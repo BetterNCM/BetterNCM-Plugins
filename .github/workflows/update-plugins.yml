@@ -25,4 +25,4 @@ jobs:
         id: node
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-        working-directory: scripts/update_plugins
+        working-directory: scripts/update-plugins
