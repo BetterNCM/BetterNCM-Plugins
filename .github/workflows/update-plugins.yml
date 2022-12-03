@@ -21,7 +21,7 @@ jobs:
         working-directory: scripts
       - name: 'Run update plugins script'
         timeout-minutes: 10
-        run: node update-site-status
+        run: node update-plugins
         id: node
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
