@@ -1,6 +1,6 @@
 import fs from 'fs';
 import path from 'path';
-import { exec } from 'child_process';
+import { exec, execSync } from 'child_process';
 import fetch from 'node-fetch';
 import download from 'github-directory-downloader';
 import { Octokit } from 'octokit';
@@ -10,8 +10,8 @@ const repoOwner = 'solstice23';
 const repoName = 'BetterNCM-Plugins';
 
 const githubToken = process.env.GITHUB_TOKEN;
-exec("git config user.name 'github-actions[bot]'");
-exec("git config user.email 'github-actions[bot]@users.noreply.github.com'");
+execSync("git config user.name 'github-actions[bot]'");
+execSync("git config user.email 'github-actions[bot]@users.noreply.github.com'");
 const octokit = new Octokit({
 	auth: githubToken,
 	userAgent: 'betterncm-plugin-updater'
@@ -107,8 +107,8 @@ const updatePlugin = async (plugin) => {
 	}
 	console.log(`  - 🔄 Upgrading...`);
 	// create new branch
-	exec(`git checkout -b master`);
-	exec(`git checkout -b update-${plugin.slug}-${plugin.latestVersion}`);	
+	execSync(`git checkout -b master`);
+	execSync(`git checkout -b update-${plugin.slug}-${plugin.latestVersion}`);	
 	// if exists, delete
 	const pluginPath = path.resolve(process.cwd(), `../../plugins-data/${plugin.slug}`);
 	if (fs.existsSync(pluginPath)) {
@@ -122,23 +122,10 @@ const updatePlugin = async (plugin) => {
 	);
 	console.log(stats);
 	// commit
-	exec(`git add .`);
-	//commit and print result
-	exec(`git commit -m "Update ${plugin.slug} to ${plugin.latestVersion}"`, (error, stdout, stderr) => {
-		if (error) {
-			console.log(`❌ ${error.message}`);
-			return;
-		}
-		if (stderr) {
-			console.log(`❌ ${stderr}`);
-			return;
-		}
-		if (stdout) {
-			console.log(`✅ ${stdout}`);
-		}
-	});
+	execSync(`git add .`);
+	execSync(`git commit -m "Update ${plugin.slug} to ${plugin.latestVersion}"`);
 	// push
-	exec(`git push origin update-${plugin.slug}-${plugin.latestVersion}`);
+	execSync(`git push origin update-${plugin.slug}-${plugin.latestVersion}`);
 	// create pull request
 	const { data: pullRequest } = await octokit.rest.pulls.create({
 		owner: repoOwner,
@@ -169,6 +156,6 @@ const updateAllPlugins = async (plugins = null) => {
 			console.log(`  - ✅ No update`);
 		}
 	}
-	exec(`git checkout master`);
+	execSync(`git checkout master`);
 }
 await updateAllPlugins();
