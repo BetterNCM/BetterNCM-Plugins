@@ -151,7 +151,11 @@ const updateAllPlugins = async (plugins = null) => {
 		console.log(`  - Latest version: ${plugin.currentVersion}`);
 		if (compareVersions(plugin.latestVersion, plugin.currentVersion) > 0) {
 			console.log(`  - ⏫ Has update!`);
-			await updatePlugin(plugin);
+			try{
+			    await updatePlugin(plugin);
+			}catch(e){
+			    console.error(`    - 🔴 Failed to update plugin: ${e}`);
+			}
 		} else {
 			console.log(`  - ✅ No update`);
 		}
