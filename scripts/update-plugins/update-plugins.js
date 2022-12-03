@@ -107,7 +107,7 @@ const updatePlugin = async (plugin) => {
 	}
 	console.log(`  - 🔄 Upgrading...`);
 	// create new branch
-	execSync(`git checkout -b master`);
+	execSync(`git checkout master`);
 	execSync(`git checkout -b update-${plugin.slug}-${plugin.latestVersion}`);	
 	// if exists, delete
 	const pluginPath = path.resolve(process.cwd(), `../../plugins-data/${plugin.slug}`);
