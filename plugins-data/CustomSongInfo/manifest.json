@@ -1,0 +1,21 @@
+{
+    "manifest_version": 1,
+    "name": "CustomSongInfo",
+    "version": "0.1.0",
+    "injects": {
+        "Main": [
+            {
+                "file": "main.js"
+            }
+        ]
+    },
+    "hijacks": {
+        ">= 2.10.4 <= 2.10.6": {
+            "orpheus://orpheus/pub/core.e5842f1.js": {
+                "type": "replace",
+                "from": "function(t,i,e,r,n,a){var o;if(((this.U()||C).from||C).id==t)",
+                "to": "async function(t,i,e,r,n,a){;i='online';window.onProcessLyrics&&(a=(await onProcessLyrics(a,e)));var o;if(((this.U()||C).from||C).id==t)"
+            }
+        }
+    }
+}
