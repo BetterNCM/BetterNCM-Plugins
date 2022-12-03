@@ -2,7 +2,7 @@
   "name": "update_plugins",
   "version": "1.0.0",
   "description": "",
-  "main": "update_plugins.js",
+  "main": "update-plugins.js",
   "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
