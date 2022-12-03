@@ -123,7 +123,20 @@ const updatePlugin = async (plugin) => {
 	console.log(stats);
 	// commit
 	exec(`git add .`);
-	exec(`git commit -m "Update ${plugin.name} to ${plugin.latestVersion}"`);
+	//commit and print result
+	exec(`git commit -m "Update ${plugin.slug} to ${plugin.latestVersion}"`, (error, stdout, stderr) => {
+		if (error) {
+			console.log(`❌ ${error.message}`);
+			return;
+		}
+		if (stderr) {
+			console.log(`❌ ${stderr}`);
+			return;
+		}
+		if (stdout) {
+			console.log(`✅ ${stdout}`);
+		}
+	});
 	// push
 	exec(`git push origin update-${plugin.slug}-${plugin.latestVersion}`);
 	// create pull request
@@ -151,7 +164,7 @@ const updateAllPlugins = async (plugins = null) => {
 		console.log(`  - Latest version: ${plugin.currentVersion}`);
 		if (compareVersions(plugin.latestVersion, plugin.currentVersion) > 0) {
 			console.log(`  - ⏫ Has update!`);
-			updatePlugin(plugin);
+			await updatePlugin(plugin);
 		} else {
 			console.log(`  - ✅ No update`);
 		}
