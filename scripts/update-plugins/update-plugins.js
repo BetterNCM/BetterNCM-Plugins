@@ -99,7 +99,7 @@ const getPluginLatestVersion = async (plugin) => {
 const updatePlugin = async (plugin) => {
 	// search if the pull request already exists
 	const searchResult = await octokit.rest.search.issuesAndPullRequests({
-		q: `repo:${repoOwner}/${repoName} is:pr "${plugin.slug} ${plugin.latestVersion}"`,
+		q: `repo:${repoOwner}/${repoName} is:pr "${plugin.name} ${plugin.latestVersion}"`,
 	});
 	if (searchResult.data.total_count > 0) {
 		console.log(`🚫 Pull request already exists for ${plugin.slug} ${plugin.latestVersion}`);
@@ -154,7 +154,6 @@ const updateAllPlugins = async (plugins = null) => {
 			updatePlugin(plugin);
 		} else {
 			console.log(`  - ✅ No update`);
-			updatePlugin(plugin);
 		}
 	}
 	exec(`git checkout master`);
