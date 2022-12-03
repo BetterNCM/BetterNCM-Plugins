@@ -135,9 +135,9 @@ const updatePlugin = async (plugin) => {
 			path.resolve(process.cwd(), `../../plugins-data/${plugin.slug}`),
 			{ token: githubToken }
 		);
+		console.log(stats);
+		console.log(`  - 📦 Downloaded ${plugin.slug} ${plugin.latestVersion} from ${plugin.repo}#${plugin.branch}${plugin.subpath}`);
 	}
-	console.log(stats);
-	console.log(`  - 📦 Downloaded ${plugin.slug} ${plugin.latestVersion} from ${plugin.repo}#${plugin.branch}${plugin.subpath}`);
 	// commit
 	execSync(`git add --all`);
 	execSync(`git commit -m "Update ${plugin.slug} to ${plugin.latestVersion}"`);
