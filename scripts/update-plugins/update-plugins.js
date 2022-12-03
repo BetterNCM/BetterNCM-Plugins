@@ -122,7 +122,7 @@ const updatePlugin = async (plugin) => {
 	);
 	console.log(stats);
 	// commit
-	execSync(`git add .`);
+	execSync(`git add --all`);
 	execSync(`git commit -m "Update ${plugin.slug} to ${plugin.latestVersion}"`);
 	// push
 	execSync(`git push origin update-${plugin.slug}-${plugin.latestVersion}`);
