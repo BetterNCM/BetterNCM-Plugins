@@ -1,0 +1,19 @@
+{
+  "name": "update_plugins",
+  "version": "1.0.0",
+  "description": "",
+  "main": "update_plugins.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "compare-versions": "^5.0.1",
+    "github-directory-downloader": "^1.3.6",
+    "node-fetch": "^3.3.0",
+    "octokit": "^2.0.10",
+    "octokit-plugin-create-pull-request": "^4.0.0"
+  }
+}
