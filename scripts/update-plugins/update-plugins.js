@@ -6,7 +6,7 @@ import download from 'github-directory-downloader';
 import { Octokit } from 'octokit';
 import { compareVersions } from 'compare-versions';
 
-const repoOwner = 'solstice23';
+const repoOwner = 'BetterNCM';
 const repoName = 'BetterNCM-Plugins';
 
 const githubToken = process.env.GITHUB_TOKEN;
