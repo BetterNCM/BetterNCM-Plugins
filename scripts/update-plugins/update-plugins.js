@@ -2,7 +2,8 @@ import fs from 'fs';
 import path from 'path';
 import { exec, execSync } from 'child_process';
 import fetch from 'node-fetch';
-import download from 'github-directory-downloader';
+import download from 'github-download';
+import downloadDirectory from 'github-directory-downloader';
 import { Octokit } from 'octokit';
 import { compareVersions } from 'compare-versions';
 
@@ -115,12 +116,28 @@ const updatePlugin = async (plugin) => {
 		fs.rm(pluginPath, { recursive: true }, (err) => {});
 	}
 	// download plugin from subpath of given branch of repo
-	const stats = await download(
-		`https://github.com/${plugin.repo}/tree/${plugin.branch}${plugin.subpath}`,
-		path.resolve(process.cwd(), `../../plugins-data/${plugin.slug}`),
-		{ token: githubToken }
-	);
+	if (plugin.subpath == '/') {
+		await new Promise (resolve => {
+			download({
+					user: plugin.repo.split('/')[0],
+					repo: plugin.repo.split('/')[1],
+					ref: plugin.branch
+				}, 
+				path.resolve(process.cwd(), `../../plugins-data/${plugin.slug}`)
+			).on('end', function() {
+				resolve();
+			})
+		});
+		console.log(`  - 📦 Downloaded ${plugin.slug} ${plugin.latestVersion} from ${plugin.repo}#${plugin.branch}`);
+	} else {
+		const stats = await downloadDirectory(
+			`https://github.com/${plugin.repo}/tree/${plugin.branch}${plugin.subpath}`,
+			path.resolve(process.cwd(), `../../plugins-data/${plugin.slug}`),
+			{ token: githubToken }
+		);
+	}
 	console.log(stats);
+	console.log(`  - 📦 Downloaded ${plugin.slug} ${plugin.latestVersion} from ${plugin.repo}#${plugin.branch}${plugin.subpath}`);
 	// commit
 	execSync(`git add --all`);
 	execSync(`git commit -m "Update ${plugin.slug} to ${plugin.latestVersion}"`);
