@@ -27,14 +27,14 @@ jobs:
       - name: 'Run pack script'
         timeout-minutes: 10
         run: node pack-plugins
-        id: node
+        id: pack
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
         working-directory: scripts/pack-plugins
       - name: 'Run push script'
         timeout-minutes: 10
         run: node push-plugins
-        id: node
+        id: push
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
         working-directory: scripts/push-plugins
