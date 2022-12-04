@@ -43,7 +43,7 @@ jobs:
         env:
           API_TOKEN_GITHUB: ${{ secrets.GH_TOKEN }}
         with:
-          source-directory: '../BetterNCM-Packed-Plugins'
+          source-directory: '/BetterNCM-Packed-Plugins'
           destination-github-username: 'BetterNCM'
           destination-repository-name: 'BetterNCM-Packed-Plugins'
           user-email: betterncm-bot@proton.me

@@ -11,6 +11,6 @@ const rootPath = path.resolve(process.cwd(), '../../../');
 const pluginsPath = path.resolve(rootPath, 'BetterNCM-Packed-Plugins');
 
 const repo = `https://BetterNCM-Bot:${process.env.GITHUB_TOKEN}@github.com/BetterNCM/BetterNCM-Packed-Plugins.git`;
-execSync(`git clone --single-branch --depth 1 --branch "master" "${repo}"`, { cwd: rootPath });
+execSync(`git clone --single-branch --depth 1 --branch "master" "${repo}"`, { cwd: '/' });
 
 fs_extra.copySync(tmpPath, pluginsPath, { overwrite: false });
