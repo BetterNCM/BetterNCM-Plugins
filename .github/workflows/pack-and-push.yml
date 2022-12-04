@@ -38,3 +38,13 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
         working-directory: scripts/push-plugins
+      - name: Pushes to the release repository
+        uses: cpina/github-action-push-to-another-repository@main
+        env:
+          API_TOKEN_GITHUB: ${{ secrets.GH_TOKEN }}
+        with:
+          source-directory: '../BetterNCM-Packed-Plugins'
+          destination-github-username: 'BetterNCM'
+          destination-repository-name: 'BetterNCM-Packed-Plugins'
+          user-email: betterncm-bot@proton.me
+          target-branch: master
