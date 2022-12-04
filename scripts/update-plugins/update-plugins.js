@@ -113,7 +113,7 @@ const updatePlugin = async (plugin) => {
 	// if exists, delete
 	const pluginPath = path.resolve(process.cwd(), `../../plugins-data/${plugin.slug}`);
 	if (fs.existsSync(pluginPath)) {
-		fs.rm(pluginPath, { recursive: true }, (err) => {});
+		fs.rmSync(pluginPath, { recursive: true }, (err) => {});
 	}
 	// download plugin from subpath of given branch of repo
 	if (plugin.subpath == '/') {
@@ -148,6 +148,7 @@ const updatePlugin = async (plugin) => {
 		owner: repoOwner,
 		repo: repoName,
 		title: `Update ${plugin.name} to ${plugin.latestVersion}`,
+		body: `\`${plugin.currentVersion}\` -> \`${plugin.latestVersion}\``,
 		head: `update-${plugin.slug}-${plugin.latestVersion}`,
 		base: 'master'
 	});
