@@ -1,0 +1,40 @@
+name: 'Pack Plugins and Push'
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches: 
+      - main
+    types: [closed]
+  
+    
+jobs:
+  UpdatePlugins:
+    if: (github.event_name == 'pull_request' && github.event.pull_request.merged) || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: 'Set up node 18.x'
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18.x
+          cache: 'npm'
+      - name: 'Install dependencies'
+        run: npm ci
+        working-directory: scripts
+      - name: 'Run pack script'
+        timeout-minutes: 10
+        run: node pack-plugins
+        id: node
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+        working-directory: scripts/pack-plugins
+      - name: 'Run push script'
+        timeout-minutes: 10
+        run: node push-plugins
+        id: node
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+        working-directory: scripts/push-plugins
