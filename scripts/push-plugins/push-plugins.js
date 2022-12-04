@@ -7,10 +7,9 @@ execSync("git config user.email 'github-actions[bot]@users.noreply.github.com'")
 
 const tmpPath = path.resolve(process.cwd(), '../../tmp');
 const rootPath = path.resolve(process.cwd(), '../../../');
+const pluginsPath = path.resolve(rootPath, 'BetterNCM-Packed-Plugins');
 execSync('git clone https://github.com/BetterNCM/BetterNCM-Packed-Plugins.git', { cwd: rootPath });
-fs_extra.copySync(tmpPath, path.resolve(rootPath, 'BetterNCM-Packed-Plugins'), { overwrite: false });
-/*execSync('git add .', { cwd: rootPath + '/BetterNCM-Packed-Plugins' });
-execSync('git commit -m "update"', { cwd: rootPath + '/BetterNCM-Packed-Plugins' });
-execSync('git push', { cwd: rootPath + '/BetterNCM-Packed-Plugins' });
-
-*/
+fs_extra.copySync(tmpPath, pluginsPath, { overwrite: false });
+execSync('git add .', { cwd: pluginsPath });
+execSync('git commit -m "update"', { cwd: pluginsPath });
+execSync('git push', { cwd: pluginsPath });
