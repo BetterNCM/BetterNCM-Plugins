@@ -12,4 +12,4 @@ execSync('git clone https://github.com/BetterNCM/BetterNCM-Packed-Plugins.git', 
 fs_extra.copySync(tmpPath, pluginsPath, { overwrite: false });
 execSync('git add .', { cwd: pluginsPath });
 execSync('git commit -m "update"', { cwd: pluginsPath });
-execSync('git push', { cwd: pluginsPath });
+//execSync('git push', { cwd: pluginsPath });
