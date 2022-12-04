@@ -21,7 +21,7 @@ const checkCompulsoryFields = (json) => {
 };
 
 
-const tmpPath = path.resolve(process.cwd(), '../../tmp');
+const tmpPath = path.resolve(process.cwd(), '../../data');
 if (fs.existsSync(tmpPath)) {
 	fs.rmSync(tmpPath, { recursive: true });
 }
@@ -63,5 +63,5 @@ plugins.forEach((plugin) => {
 });
 
 const allJson = JSON.stringify(pluginList, null, 4);
-fs.writeFileSync(path.resolve(process.cwd(), '../../tmp/plugins.json'), allJson);
+fs.writeFileSync(path.resolve(process.cwd(), '../../data/plugins.json'), allJson);
 console.log('\n✅ All plugins packed.');
