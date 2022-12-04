@@ -2,8 +2,8 @@ import fs_extra from 'fs-extra';
 import path from 'path';
 import { execSync } from 'child_process';
 
-execSync("git config --global user.name 'github-actions[bot]'");
-execSync("git config --global user.email 'github-actions[bot]@users.noreply.github.com'");
+execSync("git config --global user.name 'BetterNCM-Bot'");
+execSync("git config --global user.email 'betterncm-bot@proton.me");
 
 const tmpPath = path.resolve(process.cwd(), '../../tmp');
 const rootPath = path.resolve(process.cwd(), '../../../');
