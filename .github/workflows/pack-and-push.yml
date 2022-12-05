@@ -41,16 +41,11 @@ jobs:
         run: |
           cd release
           cp -rf ../tmp ./release
-      - name: Commit files
+      - name: Commit and push files
         run: |
           git config --local user.email "betterncm-bot@proton.me"
           git config --local user.name "BetterNCM-Bot"
           git add .
           git commit -m "Update"
-      - name: Push files
-        uses: ad-m/github-push-action@master
-        with:
-          github_token: ${{ secrets.GH_TOKEN }}
-          repository: BetterNCM/BetterNCM-Packed-Plugins
+          git push
         working-directory: release
-        
