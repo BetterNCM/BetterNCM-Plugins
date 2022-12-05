@@ -39,7 +39,7 @@ jobs:
           path: release
       - name: Copy files
         run: |
-          cp -rf ../plugins/BetterNCM-Plugins ./release
+          cp -rf ../BetterNCM-Plugins/tmp ./release
       - name: Commit files
         run: |
           git config --local user.email "betterncm-bot@proton.me"
