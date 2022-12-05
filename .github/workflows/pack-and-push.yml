@@ -16,8 +16,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-        with:
-          path: 'plugins'
       - name: 'Set up node 18.x'
         uses: actions/setup-node@v3
         with:
@@ -41,7 +39,8 @@ jobs:
           path: release
       - name: Copy files
         run: |
-          cp -rf ../BetterNCM-Plugins/tmp ./release
+          cd release
+          cp -rf ../tmp ./release
       - name: Commit files
         run: |
           git config --local user.email "betterncm-bot@proton.me"
@@ -52,3 +51,6 @@ jobs:
         uses: ad-m/github-push-action@master
         with:
           github_token: ${{ secrets.GH_TOKEN }}
+          repository: BetterNCM/BetterNCM-Packed-Plugins
+        working-directory: release
+        
