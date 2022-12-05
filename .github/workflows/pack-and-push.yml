@@ -16,6 +16,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+        with:
+          path: 'plugins'
       - name: 'Set up node 18.x'
         uses: actions/setup-node@v3
         with:
@@ -31,20 +33,22 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
         working-directory: scripts/pack-plugins
-      - name: 'Run push script'
-        timeout-minutes: 10
-        run: node push-plugins
-        id: push
-        env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-        working-directory: scripts/push-plugins
-      - name: Pushes to the release repository
-        uses: cpina/github-action-push-to-another-repository@main
-        env:
-          API_TOKEN_GITHUB: ${{ secrets.GH_TOKEN }}
+      - name: Checkout release repo
+        uses: actions/checkout@v3
         with:
-          source-directory: 'BetterNCM-Packed-Plugins'
-          destination-github-username: 'BetterNCM'
-          destination-repository-name: 'BetterNCM-Packed-Plugins'
-          user-email: betterncm-bot@proton.me
-          target-branch: master
+          repository: 'BetterNCM/https://github.com/BetterNCM/BetterNCM-Packed-Plugins'
+          token: ${{ secrets.GH_TOKEN }}
+          path: release
+      - name: Copy files
+        run: |
+          cp -rf ../plugins/tmp ./release
+      - name: Commit files
+        run: |
+          git config --local user.email "betterncm-bot@proton.me"
+          git config --local user.name "BetterNCM-Bot"
+          git add .
+          git commit -m "Update"
+      - name: Push files
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GH_TOKEN }}
