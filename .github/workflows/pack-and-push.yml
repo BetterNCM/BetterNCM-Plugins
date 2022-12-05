@@ -16,21 +16,24 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+        with:
+          path: 'plugins'
       - name: 'Set up node 18.x'
         uses: actions/setup-node@v3
         with:
           node-version: 18.x
           cache: 'npm'
+          cache-dependency-path: 'plugins/package-lock.json'
       - name: 'Install dependencies'
         run: npm ci
-        working-directory: scripts
+        working-directory: plugins/scripts
       - name: 'Run pack script'
         timeout-minutes: 10
         run: node pack-plugins
         id: pack
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-        working-directory: scripts/pack-plugins
+        working-directory: plugins/scripts/pack-plugins
       - name: Checkout release repo
         uses: actions/checkout@v3
         with:
@@ -39,14 +42,12 @@ jobs:
           path: release
       - name: Copy files
         run: |
-          cd release
-          cp -rf ../tmp ./release
+          cp -rf ../plugins/tmp ./release
       - name: Commit and push files
         run: |
           git config --local user.email "betterncm-bot@proton.me"
           git config --local user.name "BetterNCM-Bot"
-          git remote set-url origin https://${{ secrets.GH_TOKEN }}@github.com/BetterNCM/BetterNCM-Packed-Plugins
           git add .
           git commit -m "Update"
-          git push
+          git push https://betterncm-bot:${{ secrets.GH_TOKEN }}@github.com/BetterNCM/BetterNCM-Packed-Plugins.git
         working-directory: release
