@@ -42,7 +42,7 @@ jobs:
           path: release
       - name: Copy files
         run: |
-          cp -rf ../plugins/tmp ./release
+          cp -rf ./plugins/tmp ./release
       - name: Commit and push files
         run: |
           git config --local user.email "betterncm-bot@proton.me"
