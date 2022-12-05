@@ -34,7 +34,7 @@ jobs:
       - name: Checkout release repo
         uses: actions/checkout@v3
         with:
-          repository: 'BetterNCM/https://github.com/BetterNCM/BetterNCM-Packed-Plugins'
+          repository: 'BetterNCM/BetterNCM-Packed-Plugins'
           token: ${{ secrets.GH_TOKEN }}
           path: release
       - name: Copy files
