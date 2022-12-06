@@ -49,6 +49,5 @@ jobs:
           git config --local user.name "BetterNCM-Bot"
           git add .
           git commit -m "Update"
-          echo "${{ secrets.GH_TOKEN }}" | cut -c1-7
-          git push https://betterncm-bot:${{ secrets.GH_TOKEN }}@github.com/BetterNCM/BetterNCM-Packed-Plugins.git
+          git push https://${{ secrets.GH_TOKEN }}@github.com/BetterNCM/BetterNCM-Packed-Plugins.git
         working-directory: release
