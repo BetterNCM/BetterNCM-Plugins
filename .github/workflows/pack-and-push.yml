@@ -49,7 +49,6 @@ jobs:
           git config --local user.name "BetterNCM-Bot"
           git add .
           git commit -m "Update"
-          git push https://betterncm-bot:${{ secrets.GH_TOKEN }}@github.com/BetterNCM/BetterNCM-Packed-Plugins.git
-          # print the first 7 charaters of token
           echo "${{ secrets.GH_TOKEN }}" | cut -c1-7
+          git push https://betterncm-bot:${{ secrets.GH_TOKEN }}@github.com/BetterNCM/BetterNCM-Packed-Plugins.git
         working-directory: release
