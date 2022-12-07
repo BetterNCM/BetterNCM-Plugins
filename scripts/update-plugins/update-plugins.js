@@ -21,6 +21,7 @@ const octokit = new Octokit({
 
 
 const getSlugName = (name) => {
+	if (!name) return null;
 	return name.replace(/[^a-zA-Z0-9 ]/g, '').replace(/ /g, '-');
 };
 
@@ -45,7 +46,7 @@ const getPluginList = () => {
 			console.log(`❌ Invalid plugin json (Missing name or repo): ${file}`);
 			return;
 		}
-		plugin.slug = getSlugName(plugin.slug) ?? getSlugName(plugin.name) ?? "";
+		plugin.slug = getSlugName(plugin.slug ?? plugin.name) ?? "";
 		if (plugin.slug == "") {
 			console.log(`❌ No existing slug name and cannot get slug name: ${file}`);
 			return;
