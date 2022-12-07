@@ -26,6 +26,8 @@ if (fs.existsSync(tmpPath)) {
 	fs.rmSync(tmpPath, { recursive: true });
 }
 fs.mkdirSync(tmpPath);
+fs.mkdirSync(path.resolve(tmpPath, 'plugins'));
+fs.mkdirSync(path.resolve(tmpPath, 'previews'));
 
 
 let pluginList = [];
@@ -52,7 +54,19 @@ plugins.forEach((plugin) => {
 		addField(pluginJson, 'repo', repo);
 	} catch {}
 
-	compressing.zip.compressDir(path.resolve(process.cwd(), `../../plugins-data/${plugin}`), path.resolve(process.cwd(), `../../tmp/${plugin}-${manifest.version}.plugin`), {
+	if (pluginJson.preview) {
+		if (!fs.existsSync(path.resolve(process.cwd(), `../../plugins-data/${plugin}/${pluginJson.preview}`))) {
+			console.log(`🖼️ Preview of ${plugin} not found, ignored.`);
+			delete pluginJson.preview;
+		}else{
+			fs.copyFileSync(path.resolve(process.cwd(), `../../plugins-data/${plugin}/${pluginJson.preview}`), path.resolve(tmpPath, 'previews', `${plugin}.png`));
+			fs.rmSync(path.resolve(process.cwd(), `../../plugins-data/${plugin}/${pluginJson.preview}`));
+			pluginJson.preview = "previews/" + pluginJson.preview;
+		}
+	}
+
+
+	compressing.zip.compressDir(path.resolve(process.cwd(), `../../plugins-data/${plugin}`), path.resolve(process.cwd(), `../../tmp/plugins/${plugin}-${manifest.version}.plugin`), {
 		ignoreBase: true
 	});
 
