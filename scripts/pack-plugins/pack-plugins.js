@@ -71,7 +71,7 @@ plugins.forEach((plugin) => {
 		ignoreBase: true
 	});
 
-	addField(pluginJson, 'file', `${plugin}-${manifest.version}.plugin`);
+	addField(pluginJson, 'file', `plugins/${plugin}-${manifest.version}.plugin`);
 
 	pluginList.push(pluginJson);
 	console.log(`📦 ${plugin} ${manifest.version} packed.`);
