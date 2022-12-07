@@ -1,0 +1,19 @@
+{
+    "manifest_version": 1,
+    "name": "HideScrollbar",
+    "version": "1.0.0",
+    "description": "隐藏滚动条(没什么用的东西)",
+    "preview": "preview.png",
+    "author": "Zinc",
+    "betterncm_version": ">=0.2.3",
+    "requirements": [
+        "StylesheetLoader"
+    ],
+    "injects": {
+        "Main": [
+            {
+                "file": "index.js"
+            }
+        ]
+    }
+}

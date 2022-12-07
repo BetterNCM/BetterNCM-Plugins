@@ -1,0 +1,18 @@
+{
+    "manifest_version": 1,
+    "name": "LiveSongPlayer",
+    "description": "(仅 2.10.6) 可配置，简单易用的B站点歌姬",
+    "author": "MicroBlock",
+    "version": "0.1.4",
+    "betterncm_version": ">=0.2.4",
+    "preview": "lsp.png",
+    "injects": {
+        "Main": [
+            {
+                "file": "main.js"
+            },{
+                "file":"utils.js"
+            }
+        ]
+    }
+}

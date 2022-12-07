@@ -1,0 +1,16 @@
+{
+    "manifest_version": 1,
+    "name": "BGEnhanced",
+    "description": "高级背景设置，支持随机背景，支持视频，支持亚克力",
+    "author": "MicroBlock",
+    "betterncm_version": ">=0.2.6",
+    "version": "0.1.4",
+    "preview": "preview.png",
+    "injects": {
+        "Main": [
+            {
+                "file": "main.js"
+            }
+        ]
+    }
+}

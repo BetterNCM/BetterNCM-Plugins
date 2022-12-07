@@ -1,0 +1,19 @@
+{
+    "manifest_version": 1,
+    "name": "MoTheme",
+    "description": "主题插件，添加打开/关闭播放界面的过渡动画，修复了评论按钮",
+    "preview": "preview.png",
+    "author": "沫烬染",
+    "version": "1.1.5",
+    "betterncm_version": ">=0.2.2",
+    "requirements": [
+        "StylesheetLoader"
+    ],
+    "injects": {
+        "Main": [
+            {
+                "file": "main.js"
+            }
+        ]
+    }
+}

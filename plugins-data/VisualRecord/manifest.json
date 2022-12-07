@@ -1,0 +1,15 @@
+{
+    "manifest_version": 1,
+    "name": "VisualRecord",
+    "version": "1.0.0",
+    "author": "沫烬染",
+    "description": "可视化听歌排行，在个人主页-听歌排行内查看",
+    "preview": "preview.png",
+    "injects": {
+        "Main": [
+            {
+                "file": "index.js"
+            }
+        ]
+    }
+}

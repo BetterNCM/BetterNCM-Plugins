@@ -1,0 +1,19 @@
+{
+    "manifest_version": 1,
+    "name": "Microrange",
+    "description": "Microrange主题",
+    "preview": "preview.png",
+    "author": "MicroBlock",
+    "version": "0.1.0",
+    "betterncm_version": ">=0.2.0",
+    "requirements": [
+        "StylesheetLoader"
+    ],
+    "injects": {
+        "Main": [
+            {
+                "file": "main.js"
+            }
+        ]
+    }
+}

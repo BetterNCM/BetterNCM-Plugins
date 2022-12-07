@@ -1,0 +1,16 @@
+{
+    "manifest_version": 1,
+    "name": "NcmDump",
+    "version": "1.0.2",
+    "author": "沫烬染",
+    "description": "使用NcmDump程序转换ncm文件为flac，mp3（特殊文件名不行",
+    "preview": "preview.png",
+    "betterncm_version": ">=0.2.4",
+    "injects": {
+        "Main": [
+            {
+                "file": "index.js"
+            }
+        ]
+    }
+}

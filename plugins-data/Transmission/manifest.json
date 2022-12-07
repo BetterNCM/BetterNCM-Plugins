@@ -1,0 +1,19 @@
+{
+    "manifest_version":1,
+    "name":"Transmission",
+    "version":"0.1.3",
+    "description": "Transmission主题",
+    "preview": "preview.png",
+    "author": "MicroBlock",
+    "bettncm_version": ">=0.2.0",
+    "requirements": [
+        "StylesheetLoader"
+    ],
+    "injects":{
+        "Main":[
+            {
+                "file":"theme.js"
+            }
+        ]
+    }
+}

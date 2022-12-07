@@ -1,0 +1,16 @@
+{
+    "manifest_version": 1,
+    "name": "StylesheetLoader",
+    "version": "0.1.1",
+    "description": "依赖库 用于统一加载样式表",
+    "hide": true,
+    "author": "MicroBlock",
+    "betterncm_version": ">=0.2.0",
+    "injects": {
+        "Main": [
+            {
+                "file": "loader.js"
+            }
+        ]
+    }
+}

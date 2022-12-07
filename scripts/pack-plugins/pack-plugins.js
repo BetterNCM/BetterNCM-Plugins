@@ -11,9 +11,10 @@ const addField = (json, field, value) => {
 		json[field] = value;
 	}
 };
-const checkCompulsoryFields = (json) => {
+const checkCompulsoryFields = (json, pluginName) => {
 	for (const field of compulsoryFields) {
 		if (!json[field]) {
+			console.log(`❌ Plugin ${pluginName} is missing field ${field} in manifest.json.`);
 			return false;
 		}
 	}
@@ -34,14 +35,19 @@ let pluginList = [];
 
 const plugins = fs.readdirSync(path.resolve(process.cwd(), '../../plugins-data'));
 plugins.forEach((plugin) => {
+	if (plugin.startsWith('.')) return;
+	if (!fs.existsSync(path.resolve(process.cwd(), `../../plugins-data/${plugin}/manifest.json`))) {
+		console.log(`❌ Plugin ${plugin} has no manifest.json.`);
+		return;
+	}
 	const manifest = JSON.parse(fs.readFileSync(path.resolve(process.cwd(), `../../plugins-data/${plugin}/manifest.json`)));
 	
 	let pluginJson = {};
 	for (const field of compulsoryFields) {
 		addField(pluginJson, field, manifest[field]);
 	}
-	if (!checkCompulsoryFields(pluginJson)) {
-		console.log(`⏩ Manifest.json of ${plugin} missing compulsory fields, skipped.`);
+	if (!checkCompulsoryFields(pluginJson, plugin)) {
+		console.log(`⏩ Packing skipped.`);
 		return;
 	}
 	for (const field of optionalFields) {
@@ -61,7 +67,7 @@ plugins.forEach((plugin) => {
 		}else{
 			const suffix = pluginJson.preview.split('.').pop();
 			fs.copyFileSync(path.resolve(process.cwd(), `../../plugins-data/${plugin}/${pluginJson.preview}`), path.resolve(tmpPath, 'previews', `${plugin}.${suffix}`));
-			fs.rmSync(path.resolve(process.cwd(), `../../plugins-data/${plugin}/${pluginJson.preview}`));
+			//fs.rmSync(path.resolve(process.cwd(), `../../plugins-data/${plugin}/${pluginJson.preview}`));
 			pluginJson.preview = `previews/${plugin}.${suffix}`;
 		}
 	}
@@ -71,7 +77,8 @@ plugins.forEach((plugin) => {
 		ignoreBase: true
 	});
 
-	addField(pluginJson, 'file', `plugins/${plugin}-${manifest.version}.plugin`);
+	addField(pluginJson, 'file', `${plugin}-${manifest.version}.plugin`);
+	addField(pluginJson, 'file-url', `plugins/${plugin}-${manifest.version}.plugin`);
 
 	pluginList.push(pluginJson);
 	console.log(`📦 ${plugin} ${manifest.version} packed.`);

@@ -42,9 +42,14 @@ const getPluginList = () => {
 		const plugin = JSON.parse(fs.readFileSync(path.join(pluginListPath, file)));
 	
 		if (!isValidPluginJson(plugin)) {
+			console.log(`❌ Invalid plugin json (Missing name or repo): ${file}`);
 			return;
 		}
-		plugin.slug = plugin.slug ?? getSlugName(plugin.name);
+		plugin.slug = getSlugName(plugin.slug) ?? getSlugName(plugin.name) ?? "";
+		if (plugin.slug == "") {
+			console.log(`❌ No existing slug name and cannot get slug name: ${file}`);
+			return;
+		}
 
 		plugin.branch = plugin.branch ?? 'master';
 

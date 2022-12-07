@@ -1,0 +1,16 @@
+{
+    "manifest_version": 1,
+    "name": "UnblockCloudMusicInstaller",
+    "version": "0.1.7",
+    "description": "一键安装网易云解灰",
+    "preview": "preview.png",
+    "author": "MicroBlock",
+    "betterncm_version": "0.2.4",
+    "injects": {
+        "Main": [
+            {
+                "file": "main.js"
+            }
+        ]
+    }
+}

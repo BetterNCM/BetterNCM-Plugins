@@ -1,0 +1,691 @@
+/* 代码下半部分写的比较乱，不建议参考（ */
+
+/* 列表滚动条 */
+::-webkit-scrollbar {
+    width: 5px !important;
+}
+
+::-webkit-scrollbar-thumb {
+    border-radius: 5px !important;
+    background-color: rgba(255, 255, 255, 0.3) !important;
+}
+
+::-webkit-scrollbar-track {
+    background: unset !important;
+}
+
+/* 选择 */
+::selection {
+    background-color: rgba(255, 255, 255, 0.2) !important;
+}
+
+.s-theme-white ::selection {
+    background-color: rgba(0, 0, 0, 0.15) !important;
+}
+
+
+/* ************************************************************************* */
+
+
+/* 文字阴影 */
+body {
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+/* 背景 */
+#portal_root {
+    /*
+        防止某些情况下滚动整个屏幕，
+        因为壁纸被缩放1.05倍容器被撑开
+    */
+    overflow: hidden;
+    transition: opacity 0.2s ease-out;
+}
+
+#portal_root .portal-app {
+    width: 100%;
+    height: 100%;
+    background-image: var(--MoTheme-backgroundImage);
+    background-position: center;
+    background-size: cover;
+    filter: brightness(var(--MoTheme-backgroundBrightness)) saturate(var(--MoTheme-backgroundSaturate)) blur(var(--MoTheme-backgroundBlur));
+    transform: scale(var(--MoTheme-backgroundScale));
+}
+
+/* 兼容BGEnhanced */
+.MoTheme-BGEnhanced #portal_root {
+    opacity: 0;
+}
+
+.MoTheme-BGEnhanced #BGEnhanced_Background img {
+    filter: brightness(var(--MoTheme-backgroundBrightness)) saturate(var(--MoTheme-backgroundSaturate)) blur(var(--MoTheme-backgroundBlur));
+    transform: scale(var(--MoTheme-backgroundScale));
+}
+
+
+/* ************************************************************************* */
+
+
+/* 应用栏背景 */
+.g-hd {
+    background: none !important;
+}
+
+header::after {
+    content: none !important;
+}
+
+.btn-prv,
+.btn-nxt,
+.j-search-input,
+.m-listen {
+    background-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+/* 窗口控制器 */
+.m-winctrl {
+    background: none;
+}
+
+.m-nav {
+    padding: 0 5px 0 10px !important;
+}
+
+/* *** 左侧栏 *** */
+
+.nav h2 {
+    margin: unset !important;
+    padding: unset !important;
+    text-align: center;
+    font-weight: bold;
+    color: #FFFFFF;
+}
+
+.s-theme-white .nav h2 {
+    color: #000000;
+}
+
+.sys,
+.my {
+    margin: 0 !important;
+}
+
+.sys li,
+.my li {
+    margin: 5px 0 !important;
+}
+
+.sys li a,
+.my li a {
+    margin: 0 !important;
+    border-radius: 8px !important;
+}
+
+.sys li a:hover,
+.my li a:hover {
+    background-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+/* 已选择 */
+.m-nav li.z-sel a {
+    background-color: rgba(255, 255, 255, 0.2) !important;
+    backdrop-filter: blur(8px);
+}
+
+
+/* 右侧 */
+.g-mn {
+    background: none;
+}
+
+.m-tabwrap {
+    background: unset;
+    position: unset;
+}
+
+.g-recmdwrap {
+    margin: unset;
+}
+
+.m-dtool {
+    background: unset !important;
+}
+
+.m-uinfo {
+    background: unset !important;
+}
+
+.g-setHd {
+    background: unset;
+}
+
+/* *** 底部音乐控制 *** */
+
+/* 开启悬浮模式 */
+.MoTheme-bottomMusicBarDockMode .m-player {
+    margin: 10px;
+    border-radius: var(--MoTheme-bottomMusicBarRadius);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.m-player {
+    border: unset;
+    background: var(--MoTheme-bottomMusicBar_backgroundColor) !important;
+    backdrop-filter: saturate(var(--MoTheme-bottomMusicBar_backgroundSaturate)) blur(var(--MoTheme-bottomMusicBar_backgroundBlur));
+    margin: 0;
+}
+
+#main-player *,
+.m-player * {
+    transition: all 0.18s ease-out;
+}
+
+.g-single {
+    background: none;
+}
+
+.mq-playing .gsd {
+    display: none;
+}
+
+.mq-playing .g-sd,
+.mq-playing .g-mn {
+    display: none;
+}
+
+/* 弹窗 */
+.m-layer {
+    background-color: var(--MoTheme-popWindow_backgroundColor) !important;
+    backdrop-filter: saturate(var(--MoTheme-popWindow_backgroundSaturate)) blur(var(--MoTheme-popWindow_backgroundBlur));
+    border-radius: var(--MoTheme-popWindowRadius) !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+}
+
+.m-layer .zcnt {
+    background: unset !important;
+}
+
+.m-layer .lyct {
+    background: unset !important;
+}
+
+.m-layer .lyct .m-layer {
+    background: unset !important;
+    border: none !important;
+}
+
+.msghd {
+    background: unset !important;
+}
+
+/* 陌生人骚扰提示 */
+.blacknote {
+    background-color: rgba(0, 0, 0, 0.1) !important;
+}
+
+/* 查看更多历史消息 */
+.loadmore {
+    background-color: rgba(0, 0, 0, 0.1) !important;
+}
+
+.covers::after {
+    content: unset !important;
+}
+
+.u-playinglocation {
+    background-color: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(4px);
+    box-shadow: unset;
+}
+
+.u-lcsch {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.th {
+    color: #FFFFFF;
+    font-weight: bold;
+}
+
+.s-theme-white .th {
+    color: #000000;
+}
+
+/* 音乐进度条 */
+.prg {
+    transform: translateY(-1px);
+}
+
+.prg .has {
+    background-image: linear-gradient(90deg, #43CBFF, #9708CC, #FB016D) !important;
+}
+
+.brt .brtlist {
+    border-radius: var(--MoTheme-otherRadius) !important;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2) !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+}
+
+.prg-spk.j-vol::after,
+.prg-spk.j-vol::before {
+    content: unset;
+}
+
+.prg-spk.j-vol {
+    border-radius: var(--MoTheme-otherRadius) !important;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.prg-spk .has::before {
+    background-image: linear-gradient(0deg, #43CBFF, #FB016D) !important;
+}
+
+/* 当前播放列表 */
+.m-playlist.z-show {
+    background-color: var(--MoTheme-other_backgroundColor);
+    backdrop-filter: saturate(var(--MoTheme-other_backgroundSaturate)) blur(var(--MoTheme-other_backgroundBlur)) !important;
+    border-radius: var(--MoTheme-otherRadius) !important;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    bottom: 82px;
+    right: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.MoTheme-bottomMusicBarDockMode .m-playlist.z-show {
+    bottom: 92px !important;
+}
+
+.u-msg {
+    background: unset !important;
+}
+
+.g-singlec-live {
+    display: none;
+}
+
+/* 播放页封面 */
+.cdrun {
+    display: none;
+}
+
+.cdbg {
+    display: none !important;
+}
+
+.cdwrap {
+    all: unset;
+}
+
+.cdimg {
+    all: unset !important;
+}
+
+.cdimg img {
+    border-radius: 12px;
+    box-shadow: 0 16px 32px rgba(0, 0, 0, 0.3);
+}
+
+.cdbox {
+    display: none !important;
+}
+
+/* 评论和回到顶部按钮 */
+.g-singlec-comment,
+.g-singlec-comment-detail,
+.g-singlec-comment-top {
+    background-color: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(4px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.g-singlec-comment:hover,
+.g-singlec-comment-detail:hover,
+.g-singlec-comment-top:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+.g-singlec-comment {
+    right: 10px;
+    bottom: 10px;
+}
+
+.g-singlec-comment-detail {
+    left: calc(100% - 215px);
+    right: 59px;
+    bottom: 10px;
+}
+
+.g-singlec-comment-top {
+    right: 10px;
+    bottom: 10px;
+    transform: translateY(20px) !important;
+}
+
+.g-singlec-comment-top.z-show {
+    transform: translateY(0) !important;
+}
+
+.host li {
+    background: unset !important;
+}
+
+.m-plylist .itm {
+    margin: 5px !important;
+    border-radius: 8px;
+}
+
+/* 列表 */
+.j-item {
+    background-color: unset !important;
+}
+
+.j-item:hover {
+    background-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+.j-item.z-sel {
+    background-color: rgba(255, 255, 255, 0.2) !important;
+    backdrop-filter: blur(4px);
+}
+
+.MoTheme-bottomMusicBarDockMode .m-pinfo {
+    left: 10px !important;
+    bottom: 10px !important;
+}
+
+.m-pinfo {
+    left: 0 !important;
+    bottom: 0 !important;
+}
+
+.MoTheme-bottomMusicBarDockMode .m-lyric {
+    bottom: 84px !important;
+}
+
+.m-lyric {
+    background-color: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(16px);
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    margin: 5px;
+    bottom: 73px !important;
+}
+
+.u-arrlay {
+    background-color: var(--MoTheme-other_backgroundColor) !important;
+    backdrop-filter: saturate(var(--MoTheme-other_backgroundSaturate)) blur(var(--MoTheme-other_backgroundBlur)) !important;
+    border-radius: var(--MoTheme-otherRadius) !important;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2) !important;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* 消息 */
+.u-arrlay-msg {
+    right: 10px !important;
+    bottom: 85px !important;
+}
+
+.MoTheme-bottomMusicBarDockMode .u-arrlay-msg {
+    bottom: 95px !important;
+}
+
+.u-tabbtn {
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.u-tabbtn .btn:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.u-tabbtn .z-sel {
+    background-color: rgba(255, 255, 255, 0.3) !important;
+}
+
+.m-card {
+    background-clip: unset !important;
+}
+
+.m-card.m-card-arrow-bottom {
+    border: none !important;
+}
+
+/* 一起听 */
+.m-card-invite {
+    background-color: var(--MoTheme-other_backgroundColor) !important;
+    backdrop-filter: saturate(var(--MoTheme-other_backgroundSaturate)) blur(var(--MoTheme-other_backgroundBlur)) !important;
+    border-radius: var(--MoTheme-otherRadius) !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2) !important;
+    left: unset !important;
+    top: unset !important;
+    right: 10px;
+    bottom: 82px;
+}
+
+.MoTheme-bottomMusicBarDockMode .m-card-invite {
+    bottom: 92px;
+}
+
+/* 分享 */
+.m-layer-sharecard .m-layer-sharecard,
+.m-card-sharecard .m-card-sharecard {
+    backdrop-filter: unset;
+    border-radius: unset;
+}
+
+.m-layer-sharecard .logo,
+.m-card-sharecard .logo {
+    background-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+.m-layer-sharecard li:hover,
+.m-card-sharecard li:hover {
+    background-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+/* 评论回复背景 */
+.citm .reply {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.m-plylist_playlist,
+.m-plylist_album,
+.m-daily {
+    padding-bottom: 0;
+}
+
+.m-adjustbar {
+    padding-bottom: 20px;
+}
+
+.n-local {
+    bottom: 0;
+}
+
+.p-mv {
+    margin-top: 10px;
+}
+
+.g-mn-set {
+    bottom: 0;
+}
+
+.jFNMmu {
+    padding-bottom: 0;
+}
+
+.m-player .brt .brtlist:before {
+    content: unset;
+}
+
+.g-bd2 {
+    width: 50%;
+}
+
+.g-singlec-ct .m-comment-play {
+    margin-bottom: 20px;
+}
+
+.g-singlec-ct .m-comment-play .title:first-child {
+    padding-top: 55px;
+}
+
+.MoTheme-bottomMusicBarDockMode .g-singlec-ct .m-comment-play .title:first-child {
+    padding-top: 45px;
+}
+
+.s-theme-white .m-timeline .head .btn {
+    color: #000000;
+}
+
+.m-timeline .head .btn {
+    position: fixed;
+    right: 10px;
+    bottom: 92px;
+    background-color: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(2px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    width: 100px;
+    height: 35px;
+    line-height: 35px;
+    transition: background-color 0.2s ease-out;
+}
+
+.m-timeline .head .btn:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+.m-timeline .m-dtool,
+.z-frdmsgtip {
+    position: unset;
+}
+
+/* 解决播放页面渐变色 */
+.g-single-bd .bg.z-show {
+    display: none;
+}
+
+/* Tab过渡动画 */
+.m-tabwrap * {
+    transition: all 0.2s ease-out;
+}
+
+/* 浅色字调整 */
+.j-line.trans {
+    color: rgba(239, 239, 239, 0.6);
+}
+
+.m-detail.s-fc3 p {
+    color: rgba(239, 239, 239, 0.7);
+}
+
+/* 亮色主题 */
+.s-theme-white .j-line.trans {
+    color: inherit
+}
+
+.s-theme-white .m-detail.s-fc3 p {
+    color: inherit
+}
+
+.u-txt {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* 解决：切换歌曲时歌曲缩略图会变红 */
+/* 还有一起听的黑色圆形遮罩 */
+.u-cover .lnk,
+.u-face .wrap {
+    mask-image: unset;
+    -webkit-mask-image: unset;
+}
+
+.u-face .wrap:before,
+.u-face .wrap::after {
+    content: unset;
+}
+
+.u-face img {
+    border-radius: 50%;
+}
+
+/* 选择栏背景 */
+.u-select .sltwrap {
+    background: unset;
+    backdrop-filter: saturate(1.2) blur(8px);
+}
+
+.jUcpPH {
+    background-color: rgba(255, 255, 255, 0.2) !important;
+    backdrop-filter: saturate(1.2) blur(8px);
+    border-radius: 10px !important;
+    box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.15);
+}
+
+.henQmx svg {
+    fill: rgba(255, 255, 255, 0.3);
+}
+
+.u-select-fonts .select {
+    width: unset;
+}
+
+/* 亮色主题 */
+.s-theme-white .u-select .value {
+    background-color: rgba(255, 255, 255, 0.07);
+}
+
+.s-theme-white .u-select .select {
+    background-color: rgba(255, 255, 255, 0.07);
+}
+
+.g-sd,
+.g-mn,
+.g-bds-fix,
+.g-single {
+    bottom: 72px;
+}
+
+.MoTheme-bottomMusicBarDockMode .g-sd,
+.MoTheme-bottomMusicBarDockMode .g-mn,
+.MoTheme-bottomMusicBarDockMode .g-bds-fix,
+.MoTheme-bottomMusicBarDockMode .g-single {
+    bottom: 82px;
+}
+
+.g-mn.g-mn-set {
+    bottom: 0px !important;
+}
+
+.g-sd,
+.g-mn,
+.g-ft,
+.g-single {
+    display: block !important;
+    transition: all 0.3s ease-out !important;
+}
+
+.g-single {
+    opacity: 0;
+}
+
+.g-single.z-show {
+    opacity: 1;
+}
+
+.topqwq {
+    opacity: 0;
+    transform: translateY(-100vh);
+}
+
+div.m-page a:not(.js-selected):hover {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.2);
+    backdrop-filter: saturate(1.2) blur(4px);
+}
+
+.showo {
+    opacity: 1;
+}

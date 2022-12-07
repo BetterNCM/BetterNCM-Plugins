@@ -1,0 +1,60 @@
+.rm() {
+        display: none;
+}
+
+body.remove-postcast{
+    .j-flag.fsection:nth-child(2){.rm();}
+    .j-flag.rdi{.rm();}
+    #dis-podcast{.rm();}
+    .discover-podcast{.rm();}
+    [data-nej-selector="__nThemePodcastContainer"]{.rm();}
+    [data-id="/m/disc/radar/"]{.rm();}
+}
+
+body.remove-video{
+    .j-flag.fsection:nth-child(3){.rm();}
+    [data-nej-selector="__nRecMVTit"]{.rm();}
+    [data-nej-selector="__nRecMVBox"]{.rm();}
+}
+
+body.remove-subscribed{
+    .j-flag.fsection:nth-child(4){.rm();}
+}
+
+body.remove-live{
+    .j-flag.fsection:nth-child(5){.rm();}
+    [data-nej-selector="__nLiveTit"]{.rm();}
+    [data-nej-selector="__nVoiceLiveTit"]{.rm();}
+}
+
+body.remove-fm{
+    .j-flag.fsection:nth-child(6){.rm();}
+}
+
+body.remove-exclusive{
+    [href="#/m/exclusive/"]{.rm();}
+    [data-nej-selector="__nExclusiveBox"]{.rm();}
+}
+
+body.remove-latest-music{
+    [data-nej-selector="__nNewSongTit"]{.rm();}
+    [data-id="/m/disc/newsong/"]{.rm();}
+    [data-nej-selector="__nNewSongBox"]{.rm();}
+}
+
+body.remove-stuff{
+    [data-nej-selector="__nOrderButton"]{.rm();}
+}
+
+body.disable-ncm-list-optimization{
+    .m-plylist-pl2 ul .pl-di {
+        display: block !important;
+    }
+    .m-plylist-pl2 ul .lst {
+        padding: 0 !important;
+        counter-reset: tlistorder 0 !important;
+    }
+    .u-playinglocation{
+        display: none;
+    }
+}

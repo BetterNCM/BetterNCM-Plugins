@@ -1,0 +1,70 @@
+body.remove-postcast .j-flag.fsection:nth-child(2) {
+  display: none;
+}
+body.remove-postcast .j-flag.rdi {
+  display: none;
+}
+body.remove-postcast #dis-podcast {
+  display: none;
+}
+body.remove-postcast .discover-podcast {
+  display: none;
+}
+body.remove-postcast [data-nej-selector="__nThemePodcastContainer"] {
+  display: none;
+}
+body.remove-postcast [data-id="/m/disc/radar/"] {
+  display: none;
+}
+body.remove-video .j-flag.fsection:nth-child(3) {
+  display: none;
+}
+body.remove-video [data-nej-selector="__nRecMVTit"] {
+  display: none;
+}
+body.remove-video [data-nej-selector="__nRecMVBox"] {
+  display: none;
+}
+body.remove-subscribed .j-flag.fsection:nth-child(4) {
+  display: none;
+}
+body.remove-live .j-flag.fsection:nth-child(5) {
+  display: none;
+}
+body.remove-live [data-nej-selector="__nLiveTit"] {
+  display: none;
+}
+body.remove-live [data-nej-selector="__nVoiceLiveTit"] {
+  display: none;
+}
+body.remove-fm .j-flag.fsection:nth-child(6) {
+  display: none;
+}
+body.remove-exclusive [href="#/m/exclusive/"] {
+  display: none;
+}
+body.remove-exclusive [data-nej-selector="__nExclusiveBox"] {
+  display: none;
+}
+body.remove-latest-music [data-nej-selector="__nNewSongTit"] {
+  display: none;
+}
+body.remove-latest-music [data-id="/m/disc/newsong/"] {
+  display: none;
+}
+body.remove-latest-music [data-nej-selector="__nNewSongBox"] {
+  display: none;
+}
+body.remove-stuff [data-nej-selector="__nOrderButton"] {
+  display: none;
+}
+body.disable-ncm-list-optimization .m-plylist-pl2 ul .pl-di {
+  display: block !important;
+}
+body.disable-ncm-list-optimization .m-plylist-pl2 ul .lst {
+  padding: 0 !important;
+  counter-reset: tlistorder 0 !important;
+}
+body.disable-ncm-list-optimization .u-playinglocation {
+  display: none;
+}
