@@ -59,9 +59,10 @@ plugins.forEach((plugin) => {
 			console.log(`🖼️ Preview of ${plugin} not found, ignored.`);
 			delete pluginJson.preview;
 		}else{
-			fs.copyFileSync(path.resolve(process.cwd(), `../../plugins-data/${plugin}/${pluginJson.preview}`), path.resolve(tmpPath, 'previews', `${plugin}.png`));
+			const suffix = pluginJson.preview.split('.').pop();
+			fs.copyFileSync(path.resolve(process.cwd(), `../../plugins-data/${plugin}/${pluginJson.preview}`), path.resolve(tmpPath, 'previews', `${plugin}.${suffix}`));
 			fs.rmSync(path.resolve(process.cwd(), `../../plugins-data/${plugin}/${pluginJson.preview}`));
-			pluginJson.preview = "previews/" + pluginJson.preview;
+			pluginJson.preview = `previews/${plugin}.${suffix}`;
 		}
 	}
 
