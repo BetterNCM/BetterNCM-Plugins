@@ -67,7 +67,7 @@ plugins.forEach((plugin) => {
 		}else{
 			const suffix = pluginJson.preview.split('.').pop();
 			fs.copyFileSync(path.resolve(process.cwd(), `../../plugins-data/${plugin}/${pluginJson.preview}`), path.resolve(tmpPath, 'previews', `${plugin}.${suffix}`));
-			//fs.rmSync(path.resolve(process.cwd(), `../../plugins-data/${plugin}/${pluginJson.preview}`));
+			fs.rmSync(path.resolve(process.cwd(), `../../plugins-data/${plugin}/${pluginJson.preview}`));
 			pluginJson.preview = `previews/${plugin}.${suffix}`;
 		}
 	}
