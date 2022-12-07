@@ -6,6 +6,11 @@ on:
     branches: 
       - master
     types: [closed]
+  push:
+    branches: 
+      - master
+    paths:
+      - plugins-data
   
     
 jobs:
