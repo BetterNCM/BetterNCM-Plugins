@@ -1,0 +1,12 @@
+{
+    "manifest_version": 1,
+    "name": "BetterNCMPlugin",
+    "version": "0.1.0",
+    "injects": {
+        "Main": [
+            {
+                "file": "main_test.js"
+            }
+        ]
+    }
+}
