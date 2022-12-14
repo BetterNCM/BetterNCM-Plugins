@@ -1,10 +1,10 @@
 {
     "manifest_version": 1,
     "name": "BGEnhanced",
-    "description": "高级背景设置，支持随机背景，支持视频，支持亚克力",
-    "author": "MicroBlock",
-    "betterncm_version": ">=0.2.6",
-    "version": "0.1.4",
+    "version": "0.1.5",
+    "author": "MicroBlock", 
+    "description": "随意自定义你的网易云背景图！",
+    "betterncm_version": "^0.2.5", 
     "preview": "preview.png",
     "injects": {
         "Main": [
