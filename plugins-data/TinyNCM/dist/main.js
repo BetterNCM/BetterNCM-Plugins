@@ -1,53 +1,51 @@
 // @ts-nocheck
 function Checkbox({ name, value, onClick }) {
     const checkboxRef = React.useRef();
-
-    React.useEffect(() => { 
+    React.useEffect(() => {
         if (value === 1) {
             checkboxRef.current.checked = true;
             checkboxRef.current.indeterminate = false;
-        } else if (value === 0) {
+        }
+        else if (value === 0) {
             checkboxRef.current.checked = false;
             checkboxRef.current.indeterminate = false;
-        } else if (value === 2) {
+        }
+        else if (value === 2) {
             checkboxRef.current.checked = true;
             checkboxRef.current.indeterminate = true;
         }
     }, [value]);
-
-    return (
-        <label style={{ display: "flex", marginTop: ".3em" }}>
-            <input style={{ marginRight: ".5em" }} ref={checkboxRef} type="checkbox" onClick={onClick} />
-            <span>{name}</span>
-        </label>
-    );
+    return (React.createElement("label", { style: { display: "flex", marginTop: ".3em" } },
+        React.createElement("input", { style: { marginRight: ".5em" }, ref: checkboxRef, type: "checkbox", onClick: onClick }),
+        React.createElement("span", null, name)));
 }
-
 function Expandable({ children, title }) {
     let [expanded, setExpanded] = React.useState(false);
-    return (<div>
-        <h3 class="s-fc1 f-ff2" style={{ cursor: "pointer" }} onClick={() => {
-            setExpanded(!expanded)
-        }}><span style={{
-            transform: !expanded ? "rotate(-45deg)" : "",
-            display: 'inline-block',
-            transition: "transform 0.2s",
-            opacity: '0.6',
-            fontWeight: "800"
-        }}> {'×'} </span> {title} </h3>
-
-        <div style={{
-            margin: "0.5em 1em",
-            opacity: expanded ? "1" : "0",
-            height: expanded ? "auto" : "0px",
-            transition: "opacity 0.1s",
-            overflow: "hidden"
-        }}>
-            {children}
-        </div>
-    </div>)
+    return (React.createElement("div", null,
+        React.createElement("h3", { class: "s-fc1 f-ff2", style: { cursor: "pointer" }, onClick: () => {
+                setExpanded(!expanded);
+            } },
+            React.createElement("span", { style: {
+                    transform: !expanded ? "rotate(-45deg)" : "",
+                    display: 'inline-block',
+                    transition: "transform 0.2s",
+                    opacity: '0.6',
+                    fontWeight: "800"
+                } },
+                " ",
+                '×',
+                " "),
+            " ",
+            title,
+            " "),
+        React.createElement("div", { style: {
+                margin: "0.5em 1em",
+                opacity: expanded ? "1" : "0",
+                height: expanded ? "auto" : "0px",
+                transition: "opacity 0.1s",
+                overflow: "hidden"
+            } }, children)));
 }
-
 const ElementMap = {
     "顶栏": {
         "网易云Logo": ".m-logo",
@@ -100,65 +98,55 @@ const ElementMap = {
         "MV": ".u-micn-mv",
         "VIP": ".u-micn-vip"
     }
-}
-
+};
 function applyTinyNCM() {
     let config = JSON.parse(localStorage["cc.microblock.betterncm.tinyncm.minify"] || "{}");
     let css = Object.entries(config).map(([selector, value]) => {
-        if (value === 1) return `${selector}{display:none;}`;
-        if (value === 2) return `${selector}{opacity:0;}`;
+        if (value === 1)
+            return `${selector}{display:none;}`;
+        if (value === 2)
+            return `${selector}{opacity:0;}`;
         return "";
     }).join("\n");
-
     if (!document.querySelector(".tinyNCM-Minify"))
         document.head.appendChild(dom("style", { class: ["tinyNCM-Minify"] }));
-
     let cssDom = document.querySelector(".tinyNCM-Minify");
     cssDom.innerHTML = css;
 }
-
 function MinifyEle() {
     const [config, setConfig] = React.useState(JSON.parse(localStorage["cc.microblock.betterncm.tinyncm.minify"] || "{}"));
     React.useEffect(() => {
         localStorage["cc.microblock.betterncm.tinyncm.minify"] = JSON.stringify(config);
         applyTinyNCM();
     });
-
     let collectionsEle = [];
-
     for (let collection in ElementMap) {
         let configsEle = [];
         for (let name in ElementMap[collection]) {
             config[ElementMap[collection][name]] = config[ElementMap[collection][name]] ?? 0;
-            configsEle.push((
-                <Checkbox name={name} value={config[ElementMap[collection][name]]} onClick={(e) => {
+            configsEle.push((React.createElement(Checkbox, { name: name, value: config[ElementMap[collection][name]], onClick: (e) => {
                     let v = config[ElementMap[collection][name]];
-                    v++; v %= 3;
+                    v++;
+                    v %= 3;
                     console.log(v, {
                         ...config,
                         [ElementMap[collection][name]]: v
-
-                    })
+                    });
                     setConfig({
                         ...config,
                         [ElementMap[collection][name]]: v
-                    })
-                }} />
-            ))
+                    });
+                } })));
         }
-        collectionsEle.push((<Expandable title={collection}>{configsEle}</Expandable>))
+        collectionsEle.push((React.createElement(Expandable, { title: collection }, configsEle)));
     }
-    return <>{collectionsEle}</>
+    return React.createElement(React.Fragment, null, collectionsEle);
 }
-
 applyTinyNCM();
-
 function applyFont() {
     const config = JSON.parse(localStorage["cc.microblock.betterncm.tinyncm.font"] || "{}");
-
     if (!document.querySelector(".tinyNCM-Font"))
         document.head.appendChild(dom("style", { class: ["tinyNCM-Font"] }));
-
     let cssDom = document.querySelector(".tinyNCM-Font");
     let css = "";
     if (config.fontFamily)
@@ -169,42 +157,28 @@ function applyFont() {
     `;
     cssDom.innerHTML = css;
 }
-
 applyFont();
-
 function FontEle() {
     const [config, setConfig] = React.useState(JSON.parse(localStorage["cc.microblock.betterncm.tinyncm.font"] || "{}"));
     React.useEffect(() => {
         localStorage["cc.microblock.betterncm.tinyncm.font"] = JSON.stringify(config);
         applyFont();
     });
-
-    return (<div>
-        <span>字体</span>
-        <input className="u-txt sc-flag" style={{ margin: '0.2em 0.5em', borderRadius: '0.5em' }} defaultValue={config.fontFamily}
-            onKeyUp={(e) => {
+    return (React.createElement("div", null,
+        React.createElement("span", null, "\u5B57\u4F53"),
+        React.createElement("input", { className: "u-txt sc-flag", style: { margin: '0.2em 0.5em', borderRadius: '0.5em' }, defaultValue: config.fontFamily, onKeyUp: (e) => {
                 setConfig({
                     fontFamily: e.target.value
                 });
-            }} />
-    </div>)
+            } })));
 }
-
-
-
 plugin.onConfig((tools) => {
     let root = document.createElement("div");
-    let settingsEle = (<div>
-        <Expandable title="网易云精简">
-            <MinifyEle />
-        </Expandable>
-        <Expandable title="字体修改">
-            <FontEle />
-        </Expandable>
-    </div>);
-
+    let settingsEle = (React.createElement("div", null,
+        React.createElement(Expandable, { title: "\u7F51\u6613\u4E91\u7CBE\u7B80" },
+            React.createElement(MinifyEle, null)),
+        React.createElement(Expandable, { title: "\u5B57\u4F53\u4FEE\u6539" },
+            React.createElement(FontEle, null))));
     ReactDOM.render(settingsEle, root);
-    return root
+    return root;
 });
-
- 
