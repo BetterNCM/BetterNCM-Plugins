@@ -4,7 +4,7 @@ import { execSync } from 'child_process';
 import compressing from 'compressing';
 
 const compulsoryFields = ['name', 'author', 'version'];
-const optionalFields = ['description', 'betterncm_version', 'preview', 'author_links', 'hide', 'license'];
+const optionalFields = ['description', 'betterncm_version', 'preview', 'author_links', 'type', 'hide', 'deprecated', 'license'];
 
 const addField = (json, field, value) => {
 	if (value) {
