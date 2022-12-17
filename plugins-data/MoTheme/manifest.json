@@ -6,6 +6,7 @@
     "author": "沫烬染",
     "version": "1.1.5",
     "betterncm_version": ">=0.2.2",
+    "type": "theme",
     "requirements": [
         "StylesheetLoader"
     ],

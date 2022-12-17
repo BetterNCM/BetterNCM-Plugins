@@ -6,6 +6,7 @@
     "preview": "preview.png",
     "author": "MicroBlock",
     "bettncm_version": ">=0.2.0",
+    "type": "theme",
     "requirements": [
         "StylesheetLoader"
     ],

@@ -6,6 +6,7 @@
     "author": "MicroBlock",
     "version": "0.1.0",
     "betterncm_version": ">=0.2.0",
+    "type": "theme",
     "requirements": [
         "StylesheetLoader"
     ],
