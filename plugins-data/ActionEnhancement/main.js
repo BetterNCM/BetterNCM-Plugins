@@ -1,6 +1,4 @@
 plugin.onLoad(() => {
-    const VERSION = "0.1.0"
-
     function copyTextToClipboard(text) {
         var textArea = document.createElement("textarea");
         textArea.value = text;
@@ -14,7 +12,7 @@ plugin.onLoad(() => {
         try {
             var successful = document.execCommand('copy');
             var msg = successful ? 'successful' : 'unsuccessful';
-            console.log('Fallback: Copying text command was ' + msg);
+            console.log(`Fallback: Copying text command was ${msg}`);
         }
         catch (err) {
             console.error('Fallback: Oops, unable to copy', err);
