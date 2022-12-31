@@ -3,58 +3,72 @@ plugin.onAllPluginsLoaded(plugins => plugins.StylesheetLoader.loadStylesheet(
     `${this.pluginPath}/theme.css`,
     "MoTheme",
     {
-        BGEnhanced: {
+        use_BGEnhanced: {
             name: "使用BGEnhanced",
             type: "checkbox",
             reflect: "bodyFlag",
-            class: "MoTheme-BGEnhanced",
+            class: "MoTheme-use_BGEnhanced",
             default: false
         },
-        backgroundImage: {
-            name: "背景图片",
-            key: "--MoTheme-backgroundImage",
+        use_refinedNowPlaying: {
+            name: "使用RefinedNowPlaying",
+            class: "MoTheme-use_refinedNowPlaying",
+            type: "checkbox",
+            reflect: "bodyFlag",
+            default: false
+        },
+        background_image: {
+            name: "背景-图片",
+            key: "--MoTheme-background_image",
             reflect: "cssVar",
             type: "cssBackground",
             default: "url(https://img.noobzone.ru/getimg.php?url=https://i.imgur.com/ejzQz7n.png)"
         },
-        backgroundBrightness: {
-            name: "背景亮度",
-            key: "--MoTheme-backgroundBrightness",
+        background_brightness: {
+            name: "背景-亮度",
+            key: "--MoTheme-background_brightness",
             reflect: "cssVar",
             type: "cssInput",   // 并没有，随便写的
             default: "100%"
         },
-        backgroundSaturate: {
-            name: "背景饱和度",
-            key: "--MoTheme-backgroundSaturate",
+        background_saturate: {
+            name: "背景-饱和度",
+            key: "--MoTheme-background_saturate",
             reflect: "cssVar",
             type: "cssInput",   // 并没有，随便写的
             default: "100%"
         },
-        backgroundBlur: {
-            name: "背景模糊度",
-            key: "--MoTheme-backgroundBlur",
+        background_blur: {
+            name: "背景-模糊度",
+            key: "--MoTheme-background_blur",
             reflect: "cssVar",
             type: "cssInput",   // 并没有，随便写的
             default: "0px"
         },
-        backgroundScale: {
-            name: "背景缩放（解决背景模糊后边框问题）",
-            key: "--MoTheme-backgroundScale",
+        background_scale: {
+            name: "背景-缩放（解决背景模糊后边框问题）",
+            key: "--MoTheme-background_scale",
             reflect: "cssVar",
             type: "cssInput",   // 并没有，随便写的
             default: "100%"
         },
-        bottomMusicBarDockMode: {
+        bottomMusicBar_rainbowStrip: {
+            name: "底部音乐栏-彩虹条",
+            class: "MoTheme-bottomMusicBar_rainbowStrip",
+            type: "checkbox",
+            reflect: "bodyFlag",
+            default: true
+        },
+        bottomMusicBar_dockMode: {
             name: "底部音乐栏-悬浮模式",
-            class: "MoTheme-bottomMusicBarDockMode",
+            class: "MoTheme-bottomMusicBar_dockMode",
             type: "checkbox",
             reflect: "bodyFlag",
             default: false
         },
-        bottomMusicBarRadius: {
+        bottomMusicBar_radius: {
             name: "底部音乐栏-圆角大小",
-            key: "--MoTheme-bottomMusicBarRadius",
+            key: "--MoTheme-bottomMusicBar_radius",
             reflect: "cssVar",
             type: "cssInput",   // 并没有，随便写的
             default: "8px"
@@ -80,9 +94,9 @@ plugin.onAllPluginsLoaded(plugins => plugins.StylesheetLoader.loadStylesheet(
             type: "cssInput",   // 并没有，随便写的
             default: "rgba(255, 255, 255, 0.2)"
         },
-        popWindowRadius: {
+        popWindow_radius: {
             name: "弹窗-圆角大小",
-            key: "--MoTheme-popWindowRadius",
+            key: "--MoTheme-popWindow_radius",
             reflect: "cssVar",
             type: "cssInput",   // 并没有，随便写的
             default: "8px"
@@ -92,7 +106,7 @@ plugin.onAllPluginsLoaded(plugins => plugins.StylesheetLoader.loadStylesheet(
             key: "--MoTheme-popWindow_backgroundBlur",
             reflect: "cssVar",
             type: "cssInput",   // 并没有，随便写的
-            default: "16px"
+            default: "24px"
         },
         popWindow_backgroundSaturate: {
             name: "弹窗-背景饱和度",
@@ -108,9 +122,9 @@ plugin.onAllPluginsLoaded(plugins => plugins.StylesheetLoader.loadStylesheet(
             type: "cssInput",   // 并没有，随便写的
             default: "rgba(255, 255, 255, 0.2)"
         },
-        otherRadius: {
+        other_radius: {
             name: "其他-圆角大小",
-            key: "--MoTheme-otherRadius",
+            key: "--MoTheme-other_radius",
             reflect: "cssVar",
             type: "cssInput",   // 并没有，随便写的
             default: "8px"
@@ -120,7 +134,7 @@ plugin.onAllPluginsLoaded(plugins => plugins.StylesheetLoader.loadStylesheet(
             key: "--MoTheme-other_backgroundBlur",
             reflect: "cssVar",
             type: "cssInput",   // 并没有，随便写的
-            default: "16px"
+            default: "24px"
         },
         other_backgroundSaturate: {
             name: "其他-背景饱和度",
@@ -145,7 +159,9 @@ const owo = new MutationObserver(mutations => {
         if (mutation.target.classList.contains("z-show")) {
             document.querySelector(".g-singlec-comment-detail").classList.add("z-show");
         } else {
-            document.querySelector(".g-singlec-comment-detail").classList.remove("z-show");
+            if (!document.body.classList.contains("MoTheme-use_refinedNowPlaying")) {
+                document.querySelector(".g-singlec-comment-detail").classList.remove("z-show");
+            }
         }
     }
 });
@@ -155,12 +171,12 @@ const up = new MutationObserver(mutations => {
     for (const mutation of mutations) {
         for (const node of mutation.addedNodes) {
             if (node.classList.contains("g-single")) {
+                document.querySelector(".better-ncm-manager").classList.add("topqwq");
                 document.querySelector(".g-sd").classList.add("topqwq");
                 document.querySelector(".g-mn").classList.add("topqwq");
                 document.querySelector(".g-ft").classList.add("topqwq");
                 up.disconnect();
                 down.observe(document.querySelector(".g-single"), { attributes: true });
-                document.querySelector(".g-singlec-comment-detail").classList.remove("z-show");
                 owo.observe(document.querySelector(".g-singlec-comment-top"), { attributes: true });
             }
         }
@@ -171,11 +187,12 @@ const up = new MutationObserver(mutations => {
 const down = new MutationObserver(mutations => {
     for (const mutation of mutations) {
         if (!mutation.target.classList.contains("z-show")) {
+            document.querySelector(".better-ncm-manager").classList.remove("topqwq");
             document.querySelector(".g-sd").classList.remove("topqwq");
             document.querySelector(".g-mn").classList.remove("topqwq");
             document.querySelector(".g-ft").classList.remove("topqwq");
-            down.disconnect();
             up.observe(document.body, { childList: true });
+            down.disconnect();
             owo.disconnect();
         }
     }
