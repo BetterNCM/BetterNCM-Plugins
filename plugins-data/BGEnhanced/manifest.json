@@ -1,10 +1,10 @@
 {
     "manifest_version": 1,
     "name": "BGEnhanced",
-    "version": "0.1.6",
+    "version": "0.1.7",
     "author": "MicroBlock", 
     "description": "随意自定义你的网易云背景图！",
-    "betterncm_version": "*.*.*", 
+    "betterncm_version": "*", 
     "preview": "preview.png",
     "injects": {
         "Main": [
