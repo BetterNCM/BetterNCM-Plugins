@@ -6,10 +6,10 @@
     "author_links": ["https://github.com/solstice23"],
     "description": "Material You 主题",
     "preview": "preview.jpg",
-    "version": "1.0.2",
+    "version": "1.0.3",
     "type": "theme",
     "requirements": [],
-    "betterncm_version": "^0.2.5",
+    "betterncm_version": ">=0.2.5",
     "injects": {
         "Main": [
             {
