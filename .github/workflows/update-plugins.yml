@@ -1,6 +1,10 @@
 name: 'Update Plugins'
 
 on:
+  pull_request:
+    branches: 
+      - master
+    types: [closed]
   workflow_dispatch:
   schedule:
     - cron: '0 * * * *'
