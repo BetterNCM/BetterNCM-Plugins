@@ -1,8 +1,8 @@
-let opacityVal=parseFloat(localStorage["cc.microblock.bgenhanced.opacity"]||"1.0");
-let blurVal=parseFloat(localStorage["cc.microblock.bgenhanced.blur"]||"0.0");
-let baseColorVal=localStorage["cc.microblock.bgenhanced.baseColor"]||"#000000";
+let opacityVal = parseFloat(localStorage["cc.microblock.bgenhanced.opacity"] || "1.0");
+let blurVal = parseFloat(localStorage["cc.microblock.bgenhanced.blur"] || "0.0");
+let baseColorVal = localStorage["cc.microblock.bgenhanced.baseColor"] || "#000000";
 
-document.body.style.background=baseColorVal;
+document.body.style.background = baseColorVal;
 
 function setBackground(background) {
     document.querySelector("#portal_root").style.background = "#00000000"
@@ -22,7 +22,7 @@ function setBackground(background) {
     while (bgdom.firstChild) bgdom.firstChild.remove()
 
     function adjustSize() {
-        if(micaEnabled)return;
+        if (micaEnabled) return;
 
         let bg = document.getElementById("BGEnhanced_Background").firstChild
 
@@ -47,8 +47,8 @@ function setBackground(background) {
         }
     }
 
-    bgdom.style.opacity=opacityVal;
-    bgdom.style.filter=`blur(${blurVal}px)`;
+    bgdom.style.opacity = opacityVal;
+    bgdom.style.filter = `blur(${blurVal}px)`;
 
     window.onresize = adjustSize
 }
@@ -63,7 +63,7 @@ function updateCurrentBackground() {
 
 plugin.onLoad(() => {
     if (plugin.getConfig("backgrounds")) backgrounds = JSON.parse(plugin.getConfig("backgrounds"))
-    backgrounds=backgrounds.map(v=>({...v,url:v.url.replace(/http:\/\/localhost:(\S+)\/local/g,BETTERNCM_FILES_PATH)}));
+    backgrounds = backgrounds.map(v => ({ ...v, url: v.url.replace(/http:\/\/localhost:(\S+)\/local/g, BETTERNCM_FILES_PATH) }));
 
     let enabledRandBG = plugin.getConfig("randomBG", " ") === "x"
 
@@ -75,7 +75,9 @@ plugin.onLoad(() => {
     }
 
 
-    updateCurrentBackground()
+    updateCurrentBackground();
+    if (plugin.getConfig("enableCurrentCover", "false") === "true")
+        enableCurrentImage();
 })
 
 function ncmAlert(...args) {
@@ -119,7 +121,7 @@ let [enableMica, disableMica] = (() => {
     async function pointerMv(e) {
         if (e.pressure == 0) {
             document.querySelector("header").removeEventListener("pointermove", pointerMv);
-            await cPos(); 
+            await cPos();
             document.querySelector("#BGEnhanced_Background img").style.opacity = 1;
         }
     }
@@ -128,8 +130,8 @@ let [enableMica, disableMica] = (() => {
         function enableMica() {
             micaEnabled = true;
             let bgdom = document.getElementById("BGEnhanced_Background")
-            setBackground({type:"image",url:""})
-            let mask = dom("div",{class:["micaMask"]});
+            setBackground({ type: "image", url: "" })
+            let mask = dom("div", { class: ["micaMask"] });
             bgdom.appendChild(mask)
 
 
@@ -140,7 +142,7 @@ let [enableMica, disableMica] = (() => {
             window.addEventListener("blur", onblur);
             window.addEventListener("focus", onfocus);
         }, function disableMica() {
-            if(!micaEnabled)return;
+            if (!micaEnabled) return;
             micaEnabled = false;
             document.querySelector("#BGEnhanced_Background img").classList.remove("micaLayer")
             document.querySelector("#BGEnhanced_Background img").removeEventListener("load", onload);
@@ -149,7 +151,25 @@ let [enableMica, disableMica] = (() => {
             window.removeEventListener("focus", onfocus);
         }
     ]
-})()
+})();
+
+const [enableCurrentImage] = (() => {
+
+    function updateCoverBackground() {
+        const url = document.querySelector('.j-cover').src.replace(/thumbnail=(\S+)/g, "");
+        document.querySelectorAll('.BGEnhanced_Current_Cover_Img').forEach(v => (v.src = url, v.style.backgroundImage = `url('${url}')`));
+    }
+
+    setInterval(updateCoverBackground, 100);
+
+
+    return [function enable() {
+        disableMica();
+        setBackground({ type: "image", url: "" });
+        document.querySelector("#BGEnhanced_Background img").classList.add("BGEnhanced_Current_Cover_Img")
+    }]
+})();
+
 
 
 plugin.onConfig((tools) => {
@@ -286,6 +306,7 @@ plugin.onConfig((tools) => {
                 }, true),
                     tools.makeBtn("应用", () => {
                         disableMica();
+                        plugin.setConfig("enableCurrentCover", "false");
 
                         for (let bg of backgrounds) bg.current = false;
                         backgrounds[backgroundIndex].current = true;
@@ -295,13 +316,34 @@ plugin.onConfig((tools) => {
         }
 
         backgroundsDom.appendChild(dom("div",
-                { style: { background: "linear-gradient(37deg,#2b2b2b,#97b9d6)", borderRadius: "10px", overflow: "hidden", margin: "6px", height: "100px", width: "100px", display: "inline-block", position: "relative" } },
-                dom("div", {
-                    class: ["BGE_ctrlDom"]
-                }, dom("div",{innerText:"透明材质\n[实验性]"}),
-                    tools.makeBtn("应用", () => {
-                        enableMica();
-                    }, true))))
+            { style: { background: "linear-gradient(37deg,#2b2b2b,#97b9d6)", borderRadius: "10px", overflow: "hidden", margin: "6px", height: "100px", width: "100px", display: "inline-block", position: "relative" } },
+            dom("div", {
+                class: ["BGE_ctrlDom"]
+            }, dom("div", { innerText: "透明材质\n[实验性]" }),
+                tools.makeBtn("应用", () => {
+                    enableMica();
+                }, true))))
+
+        backgroundsDom.appendChild(dom("div",
+            {
+                style: { background: "#00000022", borderRadius: "10px", overflow: "hidden", margin: "6px", height: "100px", width: "100px", display: "inline-block", position: "relative" },
+            },
+            dom("div", {
+                class: ["BGE_ctrlDom"]
+            }, dom("div", { innerText: "当前歌曲封面" }),
+                tools.makeBtn("应用", () => {
+                    plugin.setConfig("enableCurrentCover", "true");
+                    enableCurrentImage();
+                }, true)), dom("span", {
+                    style: {
+                        display: "inline-block",
+                        width: "100px",
+                        height: "100px",
+                        backgroundSize: "cover",
+                    },
+                    class: ["BGEnhanced_Current_Cover_Img"]
+                })
+        ))
     }
 
     updateBackgrounds()
@@ -321,30 +363,37 @@ plugin.onConfig((tools) => {
             }), randBackgroundBtn
         ),
         backgroundsDom,
-        dom("div",{},
-            dom("div",{},
-                dom("span",{innerText:"不透明度 "}),
-                dom("input",{value:opacityVal*100,type:"range",oninput(e){
-                    opacityVal=e.target.value/100;
-                    localStorage["cc.microblock.bgenhanced.opacity"]=opacityVal;
-                    document.getElementById("BGEnhanced_Background").style.opacity=opacityVal;
-                }})
+        dom("div", {},
+            dom("div", {},
+                dom("span", { innerText: "不透明度 " }),
+                dom("input", {
+                    value: opacityVal * 100, type: "range", oninput(e) {
+                        opacityVal = e.target.value / 100;
+                        localStorage["cc.microblock.bgenhanced.opacity"] = opacityVal;
+                        document.getElementById("BGEnhanced_Background").style.opacity = opacityVal;
+                    }
+                })
             ),
-            dom("div",{},
-                dom("span",{innerText:"模糊度 "}),
-                dom("input",{value:blurVal,type:"range",oninput(e){
-                    blurVal=e.target.value;
-                    localStorage["cc.microblock.bgenhanced.blur"]=blurVal;
-                    document.getElementById("BGEnhanced_Background").style.filter=`blur(${blurVal}px)`;
-                }})
+            dom("div", {},
+                dom("span", { innerText: "模糊度 " }),
+                dom("input", {
+                    value: blurVal, type: "range", oninput(e) {
+                        blurVal = e.target.value;
+                        localStorage["cc.microblock.bgenhanced.blur"] = blurVal;
+                        document.getElementById("BGEnhanced_Background").style.filter = `blur(${blurVal}px)`;
+                    }
+                })
+
             ),
-            dom("div",{},
-                dom("span",{innerText:"底色 "}),
-                dom("input",{value:baseColorVal,type:"color",oninput(e){
-                    baseColorVal=e.target.value;
-                    localStorage["cc.microblock.bgenhanced.baseColor"]=baseColorVal;
-                    document.body.style.background=baseColorVal;
-                }})
+            dom("div", {},
+                dom("span", { innerText: "底色 " }),
+                dom("input", {
+                    value: baseColorVal, type: "color", oninput(e) {
+                        baseColorVal = e.target.value;
+                        localStorage["cc.microblock.bgenhanced.baseColor"] = baseColorVal;
+                        document.body.style.background = baseColorVal;
+                    }
+                })
             )
         ))
 })
