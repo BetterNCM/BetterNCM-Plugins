@@ -1,0 +1,15 @@
+{
+    "manifest_version": 1,
+    "name": "What is the cover of this music",
+    "preview": "preview.png",
+    "description": "BetterNCM插件，给歌曲列表添加音乐封面",
+    "version": "1.0.1",
+    "author": "沫烬染",
+    "injects": {
+        "Main": [
+            {
+                "file": "index.js"
+            }
+        ]
+    }
+}
