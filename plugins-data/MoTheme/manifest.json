@@ -1,15 +1,10 @@
 {
     "manifest_version": 1,
     "name": "MoTheme",
-    "description": "主题插件，添加打开/关闭播放界面的过渡动画，修复了评论按钮",
     "preview": "preview.png",
+    "description": "BetterNCM插件，主题插件，用于美化网易云音乐",
+    "version": "1.1.8",
     "author": "沫烬染",
-    "version": "1.1.5",
-    "betterncm_version": ">=0.2.2",
-    "type": "theme",
-    "requirements": [
-        "StylesheetLoader"
-    ],
     "injects": {
         "Main": [
             {
