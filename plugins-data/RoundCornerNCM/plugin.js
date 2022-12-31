@@ -1,0 +1,1 @@
+betterncm.app.setRoundedCorner(true)
