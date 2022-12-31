@@ -11,8 +11,7 @@ on:
   push:
     branches: 
       - master
-    paths:
-      - plugins-list
+    paths: "plugins-list/**"
     
 jobs:
   UpdatePlugins:
