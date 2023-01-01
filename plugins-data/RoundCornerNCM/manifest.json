@@ -2,7 +2,7 @@
     "manifest_version": 1,
     "name": "RoundCornerNCM",
     "slug": "RoundCornerNCM",
-    "version": "0.1.0",
+    "version": "0.1.1",
     "author": "MicroBlock",
     "description": "网易云窗口圆角。仅Win11。", 
     "betterncm_version": ">=0.2.5",
