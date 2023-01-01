@@ -32,7 +32,7 @@ const isValidPluginJson = (json) => {
 	return true;
 };	
 
-const getPluginList = () => {
+export const getPluginList = () => {
 	const pluginList = [];
 	const pluginListPath = path.resolve(process.cwd(), '../../plugins-list');
 	const files = fs.readdirSync(pluginListPath);

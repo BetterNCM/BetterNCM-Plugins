@@ -2,6 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import { execSync } from 'child_process';
 import compressing from 'compressing';
+import { getPluginList } from '../update-plugins/update-plugins.js';
 
 const compulsoryFields = ['name', 'author', 'version'];
 const optionalFields = ['description', 'requirements', 'betterncm_version', 'preview', 'author_links', 'type', 'hide', 'deprecated', 'license'];
@@ -21,6 +22,7 @@ const checkCompulsoryFields = (json, pluginName) => {
 	return true;
 };
 
+const definedPluginList = getPluginList();
 
 const tmpPath = path.resolve(process.cwd(), '../../tmp');
 if (fs.existsSync(tmpPath)) {
@@ -55,6 +57,7 @@ plugins.forEach((plugin) => {
 	}
 	addField(pluginJson, 'slug', plugin);
 	addField(pluginJson, 'update_time', parseInt(execSync(`git log -1 --format=%ct ${path.resolve(process.cwd(), `../../plugins-data/${plugin}/manifest.json`)}`)));
+	addField(pluginJson, 'repo', definedPluginList.find((definedPlugin) => definedPlugin.slug === plugin)?.repo ?? '');
 	try {
 		const repo = JSON.parse(fs.readFileSync(path.resolve(process.cwd(), `../../plugins-list/${plugin}.json`))).repo;
 		addField(pluginJson, 'repo', repo);
