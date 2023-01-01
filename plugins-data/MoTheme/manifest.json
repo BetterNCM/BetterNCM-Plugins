@@ -3,8 +3,13 @@
     "name": "MoTheme",
     "preview": "preview.png",
     "description": "BetterNCM插件，主题插件，用于美化网易云音乐",
-    "version": "1.1.8",
+    "version": "1.1.9",
     "author": "沫烬染",
+    "author_links": ["https://github.com/mo-jinran"],
+    "type": "theme",
+    "requirements": [
+        "StylesheetLoader"
+    ],
     "injects": {
         "Main": [
             {
