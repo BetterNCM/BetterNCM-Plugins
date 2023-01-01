@@ -12,6 +12,6 @@ plugin.onLoad(async () => {
         }
     `;
     const styleTag = document.createElement("style");
-    styleTag.innerText = cssText;
+    styleTag.innerHTML = cssText;
     document.head.appendChild(styleTag);
 });
