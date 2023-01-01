@@ -3,8 +3,10 @@
     "name": "What is the cover of this music",
     "preview": "preview.png",
     "description": "BetterNCM插件，给歌曲列表添加音乐封面",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "author": "沫烬染",
+    "author_links": ["https://github.com/mo-jinran"],
+    "type": "extension",
     "injects": {
         "Main": [
             {
