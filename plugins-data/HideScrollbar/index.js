@@ -1,8 +1,17 @@
 // 非常水的插件
 
-plugin.onAllPluginsLoaded(plugins => plugins.StylesheetLoader.loadStylesheet(
-    plugin,
-    `${this.pluginPath}/style.css`,
-    "HideScrollbar",
-    {}
-));
+plugin.onLoad(async () => {
+    const cssText = `
+        *::-webkit-scrollbar,
+        *::-webkit-scrollbar-button,
+        *::-webkit-scrollbar-corner,
+        *::-webkit-scrollbar-thumb,
+        *::-webkit-scrollbar-track,
+        *::-webkit-scrollbar-track-piece {
+            background-color: transparent !important;
+        }
+    `;
+    const styleTag = document.createElement("style");
+    style.innerText = cssText;
+    document.head.appendChild(styleTag);
+});
