@@ -3,7 +3,7 @@
     "name": "ActionEnhancement",
     "author": "MicroBlock",
     "description": "右键下载打开歌曲，右键“分享”复制歌曲ID，鼠标在声音图标上滚轮调节音量",
-    "version": "0.1.3",
+    "version": "0.1.4",
     "betterncm_version": ">=0.2.5",
     "preview": "preview.png",
     "injects": {
