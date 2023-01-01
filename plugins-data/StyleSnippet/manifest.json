@@ -1,0 +1,15 @@
+{
+    "manifest_version": 1,
+    "name": "StyleSnippet",
+    "version": "0.1.0",
+    "author":"MicroBlock",
+    "preview":"preview.png",
+    "betterncm_version": ">=0.2.5",
+    "injects": {
+        "Main": [
+            {
+                "file": "index.js"
+            }
+        ]
+    }
+}
