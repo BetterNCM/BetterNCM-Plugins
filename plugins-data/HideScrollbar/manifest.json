@@ -1,7 +1,7 @@
 {
     "manifest_version": 1,
     "name": "HideScrollbar",
-    "version": "2.0.0",
+    "version": "2.0.1",
     "description": "隐藏滚动条(没什么用的东西)",
     "preview": "preview.png",
     "author": "Zinc",
