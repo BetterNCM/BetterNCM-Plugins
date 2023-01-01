@@ -7,7 +7,7 @@
 
 ::-webkit-scrollbar-thumb {
     border-radius: 5px !important;
-    background-color: rgba(255, 255, 255, 0.3) !important;
+    background-color: rgba(255, 255, 255, 0.3);
 }
 
 ::-webkit-scrollbar-track {
@@ -864,8 +864,13 @@ div.m-page a:not(.js-selected):hover {
     transform: translateY(1px);
 }
 
-/* 一起听8022小时30分钟 */
+/* 一起听8434小时1分钟 */
 /* 修复这个字看不清的问题 */
 .together-text {
     color: unset;
+}
+
+.reload-notice {
+    background-color: var(--MoTheme-other_backgroundColor);
+    backdrop-filter: saturate(var(--MoTheme-other_backgroundSaturate)) blur(var(--MoTheme-other_backgroundBlur));
 }
