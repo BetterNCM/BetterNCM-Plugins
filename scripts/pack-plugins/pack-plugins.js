@@ -7,6 +7,10 @@ import { getPluginList } from '../update-plugins/update-plugins.js';
 const compulsoryFields = ['name', 'author', 'version'];
 const optionalFields = ['description', 'requirements', 'betterncm_version', 'preview', 'author_links', 'type', 'hide', 'deprecated', 'license'];
 
+const getSlugName = (name) => {
+	if (!name) return null;
+	return name.replace(/[^a-zA-Z0-9 ]/g, '').replace(/ /g, '-');
+};
 const addField = (json, field, value) => {
 	if (value) {
 		json[field] = value;
@@ -55,7 +59,7 @@ plugins.forEach((plugin) => {
 	for (const field of optionalFields) {
 		addField(pluginJson, field, manifest[field]);
 	}
-	addField(pluginJson, 'slug', plugin);
+	addField(pluginJson, 'slug', getSlugName(manifest.slug ?? manifest.name));
 	addField(pluginJson, 'update_time', parseInt(execSync(`git log -1 --format=%ct ${path.resolve(process.cwd(), `../../plugins-data/${plugin}/manifest.json`)}`)));
 	addField(pluginJson, 'repo', definedPluginList.find((definedPlugin) => definedPlugin.slug === plugin)?.repo ?? '');
 	try {
