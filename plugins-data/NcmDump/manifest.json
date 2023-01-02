@@ -3,7 +3,7 @@
     "name": "NcmDump",
     "description": "使用NcmDump程序转换ncm文件为flac，mp3（带有特殊符号的文件名不行",
     "preview": "preview.png",
-    "version": "1.0.4",
+    "version": "1.0.5",
     "author": "沫烬染",
     "author_links": ["https://github.com/mo-jinran"],
     "type": "extension",
