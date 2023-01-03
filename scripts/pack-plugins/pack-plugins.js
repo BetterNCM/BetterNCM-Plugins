@@ -5,7 +5,7 @@ import compressing from 'compressing';
 import { getPluginList } from '../update-plugins/update-plugins.js';
 
 const compulsoryFields = ['name', 'author', 'version'];
-const optionalFields = ['description', 'requirements', 'betterncm_version', 'preview', 'author_links', 'type', 'hide', 'deprecated', 'license'];
+const optionalFields = ['description', 'requirements', 'betterncm_version', 'preview', 'author_links', 'type', 'hide', 'deprecated', 'license', 'incompatible'];
 
 const getSlugName = (name) => {
 	if (!name) return null;
