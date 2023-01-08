@@ -87,38 +87,37 @@ let interval = null;
 
 async function addCover(result) {
     const setCover = async (title, resId) => {
-        let resIdList = [];
-        resId.forEach(value => resIdList.push({ "id": value }));
-
-        const params = new URLSearchParams({ c: JSON.stringify(resIdList) }).toString();
+        const resIdList = resId.map(value => { return { "id": value } });
+        const params = new URLSearchParams({ "c": JSON.stringify(resIdList) }).toString();
         const res = await fetch(`https://music.163.com/api/v3/song/detail?${params}`);
 
-        (await res.json()).songs.forEach((song, index) => {
+        (await res.json()).songs.forEach((value, index) => {
             const img = document.createElement("img");
-            img.src = `orpheus://cache/?${song.al.picUrl}?param=64y64`; // 缓存
+            img.src = `orpheus://cache/?${value.al.picUrl}?param=64y64`; // 缓存
             img.classList.add("cover");
+            img.loading = "lazy";
             img.addEventListener("load", () => title[index].classList.add("cover-loaded"));
             title[index].insertBefore(img, title[index].children[0]);
         });
-    };
+    }
 
     let title = [];
     let resId = [];
 
-    const func = () => {
-        result.querySelectorAll(".itm").forEach(item => {
+    const func = async () => {
+        for (const item of result.querySelectorAll(".itm")) {
             if (!item.querySelector(".title").querySelector(".cover")) {
                 title.push(item.querySelector(".title"));
                 resId.push(item.dataset.resId);
 
                 if (title.length == 20) {
-                    setCover([...new Set(title)], [...new Set(resId)]);
+                    await setCover([...new Set(title)], [...new Set(resId)]);
                     title = [];
                     resId = [];
                 }
             }
-        })
-    };
+        }
+    }
 
     interval = setInterval(func, 1000);
 }
@@ -159,5 +158,5 @@ async function onHashchange(event) {
 
 plugin.onLoad(async () => {
     styleLoader();
-    window.addEventListener("hashchange", onHashchange);
+    addEventListener("hashchange", onHashchange);
 });
