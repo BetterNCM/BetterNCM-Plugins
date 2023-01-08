@@ -59,36 +59,37 @@ plugins.forEach((plugin) => {
 	for (const field of optionalFields) {
 		addField(pluginJson, field, manifest[field]);
 	}
-	addField(pluginJson, 'slug', getSlugName(manifest.slug ?? manifest.name));
+	const slug = getSlugName(manifest.slug ?? manifest.name);
+	addField(pluginJson, 'slug', slug);
 	addField(pluginJson, 'update_time', parseInt(execSync(`git log -1 --format=%ct ${path.resolve(process.cwd(), `../../plugins-data/${plugin}/manifest.json`)}`)));
 	addField(pluginJson, 'repo', definedPluginList.find((definedPlugin) => definedPlugin.slug === plugin)?.repo ?? '');
 	try {
-		const repo = JSON.parse(fs.readFileSync(path.resolve(process.cwd(), `../../plugins-list/${plugin}.json`))).repo;
+		const repo = JSON.parse(fs.readFileSync(path.resolve(process.cwd(), `../../plugins-list/${slug}.json`))).repo;
 		addField(pluginJson, 'repo', repo);
 	} catch {}
 
 	if (pluginJson.preview) {
-		if (!fs.existsSync(path.resolve(process.cwd(), `../../plugins-data/${plugin}/${pluginJson.preview}`))) {
+		if (!fs.existsSync(path.resolve(process.cwd(), `../../plugins-data/${slug}/${pluginJson.preview}`))) {
 			console.log(`🖼️ Preview of ${plugin} not found, ignored.`);
 			delete pluginJson.preview;
 		}else{
 			const suffix = pluginJson.preview.split('.').pop();
-			fs.copyFileSync(path.resolve(process.cwd(), `../../plugins-data/${plugin}/${pluginJson.preview}`), path.resolve(tmpPath, 'previews', `${plugin}.${suffix}`));
-			fs.rmSync(path.resolve(process.cwd(), `../../plugins-data/${plugin}/${pluginJson.preview}`));
-			pluginJson.preview = `previews/${plugin}.${suffix}`;
+			fs.copyFileSync(path.resolve(process.cwd(), `../../plugins-data/${slug}/${pluginJson.preview}`), path.resolve(tmpPath, 'previews', `${slug}.${suffix}`));
+			fs.rmSync(path.resolve(process.cwd(), `../../plugins-data/${slug}/${pluginJson.preview}`));
+			pluginJson.preview = `previews/${slug}.${suffix}`;
 		}
 	}
 
 
-	compressing.zip.compressDir(path.resolve(process.cwd(), `../../plugins-data/${plugin}`), path.resolve(process.cwd(), `../../tmp/plugins/${plugin}-${manifest.version}.plugin`), {
+	compressing.zip.compressDir(path.resolve(process.cwd(), `../../plugins-data/${slug}`), path.resolve(process.cwd(), `../../tmp/plugins/${slug}-${manifest.version}.plugin`), {
 		ignoreBase: true
 	});
 
-	addField(pluginJson, 'file', `${plugin}-${manifest.version}.plugin`);
-	addField(pluginJson, 'file-url', `plugins/${plugin}-${manifest.version}.plugin`);
+	addField(pluginJson, 'file', `${slug}-${manifest.version}.plugin`);
+	addField(pluginJson, 'file-url', `plugins/${slug}-${manifest.version}.plugin`);
 
 	pluginList.push(pluginJson);
-	console.log(`📦 ${plugin} ${manifest.version} packed.`);
+	console.log(`📦 ${slug} ${manifest.version} packed.`);
 });
 
 const allJson = JSON.stringify(pluginList, null, 4);
