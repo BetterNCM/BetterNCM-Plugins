@@ -69,19 +69,19 @@ plugins.forEach((plugin) => {
 	} catch {}
 
 	if (pluginJson.preview) {
-		if (!fs.existsSync(path.resolve(process.cwd(), `../../plugins-data/${slug}/${pluginJson.preview}`))) {
+		if (!fs.existsSync(path.resolve(process.cwd(), `../../plugins-data/${plugin}/${pluginJson.preview}`))) {
 			console.log(`🖼️ Preview of ${plugin} not found, ignored.`);
 			delete pluginJson.preview;
 		}else{
 			const suffix = pluginJson.preview.split('.').pop();
-			fs.copyFileSync(path.resolve(process.cwd(), `../../plugins-data/${slug}/${pluginJson.preview}`), path.resolve(tmpPath, 'previews', `${slug}.${suffix}`));
-			fs.rmSync(path.resolve(process.cwd(), `../../plugins-data/${slug}/${pluginJson.preview}`));
+			fs.copyFileSync(path.resolve(process.cwd(), `../../plugins-data/${plugin}/${pluginJson.preview}`), path.resolve(tmpPath, 'previews', `${slug}.${suffix}`));
+			fs.rmSync(path.resolve(process.cwd(), `../../plugins-data/${plugin}/${pluginJson.preview}`));
 			pluginJson.preview = `previews/${slug}.${suffix}`;
 		}
 	}
 
 
-	compressing.zip.compressDir(path.resolve(process.cwd(), `../../plugins-data/${slug}`), path.resolve(process.cwd(), `../../tmp/plugins/${slug}-${manifest.version}.plugin`), {
+	compressing.zip.compressDir(path.resolve(process.cwd(), `../../plugins-data/${plugin}`), path.resolve(process.cwd(), `../../tmp/plugins/${slug}-${manifest.version}.plugin`), {
 		ignoreBase: true
 	});
 
