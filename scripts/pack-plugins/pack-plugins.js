@@ -59,7 +59,7 @@ plugins.forEach((plugin) => {
 	for (const field of optionalFields) {
 		addField(pluginJson, field, manifest[field]);
 	}
-	const slug = getSlugName(manifest.slug ?? manifest.name);
+	const slug = manifest?.slug ?? getSlugName(manifest.name);
 	addField(pluginJson, 'slug', slug);
 	addField(pluginJson, 'update_time', parseInt(execSync(`git log -1 --format=%ct ${path.resolve(process.cwd(), `../../plugins-data/${plugin}/manifest.json`)}`)));
 	addField(pluginJson, 'repo', definedPluginList.find((definedPlugin) => definedPlugin.slug === plugin)?.repo ?? '');
