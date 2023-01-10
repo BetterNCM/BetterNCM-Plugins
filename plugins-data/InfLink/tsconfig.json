@@ -1,0 +1,21 @@
+{
+    "include": [
+        "./src/**/*.ts",
+        "./src/**/*.tsx",
+        "./*.css"
+    ],
+    "compilerOptions": {
+        "target": "ESNext",
+        "lib": [
+            "ESNext",
+            "DOM"
+        ],
+        "types": [],
+        "jsx": "react",
+        "jsxFactory": "h",
+        "jsxFragmentFactory": "f",
+        "moduleResolution": "node",
+        "strictNullChecks": true,
+        "allowJs": false
+    }
+}

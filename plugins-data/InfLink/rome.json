@@ -1,0 +1,13 @@
+{
+    "formatter": {
+        "indentSize": 4,
+        "indentStyle": "space"
+    },
+    "linter": {
+        "rules": {
+            "suspicious": {
+                "noExplicitAny": "off"
+            }
+        }
+    }
+}

@@ -1,0 +1,16 @@
+{
+    "manifest_version": 1,
+    "name": "InfLink",
+    "version": "0.1.0",
+    "author":"MicroBlock",
+    "preview":"preview.png",
+    "betterncm_version": ">=1.0.0",
+    "injects": {
+        "Main": [
+            {
+                "file": "index.js"
+            }
+        ]
+    },
+    "native_plugin":"InfLink.dll"
+}
