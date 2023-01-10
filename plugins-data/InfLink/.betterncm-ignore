@@ -1,0 +1,13 @@
+/package.json
+/package-lock.json
+/native/
+/src/
+/.git/
+.gitignore
+.gitattributes
+build.js
+InfLink.dll.pdb
+package.json
+README.md
+rome.json
+tsconfig.json
