@@ -131,7 +131,8 @@ function Main() {
                     </Typography>
                     <Typography fontSize="sm" sx={{ opacity: 0.8 }}>
                         InfLink将无法使用，请确定您使用的是 1.0.0-pre2
-                        及以上版本的 BetterNCM
+                        及以上版本的 BetterNCM。
+                        若不是 请通过 BetterNCM Installer 更新。
                     </Typography>
                 </Alert>
             </div>
