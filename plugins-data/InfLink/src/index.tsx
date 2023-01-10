@@ -41,6 +41,23 @@ function Main() {
         }
     }, []);
 
+    if (!nativePluginLoaded) {
+        return (
+            <div>
+                <Alert color="error" icon={<MdError />}>
+                    <Typography fontWeight="lg" mt={0.25}>
+                        Native Plugin未加载！
+                    </Typography>
+                    <Typography fontSize="sm" sx={{ opacity: 0.8 }}>
+                        InfLink将无法使用，请确定您使用的是 1.0.0-pre2
+                        及以上版本的 BetterNCM。
+                        若不是 请通过 BetterNCM Installer 更新。
+                    </Typography>
+                </Alert>
+            </div>
+        );
+    }
+
     const [SMTCEnabled, setSMTCEnabled] = useLocalStorage(
         STORE_KEY_SMTC_ENABLED,
         false,
@@ -122,22 +139,7 @@ function Main() {
         }
     }, [InfoProvider, SMTCEnabled]);
 
-    if (!nativePluginLoaded) {
-        return (
-            <div>
-                <Alert color="error" icon={<MdError />}>
-                    <Typography fontWeight="lg" mt={0.25}>
-                        Native Plugin未加载！
-                    </Typography>
-                    <Typography fontSize="sm" sx={{ opacity: 0.8 }}>
-                        InfLink将无法使用，请确定您使用的是 1.0.0-pre2
-                        及以上版本的 BetterNCM。
-                        若不是 请通过 BetterNCM Installer 更新。
-                    </Typography>
-                </Alert>
-            </div>
-        );
-    }
+
 
     return (
         <div>
