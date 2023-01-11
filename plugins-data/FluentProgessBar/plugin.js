@@ -4,7 +4,8 @@ plugin.onLoad(()=>{
     document.head.appendChild(fluentProgressBarController);
     let draggedProgress = 1;
     const updateTransform = (percent, dragging = false) => {
-        if (!dragging && draggedProgress != 1 && Math.abs(percent - draggedProgress) > 0.2) {
+        if (!dragging && draggedProgress != 1 && Math.abs(percent - draggedProgress) > 0.2 &&
+            !(percent < -99.8 && draggedProgress > -0.2)) {
             return;
         }
         if (!dragging) draggedProgress = 1;
