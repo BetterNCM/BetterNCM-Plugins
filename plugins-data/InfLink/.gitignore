@@ -1,9 +1,0 @@
-node_modules/
-/package.lock
-/yarn.lock
-/native/.vs/
-/native/Debug/
-/native/Release/
-/native/packages/
-/native/3rd/
-InfLink.dll.pdb

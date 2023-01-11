@@ -1,2 +1,0 @@
-#define BGENHANCED_API __declspec(dllexport)
-#define BGENHANCED_API __declspec(dllimport)

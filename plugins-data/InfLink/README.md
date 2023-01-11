@@ -1,2 +1,0 @@
-# InfinityLink
-![](./preview.png)
