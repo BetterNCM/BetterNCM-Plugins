@@ -1,7 +1,7 @@
 {
     "manifest_version": 1,
     "name": "FluentProgressBar",
-    "version": "0.1.0",
+    "version": "0.1.1",
     "author":"MicroBlock & Solstice23",
     "description":"让你的进度条更顺滑！",
     "preview":"preview.png",
@@ -12,5 +12,14 @@
                 "file": "plugin.js"
             }
         ]
+    },
+    "hijacks": {
+        ">= 2.10.4 <= 2.10.6": {
+            "orpheus://orpheus/pub/core.d3fe8dd.js": {
+                "type": "replace",
+                "from": "var t=(100*this.qit).toFixed(1),i=parseInt(t),t=i+.25*Math.ceil((t-i)/.25);",
+                "to": "var t=(100*this.qit).toFixed(3);"
+            }
+        }
     }
 }
