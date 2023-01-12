@@ -80,6 +80,10 @@ plugins.forEach((plugin) => {
 		}
 	}
 
+	if (pluginJson.native_plugin) {
+		addField(pluginJson, 'native', true);
+	}
+
 
 	compressing.zip.compressDir(path.resolve(process.cwd(), `../../plugins-data/${plugin}`), path.resolve(process.cwd(), `../../tmp/plugins/${slug}-${manifest.version}.plugin`), {
 		ignoreBase: true
