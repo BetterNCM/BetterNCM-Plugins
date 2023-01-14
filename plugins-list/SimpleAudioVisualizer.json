@@ -1,7 +1,7 @@
 {
 	"name": "SimpleAudioVisualizer",
 	"repo": "BetterNCM/SimpleAudioVisualizer",
-	"branch": "main",
+	"branch": "master",
 	"subpath": "/dist",
 	"author": "MicroBlock"
 }
