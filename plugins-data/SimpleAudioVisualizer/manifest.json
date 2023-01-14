@@ -1,0 +1,18 @@
+{
+    "manifest_version": 1,
+    "name": "简单音频可视化",
+    "slug": "SimpleAudioVisualizer",
+    "version": "0.1.0",
+    "description": "在播放页面显示音频可视化视效！",
+    "betterncm_version": ">= 1.0.0",
+    "author_links": ["https://github.com/woshizja/sound-processor"],
+    "preview": "preview.png",
+    "loadAfter": ["LibFrontendPlay"],
+    "requirements": ["LibFrontendPlay"],
+    "author": "MicroBlock & woshizja",
+    "injects": {
+        "Main": [{
+            "file": "index.js"
+        }]
+    }
+}
