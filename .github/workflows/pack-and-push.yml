@@ -11,10 +11,13 @@ on:
       - master
     paths:
       - plugins-data
-  
-    
+
+concurrency:
+  group: 'pack-and-push'
+  cancel-in-progress: true
+
 jobs:
-  UpdatePlugins:
+  PackAndPush:
     if: (github.event_name == 'pull_request' && github.event.pull_request.merged) || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     timeout-minutes: 10
