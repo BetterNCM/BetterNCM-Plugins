@@ -874,3 +874,8 @@ div.m-page a:not(.js-selected):hover {
     background-color: var(--MoTheme-other_backgroundColor);
     backdrop-filter: saturate(var(--MoTheme-other_backgroundSaturate)) blur(var(--MoTheme-other_backgroundBlur));
 }
+
+/* 修复左下角VIP，试听之类标识有红色背景 */
+.j-vipicn.icnarr * {
+    background: none;
+}
