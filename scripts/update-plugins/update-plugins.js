@@ -209,7 +209,7 @@ const updatePlugin = async (plugin) => {
 		owner: repoOwner,
 		repo: repoName,
 		title: `Update ${plugin.name} to ${plugin.latestVersion}`,
-		body: `\`${plugin.currentVersion}\` -> \`${plugin.latestVersion}\``,
+		body: `\`${plugin.currentVersion}\` -> \`${plugin.latestVersion}\`\n\nRepo: https://github.com/${repoOwner}/${repoName}/`,
 		head: `update-${plugin.slug}-${plugin.latestVersion}`,
 		base: 'master'
 	});
