@@ -10,11 +10,11 @@
 
 ```js
 {
-	"name": "ExamplePlugin", // 插件名
-	"repo": "BetterNCM/example-plugin", // 插件的 Repo
-	"branch": "main", // 分支名
-	"subpath": "/", // 插件在 repo 中的子目录 （可选）
-	"author": "Author" // 作者
+    "name": "ExamplePlugin", // 插件名
+    "repo": "BetterNCM/example-plugin", // 插件的 Repo
+    "branch": "main", // 分支名
+    "subpath": "/", // 插件在 repo 中的子目录 （可选）
+    "author": "Author" // 作者
 }
 ```
 
@@ -32,11 +32,11 @@
     "version": "0.1.0", // 插件版本，推荐使用语义化版本（https://semver.org/）
     "betterncm_version": ">=1.0.0", // 依赖的 BetterNCM 版本
     "author": "Author", // 插件作者
-	"author_link": "https://example.com", // 作者链接（可选）
+    "author_link": "https://example.com", // 作者链接（可选）
     "description": "Description of the plugin", // 插件描述
     "preview": "preview.png", // 插件预览图
-	"type": "extension", // 插件类型（可选）：extension (默认) | theme | dependency"
-	"requirements": ["example-dependency"], // 依赖的插件（可选）
+    "type": "extension", // 插件类型（可选）：extension (默认) | theme | dependency"
+    "requirements": ["example-dependency"], // 依赖的插件（可选）
 
 
     "injects": { // 普通注入
@@ -57,6 +57,6 @@
             }
         }
     }
-	"native_plugin": "native.dll", // 需要注入的 native dll （可选）（接口参考已有  native 插件）
+    "native_plugin": "native.dll", // 需要注入的 native dll （可选）（接口参考已有  native 插件）
 }
 ```
