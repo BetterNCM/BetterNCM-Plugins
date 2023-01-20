@@ -46,9 +46,9 @@
             }
         ]
     },
-    "hijacks":{  // 网易云请求修改（可选）
-        "> 2.10.0 <= 2.10.6":{  // 版本，支持Range
-            "orpheus://orpheus/pub/core.e5842f1.js":{ // URL，开头部分匹配即可
+    "hijacks": {  // 网易云请求修改（可选）
+        "> 2.10.0 <= 2.10.6": {  // 版本，支持Range
+            "orpheus://orpheus/pub/core.e5842f1.js": { // URL，开头部分匹配即可
             //(如 orpheus://orpheus/pub/core.e5842f1.js?abcdefg 将被匹配到)
 
                 "type":"replace", // 类型，目前支持 replace 和 regex
@@ -56,7 +56,7 @@
                 "to":";expose(a);var o;if(((this.U()||C).from||C).id==t)" // 替换为
             }
         }
-    }
+    },
     "native_plugin": "native.dll", // 需要注入的 native dll （可选）（接口参考已有  native 插件）
 }
 ```
