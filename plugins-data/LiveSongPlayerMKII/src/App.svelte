@@ -69,7 +69,7 @@
         live.on("live", () => {
             live.on("heartbeat", console.log);
             live.on("msg", ({ cmd, data, info }) => {
-                if (cmd === "DANMU_MSG") {
+                if (cmd.startsWith("DANMU_MSG")) {
                     let message = info[1];
 
                     function detectCommand(cmd, callback) {

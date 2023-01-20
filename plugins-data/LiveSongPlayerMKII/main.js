@@ -98,7 +98,7 @@ plugin.onConfig(function (tools) {
         if (DEV_MODE)
             popup = window.open("http://127.0.0.1:5500/build/index.html", "live-songplayer", 'left=100,top=100,width=1205,height=565')
         else
-            popup = window.open(BETTERNCM_FILES_PATH + plugin.pluginPath + "./build/index.html", "live-songplayer", 'left=100,top=100,width=1205,height=565')
+            popup = window.open(BETTERNCM_FILES_PATH + plugin.pluginPath.split('./')[1] + "./build/index.html", "live-songplayer", 'left=100,top=100,width=1205,height=565')
 
         setTimeout(() => {
             sendMessage({ type: "syncConfig", configs })
