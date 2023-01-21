@@ -1,6 +1,7 @@
 plugin.onLoad(function (plugin) {
     let utils = {
         searchSong(keyword) {
+            var searchsong_handle;
             return Promise.race([new Promise(function (resolve) {
                 var handle = setInterval(function () {
                     if (window["searching"])
@@ -9,7 +10,7 @@ plugin.onLoad(function (plugin) {
                     clearInterval(handle);
                     document.querySelector(".j-search-input").value = keyword;
                     document.querySelector(".sch-btn").click();
-                    var searchsong_handle = setInterval(function () {
+                    searchsong_handle = setInterval(function () {
                         if (!document.querySelector(".m-search .j-item"))
                             return;
                         clearInterval(searchsong_handle);
@@ -19,7 +20,10 @@ plugin.onLoad(function (plugin) {
                         }, 50);
                     }, 100);
                 });
-            }), betterncm.utils.delay(6000).then(_ => { throw Error("Search Timeout") })]);
+            }), betterncm.utils.delay(3000).then(_ => { 
+                clearInterval(searchsong_handle);
+				window["searching"] = false;
+				throw Error("Search Timeout"); })]);
         },
         getSearchResult(number) {
             if (number === void 0) { number = 0; }
