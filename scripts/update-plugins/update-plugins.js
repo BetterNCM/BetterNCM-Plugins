@@ -110,7 +110,7 @@ const updatePlugin = async (plugin) => {
 	});
 	const pullRequestExists = searchResult.data.total_count > 0;
 	searchResult = await octokit.rest.search.issuesAndPullRequests({
-		q: `repo:${repoOwner}/${repoName} is:pr is:close "${plugin.name} ${plugin.latestVersion}"`,
+		q: `repo:${repoOwner}/${repoName} is:pr is:closed "${plugin.name} ${plugin.latestVersion}"`,
 	});
 	const versionRejected = searchResult.data.total_count > 0;
 	if (pullRequestExists) {
