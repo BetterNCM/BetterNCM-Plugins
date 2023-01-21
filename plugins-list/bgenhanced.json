@@ -2,6 +2,6 @@
 	"name": "BGEnhanced",
 	"repo": "BetterNCM/BGEnhanced",
 	"branch": "main",
-	"subpath": "/",
+	"subpath": "/dist/",
 	"author": "MicroBlock"
 }
