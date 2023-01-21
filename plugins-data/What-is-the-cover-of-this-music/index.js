@@ -9,7 +9,7 @@ async function styleLoader() {
         .m-search .m-plylist .itm,
         .m-yrsh .m-plylist .itm,
         .m-plylist_playlist .lst .itm {
-            height: 42px;
+            height: calc(var(--cover-size, 32px) + 10px);
         }
 
         /* 序号垂直居中 */
@@ -18,8 +18,8 @@ async function styleLoader() {
         .m-search .m-plylist .itm:before,
         .m-yrsh .m-plylist .itm::before,
         .m-plylist_playlist .lst .itm:before {
-            height: 42px;
-            line-height: 42px;
+            height: calc(var(--cover-size, 32px) + 10px);
+            line-height: calc(var(--cover-size, 32px) + 10px);
         }
 
         /* 文字垂直居中 */
@@ -28,8 +28,8 @@ async function styleLoader() {
         .m-search .m-plylist .td,
         .m-yrsh .m-plylist .td,
         .m-plylist_playlist .lst .td {
-            height: 42px;
-            line-height: 32px;
+            height: calc(var(--cover-size, 32px) + 10px);
+            line-height: var(--cover-size, 32px);
         }
 
         /* 图标垂直居中 */
@@ -38,7 +38,7 @@ async function styleLoader() {
         .m-search .m-plylist .ico,
         .m-yrsh .m-plylist .ico,
         .m-plylist_playlist .lst .ico {
-            margin: 12px 0 0 8px;
+            margin: calc(var(--cover-size, 32px) * 0.5 - 10px) 0 0 8px;
         }
 
         /* 封面位置模糊 */
@@ -49,8 +49,8 @@ async function styleLoader() {
         .m-plylist_playlist .lst .title:not(.cover-loaded)::before {
             content: "";
             position: absolute;
-            width: 32px;
-            height: 32px;
+            width: var(--cover-size, 32px);
+            height: var(--cover-size, 32px);
             border-radius: 6px;
             backdrop-filter: blur(4px);
             background-color: rgba(255, 255, 255, 0.2);
@@ -62,7 +62,7 @@ async function styleLoader() {
         .m-search .m-plylist .tit,
         .m-yrsh .m-plylist .tit,
         .m-plylist_playlist .lst .tit {
-            margin-left: 42px;
+            margin-left: calc(var(--cover-size, 32px) + 10px);
         }
 
         /* 音乐封面居中 */
@@ -72,8 +72,8 @@ async function styleLoader() {
         .m-yrsh .m-plylist .cover,
         .m-plylist_playlist .lst .cover {
             position: absolute;
-            width: 32px;
-            height: 32px;
+            width: var(--cover-size, 32px);
+            height: var(--cover-size, 32px);
             border-radius: 6px;
         }
     `;
@@ -105,6 +105,7 @@ async function addCover(result) {
     let resId = [];
 
     const func = async () => {
+        result.classList.add("list-with-covers");
         for (const item of result.querySelectorAll(".itm")) {
             if (!item.querySelector(".title").querySelector(".cover")) {
                 title.push(item.querySelector(".title"));
