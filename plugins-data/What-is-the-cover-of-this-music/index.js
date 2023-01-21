@@ -107,31 +107,38 @@ const fetchCovers = async (title, resId) => {
 }
 
 const addCover = async (result) => {
-    let title = [];
-    let resId = [];
-
     const func = async () => {
+        let titles = [], resIds = [];
         result.classList.add("list-with-covers");
-        for (const item of result.querySelectorAll(".itm")) {
-            if (!item.querySelector(".title").querySelector(".cover")) {
-                if (cache[item.dataset.resId]) {
-                    setCover(item.querySelector(".title"), cache[item.dataset.resId]);
-                    continue;
-                }
-                title.push(item.querySelector(".title"));
-                resId.push(item.dataset.resId);
-
-                if (title.length == 20) {
-                    await fetchCovers([...new Set(title)], [...new Set(resId)]);
-                    title = [];
-                    resId = [];
-                }
+        for (const item of result.querySelectorAll(".itm:not(.cover-initialized)")) {
+            item.classList.add("cover-initialized");
+            if (cache[item.dataset.resId]) {
+                setCover(item.querySelector(".title"), cache[item.dataset.resId]);
+                continue;
             }
+            titles.push(item.querySelector(".title"));
+            resIds.push(item.dataset.resId);
+
+            if (titles.length == 20) {
+                await fetchCovers([...new Set(titles)], [...new Set(resIds)]);
+                titles = [];
+                resIds = [];
+            }
+        }
+        
+        if (titles.length) {
+            await fetchCovers([...new Set(titles)], [...new Set(resIds)]);
         }
     }
 
     observer = new MutationObserver(func);
     observer.observe(result, { childList: true, subtree: true });
+    const interval = setInterval(() => {
+        if (result.querySelector(".itm")) {
+            func();
+            clearInterval(interval);
+        }        
+    }, 100);
 }
 
 
