@@ -82,25 +82,31 @@ async function styleLoader() {
     document.head.appendChild(style);
 }
 
+let observer = null;
 
-let interval = null;
+let cache = {};
 
-async function addCover(result) {
-    const setCover = async (title, resId) => {
-        const resIdList = resId.map(value => { return { "id": value } });
-        const params = new URLSearchParams({ "c": JSON.stringify(resIdList) }).toString();
-        const res = await fetch(`https://music.163.com/api/v3/song/detail?${params}`);
+const setCover = async (title, url) => {
+    const img = document.createElement("img");
+    img.src = `orpheus://cache/?${url}?param=64y64`; // 缓存
+    img.classList.add("cover");
+    img.loading = "lazy";
+    img.addEventListener("load", () => title.classList.add("cover-loaded"));
+    title.insertBefore(img, title.children[0]);
+}
 
-        (await res.json()).songs.forEach((value, index) => {
-            const img = document.createElement("img");
-            img.src = `orpheus://cache/?${value.al.picUrl}?param=64y64`; // 缓存
-            img.classList.add("cover");
-            img.loading = "lazy";
-            img.addEventListener("load", () => title[index].classList.add("cover-loaded"));
-            title[index].insertBefore(img, title[index].children[0]);
-        });
-    }
+const fetchCovers = async (title, resId) => {
+    const resIdList = resId.map(value => { return { "id": value } });
+    const params = new URLSearchParams({ "c": JSON.stringify(resIdList) }).toString();
+    const res = await fetch(`https://music.163.com/api/v3/song/detail?${params}`);
 
+    (await res.json()).songs.forEach((value, index) => {
+        cache[value.id] = value.al.picUrl;
+        setCover(title[index], value.al.picUrl);
+    });
+}
+
+const addCover = async (result) => {
     let title = [];
     let resId = [];
 
@@ -108,11 +114,15 @@ async function addCover(result) {
         result.classList.add("list-with-covers");
         for (const item of result.querySelectorAll(".itm")) {
             if (!item.querySelector(".title").querySelector(".cover")) {
+                if (cache[item.dataset.resId]) {
+                    setCover(item.querySelector(".title"), cache[item.dataset.resId]);
+                    continue;
+                }
                 title.push(item.querySelector(".title"));
                 resId.push(item.dataset.resId);
 
                 if (title.length == 20) {
-                    await setCover([...new Set(title)], [...new Set(resId)]);
+                    await fetchCovers([...new Set(title)], [...new Set(resId)]);
                     title = [];
                     resId = [];
                 }
@@ -120,12 +130,16 @@ async function addCover(result) {
         }
     }
 
-    interval = setInterval(func, 1000);
+    observer = new MutationObserver(func);
+    observer.observe(result, { childList: true, subtree: true });
 }
 
 
 async function onHashchange(event) {
-    clearInterval(interval);
+    if (observer) {
+        observer.disconnect();
+        observer = null;
+    }
     let result = null;
 
     // 每日推荐
