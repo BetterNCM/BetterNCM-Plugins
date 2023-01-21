@@ -13,6 +13,10 @@ on:
       - master
     paths: "plugins-list/**"
     
+concurrency:
+  group: 'update-plugins'
+  cancel-in-progress: true
+
 jobs:
   UpdatePlugins:
     runs-on: ubuntu-latest
