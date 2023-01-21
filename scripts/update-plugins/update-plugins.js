@@ -105,17 +105,31 @@ const getPluginLatestVersion = async (plugin) => {
 
 const updatePlugin = async (plugin) => {
 	// search if the pull request already exists
-	const searchResult = await octokit.rest.search.issuesAndPullRequests({
-		q: `repo:${repoOwner}/${repoName} is:pr "${plugin.name} ${plugin.latestVersion}"`,
+	let searchResult = await octokit.rest.search.issuesAndPullRequests({
+		q: `repo:${repoOwner}/${repoName} is:pr is:open "${plugin.name} ${plugin.latestVersion}"`,
 	});
-	if (searchResult.data.total_count > 0) {
-		console.log(`🚫 Pull request already exists for ${plugin.slug} ${plugin.latestVersion}`);
+	const pullRequestExists = searchResult.data.total_count > 0;
+	searchResult = await octokit.rest.search.issuesAndPullRequests({
+		q: `repo:${repoOwner}/${repoName} is:pr is:close "${plugin.name} ${plugin.latestVersion}"`,
+	});
+	const versionRejected = searchResult.data.total_count > 0;
+	if (pullRequestExists) {
+		console.log(`📋 Pull request already exists for ${plugin.slug} ${plugin.latestVersion}`);
+		console.log(`Pushing new commit to update pull request...`);
+	}
+	if (versionRejected) {
+		console.log(`🚫 Pull request already exists for ${plugin.slug} ${plugin.latestVersion} and has been closed`);
 		return;
 	}
 	console.log(`  - 🔄 Upgrading...`);
 	// create new branch
 	execSync(`git checkout master`);
-	execSync(`git checkout -b update-${plugin.slug}-${plugin.latestVersion}`);	
+	if (!pullRequestExists) {
+		execSync(`git checkout -b update-${plugin.slug}-${plugin.latestVersion}`);
+	} else {
+		execSync(`git checkout update-${plugin.slug}-${plugin.latestVersion}`);
+	}
+
 	// if exists, delete
 	const pluginPath = path.resolve(process.cwd(), `../../plugins-data/${plugin.slug}`);
 	if (fs.existsSync(pluginPath)) {
@@ -205,6 +219,10 @@ const updatePlugin = async (plugin) => {
 	// push
 	execSync(`git push origin update-${plugin.slug}-${plugin.latestVersion}`);
 	// create pull request
+	if (pullRequestExists) {
+		console.log(`🔼 The branch for PR has been updated`);
+		return;
+	}
 	const { data: pullRequest } = await octokit.rest.pulls.create({
 		owner: repoOwner,
 		repo: repoName,
