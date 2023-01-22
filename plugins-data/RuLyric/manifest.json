@@ -1,0 +1,18 @@
+{
+    "manifest_version": 1,
+    "name": "RuLyrics",
+    "version": "0.1.0",
+    "description": "description",
+    "betterncm_version": ">=1.0.0",
+    "author_links": ["https://github.com/MicroCBer"],
+    "preview": "preview.png",
+    "author": "MicroBlock",
+    "injects": {
+        "Main": [{
+            "file": "index.js"
+        }]
+    },
+    "loadAfter":["libsonginfo"],
+    "requirements": ["libsonginfo"],
+    "native_plugin":"RuLyrics.dll"
+}
