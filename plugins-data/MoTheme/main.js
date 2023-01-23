@@ -3,54 +3,12 @@ plugin.onAllPluginsLoaded(plugins => plugins.StylesheetLoader.loadStylesheet(
     `${this.pluginPath}/theme.css`,
     "MoTheme",
     {
-        use_BGEnhanced: {
-            name: "使用BGEnhanced",
-            type: "checkbox",
-            reflect: "bodyFlag",
-            class: "MoTheme-use_BGEnhanced",
-            default: false
-        },
         use_refinedNowPlaying: {
             name: "使用RefinedNowPlaying",
             class: "MoTheme-use_refinedNowPlaying",
             type: "checkbox",
             reflect: "bodyFlag",
             default: false
-        },
-        background_image: {
-            name: "背景-图片",
-            key: "--MoTheme-background_image",
-            reflect: "cssVar",
-            type: "cssBackground",
-            default: "url(https://img.noobzone.ru/getimg.php?url=https://i.imgur.com/ejzQz7n.png)"
-        },
-        background_brightness: {
-            name: "背景-亮度",
-            key: "--MoTheme-background_brightness",
-            reflect: "cssVar",
-            type: "cssInput",   // 并没有，随便写的
-            default: "100%"
-        },
-        background_saturate: {
-            name: "背景-饱和度",
-            key: "--MoTheme-background_saturate",
-            reflect: "cssVar",
-            type: "cssInput",   // 并没有，随便写的
-            default: "100%"
-        },
-        background_blur: {
-            name: "背景-模糊度",
-            key: "--MoTheme-background_blur",
-            reflect: "cssVar",
-            type: "cssInput",   // 并没有，随便写的
-            default: "0px"
-        },
-        background_scale: {
-            name: "背景-缩放（解决背景模糊后边框问题）",
-            key: "--MoTheme-background_scale",
-            reflect: "cssVar",
-            type: "cssInput",   // 并没有，随便写的
-            default: "100%"
         },
         bottomMusicBar_rainbowStrip: {
             name: "底部音乐栏-彩虹条",

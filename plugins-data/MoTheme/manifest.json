@@ -2,13 +2,14 @@
     "manifest_version": 1,
     "name": "MoTheme",
     "preview": "preview.png",
-    "description": "BetterNCM插件，主题插件，用于美化网易云音乐",
-    "version": "1.1.11",
+    "description": "主题插件，用于美化网易云音乐（已移除设置壁纸功能，请使用BGEnhanced插件）",
+    "version": "1.2.0",
     "author": "沫烬染",
     "author_links": ["https://github.com/mo-jinran"],
     "type": "theme",
     "requirements": [
-        "StylesheetLoader"
+        "StylesheetLoader",
+        "BGEnhanced"
     ],
     "injects": {
         "Main": [
