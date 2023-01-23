@@ -1,7 +1,7 @@
 {
     "manifest_version": 1,
     "name": "RuLyrics",
-    "version": "0.1.0",
+    "version": "0.1.1",
     "description": "description",
     "betterncm_version": ">=1.0.0",
     "author_links": ["https://github.com/MicroCBer"],
@@ -12,7 +12,7 @@
             "file": "index.js"
         }]
     },
-    "loadAfter":["libsonginfo"],
-    "requirements": ["libsonginfo"],
+    "loadAfter":["liblyric"],
+    "requirements": ["liblyric"],
     "native_plugin":"RuLyrics.dll"
 }
