@@ -80,8 +80,11 @@ plugins.forEach((plugin) => {
 		}
 	}
 
-	if (pluginJson.native_plugin) {
+	if (manifest.native_plugin) {
 		addField(pluginJson, 'native', true);
+	}
+	if (manifest.require_restart) {
+		addField(pluginJson, 'require_restart', true);
 	}
 
 
