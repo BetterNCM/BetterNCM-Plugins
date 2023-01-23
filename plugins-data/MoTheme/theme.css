@@ -42,21 +42,9 @@ body {
 #portal_root .portal-app {
     width: 100%;
     height: 100%;
-    background-image: var(--MoTheme-background_image);
+    background-image: url("https://img.noobzone.ru/getimg.php?url=https://i.imgur.com/ejzQz7n.png");
     background-position: center;
     background-size: cover;
-    filter: brightness(var(--MoTheme-background_brightness)) saturate(var(--MoTheme-background_saturate)) blur(var(--MoTheme-background_blur));
-    transform: scale(var(--MoTheme-background_scale));
-}
-
-/* 兼容BGEnhanced */
-.MoTheme-use_BGEnhanced #portal_root {
-    opacity: 0;
-}
-
-.MoTheme-use_BGEnhanced #BGEnhanced_Background img {
-    filter: brightness(var(--MoTheme-background_brightness)) saturate(var(--MoTheme-background_saturate)) blur(var(--MoTheme-background_blur));
-    transform: scale(var(--MoTheme-background_scale));
 }
 
 
