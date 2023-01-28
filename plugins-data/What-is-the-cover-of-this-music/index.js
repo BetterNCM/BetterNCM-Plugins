@@ -6,7 +6,7 @@ async function styleLoader() {
         /* 修改条目高度 */
         .m-daily .m-plylist .itm,
         .m-recordscroll .m-plylist .itm,
-        .m-search .m-plylist .itm,
+        .m-search .m-plylist:not(.m-plylist-lrc-mult) .itm,
         .m-yrsh .m-plylist .itm,
         .m-plylist_playlist .lst .itm {
             height: calc(var(--cover-size, 32px) + 10px);
@@ -38,7 +38,7 @@ async function styleLoader() {
         .m-search .m-plylist .ico,
         .m-yrsh .m-plylist .ico,
         .m-plylist_playlist .lst .ico {
-            margin: calc(var(--cover-size, 32px) * 0.5 - 10px) 0 0 8px;
+            margin: calc(var(--cover-size, 12px)) 0 0 8px;
         }
 
         /* 封面位置模糊 */
@@ -88,7 +88,7 @@ let cache = {};
 
 const setCover = async (title, url) => {
     const img = document.createElement("img");
-    img.src = `orpheus://cache/?${url}?param=64y64`; // 缓存
+    img.src = `orpheus://cache/?${url}?param=64y64`;
     img.classList.add("cover");
     img.loading = "lazy";
     img.addEventListener("load", () => title.classList.add("cover-loaded"));
@@ -125,7 +125,7 @@ const addCover = async (result) => {
                 resIds = [];
             }
         }
-        
+
         if (titles.length) {
             await fetchCovers([...new Set(titles)], [...new Set(resIds)]);
         }
@@ -137,7 +137,7 @@ const addCover = async (result) => {
         if (result.querySelector(".itm")) {
             func();
             clearInterval(interval);
-        }        
+        }
     }, 100);
 }
 
