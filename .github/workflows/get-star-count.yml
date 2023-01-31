@@ -37,3 +37,10 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
         working-directory: scripts/update-star-count
+      - name: 'Commit'
+        run: |
+          git config --local user.email "github-actions[bot]"
+          git config --local user.name "github-actions[bot]@users.noreply.github.com"
+          git add --all
+          git commit -m "Update star count"
+          git push
