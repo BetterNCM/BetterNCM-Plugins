@@ -6,7 +6,7 @@ import download from 'github-download';
 import downloadDirectory from 'github-directory-downloader';
 import { Octokit } from 'octokit';
 import { compareVersions } from 'compare-versions';
-import { getPluginList } from '..utils.js';
+import { getPluginList } from '../utils.js';
 
 const repoOwner = 'BetterNCM';
 const repoName = 'BetterNCM-Plugins';
