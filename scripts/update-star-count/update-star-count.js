@@ -26,4 +26,4 @@ for (const plugin of pluginList) {
 		console.log("❌ " + error);
 	}
 }
-fs.writeFileSync(path.resolve(process.cwd(), `../../plugins-data/stars.json`), JSON.stringify(starsJson, null, 2));
+fs.writeFileSync(path.resolve(process.cwd(), `../../stars.json`), JSON.stringify(starsJson, null, 2));

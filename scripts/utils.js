@@ -44,7 +44,7 @@ export const getPluginList = () => {
 	return pluginList;
 }
 export const getStarCount = () => {
-	const starsPath = path.resolve(process.cwd(), '../../plugins-data/stars.json');
+	const starsPath = path.resolve(process.cwd(), '../../stars.json');
 	if (fs.existsSync(starsPath)) {
 		return JSON.parse(fs.readFileSync(starsPath));
 	}
