@@ -2,7 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import { execSync } from 'child_process';
 import compressing from 'compressing';
-import { getPluginList } from '../update-plugins/update-plugins.js';
+import { getPluginList } from '../utils.js';
 
 const compulsoryFields = ['name', 'author', 'version'];
 const optionalFields = ['description', 'requirements', 'betterncm_version', 'preview', 'author_links', 'type', 'hide', 'deprecated', 'license', 'incompatible'];
