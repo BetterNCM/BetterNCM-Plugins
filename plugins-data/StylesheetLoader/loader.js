@@ -1,20 +1,5 @@
 let loader_stylesheets = []
 
-async function switchToDefault() {
-    (await betterncm.utils.waitForElement(".skin", 0)).style.display = "none"
-    if (!document.querySelector('[data-name="default"]')) document.querySelector(".skin").click();
-    (await betterncm.utils.waitForElement('[data-name="default"] label', 0)).click();
-    document.querySelector(".skin").click()
-}
-
-async function switchToWhite() {
-    (await betterncm.utils.waitForElement(".skin", 0)).style.display = "none"
-    if (!document.querySelector('[data-name="default"]')) document.querySelector(".skin").click();
-
-    (await betterncm.utils.waitForElement('[title="纯色"]', 0)).click();
-    (await betterncm.utils.waitForElement('[data-iswhite="true"]', 0)).click();
-}
-
 async function loadStylesheetObj({ path, id, config, plugin }) {
     function reloadStylesheet(content) {
         let root = document.querySelector(':root');
@@ -45,12 +30,10 @@ async function loadStylesheetObj({ path, id, config, plugin }) {
 
     let content = await betterncm.fs.readFileText(path)
     if (path.includes("plugins_dev")) {
-        setInterval(async () => {
-            if (content !== await betterncm.fs.readFileText(path)) {
-                content = await betterncm.fs.readFileText(path)
-                reloadStylesheet(content)
-            }
-        }, 1000)
+        betterncm_native.fs.watchDirectory(path.slice(0,path.indexOf('/plugins_dev')-1)+'/plugins_dev/',async ()=>{
+            content = await betterncm.fs.readFileText(path)
+            reloadStylesheet(content)
+        });
     }
     reloadStylesheet(content)
 }
@@ -61,22 +44,6 @@ async function loadAllStylesheets() {
 }
 
 plugin.onLoad(() => {
-    betterncm.utils.waitForElement("head").then(head => head.appendChild(dom("style", {
-        innerHTML: `
-.skin{display:none;}
-`})));
-
-
-    setInterval(() => {
-        if (plugin.getConfig("fontColor", "white") === "white") {
-            if (ctl.skin[betterncm.ncm.findNativeFunction(ctl.skin, [".selected"])]().selected.name !== "default")
-                switchToDefault();
-        } else {
-            if (ctl.skin[betterncm.ncm.findNativeFunction(ctl.skin, [".selected"])]().selected.name !== "hsl(0, 82%, 59%)")
-                switchToWhite();
-        }
-    }, 100)
-
     this.loadStylesheet = async function (plugin, path, id, config = {}) {
         loader_stylesheets.push({ path, id, config, plugin });
         loadStylesheetObj({ path, id, config, plugin })
@@ -102,29 +69,6 @@ plugin.onLoad(() => {
                                 configInput
                             )
                         )
-
-                        if (config[configKey].type.includes("cssBackground")) {
-                            settings.push(
-                                dom("input", {
-                                    type: "file", async onchange(e) {
-                                        let url = e.target.value;
-                                        let ext = url.substring(url.lastIndexOf('.') + 1).toLowerCase();
-                                        if (!ext) return;
-
-                                        let imgid = Math.floor(Math.random() * 10000000)
-                                        let path = "/temp/" + imgid + "." + ext;
-                                        await betterncm.fs.mkdir("temp")
-                                        await betterncm.fs.writeFile(path, e.target.files[0])
-
-                                        let cssVal = `url(${BETTERNCM_FILES_PATH + path})`
-
-                                        configInput.value = cssVal;
-                                        plugin.setConfig(configKey, cssVal);
-                                        loadAllStylesheets()
-                                    }
-                                })
-                            )
-                        }
 
                         if (config[configKey].type.includes("cssColor")) {
                             settings.push(
@@ -189,16 +133,9 @@ plugin.onLoad(() => {
 })
 
 plugin.onConfig((tools) => {
-    let textColorSwitch = tools.makeBtn(`切换字体颜色 [${plugin.getConfig("fontColor", "white") === "white" ? "白" : "黑"}]`, (e) => {
-        plugin.setConfig("fontColor", plugin.getConfig("fontColor", "white") === "white" ? "black" : "white");
-
-        textColorSwitch.innerText = `切换字体颜色 [${plugin.getConfig("fontColor", "white") === "white" ? "白" : "黑"}]`;
-    }, true);
-
     return dom("div", {},
         dom("div", {},
-            tools.makeBtn("重载所有样式", loadAllStylesheets, true),
-            textColorSwitch
+            tools.makeBtn("重载所有样式", loadAllStylesheets, true)
         ),
 
     )
