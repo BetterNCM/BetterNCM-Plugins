@@ -24,7 +24,7 @@
 ## 注意
 
 + 请确保要同步到此仓库的插件目录中，没有多余的文件（除了插件运行所必须的文件和插件预览图）。
-+ 或者新建 .betterncm-ignore 文件来过滤不需要的文件（格式类似 .gitignore）。
++ 或者创建 .betterncm-ignore 文件来过滤不需要的文件（格式类似 .gitignore）。
 + Native 插件必须使用 GitHub Action 编译。
 
 ## Manifest.json 格式
