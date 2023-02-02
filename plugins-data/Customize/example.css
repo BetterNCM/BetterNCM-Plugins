@@ -1,0 +1,9 @@
+body.rectangle-cover .g-single-track .g-singlec-ct .n-single .sd {
+    width: clamp(280px,20vw,400px);
+}
+.g-single .g-singlec-ct .n-single .mn .head .inf .title h1 {
+    font-size: 20px!important;
+}
+.g-single-track .g-singlec-ct .n-single .mn {
+    margin-bottom: -30px;
+}
