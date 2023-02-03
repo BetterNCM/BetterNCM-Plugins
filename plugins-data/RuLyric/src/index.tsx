@@ -73,7 +73,13 @@ function MainMenu() {
 
     React.useEffect(() => {
         if (taskbar) {
-            betterncm_native.native_plugin.call('rulyrics.embed_into_taskbar', [])
+            setTimeout(() => {
+                betterncm_native.native_plugin.call('rulyrics.embed_into_taskbar', [])
+            }, 500);
+        }else{
+            setTimeout(() => {
+                betterncm_native.native_plugin.call('rulyrics.embed_into_any', ['']);
+            }, 500);
         }
     }, [taskbar]);
 
@@ -146,16 +152,22 @@ function MainMenu() {
             const playing = getPlayingSong();
             setCurrentSong(playing);
 
-            const lrc = await loadedPlugins.liblyric.getLyricData(playing.data.id);
-            const parsed = loadedPlugins.liblyric.parseLyric(lrc.lrc.lyric, lrc.tlyric.lyric, lrc.romalrc.lyric, lrc.yrc.lyric)
-            setCurrentLyrics(parsed)
-
-            betterncm_native.native_plugin.call('rulyrics.update_lyrics', [
-                playing.data.name,
-                ""
-            ])
-
-            _currentLine = 0;
+            try {
+                const lrc = await loadedPlugins.liblyric.getLyricData(playing.data.id);
+                const parsed = loadedPlugins.liblyric.parseLyric(lrc.lrc?.lyric, lrc.tlyric?.lyric, lrc.romalrc?.lyric, lrc.yrc?.lyric)
+                setCurrentLyrics(parsed)
+            }
+            catch (e) {
+                setCurrentLyrics(null);
+            }
+            finally {
+                _currentLine = 0;
+                betterncm_native.native_plugin.call('rulyrics.update_lyrics', [
+                    playing.data.name,
+                    "",
+                    0
+                ])
+            }
         });
     }, []);
 
@@ -163,23 +175,26 @@ function MainMenu() {
 
         let lastLine = -1;
 
+        legacyNativeCmder.appendRegisterCall('PlayState', 'audioplayer', (_, __, state) => {
+            betterncm_native.native_plugin.call('rulyrics.seek', [
+                0,
+                state === 2]);
+        });
+
         legacyNativeCmder.appendRegisterCall(
             "PlayProgress",
             "audioplayer",
             (_, time) => {
-                const ms = time * 1000;
+                const ms = Math.round(time * 1000);
                 if (_currentLyrics) {
                     if (!_currentLyrics[_currentLine]) _currentLine = 0;
 
-                    if (!(_currentLyrics[_currentLine + 1].time > ms &&
-                        (_currentLyrics[_currentLine].time + _currentLyrics[_currentLine].duration) < ms)) {
-                        while (_currentLyrics[_currentLine + 1] && (_currentLyrics[_currentLine + 1].time < ms))
-                            _currentLine++;
+                    while (_currentLyrics[_currentLine + 1] && (_currentLyrics[_currentLine + 1].time < ms))
+                        _currentLine++;
 
-                        while (_currentLyrics[_currentLine] &&
-                            (_currentLyrics[_currentLine].time + _currentLyrics[_currentLine].duration < ms))
-                            _currentLine--;
-                    }
+                    while (_currentLyrics[_currentLine] &&
+                        (_currentLyrics[_currentLine].time > ms))
+                        _currentLine--;
 
 
                     if (lastLine !== _currentLine) {
@@ -202,8 +217,15 @@ function MainMenu() {
                             [
                                 lyricsArr, _currentLine
                             ],
-                            _currentLyrics[_currentLine].translatedLyric
+                            _currentLyrics[_currentLine].translatedLyric,
+                            Math.max(ms - _currentLyrics[_currentLine].time, 0)
                         ])
+                    } else {
+                        const time = Math.round(ms - _currentLyrics[_currentLine].time);
+                        if (time > 100)
+                            betterncm_native.native_plugin.call('rulyrics.seek', [
+                                time,
+                                false]);
                     }
 
                 }
@@ -216,7 +238,7 @@ function MainMenu() {
         if (taskbar) {
             setTimeout(() => {
                 betterncm_native.native_plugin.call('rulyrics.embed_into_taskbar', [])
-            }, 100);
+            }, 500);
         }
     }
 
@@ -265,7 +287,7 @@ function MainMenu() {
                     <FormGroup>
                         <FormControlLabel
                             control={
-                                <Switch defaultChecked={taskbar} onChange={(_, c) => setTaskbar(c)} />
+                                <Switch checked={taskbar} onChange={(_, c) => setTaskbar(c)} />
                             }
                             label="嵌入到任务栏 （可能需要重启网易云）"
                         />
