@@ -1,0 +1,19 @@
+{
+    "manifest_version": 1,
+    "name": "Customize",
+    "version": "0.3.0",
+    "author": "Nexmoe",
+    "author_links": [
+        "https://github.com/nexmoe"
+    ],
+    "description": "注入你的 CSS 和 JS 代码，让网易云变成你的形状", 
+    "preview": "preview.png", 
+    
+    "injects": {
+        "Main": [ 
+            {
+                "file": "main.js" 
+            }
+        ]
+    }
+}

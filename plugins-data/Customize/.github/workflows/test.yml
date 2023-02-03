@@ -1,0 +1,77 @@
+name: Compatibility Tests
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+  release:
+    types: [published]
+
+  workflow_dispatch:
+jobs:
+  test:
+    name: Run tests on NCM ${{matrix.ncm-downloads}}
+    runs-on: windows-latest
+    strategy:
+      max-parallel: 4
+      matrix:
+        ncm-downloads: 
+              - 2.10.6.200601
+              - 2.10.5.200451
+              - 2.10.4.200380
+              - 2.10.2.200154
+    steps:
+      - uses: actions/checkout@v3
+      - name: Copy plugin to plugins_dev
+        shell: pwsh
+        run:
+            If(Test-Path "./manifest_test.json") {
+                Remove-Item ./manifest.json;
+                Move-Item ./manifest_test.json ./manifest.json;
+            };
+
+            mkdir C:\users\runneradmin\betterncm\plugins_dev;
+            cp ./ "C:\users\runneradmin\betterncm\plugins_dev" -recurse -Force;
+
+      - name: Cache NCM Installer of ${{matrix.ncm-downloads}}
+        id: cache-ncm-installer
+        uses: actions/cache@v3
+        with:
+          path: ./CloudMusic_Installer.exe
+          key: ${{matrix.ncm-downloads}}-installer
+
+      - name: Download NCM Installer of ${{matrix.ncm-downloads}}
+        if: steps.cache-ncm-installer.outputs.cache-hit != 'true'
+        run: Invoke-WebRequest "https://d1.music.126.net/dmusic/NeteaseCloudMusic_Music_official_${{matrix.ncm-downloads}}.exe" -OutFile CloudMusic_Installer.exe;
+      - name: Install NCM ${{matrix.ncm-downloads}} and BetterNCM
+        shell: pwsh
+        run:
+            .\CloudMusic_Installer.exe /S;
+            while (!(Test-Path "C:\Program Files (x86)\NetEase\CloudMusic\cloudmusic.exe")) { Start-Sleep 10 };
+            Invoke-WebRequest https://github.com/MicroCBer/BetterNCM/releases/download/1.0.0/BetterNCMII.dll -OutFile betterncm.dll;
+            cp ./betterncm.dll "C:\Program Files (x86)\NetEase\CloudMusic\msimg32.dll" -Force;
+            start "C:\Program Files (x86)\NetEase\CloudMusic\cloudmusic.exe";
+      - name: Check if NCM Crashes
+        shell: pwsh
+        run:
+          Start-Sleep 20;
+#           Get-Process cloudmusic;
+
+      - name: Check if tests passes
+        shell: pwsh
+        run:
+          If(Test-Path "C:\users\runneradmin\betterncm\__TEST_SUCCEEDED__.txt"){
+            Write-Output "Tests passed!"
+            Write-Output(Get-Content "C:\users\runneradmin\betterncm\__TEST_SUCCEEDED__.txt")
+          } ElseIf(Test-Path "C:\users\runneradmin\betterncm\__TEST_FAILED__.txt"){
+            throw Get-Content "C:\users\runneradmin\betterncm\__TEST_FAILED__.txt";
+          }
+           Else{
+            Write-Output "No test result found!"
+          }
+  
+      - uses: OrbitalOwen/desktop-screenshot-action@0.1
+        name: Take screenshot
+        with:
+          file-name: 'desktop.jpg'
