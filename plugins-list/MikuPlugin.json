@@ -2,6 +2,6 @@
 	"name": "MikuPlugin",
 	"repo": "miku3333/miku-plugin",
 	"branch": "main",
-	"subpath": "/",
+	"subpath": "/dist",
 	"author": "小岩喵"
 }
