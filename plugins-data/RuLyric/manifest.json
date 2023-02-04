@@ -7,7 +7,6 @@
     "author_links": ["https://github.com/MicroCBer"],
     "preview": "preview.png",
     "author": "MicroBlock",
-    "hide": true,
     "injects": {
         "Main": [{
             "file": "index.js"
