@@ -38,8 +38,8 @@ setTimeout(() => {
 }, 100)
 
 setInterval(_ => {
-    document.querySelector(".j-vol").addEventListener("mousewheel", e => {
-        let currentVolume = parseInt(document.querySelector(".prg-spk.j-vol.f-dn .has").style.height) / 100;
+    document.querySelector(".j-vol").onmousewheel = e => {
+        const currentVolume = parseInt(document.querySelector(".prg-spk.j-vol.f-dn .has").style.height) / 100;
         if (e.deltaY > 0) channel.call("audioplayer.setVolume", () => { }, ["", "", currentVolume - 0.1])
         else channel.call("audioplayer.setVolume", () => { }, ["", "", Math.min(currentVolume + 0.1, 1)])
     })
