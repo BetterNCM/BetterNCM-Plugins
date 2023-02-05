@@ -29,8 +29,7 @@ plugin.onConfig((tools) => {
 				style: { margin: "10px 8px" },
 			}),
 			dom("textarea", {
-				innerText: plugin.getConfig("customizeCss", ""),
-
+				value: plugin.getConfig("customizeCss", ""),
 				rows: 10,
 				oninput: (event) => {
 					plugin.setConfig("customizeCss", event.target.value);
@@ -54,7 +53,7 @@ plugin.onConfig((tools) => {
 				style: { margin: "10px 8px" },
 			}),
 			dom("textarea", {
-				innerText: plugin.getConfig("customizeJS", ""),
+				value: plugin.getConfig("customizeJS", ""),
 				rows: 8,
 				oninput: (event) => {
 					plugin.setConfig("customizeJS", event.target.value);
