@@ -9,7 +9,7 @@ async function styleLoader() {
         .m-search .m-plylist:not(.m-plylist-lrc-mult) .itm,
         .m-yrsh .m-plylist .itm,
         .m-plylist_playlist .lst .itm {
-            height: calc(var(--cover-size, 32px) + 10px);
+            min-height: calc(var(--cover-size, 32px) + 10px);
         }
 
         /* 序号垂直居中 */
