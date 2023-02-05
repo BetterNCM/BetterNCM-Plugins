@@ -1,4 +1,9 @@
 plugin.onLoad(()=>{
+    let totalLength = 0;
+    legacyNativeCmder.appendRegisterCall('Load', 'audioplayer', (_, info)=>{
+        totalLength = info.duration;
+    });
+
     const fluentProgressBarController = document.createElement('style');
     fluentProgressBarController.innerHTML = '';
     document.head.appendChild(fluentProgressBarController);
@@ -11,10 +16,8 @@ plugin.onLoad(()=>{
         if (!dragging) draggedProgress = 1;
         fluentProgressBarController.innerHTML = `.prg{ ${(!("MaterialYouTheme" in loadedPlugins))&&"overflow-x: hidden;"} } \n.prg:not(.hvr) .has { width: 100% !important; transform: translateX(${percent}%) !important; }`;
     };
-    legacyNativeCmder.appendRegisterCall('PlayProgress','audioplayer',(_,progress)=>{
-        const [min,sec]=document.querySelector('time.all').innerText.split(':');
-        const allTime=(+min)*60+(+sec);
-        updateTransform(-(allTime-progress)/allTime*100);
+    legacyNativeCmder.appendRegisterCall('PlayProgress', 'audioplayer', (_, progress)=>{
+        updateTransform(-(totalLength-progress)/totalLength*100);
     });
     betterncm.utils.waitForElement('.prg .has').then(()=>{
         new MutationObserver(()=>{
