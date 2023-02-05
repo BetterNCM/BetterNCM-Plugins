@@ -6,7 +6,7 @@
     "author_links": ["https://github.com/solstice23"],
     "description": "Material You 主题 | 支持切换配色",
     "preview": "preview.gif",
-    "version": "2.0.6",
+    "version": "2.0.7",
     "type": "theme",
     "requirements": [],
     "betterncm_version": ">=0.2.5",
