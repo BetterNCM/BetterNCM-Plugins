@@ -134,40 +134,50 @@
                         const options = optionsText.split(" ").map(v => v.trim()).filter(v => v
                             .length);
                         const range = new monaco.Range(
+                            position.lineNumber,
                             1,
-                            1,
-                            model.getLineCount(),
-                            model.getLineMaxColumn(model.getLineCount())
+                            position.lineNumber,
+                            model.getLineMaxColumn(position.lineNumber)
                         );
 
-                        if (options[0] === "#Config")
+                        if (options[0] === "ss")
                             return {
                                 range,
                                 contents: [{
-                                        value: '# StyleSnippet 设置项'
+                                        value: '### StyleSnippet 设置项'
                                     },
                                     {
-                                        value: `## ${line.slice(0,line.indexOf("//"))}`
+                                        value: `#### ID：${line.slice(1,line.indexOf(":"))}`
                                     },
                                     ...options.slice(1).map(v => {
-                                        if (v.startsWith("slider")) {
+                                        if (v.startsWith("#name:")) {
+                                            return {
+                                                value: "**名称**: " + v.slice(6)
+                                            }
+                                        }
+                                        if (v.startsWith("#group:")) {
+                                            return {
+                                                value: "**分组**: " + v.slice(6)
+                                            }
+                                        }
+                                        if (v.startsWith("#slider")) {
                                             return {
                                                 value: "**滑条**"
                                             }
                                         }
-                                        if (v.startsWith("from")) {
+                                        if (v.startsWith("from:")) {
                                             return {
-                                                value: "**从**" + v.slice(4)
+                                                value: "**从**: " + v.slice(5)
                                             }
                                         }
-                                        if (v.startsWith("to")) {
+                                        if (v.startsWith("to:")) {
                                             return {
-                                                value: "**到**" + v.slice(4)
+                                                value: "**到**: " + v.slice(3)
                                             }
                                         }
-                                        if (v.startsWith("step")) {
+                                        if (v.startsWith("step:")) {
                                             return {
-                                                value: "**每步**" + v.slice(4)
+                                                value: "**每步**: " + v.slice(5)
                                             }
                                         }
                                     })
