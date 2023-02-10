@@ -1,9 +1,10 @@
 {
     "manifest_version": 1,
-    "name": "VisualRecord",
+    "name": "可视化听歌排行",
+    "slug": "VisualRecord",
     "preview": "preview.png",
-    "description": "可视化听歌排行，在个人主页-听歌排行内查看",
-    "version": "1.0.1",
+    "description": "在个人主页-听歌排行内查看",
+    "version": "1.0.2",
     "author": "沫烬染",
     "author_links": ["https://github.com/mo-jinran"],
     "type": "extension",

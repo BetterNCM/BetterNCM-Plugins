@@ -4,8 +4,8 @@
 plugin.onConfig(tools => {
     return dom("div", {},
         dom("div", {},
-            tools.makeBtn("从左到右", () => plugin.setConfig("direction", "left"), false),
-            tools.makeBtn("从右到左", () => plugin.setConfig("direction", "right"), false)
+            tools.makeBtn("从左到右", () => plugin.setConfig("direction", "left"), true),
+            tools.makeBtn("从右到左", () => plugin.setConfig("direction", "right"), true)
         ),
         dom("br", {}),
         dom("div", {},
