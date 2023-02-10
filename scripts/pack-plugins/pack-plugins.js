@@ -63,6 +63,7 @@ plugins.forEach((plugin) => {
 	const slug = manifest?.slug ?? getSlugName(manifest.name);
 	addField(pluginJson, 'slug', slug);
 	addField(pluginJson, 'update_time', parseInt(execSync(`git log -1 --format=%ct ${path.resolve(process.cwd(), `../../plugins-data/${plugin}/manifest.json`)}`)));
+	addField(pluginJson, 'publish_time', parseInt(execSync(`git log --reverse --format=%ct ${path.resolve(process.cwd(), `../../plugins-data/${plugin}/manifest.json`)}`).toString().split('\n')[0]));
 	const repo = definedPluginList.find((definedPlugin) => definedPlugin.slug === plugin)?.repo ?? '';
 	addField(pluginJson, 'repo', repo);
 	addField(pluginJson, 'stars', starCount[repo] ?? 0);
