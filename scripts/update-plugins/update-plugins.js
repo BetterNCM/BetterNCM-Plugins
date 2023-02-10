@@ -42,7 +42,7 @@ const getPluginListWithCurrentVersion = (pluginList = null) => { // Get plugin l
 }
 
 const getPluginLatestVersion = async (plugin) => {
-	const url = `https://raw.githubusercontent.com/${plugin.repo}/${plugin.branch}${plugin.subpath}/manifest.json`;
+	const url = `https://raw.githubusercontent.com/${plugin.repo}/${plugin.branch}${plugin.subpath}/manifest.json?${Date.now()}`;
 	try {
 		const response = await fetch(url, {
 			method: 'GET'
