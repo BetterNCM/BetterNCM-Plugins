@@ -12,6 +12,10 @@ const TaskbarLyricsAPI = {
         const params = `font_family=${font_family}`;
         return fetch(`${TaskbarLyricsURL}/font?${new URLSearchParams(params)}`);
     },
+    async style(basic, extra) {
+        const params = `basic=${basic}&extra=${extra}`;
+        return fetch(`${TaskbarLyricsURL}/style?${new URLSearchParams(params)}`);
+    },
     async color(light_basic, light_extra, dark_basic, dark_extra) {
         const params = `light_basic=${light_basic}&light_extra=${light_extra}&dark_basic=${dark_basic}&dark_extra=${dark_extra}`;
         return fetch(`${TaskbarLyricsURL}/color?${new URLSearchParams(params)}`);
@@ -19,6 +23,10 @@ const TaskbarLyricsAPI = {
     async position(position, lock) {
         const params = `position=${position}&lock=${lock}`;
         return fetch(`${TaskbarLyricsURL}/position?${new URLSearchParams(params)}`);
+    },
+    async margin(left, right) {
+        const params = `left=${left}&right=${right}`;
+        return fetch(`${TaskbarLyricsURL}/margin?${new URLSearchParams(params)}`);
     },
     async align(basic, extra) {
         const params = `basic=${basic}&extra=${extra}`;
@@ -41,6 +49,10 @@ const defaultConfig = {
     font: {
         "font_family": "Microsoft YaHei"
     },
+    style: {
+        "basic": "Regular",
+        "extra": "Regular"
+    },
     color: {
         "light_basic": "000000",
         "light_extra": "000000",
@@ -50,6 +62,10 @@ const defaultConfig = {
     position: {
         "position": "left",
         "lock": "false"
+    },
+    margin: {
+        "left": "0",
+        "right": "0"
     },
     align: {
         "basic": "left",
@@ -66,6 +82,7 @@ async function startTaskbarLyrics() {
     const path = `"${loadedPlugins["Taskbar-Lyrics"].pluginPath}\\taskbar-lyrics.exe"`;
     await betterncm.app.exec(`${path} ${TaskbarLyricsPort}`, false, true);
     TaskbarLyricsAPI.start();
+    setConfigs();
 }
 
 
@@ -82,6 +99,22 @@ async function defaultFontFamily() {
     plugin.setConfig("font", undefined);
     TaskbarLyricsAPI.font(defaultConfig.font.font_family);
     document.querySelector("#font_family").value = defaultConfig.font.font_family;
+}
+
+
+// 字体样式
+async function setFontStyle(event) {
+    const config = {
+        "basic": event.target.value[0] == "basic" ? event.target.value[1] : plugin.getConfig("style", defaultConfig.style)["basic"],
+        "extra": event.target.value[0] == "extra" ? event.target.value[1] : plugin.getConfig("style", defaultConfig.style)["extra"]
+    };
+    plugin.setConfig("style", config);
+    TaskbarLyricsAPI.style(config.basic, config.extra);
+}
+
+async function defaultFontStyle() {
+    plugin.setConfig("style", undefined);
+    TaskbarLyricsAPI.style(defaultConfig.style.basic, defaultConfig.style.extra);
 }
 
 
@@ -118,7 +151,7 @@ async function defaultFontColor() {
 
 
 // 修改位置
-async function setWindowPosition(event) {
+async function setPosition(event) {
     const config = {
         "position": event.target.value,
         "lock": "true"
@@ -127,9 +160,27 @@ async function setWindowPosition(event) {
     TaskbarLyricsAPI.position(config.position, config.lock);
 }
 
-async function defaultWindowPosition() {
+async function defaultPosition() {
     plugin.setConfig("position", undefined);
     TaskbarLyricsAPI.position(defaultConfig.position.position, defaultConfig.position.lock);
+}
+
+
+// 修改边距
+async function setMargin() {
+    const config = {
+        "left": document.querySelector("#left").value,
+        "right": document.querySelector("#right").value
+    };
+    plugin.setConfig("margin", config);
+    TaskbarLyricsAPI.margin(config.left, config.right);
+}
+
+async function defaultMargin() {
+    plugin.setConfig("margin", undefined);
+    TaskbarLyricsAPI.margin(defaultConfig.margin.left, defaultConfig.margin.right);
+    document.querySelector("#left").value = defaultConfig.margin.left;
+    document.querySelector("#right").value = defaultConfig.margin.right;
 }
 
 
@@ -161,6 +212,44 @@ async function setParentTaskbar(event) {
 async function defaultParentTaskbar() {
     plugin.setConfig("screen", undefined);
     TaskbarLyricsAPI.screen(defaultConfig.screen.parent_taskbar);
+}
+
+
+async function setConfigs() {
+    plugin.getConfig("font", false) && TaskbarLyricsAPI.font(
+        plugin.getConfig("font", defaultConfig.font)["font_family"]
+    );
+
+    plugin.getConfig("style", false) && TaskbarLyricsAPI.style(
+        plugin.getConfig("style", defaultConfig.style)["basic"],
+        plugin.getConfig("style", defaultConfig.style)["extra"]
+    );
+
+    plugin.getConfig("color", false) && TaskbarLyricsAPI.color(
+        plugin.getConfig("color", defaultConfig.color)["light_basic"],
+        plugin.getConfig("color", defaultConfig.color)["light_extra"],
+        plugin.getConfig("color", defaultConfig.color)["dark_basic"],
+        plugin.getConfig("color", defaultConfig.color)["dark_extra"]
+    );
+
+    plugin.getConfig("position", false) && TaskbarLyricsAPI.position(
+        plugin.getConfig("position", defaultConfig.position)["position"],
+        plugin.getConfig("position", defaultConfig.position)["lock"]
+    );
+
+    plugin.getConfig("margin", false) && TaskbarLyricsAPI.margin(
+        plugin.getConfig("margin", defaultConfig.margin)["left"],
+        plugin.getConfig("margin", defaultConfig.margin)["right"]
+    );
+
+    plugin.getConfig("align", false) && TaskbarLyricsAPI.align(
+        plugin.getConfig("align", defaultConfig.align)["basic"],
+        plugin.getConfig("align", defaultConfig.align)["extra"]
+    );
+
+    plugin.getConfig("screen", false) && TaskbarLyricsAPI.screen(
+        plugin.getConfig("screen", defaultConfig.screen)["parent_taskbar"]
+    );
 }
 
 
@@ -197,13 +286,41 @@ plugin.onConfig(tools => {
         // 更换字体
         dom("section", {},
             dom("h1", {},
-                dom("strong", { innerText: "更换字体：" }),
+                dom("strong", { innerText: "字体更换：" }),
                 tools.makeBtn("立即应用", setFontFamily, true),
                 tools.makeBtn("恢复默认", defaultFontFamily, true)
             ),
             dom("div", {},
                 dom("span", { innerText: "字体名称：" }),
                 createInput("font", "font_family")
+            )
+        ),
+
+        dom("hr", {}),
+
+        // 字体样式
+        dom("section", {},
+            dom("h1", {},
+                dom("strong", { innerText: "字体样式：" }),
+                tools.makeBtn("恢复默认", defaultFontStyle, true)
+            ),
+            dom("div", {},
+                dom("span", { innerText: "基本歌词：" }),
+                tools.makeBtn("正常", setFontStyle, true, { value: ["basic", "Regular"] }),
+                tools.makeBtn("粗", setFontStyle, true, { value: ["basic", "Bold"] }),
+                tools.makeBtn("斜", setFontStyle, true, { value: ["basic", "Italic"] }),
+                tools.makeBtn("既粗又斜", setFontStyle, true, { value: ["basic", "BoldItalic"] }),
+                tools.makeBtn("下划线", setFontStyle, true, { value: ["basic", "Underline"] }),
+                tools.makeBtn("删除线", setFontStyle, true, { value: ["basic", "Strikeout"] })
+            ),
+            dom("div", {},
+                dom("span", { innerText: "扩展歌词：" }),
+                tools.makeBtn("正常", setFontStyle, true, { value: ["extra", "Regular"] }),
+                tools.makeBtn("粗", setFontStyle, true, { value: ["extra", "Bold"] }),
+                tools.makeBtn("斜", setFontStyle, true, { value: ["extra", "Italic"] }),
+                tools.makeBtn("既粗又斜", setFontStyle, true, { value: ["extra", "BoldItalic"] }),
+                tools.makeBtn("下划线", setFontStyle, true, { value: ["extra", "Underline"] }),
+                tools.makeBtn("删除线", setFontStyle, true, { value: ["extra", "Strikeout"] })
             )
         ),
 
@@ -240,12 +357,31 @@ plugin.onConfig(tools => {
         dom("section", {},
             dom("h1", {},
                 dom("strong", { innerText: "修改位置：" }),
-                tools.makeBtn("恢复默认", defaultWindowPosition, true)
+                tools.makeBtn("恢复默认", defaultPosition, true)
             ),
             dom("div", {},
                 dom("span", { innerText: "窗口位置：" }),
-                tools.makeBtn("左", setWindowPosition, true, { value: "left" }),
-                tools.makeBtn("右", setWindowPosition, true, { value: "right" })
+                tools.makeBtn("左", setPosition, true, { value: "left" }),
+                tools.makeBtn("右", setPosition, true, { value: "right" })
+            )
+        ),
+
+        dom("hr", {}),
+
+        // 修改边距
+        dom("section", {},
+            dom("h1", {},
+                dom("strong", { innerText: "修改边距：" }),
+                tools.makeBtn("立即应用", setMargin, true),
+                tools.makeBtn("恢复默认", defaultMargin, true)
+            ),
+            dom("div", {},
+                dom("span", { innerText: "左边距：" }),
+                createInput("margin", "left")
+            ),
+            dom("div", {},
+                dom("span", { innerText: "右边距：" }),
+                createInput("margin", "right")
             )
         ),
 
@@ -316,7 +452,7 @@ async function styleLoader() {
         font-size: 1.25rem;
     }
 
-    #taskbar-lyrics-dom h1 * {
+    #taskbar-lyrics-dom h1 strong {
         font-weight: bold;
     }
 
@@ -328,7 +464,7 @@ async function styleLoader() {
     }
 
     #taskbar-lyrics-dom div {
-        margin: 10px 0;
+        margin: 5px 0;
     }
 
     #taskbar-lyrics-dom p {
@@ -342,32 +478,7 @@ async function styleLoader() {
 
 plugin.onLoad(async () => {
     addEventListener("beforeunload", TaskbarLyricsAPI.stop);
-    startTaskbarLyrics()
+    startTaskbarLyrics();
     watchLyricsChange();
     styleLoader();
-
-    plugin.getConfig("font", false) && TaskbarLyricsAPI.font(
-        plugin.getConfig("font", defaultConfig.font)["font_family"]
-    );
-
-    plugin.getConfig("color", false) && TaskbarLyricsAPI.color(
-        plugin.getConfig("color", defaultConfig.color)["light_basic"],
-        plugin.getConfig("color", defaultConfig.color)["light_extra"],
-        plugin.getConfig("color", defaultConfig.color)["dark_basic"],
-        plugin.getConfig("color", defaultConfig.color)["dark_extra"]
-    );
-
-    plugin.getConfig("position", false) && TaskbarLyricsAPI.position(
-        plugin.getConfig("position", defaultConfig.position)["position"],
-        plugin.getConfig("position", defaultConfig.position)["lock"]
-    );
-
-    plugin.getConfig("align", false) && TaskbarLyricsAPI.align(
-        plugin.getConfig("align", defaultConfig.align)["basic"],
-        plugin.getConfig("align", defaultConfig.align)["extra"]
-    );
-
-    plugin.getConfig("screen", false) && TaskbarLyricsAPI.screen(
-        plugin.getConfig("screen", defaultConfig.screen)["parent_taskbar"]
-    );
 });
