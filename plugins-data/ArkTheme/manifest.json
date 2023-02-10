@@ -7,6 +7,10 @@
     "description": "一个仿明日方舟 UI 的主题。暂时仅支持亮色模式（网易云本身白色主题）。", 
     "betterncm_version": "^0.2.6",
     "preview": "preview.png", 
+    "requirements": [
+        "RefinedNowPlaying",
+        "StyleSnippet"
+    ],
     "injects": {
         "Main": [ 
             {
