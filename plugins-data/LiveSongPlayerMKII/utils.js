@@ -39,5 +39,5 @@ plugin.onLoad(function (plugin) {
         }
     }
 
-    this.utils = utils;
+    this.mainPlugin.utils = utils;
 })
