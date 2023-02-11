@@ -3,7 +3,6 @@
 .pages-mixins();
 .header-mixin();
 
-
 .pages-mixins{
     .g-mn{
         .playlist-page-mixin();
@@ -14,6 +13,7 @@
         .play-page-mixin();
     }
     .play-page-playbar-mixin();
+
 }
 
 .tweaks-mixin(){
@@ -111,9 +111,9 @@
 }
 
 .main-player-mixin(){
-    @main-player-margin: 20px;
-    @main-player-max-width: 760px;
-    @main-player-height: 72px; // hardcoded in ncm css
+    @main-player-margin: 2em;
+    @main-player-max-width: 60em;
+    @main-player-height: 6em; // hardcoded in ncm css
 
     body{
         // adjust height
@@ -125,8 +125,8 @@
 
     // Play info
     .m-pinfo{
-        top: calc(100vh - @main-player-height - @main-player-margin * 2);
-        margin: @main-player-margin calc(50vw - @main-player-max-width / 2);
+        bottom: calc(@main-player-height - 3 * @main-player-margin);
+        margin: @main-player-margin calc(50% - @main-player-max-width / 2);
         max-width: 270px;
         // Cover
         .pic,.cover, .lnk{
@@ -139,7 +139,7 @@
 
     #main-player{
         box-shadow: 1px 2px 6px rgba(0, 0, 0, 0.137);
-        top: calc(100vh - @main-player-height - @main-player-margin * 2);
+        bottom: calc(@main-player-height - 3 * @main-player-margin);
         margin: @main-player-margin auto;
         max-width: @main-player-max-width;
         border-top: none;
@@ -291,9 +291,9 @@
     }
 
     .content{
-        transform: translateY(-230px);
+        transform: translateY(-15%);
         justify-content: flex-end;
-        padding-bottom: 160px;
+        padding-bottom: 100%;
         overflow: hidden;
         backdrop-filter: blur(10px);
         max-width: 300px;
@@ -357,14 +357,75 @@
         backdrop-filter: blur(0px);
         width: 300px;
         margin: -10px 0 0 30px;
+        bottom: 10%;
 
-        &>*:not(.btnc):not(.btnp):not(.prg){
+        &>*:not(.btnc):not(.btnp):not(.prg):not(.j-vol){
             display: none;
+        }
+
+        .j-vol{
+            &.prg-spk{
+                opacity: 0.4 !important;
+                display: block !important;
+                background: transparent;
+                position: absolute;
+                height: 105px;
+                top: -330px;
+
+                *,*:not(.track):not(.has)::before{
+                    background: transparent;
+                    width: 10px;
+                }
+
+                .has::before{
+                    background: black;
+                }
+
+                *,*::before{
+                    border-radius: 0 !important;
+                }
+
+                left: 20px;
+
+                .has,.track{
+                    opacity: 0;
+                    transition: opacity .1s, margin-left .1s;
+                    margin-left: -20px;
+                }
+                &:hover{
+                    opacity: 1 !important;
+
+                    .has,.track{
+                        margin-left: -15px;
+                        opacity: 1;
+                    }
+                }
+
+                &::before{
+                    display: block;
+                    content:"VOLUME";
+                    position: absolute;
+                    writing-mode: vertical-lr;
+                    letter-spacing: 10px;
+                    top: 15px;
+                    z-index: 10;
+                    color: rgba(83, 83, 83, 0.596);
+                    font-weight: 900;
+                }
+
+
+            }
+
+            svg{
+                display: none;
+            }
         }
     }
 
     .m-pinfo:not(.z-show){
-        margin: 30px 0 0 40px;
+        margin: 30px 0 0 30px;
+        padding: 0 15px;
+        width: 300px;
         .oper{
             top: 10px;
         }
@@ -372,8 +433,8 @@
         overflow: visible;
 
         .btns{
-            margin-left: 5px;
-            transform: translateY(-10px) translateX(2px);
+            // margin-left: 2.5px;
+            transform: translateY(-10px);
             width: 100%;
             position: none !important;
             left: 0 !important;
@@ -400,10 +461,13 @@
                 display: block;
                 overflow: visible;
                 &.loved{
-                    transform: translateY(-8px);
+                    svg{
+                        display:block !important;
+                    }
                 }
                 &::before{
-                    width: 38px !important;
+                    display:none !important;
+                    
                 }
            }
         }
