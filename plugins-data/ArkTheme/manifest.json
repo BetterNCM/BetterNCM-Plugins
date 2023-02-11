@@ -2,11 +2,12 @@
     "manifest_version": 1,
     "name": "Ark Theme",
     "slug": "ark-theme",
-    "version": "0.1.0",
+    "version": "0.1.1",
     "author": "MicroBlock",
     "description": "一个仿明日方舟 UI 的主题。暂时仅支持亮色模式（网易云本身白色主题）。", 
-    "betterncm_version": ">=1.0.0",
+    "betterncm_version": "^1.0.0",
     "preview": "preview.png", 
+    "type":"theme",
     "requirements": [
         "RefinedNowPlaying",
         "StyleSnippet"
