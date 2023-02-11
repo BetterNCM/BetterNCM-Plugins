@@ -31,7 +31,7 @@
         if (msg._ != "cc.microblock.liveSongPlayer") return;
         mainWindow = e.source;
 
-        console.log(msg);
+        console.debug(msg);
 
         if (msg.type === "syncPlaying") {
             ({ id, title, artist, cover, duration } = msg);
@@ -56,6 +56,7 @@
     });
 
     function sendMessage(message) {
+        console.log("Send", message);
         mainWindow.postMessage(
             JSON.stringify({ ...message, _: "cc.microblock.liveSongPlayer" }),
             "*"
@@ -71,6 +72,7 @@
             live.on("msg", ({ cmd, data, info }) => {
                 if (cmd.startsWith("DANMU_MSG")) {
                     let message = info[1];
+                    console.log("DANMU", message);
 
                     function detectCommand(cmd, callback) {
                         if (message.startsWith(cmd)) {
@@ -79,11 +81,15 @@
                                 .trim()
                                 .split(" ");
                             callback(args);
+                            return true;
                         }
+                        return false;
                     }
 
                     function detectCommands(cmds, callback) {
-                        for (let cmd of cmds) detectCommand(cmd, callback);
+                        for (let cmd of cmds) {
+                            if (detectCommand(cmd, callback)) return;
+                        }
                     }
 
                     detectCommands(["play", "pl", "点歌"], (keyword) => {
@@ -177,13 +183,12 @@
     .player {
         display: flex;
         flex-direction: var(--layout1);
-        
+
         .currentPlaying {
             display: flex;
             flex-direction: var(--layout2);
             align-items: var(--align);
             margin: 1em;
-            
 
             .cover {
                 min-width: @coverSize;

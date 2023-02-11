@@ -30,7 +30,6 @@ plugin.onConfig(function (tools) {
 
     function makeConfig(name, key) {
         let extra;
-        console.log(tools)
         let configInput = tools.makeInput(configs[key], { onchange: (e) => setVal(key, e.target.value), onkeyup: (e) => setVal(key, e.target.value) });
 
         function setVal(key, val) {
@@ -45,7 +44,8 @@ plugin.onConfig(function (tools) {
 
 
 
-        if (defaultConfigs[key].startsWith && defaultConfigs[key].startsWith("#")) extra = dom("input", { type: "color", value: configs[key], onchange: (e) => setVal(key, e.target.value) })
+        if (defaultConfigs[key].startsWith && defaultConfigs[key].startsWith("#")) 
+        extra = dom("input", { type: "color", value: configs[key], onchange: (e) => setVal(key, e.target.value) })
 
         return dom("div", {}, dom("span", { innerText: name }),
             configInput
@@ -184,5 +184,5 @@ plugin.onConfig(function (tools) {
                     });
                 }, -702)
             }, 100)
-    }), ...configsDoms)
+    }),dom("div",{innerText:"更改设置后按回车应用哦~"}), ...configsDoms)
 })
