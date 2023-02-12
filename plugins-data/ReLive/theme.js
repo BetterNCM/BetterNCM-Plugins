@@ -63,4 +63,25 @@ plugin.onAllPluginsLoaded(async function (plugins) {
             loadDark();
         });
     });
+
+    document.addEventListener("fullscreenchange", () => {
+        if (document.fullscreenElement) document.body.classList.add("fullscreen");
+        else document.body.classList.remove("fullscreen");
+    });
+
+    // fullscreen popup fix
+    let observer = new MutationObserver((mutation) => {
+        for (const mut of mutation) {
+            let target = mut.target;
+            target.childNodes.forEach((node) => {
+                if (node.tagName == "DIV") {
+                    document.body.appendChild(node);
+                }
+            });
+        }
+    });
+
+    observer.observe(document.querySelector("html"), {
+        childList: true,
+    });
 });
