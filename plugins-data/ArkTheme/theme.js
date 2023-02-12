@@ -19,6 +19,25 @@ plugin.onAllPluginsLoaded(async function (plugins) {
 
         setTimeout(addTips, 1000);
     }
+    
+    setTimeout(()=>{
+        const getEBtn=()=>[...document.querySelectorAll('.rnp-checkbox')].find(v=>v.nextElementSibling?.innerText.includes('优化底栏'));
+        let btn;
+        const fixDL=async ()=>{
+            if(!btn){
+                btn=getEBtn();
+                btn.addEventListener('change',fixDL);
+            }
+            if(btn && btn.checked){
+                btn.click();
+            }
+        };
+
+
+        fixDL();
+        window.addEventListener('load',fixDL());
+        setInterval(fixDL,1000);
+    });
 
     plugins.StyleSnippet.addExternalSnippet(
         await betterncm.fs.readFileText(this.pluginPath + './theme.less'),
