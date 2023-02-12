@@ -1,0 +1,20 @@
+{
+    "manifest_version": 1,
+    "name": "ReLive",
+    "slug": "relive-theme",
+    "version": "0.2.2",
+    "author": "Flysoft",
+    "description": "ReLive 主题 | 修改自 Ark Theme",
+    "betterncm_version": "^1.0.0",
+    "preview": "preview.gif",
+    "type": "theme",
+    "requirements": ["RefinedNowPlaying", "StyleSnippet"],
+    "incompatible": ["Apple-Musiclike-lyrics", "MaterialYouTheme"],
+    "injects": {
+        "Main": [
+            {
+                "file": "theme.js"
+            }
+        ]
+    }
+}
