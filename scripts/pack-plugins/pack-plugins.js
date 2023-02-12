@@ -72,8 +72,9 @@ plugins.forEach((plugin) => {
 		const repo = JSON.parse(fs.readFileSync(path.resolve(process.cwd(), `../../plugins-list/${slug}.json`))).repo;
 		addField(pluginJson, 'repo', repo);
 	} catch {}
-
+	
 	if (pluginJson.preview) {
+		pluginJson.preview = pluginJson.preview.replace(/^\.?[\\/]/g, '');
 		if (!fs.existsSync(path.resolve(process.cwd(), `../../plugins-data/${plugin}/${pluginJson.preview}`))) {
 			console.log(`🖼️ Preview of ${plugin} not found, ignored.`);
 			delete pluginJson.preview;
