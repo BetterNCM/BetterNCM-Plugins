@@ -211,6 +211,9 @@ body:not(.s-theme-white){
             bottom: 0px;
             padding-bottom: @main-player-height;
         }
+        
+        position: fixed;
+        overflow: visible;
     }
 
     // remove ncm's default open animation
@@ -344,17 +347,22 @@ body:not(.s-theme-white){
         flex-direction: column;
         width: max-content;
         & when (not(@rounded-corner)){
-            border: 1px solid rgba(0, 0, 0, 0.753);
+            border: 1px solid var(--ark-base-background);
             background: rgba(255, 255, 255, 0.212);
         }
         & when (@rounded-corner){
-            background: rgba(255, 255, 255, 0.445);
+            background: rgba(var(--ark-base-background), 0.445);
         }
         .fix-corner();
         overflow: hidden;
         & > *:nth-child(1) {
-            background: black;
-            color: white;
+            background: rgb(var(--ark-base-background));
+            color: rgb(var(--ark-base-foreground)) !important;
+
+            *,*::before,*::after{
+                color: rgb(var(--ark-base-foreground)) !important;
+                fill: rgb(var(--ark-base-foreground)) !important;
+            }
         }
         .u-ibtn5b,
         button {
@@ -504,11 +512,20 @@ body:not(.s-theme-white){
             transform: translateX(-50px);
         }
 
+        
+        .g-mn2c, div:not(.g-mn2c) > .g-mn2{
+            position: absolute;
+            left: 360px !important;
+        }
+
         .m-comment {
             width: 100%;
             padding: 20px;
             margin: 0 !important;
-            margin-left: 400px !important;
+
+            .m-page{
+                width: 60%;
+            }
         }
 
         .recommend-btn {
@@ -616,6 +633,10 @@ body:not(.s-theme-white){
         width: 300px;
         .oper {
             top: 10px;
+        }
+        
+        bar:not(.oper){
+            display:none;
         }
 
         overflow: visible;
