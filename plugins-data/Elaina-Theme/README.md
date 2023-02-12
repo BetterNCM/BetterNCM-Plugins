@@ -1,3 +1,3 @@
 # BetterNCM Elaina Theme
 
-![screenshot01](./assets/screenshot01.png)
+![screenshot01](preview.png)
