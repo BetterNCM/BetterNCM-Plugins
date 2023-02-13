@@ -72,7 +72,7 @@ plugin.onLoad(async () => {
   div.g-singlec .recommend.j-flag,
   .m-myradio.j-recommend-content,
   .g-singlec-comment.j-flag,
-  .mixin-portalified,
+  .g-mn2.j-flag,
   .g-singlec-comment-detail.j-flag,
   .g-bd2.f-cb {
     display: none;
