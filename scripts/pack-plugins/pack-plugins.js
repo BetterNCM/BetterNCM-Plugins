@@ -101,6 +101,9 @@ plugins.forEach((plugin) => {
 	addField(pluginJson, 'file', `${slug}-${manifest.version}.plugin`);
 	addField(pluginJson, 'file-url', `plugins/${slug}-${manifest.version}.plugin`);
 
+	// Make everything "extension"
+	pluginJson['type'] = 'extension'
+	
 	pluginList.push(pluginJson);
 	console.log(`📦 ${slug} ${manifest.version} packed.`);
 });
