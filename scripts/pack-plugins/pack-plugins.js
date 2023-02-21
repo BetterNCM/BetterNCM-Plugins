@@ -107,7 +107,7 @@ plugins.forEach((plugin) => {
 
 // temporary
 const allThemes = pluginList.filter(plugin=>plugin['type']==='theme').map(plugin=>plugin.slug)
-pluginList = pluginList.map(plugin=>( { ...plugin, type: 'framework', incompatible: [ ...plugin.incompatible??[], ...(plugin.type==='theme'?allThemes.filter(theme=>theme.slug!=plugin.slug):[]) ] } ))
+pluginList = pluginList.map(plugin=>( { ...plugin, type: 'framework', incompatible: [ ...plugin.incompatible??[], ...(plugin.type==='theme'?allThemes.filter(theme=>theme!=plugin.slug):[]) ] } ))
 
 const allJson = JSON.stringify(pluginList, null, 4);
 fs.writeFileSync(path.resolve(process.cwd(), '../../tmp/plugins.json'), allJson);
