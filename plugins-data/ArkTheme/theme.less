@@ -210,7 +210,7 @@ body:not(.s-theme-white){
 
 @main-player-mixin: {
     @main-player-margin: 2em;
-    @main-player-max-width: 60em;
+    @main-player-max-width: 70em;
     @main-player-height: 6em; // hardcoded in ncm css
 
     body {
@@ -258,8 +258,9 @@ body:not(.s-theme-white){
         background: if(@apply-main-player-stronger-mask,rgba(var(--ark-base-background), 0.8),rgba(var(--ark-base-background), 0.25)) !important;
         backdrop-filter: blur(16px);
         border-radius: 2px;
-        overflow: hidden;
-
+        &:not(:hover){
+            overflow: hidden;
+        }
         // Progress bar
         .prg {
             top: 0;
