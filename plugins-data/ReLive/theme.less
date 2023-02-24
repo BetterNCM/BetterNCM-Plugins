@@ -389,6 +389,16 @@
         max-width: 20em;
         pointer-events: none;
 
+        .u-cover {
+            &,
+            & * {
+                border-radius: 5px !important;
+            }
+            .lnk {
+                -webkit-mask-image: none;
+            }
+        }
+
         h3 > *,
         .j-title {
             pointer-events: auto;
@@ -507,16 +517,6 @@
         .f-ust {
             font-size: 40px;
             line-height: 50px;
-        }
-    }
-
-    .u-cover {
-        &,
-        & * {
-            border-radius: 5px !important;
-        }
-        .lnk {
-            -webkit-mask-image: none;
         }
     }
 
@@ -640,7 +640,7 @@
     height: 100%;
 
     .cdin {
-        box-shadow: none;
+        box-shadow: none !important;
     }
 
     .cdwrap,
@@ -649,8 +649,12 @@
         border-radius: 5px !important;
     }
 
+    .g-single-program .wrap > * {
+        visibility: visible !important;
+    }
+
     .lyric {
-        .lyric-only & {
+        .lyric-only .g-single-track & {
             bottom: clamp(100px, 10%, 150px) !important;
         }
     }
@@ -742,7 +746,12 @@
             padding: 10px 50px;
             margin: 0 !important;
             margin-left: calc(@main-player-width + @main-player-left) !important;
-            margin-right: 50px;
+            margin-right: 50px !important;
+
+            .lyric-only:not(.mq-playing-program) & {
+                margin-left: 50px !important;
+                margin-right: 50px !important;
+            }
 
             .m-page > a {
                 display: inline-flex;
@@ -823,12 +832,20 @@
         margin: -10px 0 0 @main-player-left;
         bottom: 8%;
         background: none !important;
+        transition: opacity 0.2s ease !important;
 
-        .lyric-only & {
+        .lyric-only:not(.mq-playing-program) & {
+            bottom: 0;
+        }
+
+        .lyric-only.mq-playing-scroll:not(.mq-playing-program) &:not(:hover) {
+            opacity: 0.3 !important;
+        }
+
+        .lyric-only.center-lyric:not(.mq-playing-program) & {
+            margin: 0;
             left: 50%;
             transform: translateX(-50%);
-            margin: 0;
-            bottom: 0;
         }
 
         & > *:not(.btnc):not(.btnp):not(.prg):not(.prg-spk) {
@@ -845,7 +862,7 @@
                 height: 105px;
                 top: -45vh;
 
-                .lyric-only & {
+                .lyric-only:not(.mq-playing-program) & {
                     left: -34vw;
                 }
 
@@ -910,13 +927,12 @@
         padding: 0;
         width: @main-player-width;
         max-width: none;
+        .lyric-only:not(.mq-playing-program) & {
+            display: none;
+        }
         .oper {
             pointer-events: auto;
             top: 10px;
-
-            .lyric-only & {
-                visibility: hidden;
-            }
         }
 
         overflow: visible;

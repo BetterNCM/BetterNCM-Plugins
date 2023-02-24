@@ -70,7 +70,7 @@ plugin.onAllPluginsLoaded(async function (plugins) {
     });
 
     // fullscreen popup fix
-    let observer = new MutationObserver((mutation) => {
+    new MutationObserver((mutation) => {
         for (const mut of mutation) {
             let target = mut.target;
             target.childNodes.forEach((node) => {
@@ -79,9 +79,24 @@ plugin.onAllPluginsLoaded(async function (plugins) {
                 }
             });
         }
+    }).observe(document.querySelector("html"), {
+        childList: true,
     });
 
-    observer.observe(document.querySelector("html"), {
+    // program detector
+    new MutationObserver((mutation) => {
+        for (const mut of mutation) {
+            let target = mut.target;
+            for (const node of target.children) {
+                if (node.classList.contains("g-single")) {
+                    document.body.classList.toggle(
+                        "mq-playing-program",
+                        node.childNodes.item(0).classList.contains("g-single-program")
+                    );
+                }
+            }
+        }
+    }).observe(document.querySelector("body"), {
         childList: true,
     });
 });
