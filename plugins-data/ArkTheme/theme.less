@@ -11,6 +11,15 @@ html when (@apply-main-player){
     @main-player-mixin();
 }
 
+@main-player-rounded-corner: false; //: name: 底栏大圆角模式 | type: checkbox
+#main-player when(@main-player-rounded-corner){
+    border-radius: 10px !important;
+    .prg{
+        overflow: hidden;
+        border-radius: 10px !important;
+    }
+}
+
 @apply-main-player-stronger-mask: false; //: name: 修改底栏：更强的遮罩 | type: checkbox
 
 @apply-pages: true; //: name: 修改页面 | type: checkbox
@@ -50,10 +59,13 @@ html when (@apply-header){
     @header-mixin();
 }
 
-@rounded-corner: false; //: name: 圆角模式 | type: checkbox
+@rounded-corner: false; //: name: 小圆角模式 | type: checkbox
+@big-rounded-corner: false; //: name: 大圆角模式 | type: checkbox
 .fix-corner(){
-    border-radius: if(@rounded-corner,8px,0) !important;
+    border-radius: if(@big-rounded-corner,16px,if(@rounded-corner,8px,0)) !important;
 }
+
+@clip-cover: false; //: name: 裁剪专辑封面 | type: checkbox
 
 body{
     --ark-base-foreground: 0,0,0;
@@ -258,9 +270,6 @@ body:not(.s-theme-white){
         background: if(@apply-main-player-stronger-mask,rgba(var(--ark-base-background), 0.8),rgba(var(--ark-base-background), 0.25)) !important;
         backdrop-filter: blur(16px);
         border-radius: 2px;
-        &:not(:hover){
-            overflow: hidden;
-        }
         // Progress bar
         .prg {
             top: 0;
@@ -270,9 +279,10 @@ body:not(.s-theme-white){
             left: 0;
             right: 0;
 
-            &,
-            * {
-                border-radius: 0 !important;
+            & when (not(@main-player-rounded-corner)){
+                &,*{
+                    border-radius: 0 !important;
+                }
             }
 
             .ctrl {
@@ -430,13 +440,15 @@ body:not(.s-theme-white){
     .cdin,
     .cdimg,
     img {
-        max-width: 220px;
-        object-fit: cover;
         left: 50px;
         .fix-corner();
         
         &:not(.cdimg){
             box-shadow: none !important;
+        }
+        & when(@clip-cover){
+            max-width: 220px;
+            object-fit: cover;
         }
     }
 
@@ -544,7 +556,7 @@ body:not(.s-theme-white){
 }
 
 @play-page-playbar-mixin: {
-    #main-player.z-shadow {
+    body:not(.lyric-only) #main-player.z-shadow {
         .prg when (not(@apply-play-page-white-bg)){
             left: 30px;
             right: 30px;
@@ -636,7 +648,7 @@ body:not(.s-theme-white){
         }
     }
 
-    .m-pinfo:not(.z-show) {
+    body:not(.lyric-only) .m-pinfo:not(.z-show) {
         margin: 30px 0 0 30px;
         padding: 0 15px;
         width: 300px;

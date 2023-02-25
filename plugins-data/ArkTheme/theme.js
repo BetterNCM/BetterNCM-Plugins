@@ -21,13 +21,14 @@ plugin.onAllPluginsLoaded(async function (plugins) {
     }
     
     setTimeout(()=>{
-        document.querySelector('#vertical-align [value="bottom"]:not(.selected)')?.click();
+        
         const getEBtn=()=>[...document.querySelectorAll('.rnp-checkbox')].find(v=>v.nextElementSibling?.innerText.includes('优化底栏'));
         let btn;
         const fixDL=async ()=>{
             if(!btn){
                 btn=getEBtn();
                 btn.addEventListener('change',fixDL);
+                document.querySelector('#vertical-align [value="bottom"]:not(.selected)')?.click();
             }
             if(btn && btn.checked){
                 btn.click();
