@@ -76,7 +76,7 @@ function MainMenu() {
             setTimeout(() => {
                 betterncm_native.native_plugin.call('rulyrics.embed_into_taskbar', [])
             }, 500);
-        }else{
+        } else {
             setTimeout(() => {
                 betterncm_native.native_plugin.call('rulyrics.embed_into_any', ['']);
             }, 500);
@@ -154,11 +154,12 @@ function MainMenu() {
 
             try {
                 const lrc = await loadedPlugins.liblyric.getLyricData(playing.data.id);
-                const parsed = loadedPlugins.liblyric.parseLyric(lrc.lrc?.lyric, lrc.tlyric?.lyric, lrc.romalrc?.lyric, lrc.yrc?.lyric)
+                const parsed = loadedPlugins.liblyric.parseLyric(lrc.lrc?.lyric, lrc.ytlyric?.lyric ?? lrc.tlyric?.lyric, lrc.romalrc?.lyric, lrc.yrc?.lyric)
                 setCurrentLyrics(parsed)
             }
             catch (e) {
                 setCurrentLyrics(null);
+                console.error(e);
             }
             finally {
                 _currentLine = 0;
@@ -213,13 +214,14 @@ function MainMenu() {
                             ];
                         }
 
-                        betterncm_native.native_plugin.call('rulyrics.update_lyrics', [
-                            [
-                                lyricsArr, _currentLine
-                            ],
-                            _currentLyrics[_currentLine].translatedLyric,
-                            Math.max(ms - _currentLyrics[_currentLine].time, 0)
-                        ])
+                        if (lyricsArr.length > 0)
+                            betterncm_native.native_plugin.call('rulyrics.update_lyrics', [
+                                [
+                                    lyricsArr, _currentLine
+                                ],
+                                _currentLyrics[_currentLine].translatedLyric,
+                                Math.max(ms - _currentLyrics[_currentLine].time, 0)
+                            ])
                     } else {
                         const time = Math.round(ms - _currentLyrics[_currentLine].time);
                         if (time > 100)
@@ -289,7 +291,7 @@ function MainMenu() {
                             control={
                                 <Switch checked={taskbar} onChange={(_, c) => setTaskbar(c)} />
                             }
-                            label="嵌入到任务栏 （可能需要重启网易云）"
+                            label="嵌入到任务栏"
                         />
                     </FormGroup>
 

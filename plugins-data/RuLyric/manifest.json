@@ -1,7 +1,7 @@
 {
     "manifest_version": 1,
     "name": "RuLyrics",
-    "version": "0.1.3",
+    "version": "0.1.4",
     "description": "桌面歌词插件，支持逐词，嵌入任务栏",
     "betterncm_version": ">=1.0.0",
     "author_links": ["https://github.com/MicroCBer"],
