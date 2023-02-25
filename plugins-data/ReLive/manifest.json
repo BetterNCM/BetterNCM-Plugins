@@ -2,7 +2,7 @@
     "manifest_version": 1,
     "name": "ReLive",
     "slug": "relive-theme",
-    "version": "0.3.5",
+    "version": "0.3.6",
     "author": "Flysoft",
     "author_links": ["https://github.com/FlysoftBeta"],
     "description": "ReLive 主题 | 支持亮暗色切换 | 支持 BGEnhanced | 修改自 Ark Theme",
