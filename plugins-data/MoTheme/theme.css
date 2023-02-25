@@ -253,7 +253,7 @@ header::after {
 }
 
 .MoTheme-bottomMusicBar_rainbowStrip .prg .has {
-    background-image: linear-gradient(90deg, #43CBFF, #9708CC, #FB016D) !important;
+    background-image: var(--MoTheme-bottomMusicBar_rainbowStrip_playback_progress) !important;
 }
 
 .MoTheme-use_refinedNowPlaying.mq-playing .prg .has {
@@ -278,7 +278,7 @@ header::after {
 }
 
 .MoTheme-bottomMusicBar_rainbowStrip .prg-spk .has::before {
-    background-image: linear-gradient(0deg, #43CBFF, #FB016D) !important;
+    background-image: var(--MoTheme-bottomMusicBar_rainbowStrip_volume_progress) !important;
 }
 
 .MoTheme-use_refinedNowPlaying.mq-playing .prg-spk .has::before {
@@ -852,7 +852,7 @@ div.m-page a:not(.js-selected):hover {
     transform: translateY(1px);
 }
 
-/* 一起听8434小时1分钟 */
+/* 一起听9741小时9分钟 */
 /* 修复这个字看不清的问题 */
 .together-text {
     color: unset;
@@ -866,4 +866,17 @@ div.m-page a:not(.js-selected):hover {
 /* 修复左下角VIP，试听之类标识有红色背景 */
 .j-vipicn.icnarr * {
     background: none;
+}
+
+/* 私信选择表情框背景透明 */
+.m-emts {
+    background-color: var(--MoTheme-other_backgroundColor) !important;
+    backdrop-filter: saturate(var(--MoTheme-other_backgroundSaturate)) blur(var(--MoTheme-other_backgroundBlur)) !important;
+    border-radius: var(--MoTheme-other_radius) !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2) !important;
+}
+
+.m-emts>div {
+    background: none !important;
 }
