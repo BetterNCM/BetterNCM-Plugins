@@ -654,9 +654,13 @@
     }
 
     .lyric {
-        left: 45% !important;
-        width: auto !important;
-        right: clamp(10px, 3%, 40px) !important;
+        body:not(.lyric-only):not(.mq-playing-program) & {
+            top: 0 !important;
+            left: 45% !important;
+            width: auto !important;
+            height: auto !important;
+            right: clamp(10px, 3%, 40px) !important;
+        }
 
         .lyric-only .g-single-track & {
             bottom: clamp(100px, 10%, 150px) !important;
