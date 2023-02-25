@@ -1,7 +1,7 @@
 {
     "manifest_version": 1,
     "name": "StylesheetLoader",
-    "version": "0.1.2",
+    "version": "0.1.3",
     "description": "依赖库 用于统一加载样式表",
     "type": "lib",
     "author": "MicroBlock",

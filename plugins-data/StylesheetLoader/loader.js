@@ -53,6 +53,9 @@ plugin.onLoad(() => {
                 ...Object.keys(config)
                     .map(configKey => {
                         let settings = []
+                        
+                        if (config[configKey].type.includes("cssBackground")) return;
+                        
 
                         let currentConfigValue = plugin.getConfig(configKey, config[configKey].default)
 
