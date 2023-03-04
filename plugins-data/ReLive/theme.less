@@ -15,6 +15,9 @@
 }
 @main-player-left: 7%;
 @main-player-width: clamp(200px, 25%, 500px);
+@main-player-margin: 2em;
+@main-player-max-width: 60em;
+@main-player-height: 6em; // hardcoded in ncm css
 
 .menu-mixin() {
     .m-layer:not(.m-layer *),
@@ -226,6 +229,9 @@
         --themeC1: #000000;
         --themeC1-rgb: 0, 0, 0;
         --themeC1-hvr: #2a2a2a;
+        // lyric bar plugin support
+        --bottombar-elevation: @main-player-margin;
+        --bottombar-height: @main-player-height;
 
         &:not(.s-theme-white) {
             --layer-background: rgba(46, 46, 46, 0.5);
@@ -234,6 +240,13 @@
             --themeC1-rgb: 255, 255, 255;
             --themeC1-hvr: #d8d8d8;
         }
+    }
+
+    .lyric-bar {
+        right: calc(50% - @main-player-max-width / 2);
+        border-radius: 5px;
+        background: var(--layer-background);
+        backdrop-filter: blur(var(--layer-blur));
     }
 }
 
@@ -363,10 +376,6 @@
 }
 
 .main-player-mixin() {
-    @main-player-margin: 2em;
-    @main-player-max-width: 60em;
-    @main-player-height: 6em; // hardcoded in ncm css
-
     body {
         // adjust height
         .g-mn {
@@ -421,7 +430,7 @@
         max-width: @main-player-max-width;
         border-top: none;
         background: var(--layer-background);
-        backdrop-filter: blur(10px);
+        backdrop-filter: blur(var(--layer-blur));
         border-radius: 5px;
 
         body:not(.s-theme-white) & {
