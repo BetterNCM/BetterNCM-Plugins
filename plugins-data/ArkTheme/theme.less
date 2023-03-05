@@ -261,6 +261,16 @@ body:not(.s-theme-white){
         }
     }
 
+    // Adapt to plugin LyricBar
+    .lyric-bar{
+        margin-right: calc(50% - @main-player-max-width / 2 - 10px);
+        margin-bottom: @main-player-margin;
+        background: if(@apply-main-player-stronger-mask,rgba(var(--ark-base-background), 0.8),rgba(var(--ark-base-background), 0.25)) !important;
+        box-shadow: 1px 2px 6px rgba(0, 0, 0, 0.137);
+        backdrop-filter: blur(16px);
+        .fix-corner();
+    }
+
     #main-player {
         box-shadow: 1px 2px 6px rgba(0, 0, 0, 0.137);
         bottom: calc(@main-player-height - 3 * @main-player-margin);
@@ -326,6 +336,10 @@ body:not(.s-theme-white){
     .m-banner {
         display: none;
     }
+    .m-tabwrap{
+        position: absolute;
+        top: 0;
+    }
 }
 
 @playlist-page-mixin: {
@@ -367,7 +381,7 @@ body:not(.s-theme-white){
         width: max-content;
         & when (not(@rounded-corner)){
             border: 1px solid var(--ark-base-background);
-            background: rgba(255, 255, 255, 0.212);
+            background: rgba(var(--ark-base-background), 0.445);
         }
         & when (@rounded-corner){
             background: rgba(var(--ark-base-background), 0.445);
@@ -375,16 +389,21 @@ body:not(.s-theme-white){
         .fix-corner();
         overflow: hidden;
         & > *:nth-child(1) {
+            width: 100%;
+            
             background: rgb(var(--ark-base-background));
             color: rgb(var(--ark-base-foreground)) !important;
+            overflow: hidden;
+            .u-ibtn5:nth-child(1){
+                width: calc(100% - 35px);
+            }
 
             *,*::before,*::after{
                 color: rgb(var(--ark-base-foreground)) !important;
                 fill: rgb(var(--ark-base-foreground)) !important;
             }
         }
-        .u-ibtn5b,
-        button {
+        * {
             border-radius: 0 !important;
             border: none;
             text-align: left;
@@ -440,7 +459,7 @@ body:not(.s-theme-white){
     .cdin,
     .cdimg,
     img {
-        left: 50px;
+        // left: 50px;
         .fix-corner();
         
         &:not(.cdimg){
@@ -557,9 +576,15 @@ body:not(.s-theme-white){
 
 @play-page-playbar-mixin: {
     body:not(.lyric-only) #main-player.z-shadow {
+        
         .prg when (not(@apply-play-page-white-bg)){
             left: 30px;
             right: 30px;
+        }
+        .prg{
+            &,*{
+                border-radius: 0 !important;
+            }
         }
         @keyframes MPlayerEnterRefAnim{
             0%{
