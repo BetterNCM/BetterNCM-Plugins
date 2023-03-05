@@ -12,7 +12,7 @@ html when (@apply-main-player){
 }
 
 @main-player-rounded-corner: false; //: name: 底栏大圆角模式 | type: checkbox
-#main-player when(@main-player-rounded-corner){
+.m-player when(@main-player-rounded-corner){
     border-radius: 10px !important;
     .prg{
         overflow: hidden;
@@ -245,9 +245,13 @@ body:not(.s-theme-white){
 
     // Play info
     .m-pinfo {
-        bottom: calc(@main-player-height - 3 * @main-player-margin);
+        .oper{
+            pointer-events: none;
+        }
+        bottom: calc(@main-player-height - 3 * @main-player-margin) !important;
         margin: @main-player-margin calc(50% - @main-player-max-width / 2);
         max-width: 270px;
+ 
         // Cover
         .pic,
         .cover,
@@ -271,7 +275,7 @@ body:not(.s-theme-white){
         .fix-corner();
     }
 
-    #main-player {
+    .m-player {
         box-shadow: 1px 2px 6px rgba(0, 0, 0, 0.137);
         bottom: calc(@main-player-height - 3 * @main-player-margin);
         margin: @main-player-margin auto;
@@ -282,7 +286,8 @@ body:not(.s-theme-white){
         border-radius: 2px;
         // Progress bar
         .prg {
-            top: 0;
+            z-index: 99999 !important;
+            top: 0 !important;
            
             height: 10px;
             margin: 0;
@@ -575,7 +580,7 @@ body:not(.s-theme-white){
 }
 
 @play-page-playbar-mixin: {
-    body:not(.lyric-only) #main-player.z-shadow {
+    body:not(.lyric-only) .m-player.z-shadow {
         
         .prg when (not(@apply-play-page-white-bg)){
             left: 30px;
@@ -673,12 +678,19 @@ body:not(.s-theme-white){
         }
     }
 
-    body:not(.lyric-only) .m-pinfo:not(.z-show) {
+    body:not(.lyric-only) .g-sd + .m-pinfo:not(.z-show),
+    body:not(.lyric-only) .g-mn.one:not([style^="--rnp-"]) + .m-pinfo:not(.z-show) {
         margin: 30px 0 0 30px;
         padding: 0 15px;
+        .oper{
+            pointer-events: unset !important;
+        }
         width: 300px;
         .oper {
             top: 10px;
+            *{
+                background: transparent;
+            }
         }
         
         bar:not(.oper){
