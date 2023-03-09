@@ -217,7 +217,7 @@ const updatePlugin = async (plugin) => {
 		owner: repoOwner,
 		repo: repoName,
 		title: `Update ${plugin.name} to ${plugin.latestVersion}`,
-		body: `\`${plugin.currentVersion}\` -> \`${plugin.latestVersion}\`\n\nRepo: https://github.com/${plugin.repo}/\n\n[🔀 Compare changes](https://githun.com/${plugin.repo}/compare/${lastCommitHash.substring(0, 7)}...${defaultBranch})`,
+		body: `\`${plugin.currentVersion}\` -> \`${plugin.latestVersion}\`\n\nRepo: https://github.com/${plugin.repo}/\n\n[🔀 Compare changes](https://github.com/${plugin.repo}/compare/${lastCommitHash.substring(0, 7)}...${defaultBranch})`,
 		head: `update-${plugin.slug}-${plugin.latestVersion}`,
 		base: 'master'
 	});
