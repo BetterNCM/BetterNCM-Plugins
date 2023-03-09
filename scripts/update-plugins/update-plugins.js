@@ -169,6 +169,40 @@ const updatePlugin = async (plugin) => {
 		}
 		iterate(pluginPath);
 	}
+	// get last commit hash
+	const commitInfoJson = path.resolve(process.cwd(), `../../commit-info/${plugin.slug}.json`);
+	let lastCommitHash = '';
+	if (fs.existsSync(commitInfoJson)) {
+		const commitInfo = JSON.parse(fs.readFileSync(commitInfoJson, 'utf8'));
+		lastCommitHash = commitInfo.lastCommitHash;
+	}
+	// get current commit hash
+	let currentCommitHash = '', defaultBranch = '';
+	try {
+		defaultBranch = (await octokit.request(`GET /repos/${plugin.repo.split('/')[0]}/${plugin.repo.split('/')[1]}`, {
+			owner: plugin.repo.split('/')[0],
+			repo: plugin.repo.split('/')[1],
+		})).data.default_branch;
+		currentCommitHash = (await octokit.request(`GET /repos/${plugin.repo.split('/')[0]}/${plugin.repo.split('/')[1]}/commits`, {
+			owner: plugin.repo.split('/')[0],
+			repo: plugin.repo.split('/')[1],
+			ref: defaultBranch
+		})).data[0].sha;
+	} catch (error) {
+		console.log("❌ " + error);
+	}
+	console.log(`🔀 commit hash: ${lastCommitHash.substring(0, 7)} -> ${currentCommitHash.substring(0, 7)}`);
+	// write commit info
+	if (!fs.existsSync(commitInfoJson)) {
+		fs.writeFileSync(commitInfoJson, JSON.stringify({
+			lastCommitHash: currentCommitHash
+		}));
+	} else {
+		const commitInfo = JSON.parse(fs.readFileSync(commitInfoJson, 'utf8'));
+		commitInfo.lastCommitHash = currentCommitHash;
+		fs.writeFileSync(commitInfoJson, JSON.stringify(commitInfo));
+	}
+
 	// commit
 	execSync(`git add --all`);
 	execSync(`git commit -m "Update ${plugin.slug} to ${plugin.latestVersion}"`);
@@ -183,7 +217,7 @@ const updatePlugin = async (plugin) => {
 		owner: repoOwner,
 		repo: repoName,
 		title: `Update ${plugin.name} to ${plugin.latestVersion}`,
-		body: `\`${plugin.currentVersion}\` -> \`${plugin.latestVersion}\`\n\nRepo: https://github.com/${plugin.repo}/`,
+		body: `\`${plugin.currentVersion}\` -> \`${plugin.latestVersion}\`\n\nRepo: https://github.com/${plugin.repo}/\n\n[🔀 Compare changes](https://githun.com/${plugin.repo}/compare/${lastCommitHash.substring(0, 7)}...${defaultBranch})`,
 		head: `update-${plugin.slug}-${plugin.latestVersion}`,
 		base: 'master'
 	});
