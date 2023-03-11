@@ -1,2 +1,0 @@
-#define CRASHFIX_API __declspec(dllexport)
-#define CRASHFIX_API __declspec(dllimport)
