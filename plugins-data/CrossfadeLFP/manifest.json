@@ -1,0 +1,15 @@
+{
+    "name":"CrossFade LFP [Experimental]",
+    "description":"在歌曲间添加平滑过渡 (极实验性)",
+    "author":"MicroBlock",
+    "version":"0.1.0",
+    "injects":{
+        "Main":[
+            {
+                "file":"CrossFadeLFP.js"
+            }
+        ]
+    },
+    "requirements":["LibFrontendPlay"],
+    "preview":"preview.png"
+}
