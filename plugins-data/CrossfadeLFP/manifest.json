@@ -3,7 +3,7 @@
     "slug":"crossfade-lfp",
     "description":"在歌曲间添加平滑过渡 (极实验性)",
     "author":"MicroBlock",
-    "version":"0.1.0",
+    "version":"0.1.1",
     "injects":{
         "Main":[
             {
