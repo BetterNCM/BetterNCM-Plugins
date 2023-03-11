@@ -1,7 +1,33 @@
+plugin.onConfig((tools) => {
+    console.log(tools)
+    const btnFollowSystem = tools.makeBtn(`跟随系统主题 [${localStorage['cc.microblock.themeswitcher.followSystem'] === 'true' ? '√' : '×'}]`, () => {
+        if (localStorage['cc.microblock.themeswitcher.followSystem'] === 'true') {
+            localStorage['cc.microblock.themeswitcher.followSystem'] = 'false'
+            btnFollowSystem.innerText = `跟随系统主题 [×]`
+        }else{
+            localStorage['cc.microblock.themeswitcher.followSystem'] = 'true'
+            btnFollowSystem.innerText = `跟随系统主题 [√]`
+        }
+    });
+    return dom('div', {}, btnFollowSystem)
+})
+
 plugin.onLoad(() => {
     !(async () => {
         const head = await betterncm.utils.waitForElement('head', 20);
         const skinBtn = await betterncm.utils.waitForElement('.m-tool .skin.z-notip', 20);
+
+        localStorage['cc.microblock.themeswitcher.followSystem'] ??= 'false';
+
+        const checkSystemTheme = async () => {
+            if (localStorage['cc.microblock.themeswitcher.followSystem'] === 'true') {
+                if (await betterncm.app.isLightTheme()) switchToLight();
+                else switchToDark();
+            }
+        };
+
+        setInterval(checkSystemTheme, 5000)
+
 
         localStorage['cc.microblock.themeswitcher.theme'] ??= 'light'
 
@@ -29,9 +55,6 @@ plugin.onLoad(() => {
             skinLight.click();
         }
 
-        if (localStorage['cc.microblock.themeswitcher.theme'] === 'light') switchToLight();
-        else switchToDark();
-
         function switchTheme() {
             if (localStorage['cc.microblock.themeswitcher.theme'] === 'light') {
                 switchToDark();
@@ -43,11 +66,11 @@ plugin.onLoad(() => {
             }
         }
 
-        const hookThemeBtn = ()=>{
+        const hookThemeBtn = () => {
             skinBtn.onclick = (e) => {
                 // switch theme
                 switchTheme();
-    
+
                 // stop the original event
                 e.stopPropagation();
                 e.preventDefault();
@@ -56,5 +79,12 @@ plugin.onLoad(() => {
 
         setInterval(hookThemeBtn, 1000);
         hookThemeBtn();
+
+        if (localStorage['cc.microblock.themeswitcher.followSystem'] !== 'true') {
+            if (localStorage['cc.microblock.themeswitcher.theme'] === 'light') switchToLight();
+            else switchToDark();
+        } else {
+            checkSystemTheme();
+        }
     })()
 })
