@@ -1,6 +1,7 @@
 {
   "BetterNCM/ActionEnhancement": 0,
   "BetterNCM/ArkTheme": 4,
+  "BetterNCM/CrossfadeLFP": 0,
   "nexmoe/betterncm-plugin-customize": 0,
   "keiko233/elaina-theme-netease": 6,
   "BetterNCM/FluentProgessBar": 5,
@@ -32,6 +33,6 @@
   "solstice23/gpt-trans-netease": 2,
   "solstice23/lyric-bar-netease": 8,
   "solstice23/material-you-theme-netease": 84,
-  "solstice23/refined-now-playing-netease": 151,
+  "solstice23/refined-now-playing-netease": 152,
   "BetterNCM/TinyNCM": 1
 }
