@@ -1,0 +1,1 @@
+(()=>{var a=typeof WorkerGlobalScope<"u"&&self instanceof WorkerGlobalScope;var l=()=>{};var r=l;var t=channel.call;channel.call=function(e,...n){if(e==="storage.downloadscanner")r(e,...n,new Error().stack);else return t.apply(t,[e,...n])};})();
