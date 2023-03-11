@@ -2,7 +2,7 @@
     "manifest_version": 1,
     "name": "Ark Theme",
     "slug": "ark-theme",
-    "version": "0.2.9",
+    "version": "0.2.10",
     "author": "MicroBlock",
     "description": "类 Ark 主题 | 支持亮/暗色主题 | 完美支持 BGEnhanced | 在 StyleSnippet 内修改多项设置", 
     "betterncm_version": "^1.0.0",
