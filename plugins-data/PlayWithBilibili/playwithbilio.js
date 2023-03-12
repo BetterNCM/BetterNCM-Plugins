@@ -87,7 +87,7 @@ plugin.onLoad(() => {
 
     legacyNativeCmder.appendRegisterCall('PlayProgress', 'audioplayer', (_, progress) => {
         if (Math.abs(ifrVideo.currentTime - progress) > 0.5) ifrVideo.currentTime = progress;
-        if(loadedPlugins.LibFrontendPlay?.currentAudioPlayer?.paused!==false) ifrVideo?.play();
+        if(loadedPlugins.LibFrontendPlay?.currentAudioPlayer?.paused===false) ifrVideo?.play();
         ifrVideo.volume = 0
     });
 
