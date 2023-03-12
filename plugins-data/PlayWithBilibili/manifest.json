@@ -1,0 +1,17 @@
+{
+    "name":"Play With Bilibili MV",
+    "slug":"play-with-bilibili",
+    "description":"自动在背景播放 Bilibili MV",
+    "author":"MicroBlock",
+    "version":"0.1.0",
+    "injects":{
+        "Main":[
+            {
+                "file":"playwithbilio.js"
+            }
+        ]
+    },
+    "requirements":[],
+    "preview":"preview.png",
+    "manifest_version": 1
+}
