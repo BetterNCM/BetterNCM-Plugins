@@ -15,13 +15,13 @@ plugin.onLoad(async () => {
     const { defaultConfig } = { ...this.base };
     const {
         lyrics,
-        fontFamily,
-        fontColor,
-        fontStyle,
+        font,
+        color,
+        style,
         position,
         margin,
-        textAlign,
-        parentTaskbar,
+        align,
+        screen,
     } = { ...this.func };
 
 
@@ -71,16 +71,20 @@ plugin.onLoad(async () => {
 
     // 歌词设置
     const setLyricsSettings = async () => {
+        const apply = configView.querySelector(".lyrics-settings .apply");
         const reset = configView.querySelector(".lyrics-settings .reset");
 
         const lyricsSwitch = configView.querySelector(".lyrics-settings .lyrics-switch");
         const extraShowWhatValue = configView.querySelector(".lyrics-settings .extra-show-what-value");
         const extraShowWhatBox = configView.querySelector(".lyrics-settings .extra-show-what-box");
+        const adjust = configView.querySelector(".lyrics-settings .adjust");
 
         const elements = {
-            extraShowWhatValue
+            extraShowWhatValue,
+            adjust
         }
 
+        apply.addEventListener("click", () => lyrics.set(elements));
         reset.addEventListener("click", () => lyrics.default(elements));
 
         lyricsSwitch.addEventListener("change", event => lyrics.switch(event));
@@ -99,6 +103,7 @@ plugin.onLoad(async () => {
         });
 
         extraShowWhatValue.textContent = plugin.getConfig("lyrics", defaultConfig["lyrics"])["extra_show"]["textContent"];
+        adjust.value = plugin.getConfig("lyrics", defaultConfig["lyrics"])["adjust"];
     }
 
 
@@ -107,16 +112,16 @@ plugin.onLoad(async () => {
         const apply = configView.querySelector(".font-settings .apply");
         const reset = configView.querySelector(".font-settings .reset");
 
-        const fontFamily_ = configView.querySelector(".font-settings .font-family");
+        const font_family = configView.querySelector(".font-settings .font-family");
 
         const elements = {
-            fontFamily_
+            font_family
         };
 
-        apply.addEventListener("click", () => fontFamily.set(elements));
-        reset.addEventListener("click", () => fontFamily.default(elements));
+        apply.addEventListener("click", () => font.set(elements));
+        reset.addEventListener("click", () => font.default(elements));
 
-        fontFamily_.value = plugin.getConfig("font", defaultConfig["font"])["font_family"];
+        font_family.value = plugin.getConfig("font", defaultConfig["font"])["font_family"];
     }
 
 
@@ -145,8 +150,8 @@ plugin.onLoad(async () => {
             extraDarkOpacity
         }
 
-        apply.addEventListener("click", () => fontColor.set(elements));
-        reset.addEventListener("click", () => fontColor.default(elements));
+        apply.addEventListener("click", () => color.set(elements));
+        reset.addEventListener("click", () => color.default(elements));
 
         basicLightColor.value = `#${plugin.getConfig("color", defaultConfig["color"])["basic"]["light"]["hex_color"].toString(16)}`;
         basicLightOpacity.value = plugin.getConfig("color", defaultConfig["color"])["basic"]["light"]["opacity"];
@@ -187,18 +192,18 @@ plugin.onLoad(async () => {
             extraStrikethrough
         }
 
-        reset.addEventListener("click", () => fontStyle.default(elements));
+        reset.addEventListener("click", () => style.default(elements));
 
-        basicNormal.addEventListener("click", () => fontStyle.setSlopeBasicNormal());
-        basicOblique.addEventListener("click", () => fontStyle.setSlopeBasicOblique());
-        basicItalic.addEventListener("click", () => fontStyle.setSlopeBasicItalic());
-        basicUnderline.addEventListener("change", event => fontStyle.setBasicUnderline(event));
-        basicStrikethrough.addEventListener("change", event => fontStyle.setBasicStrikethrough(event));
-        extraNormal.addEventListener("click", () => fontStyle.setSlopeExtraNormal());
-        extraOblique.addEventListener("click", () => fontStyle.setSlopeExtraOblique());
-        extraItalic.addEventListener("click", () => fontStyle.setSlopeExtraItalic());
-        extraUnderline.addEventListener("change", event => fontStyle.setExtraUnderline(event));
-        extraStrikethrough.addEventListener("change", event => fontStyle.setExtraStrikethrough(event));
+        basicNormal.addEventListener("click", event => style.setSlopeNormal(event));
+        basicOblique.addEventListener("click", event => style.setSlopeOblique(event));
+        basicItalic.addEventListener("click", event => style.setSlopeItalic(event));
+        basicUnderline.addEventListener("change", event => style.setUnderline(event));
+        basicStrikethrough.addEventListener("change", event => style.setStrikethrough(event));
+        extraNormal.addEventListener("click", event => style.setSlopeNormal(event));
+        extraOblique.addEventListener("click", event => style.setSlopeOblique(event));
+        extraItalic.addEventListener("click", event => style.setSlopeItalic(event));
+        extraUnderline.addEventListener("change", event => style.setUnderline(event));
+        extraStrikethrough.addEventListener("change", event => style.setStrikethrough(event));
 
         basicWeightSelectValue.addEventListener("click", event => {
             const open = event.target.parentElement.classList.contains("z-open");
@@ -215,14 +220,14 @@ plugin.onLoad(async () => {
             const name = event.target.parentElement.dataset.type;
             const value = event.target.dataset.value;
             const textContent = event.target.textContent;
-            fontStyle.setWeight(name, value, textContent);
+            style.setWeight(name, value, textContent);
             basicWeightSelectValue.textContent = textContent;
         });
         extraWeightSelectBox.addEventListener("click", event => {
             const name = event.target.parentElement.dataset.type;
             const value = event.target.dataset.value;
             const textContent = event.target.textContent;
-            fontStyle.setWeight(name, value, textContent);
+            style.setWeight(name, value, textContent);
             extraWeightSelectValue.textContent = textContent;
         });
 
@@ -281,13 +286,13 @@ plugin.onLoad(async () => {
         const extraLeft = configView.querySelector(".align-settings .extra-left");
         const extraCenter = configView.querySelector(".align-settings .extra-center");
         const extraRight = configView.querySelector(".align-settings .extra-right");
-        reset.addEventListener("click", () => textAlign.default());
-        basicLeft.addEventListener("click", () => textAlign.setBasicLeft());
-        basicCenter.addEventListener("click", () => textAlign.setBasicCenter());
-        basicRight.addEventListener("click", () => textAlign.setBasicRight());
-        extraLeft.addEventListener("click", () => textAlign.setExtraLeft());
-        extraCenter.addEventListener("click", () => textAlign.setExtraCenter());
-        extraRight.addEventListener("click", () => textAlign.setExtraRight());
+        reset.addEventListener("click", () => align.default());
+        basicLeft.addEventListener("click", event => align.setLeft(event));
+        basicCenter.addEventListener("click", event => align.setCenter(event));
+        basicRight.addEventListener("click", event => align.setRight(event));
+        extraLeft.addEventListener("click", event => align.setLeft(event));
+        extraCenter.addEventListener("click", event => align.setCenter(event));
+        extraRight.addEventListener("click", event => align.setRight(event));
     }
 
 
@@ -296,9 +301,9 @@ plugin.onLoad(async () => {
         const reset = configView.querySelector(".screen-settings .reset");
         const primary = configView.querySelector(".screen-settings .primary");
         const secondary = configView.querySelector(".screen-settings .secondary");
-        reset.addEventListener("click", () => parentTaskbar.default());
-        primary.addEventListener("click", () => parentTaskbar.setPrimary());
-        secondary.addEventListener("click", () => parentTaskbar.setSecondary());
+        reset.addEventListener("click", () => screen.default());
+        primary.addEventListener("click", () => screen.setPrimary());
+        secondary.addEventListener("click", () => screen.setSecondary());
     }
 
 
