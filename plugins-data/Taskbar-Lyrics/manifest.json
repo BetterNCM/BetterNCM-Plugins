@@ -4,18 +4,16 @@
     "slug": "Taskbar-Lyrics",
     "description": "在任务栏上嵌入歌词，目前仅建议Windows 11",
     "preview": "preview.png",
-    "version": "1.5.1",
+    "version": "1.5.2",
     "author": "沫烬染",
     "author_links": [
         "https://github.com/mo-jinran"
     ],
     "type": "extension",
     "loadAfter": [
-        "libsonginfo",
         "liblyric"
     ],
     "requirements": [
-        "libsonginfo",
         "liblyric"
     ],
     "injects": {
