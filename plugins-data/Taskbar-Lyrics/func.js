@@ -9,8 +9,12 @@ plugin.onLoad(async () => {
 
     // 启动任务栏歌词软件
     const TaskbarLyricsStart = async () => {
-        const TaskbarLyricsPath = `${this.pluginPath}/taskbar-lyrics.exe`;
-        betterncm.app.exec(`${TaskbarLyricsPath} ${TaskbarLyricsPort}`, false, true);
+        const BetterNCMDataPath = await betterncm.app.getDataPath();
+        const PluginPath = this.pluginPath.replace("/./", "\\");
+        const copyCmd = `cmd /c "copy "${PluginPath}\\taskbar-lyrics.exe" "${BetterNCMDataPath}""`;
+        const runCmd = `"${BetterNCMDataPath}\\taskbar-lyrics.exe" ${TaskbarLyricsPort}`;
+        await betterncm.app.exec(copyCmd, false, false);
+        await betterncm.app.exec(runCmd, false, false);
         TaskbarLyricsAPI.font(plugin.getConfig("font", defaultConfig.font));
         TaskbarLyricsAPI.color(plugin.getConfig("color", defaultConfig.color));
         TaskbarLyricsAPI.style(plugin.getConfig("style", defaultConfig.style));
@@ -32,6 +36,14 @@ plugin.onLoad(async () => {
     // 歌词设置
     const lyrics = {
         switch: event => event.target.checked ? TaskbarLyricsStart() : TaskbarLyricsClose(),
+        setRetrievalMethod: (value, textContent) => {
+            const config = JSON.parse(JSON.stringify(plugin.getConfig("lyrics", defaultConfig.lyrics)));
+            config.retrieval_method.value = value;
+            config.retrieval_method.textContent = textContent;
+            stopGetLyric();
+            plugin.setConfig("lyrics", config);
+            startGetLyric();
+        },
         setExtraShow: (value, textContent) => {
             const config = JSON.parse(JSON.stringify(plugin.getConfig("lyrics", defaultConfig.lyrics)));
             config.extra_show.value = value;
@@ -44,9 +56,12 @@ plugin.onLoad(async () => {
             plugin.setConfig("lyrics", config);
         },
         default: elements => {
-            elements.extraShowWhatValue.textContent = defaultConfig.lyrics.extra_show.textContent;
+            elements.retrievalMethodValue.textContent = defaultConfig.lyrics.retrieval_method.textContent;
+            elements.extraShowValue.textContent = defaultConfig.lyrics.extra_show.textContent;
             elements.adjust.value = defaultConfig.lyrics.adjust;
+            stopGetLyric();
             plugin.setConfig("lyrics", undefined);
+            startGetLyric();
         }
     }
 
@@ -139,10 +154,10 @@ plugin.onLoad(async () => {
         default: elements => {
             plugin.setConfig("style", undefined);
             TaskbarLyricsAPI.style(defaultConfig.style);
-            elements["basicWeightSelectValue"].textContent = defaultConfig["style"]["basic"]["weight"]["textContent"];
+            elements["basicWeightValue"].textContent = defaultConfig["style"]["basic"]["weight"]["textContent"];
             elements["basicUnderline"].checked = defaultConfig["style"]["basic"]["underline"];
             elements["basicStrikethrough"].checked = defaultConfig["style"]["basic"]["strikethrough"];
-            elements["extraWeightSelectValue"].textContent = defaultConfig["style"]["extra"]["weight"]["textContent"];
+            elements["extraWeightValue"].textContent = defaultConfig["style"]["extra"]["weight"]["textContent"];
             elements["extraUnderline"].checked = defaultConfig["style"]["extra"]["underline"];
             elements["extraStrikethrough"].checked = defaultConfig["style"]["extra"]["strikethrough"];
         }
