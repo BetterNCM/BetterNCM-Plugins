@@ -1,7 +1,7 @@
 {
     "manifest_version": 1,
     "name": "LibFrontendPlay",
-    "version": "0.1.1",
+    "version": "1.0.0",
     "author":"MicroBlock",
     "description": "在前端播放音乐，而不是 C++ 后端！\n【支持 AMLL 音频可视化视效】",
     "betterncm_version": ">=1.0.0",
