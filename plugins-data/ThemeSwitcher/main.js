@@ -67,18 +67,10 @@ plugin.onLoad(() => {
         }
 
         const hookThemeBtn = () => {
-            skinBtn.onclick = (e) => {
-                // switch theme
-                switchTheme();
-
-                // stop the original event
-                e.stopPropagation();
-                e.preventDefault();
-            };
+            skinBtn.onclick = (e) => switchTheme();;
         }
 
         setInterval(hookThemeBtn, 1000);
-        hookThemeBtn();
 
         if (localStorage['cc.microblock.themeswitcher.followSystem'] !== 'true') {
             if (localStorage['cc.microblock.themeswitcher.theme'] === 'light') switchToLight();
