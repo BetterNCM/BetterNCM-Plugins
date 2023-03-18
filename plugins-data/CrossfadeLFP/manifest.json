@@ -1,9 +1,9 @@
 {
-    "name":"CrossFade LFP [Experimental]",
+    "name":"CrossFade LFP",
     "slug":"crossfade-lfp",
-    "description":"在歌曲间添加平滑过渡 (极实验性)",
+    "description":"在歌曲间添加平滑过渡",
     "author":"MicroBlock",
-    "version":"0.1.3",
+    "version":"0.1.5",
     "injects":{
         "Main":[
             {

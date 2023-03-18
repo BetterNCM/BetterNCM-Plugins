@@ -5,11 +5,6 @@ plugin.onAllPluginsLoaded(() => {
 
         loadedPlugins.LibFrontendPlay.addEventListener('audioSourceUpdated', ({ detail }) => {
             if (status !== 'loading') return;
-            //     gainNodeNext = loadedPlugins.LibFrontendPlay.currentAudioContext.createGain();
-            //     const audioCtx=loadedPlugins.LibFrontendPlay.currentAudioContext
-            //     detail.connect(gainNodeNext);
-            //     gainNodeNext.connect(audioCtx.destination);
-            //     gainNodeNext.gain.setValueAtTime(0, 0);
 
             loadedPlugins.LibFrontendPlay.currentAudioPlayer.volume = 0
             const onCanPlay = () => {
@@ -29,24 +24,13 @@ plugin.onAllPluginsLoaded(() => {
             loadedPlugins.LibFrontendPlay.previousAudioPlayer = lastPlayer;
             loadedPlugins.LibFrontendPlay.currentAudioPlayer = null;
 
-            //     if(!gainNodeNext){
-            //         gainNodePrevious = loadedPlugins.LibFrontendPlay.currentAudioContext.createGain();
-            //         const audioCtx=loadedPlugins.LibFrontendPlay.currentAudioContext
-            //         gainNodePrevious.gain.setValueAtTime(0, audioCtx.currentTime);
-            //         loadedPlugins.LibFrontendPlay.currentAudioSource.connect(gainNodePrevious);
-            //         gainNodePrevious.connect(audioCtx.destination);
-            //     }else{
-            //         gainNodePrevious = gainNodeNext;
-            //         gainNodeNext = null;
-            //     }
-
             lastPlayer.addEventListener('timeupdate', () => {
                 if ((lastPlayer.duration - lastPlayer.currentTime) < 0.3) {
                     lastPlayer.remove();
                     lastPlayer.pause();
-                    setImmediate(() => {
+                    setTimeout(() => {
                         loadedPlugins.LibFrontendPlay.currentAudioPlayer.dispatchEvent(new CustomEvent('play'))
-                    })
+                    },10)
                 }
             })
 
@@ -56,7 +40,7 @@ plugin.onAllPluginsLoaded(() => {
         setInterval(() => {
             const currentPlayer = loadedPlugins.LibFrontendPlay.currentAudioPlayer;
             const previousPlayer = loadedPlugins.LibFrontendPlay.previousAudioPlayer;
-            const currentPlayerTime = currentPlayer.currentTime ?? 0;
+            const currentPlayerTime = currentPlayer?.currentTime ?? 0;
             if (status === 'none' && currentPlayerTime > currentPlayer.duration - crossfadeTime - loadTime) {
                 status = 'loading';
                 switchToNext();
@@ -68,15 +52,11 @@ plugin.onAllPluginsLoaded(() => {
                 console.log('[Crossfade] Playing next song!');
 
                 loadedPlugins.LibFrontendPlay.currentAudioPlayer.play();
-                //         gainNodeNext.gain.setValueAtTime(0, 0);
-                //         gainNodeNext.gain.linearRampToValueAtTime(0, crossfadeTime);
-                //         gainNodePrevious.gain.setValueAtTime(1, previousPlayer?.duration-crossfadeTime);
-                //         gainNodePrevious.gain.linearRampToValueAtTime(0, previousPlayer?.duration-0.5)
             }
 
             if (status === 'fade') {
-                const ratio = (previousPlayer?.currentTime - previousPlayer?.duration + crossfadeTime + 0.3) / crossfadeTime;
-                console.log(ratio)
+                const ratio = currentPlayerTime / crossfadeTime;
+
                 if (ratio >= 1) {
                     status = 'none'
                     previousPlayer.remove();
