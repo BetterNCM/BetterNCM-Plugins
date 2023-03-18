@@ -42,7 +42,7 @@ body {
 #portal_root .portal-app {
     width: 100%;
     height: 100%;
-    background-image: url("https://img.noobzone.ru/getimg.php?url=https://i.imgur.com/ejzQz7n.png");
+    background-image: url("orpheus://cache/?https://img.noobzone.ru/getimg.php?url=https://i.imgur.com/ejzQz7n.png");
     background-position: center;
     background-size: cover;
 }

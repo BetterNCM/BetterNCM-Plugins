@@ -3,7 +3,7 @@
     "name": "MoTheme",
     "preview": "preview.png",
     "description": "主题插件，用于美化网易云音乐（更换背景使用BGEnhanced插件，切换颜色使用明/暗主题切换器插件）",
-    "version": "1.2.1",
+    "version": "1.2.2",
     "author": "沫烬染",
     "author_links": [
         "https://github.com/mo-jinran"
@@ -11,7 +11,8 @@
     "type": "theme",
     "requirements": [
         "StylesheetLoader",
-        "light-dark-theme-switcher"
+        "light-dark-theme-switcher",
+        "ListScrollFix"
     ],
     "injects": {
         "Main": [
