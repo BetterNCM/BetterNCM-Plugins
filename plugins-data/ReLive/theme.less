@@ -229,6 +229,7 @@
         --themeC1: #000000;
         --themeC1-rgb: 0, 0, 0;
         --themeC1-hvr: #2a2a2a;
+        --ncm-text: #000000;
         // lyric bar plugin support
         --bottombar-elevation: @main-player-margin;
         --bottombar-height: @main-player-height;
@@ -239,14 +240,26 @@
             --themeC1: #ffffff;
             --themeC1-rgb: 255, 255, 255;
             --themeC1-hvr: #d8d8d8;
+            --ncm-text: #ffffff;
         }
     }
 
     .lyric-bar {
-        right: calc(50% - @main-player-max-width / 2);
         border-radius: 5px;
         background: var(--layer-background);
         backdrop-filter: blur(var(--layer-blur));
+        box-shadow: 0 0 20px 10px rgb(0 0 0 / 5%);
+
+        &.posx-left {
+            left: 70px !important;
+        }
+
+        &.posy-bottom.posx-left {
+            left: calc(50% - @main-player-max-width / 2) !important;
+        }
+        &.posy-bottom.posx-right {
+            right: calc(50% - @main-player-max-width / 2) !important;
+        }
     }
 }
 
@@ -502,9 +515,10 @@
 
 .playlist-page-mixin() {
     .itm {
-        margin: 0 20px;
         border-radius: 3px;
         font-weight: 700;
+        padding-top: 6px !important;
+        padding-bottom: 6px !important;
 
         &:not(:hover):not(.z-sel) {
             background: transparent !important;
@@ -642,6 +656,13 @@
     .u-micn-loved,
     .u-micn {
         background: var(--themeC1);
+    }
+
+    .u-playinglocation {
+        margin: 0 !important;
+        right: 52px;
+        bottom: 52px;
+        box-shadow: 0 0 20px 20px rgb(0 0 0 / 5%);
     }
 }
 
