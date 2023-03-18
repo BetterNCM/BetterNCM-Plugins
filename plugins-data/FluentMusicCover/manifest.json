@@ -1,7 +1,7 @@
 {
     "manifest_version": 1,
     "name": "FluentMusicCover",
-    "version": "1.1.0",
+    "version": "1.1.1",
     "author":"MicroBlock",
     "description": "展示歌单内歌曲封面，且尽量保证不造成卡顿",
     "betterncm_version": ">=1.0.0",
@@ -13,6 +13,7 @@
         ]
     },
     "preview":"preview.png",
+    "requirements":["ListScrollFix"],
     "hijacks":{
         ">= 2.10.0":{
             "orpheus://orpheus/pub/core.":{
