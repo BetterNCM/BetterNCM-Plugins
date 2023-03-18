@@ -2,7 +2,7 @@ plugin.onLoad(function () {
     this.mainPlugin.enableTemplateTag = false;
     this.mainPlugin.hackNCMTemplateParse = ({ template, name }) => {
         if (name === "m-xwgt-track-title")
-            template = "<div class='fmc-cover-container'> <img class='betterncm-fluentmusiccover-lazyload fmc-cover' style='opacity:0;' data-src=${x.album.picUrl} data-id=${x.id} /> </div> <script> loadedPlugins.FluentMusicCover.lazyLoad(); </script>" + template
+            template = "<div class='fmc-cover-container'><div class='fmc-cover-wrapper'><img class='betterncm-fluentmusiccover-lazyload fmc-cover' style=${getCoverStyle(x.id, x.album.picUrl)} src=${getCoverImage(x.id, x.album.picUrl)} data-src=${x.album.picUrl} data-id=${x.id} onload='coverImageOnload(this)'/> </div> </div>" + template
 
         if (localStorage["fluentmusiccover.enableTemplateTag"] === "true")
             template = `<fmc-meta-tag data-template-id=${name}></fmc-meta-tag>` + template
@@ -19,23 +19,21 @@ plugin.onLoad(function () {
         align-items: center;
     }
 
-    .fmc-cover {
+    .fmc-cover-wrapper {
         width: var(--cover-size, 34px);
+        height: var(--cover-size, 34px);
         display: inline;
         border: none;
         border-radius: 4px;
         margin: 0 10px;
         float: left;
-        height: var(--cover-size, 34px);
-        transition: opacity 0.2s;
-    }
-    .fmc-cover::after {
-        // 占位符
-        content: "";
-        display: inline-block;
-        width: var(--cover-size, 34px);
-        height: var(--cover-size, 34px);
         background: #33333333;
+        overflow: hidden;
+    }
+    .fmc-cover {
+        width: 100%;
+        height: 100%;
+        transition: opacity 0.2s;
     }
 
     .fmc-toast{
@@ -72,35 +70,69 @@ plugin.onLoad(function () {
         ));
         const cacheDir = await betterncm.fs.mountDir('/FluentMusicCover-Cache/') + '/';
 
+
+        const loadCoverImage = (img) => {
+            if (!img.src.startsWith('data:image/gif;base64')) {
+                return;
+            }
+            // if in viewport and visible
+            const top = img.getBoundingClientRect().top;
+            if (top !== 0 && img.getBoundingClientRect().top < window.innerHeight * 2) {
+                const idImg = img.dataset.id + "." + img.dataset.src.split('.').pop();
+                !(async () => {
+                    await betterncm.fs.writeFile('/FluentMusicCover-Cache/' + idImg,
+                        await fetch(img.dataset.src + "?param=64y64").then(v => v.blob()));
+
+                    cached.push(img.dataset.id);
+                    img.src = cacheDir + idImg;
+                })();
+            }
+        }
+
+        const coverImageOnload = (img) => {
+            if (!img.src.startsWith('data:image/gif;base64')) {
+                img.style.opacity = 1;
+                return;
+            }
+            loadCoverImage(img);
+        }
+        window.coverImageOnload = coverImageOnload;
+        window.getCoverImage = (id, src) => {
+            id = id.toString();
+            const idImg = id + "." + src.split('.').pop();
+            if (cached.includes(id)) {
+                return cacheDir + idImg;
+            } else {
+                return 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==';
+            }
+        }
+        window.getCoverStyle = (id, src) => {
+            const url = getCoverImage(id, src);
+            if (url.startsWith('data:image/gif;base64')) {
+                return 'opacity:0';
+            }
+            const testImg = new Image();
+            testImg.src = url;
+            if (testImg.complete) {
+                return 'opacity:1;transition:none';
+            }
+            return 'opacity:0';
+        }
+
         // lazy load for img.betterncm-fluentmusiccover-lazyload
         const lazyLoad = () => {
-            const imgs = document.querySelectorAll('img.betterncm-fluentmusiccover-lazyload:not(.fmc-cover-loaded)')
+            const imgs = document.querySelectorAll('img.betterncm-fluentmusiccover-lazyload[src^="data:image/gif;base64"]')
             for (let img of imgs) {
-                // if in viewport and visible
-                const top = img.getBoundingClientRect().top;
-                if (top !== 0 && img.getBoundingClientRect().top < window.innerHeight * 2) {
-                    img.classList.add('fmc-cover-loaded')
-                    img.onload = () => img.style.opacity = 1;
-                    const idImg = img.dataset.id + "." + img.dataset.src.split('.').pop();
-                    if (!cached.includes(img.dataset.id)) {
-                        !(async () => {
-                            await betterncm.fs.writeFile('/FluentMusicCover-Cache/' + idImg,
-                                await fetch(img.dataset.src + "?param=64y64").then(v => v.blob()));
-
-                            cached.push(img.dataset.id);
-                            img.src = cacheDir + idImg;
-                        })();
-                    } else {
-                        img.src = cacheDir + idImg;
-                    }
-                }
+                loadCoverImage(img);
             }
         }
         this.mainPlugin.lazyLoad = betterncm.utils.debounce(lazyLoad, 100);
         this.mainPlugin.cached = cached;
         window.addEventListener("wheel", lazyLoad);
-        setInterval(lazyLoad, 1000);
+        document.querySelector(".g-mn").addEventListener("scroll", lazyLoad, { passive: true });
+        //setInterval(lazyLoad, 1000);
         addEventListener("hashchange", lazyLoad);
+
 
         // check if hijack succeeded
         const hijackSucceeded = (await betterncm.app.getSucceededHijacks()).includes("FluentMusicCover::fluentMusicCover.hackNCMTemplateParse");
