@@ -153,6 +153,7 @@ plugin.onLoad(() => {
 
 
     const reloadVideo = async () => {
+        if (!config.enable) return;
         const { data: { name, artists, duration } } = getPlayingSong();
         const kwd = config['search-kwd']
             .replace("{name}", name)
@@ -291,6 +292,7 @@ plugin.onConfig(tools => {
             fadeIn();
         } else {
             fadeOut();
+            ifr.src="about:blank"
         }
     }
 
