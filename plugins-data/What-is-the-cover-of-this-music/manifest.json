@@ -4,13 +4,13 @@
     "slug": "What-is-the-cover-of-this-music",
     "preview": "preview.png",
     "description": "歌曲列表添加音乐封面。位置：每日推荐，听歌排行，搜索列表，歌手专辑，歌单列表",
-    "version": "2.0.6",
+    "version": "2.0.7",
     "author": "沫烬染",
     "author_links": [
         "https://github.com/mo-jinran"
     ],
     "requirements": [
-        "ListScrollFix"
+        "list-scroll-fix"
     ],
     "type": "extension",
     "injects": {
