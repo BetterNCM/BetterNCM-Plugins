@@ -4,8 +4,8 @@
     height: 100%;
     overflow: hidden;
     display: flex;
-    gap: 16px;
     flex-direction: column;
+    gap: 16px;
 }
 
 
@@ -75,6 +75,7 @@ body.s-theme-white #taskbar-lyrics-dom .tab_button.active::after {
     display: flex;
     align-items: center;
     margin: 10px 0;
+    gap: 10px;
 }
 
 #taskbar-lyrics-dom .content h1 strong {
@@ -89,10 +90,15 @@ body.s-theme-white #taskbar-lyrics-dom .tab_button.active::after {
     background-color: rgba(255, 255, 255, 0.2);
 }
 
+body.s-theme-white #taskbar-lyrics-dom .content hr {
+    background-color: rgba(0, 0, 0, 0.2);
+}
+
 #taskbar-lyrics-dom .content section>div {
     display: flex;
     min-height: 30px;
     margin: 5px 0;
+    gap: 10px;
 }
 
 #taskbar-lyrics-dom .content .item_container {
@@ -107,7 +113,6 @@ body.s-theme-white #taskbar-lyrics-dom .tab_button.active::after {
 
 #taskbar-lyrics-dom .content p {
     font-size: 14px;
-    margin: 5px 0;
 }
 
 #taskbar-lyrics-dom .content a {
@@ -178,18 +183,8 @@ body.s-theme-white #taskbar-lyrics-dom .content input.switch-btn:checked {
 #taskbar-lyrics-dom .u-select {
     display: inline-block;
     width: 200px;
-    margin: 0 5px;
-}
-
-#taskbar-lyrics-dom input.switch-btn {
-    margin: 0 5px;
-}
-
-#taskbar-lyrics-dom button.u-ibtn5 {
-    margin: 0 5px;
 }
 
 #taskbar-lyrics-dom input.u-txt {
-    margin: 0 5px;
     border-radius: 4px;
 }
