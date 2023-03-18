@@ -2,6 +2,6 @@
     "name": "ListScrollFix",
     "repo": "BetterNCM/list-scroll-fix",
     "branch": "main",
-    "subpath": "/",
+    "subpath": "/dist",
     "author": "solstice23"
 }
