@@ -1,0 +1,19 @@
+{
+    "manifest_version": 1,
+    "name": "ListScrollFix",
+    "slug": "list-scroll-fix",
+    "author": "solstice23",
+    "author_links": ["https://github.com/solstice23"],
+    "description": "修复歌单列表滚动的跳动",
+    "preview": "preview.png",
+    "version": "0.1.0",
+    "type": "lib",
+    "betterncm_version": ">=1.0.0",
+    "injects": {
+        "Main": [
+            {
+                "file": "main.js"
+            }
+        ]
+    }
+}
