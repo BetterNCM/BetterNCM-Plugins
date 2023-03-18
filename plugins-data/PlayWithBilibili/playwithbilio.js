@@ -198,7 +198,8 @@ plugin.onLoad(() => {
     });
 
     legacyNativeCmder.appendRegisterCall('PlayProgress', 'audioplayer', (_, progress) => {
-        if (Math.abs(ifrVideo?.currentTime - progress) > 0.5) ifrVideo.currentTime = progress;
+        if (!ifrVideo) return;
+        if (Math.abs(ifrVideo?.currentTime - progress) > 0.3) ifrVideo.currentTime = progress;
         if (loadedPlugins.LibFrontendPlay?.currentAudioPlayer?.paused === false) ifrVideo?.play();
         ifrVideo.volume = 0
     });
@@ -292,7 +293,7 @@ plugin.onConfig(tools => {
             fadeIn();
         } else {
             fadeOut();
-            ifr.src="about:blank"
+            ifr.src = "about:blank"
         }
     }
 
