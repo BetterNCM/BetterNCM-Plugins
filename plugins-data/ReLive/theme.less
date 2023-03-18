@@ -243,10 +243,20 @@
     }
 
     .lyric-bar {
-        right: calc(50% - @main-player-max-width / 2);
         border-radius: 5px;
         background: var(--layer-background);
         backdrop-filter: blur(var(--layer-blur));
+
+        &.posx-left {
+            left: 70px !important;
+        }
+
+        &.posy-bottom.posx-left {
+            left: calc(50% - @main-player-max-width / 2) !important;
+        }
+        &.posy-bottom.posx-right {
+            right: calc(50% - @main-player-max-width / 2) !important;
+        }
     }
 }
 
@@ -502,9 +512,10 @@
 
 .playlist-page-mixin() {
     .itm {
-        margin: 0 20px;
         border-radius: 3px;
         font-weight: 700;
+        padding-top: 6px !important;
+        padding-bottom: 6px !important;
 
         &:not(:hover):not(.z-sel) {
             background: transparent !important;
