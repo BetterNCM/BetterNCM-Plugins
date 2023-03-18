@@ -31,6 +31,23 @@ plugin.onLoad(function () {
         background: #33333333;
     }
 
+    .fmc-toast{
+        position: fixed;
+        top: 10px;
+        left: 10px;
+        z-index: 99999;
+        width: 350px;
+        height: 60px;
+        background: #333333;
+        border-radius: 4px;
+        box-shadow: 0 0 10px #00000033;
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: opacity 0.2s;
+    }
+
 
     [data-impress-type='song'],
     .lst .itm {
@@ -56,8 +73,7 @@ plugin.onLoad(function () {
             for (let img of imgs) {
                 // if in viewport and visible
                 const top = img.getBoundingClientRect().top;
-                if (top !== 0 && img.getBoundingClientRect().top < window.innerHeight) {
-                    console.log("Loading:", img, img.getBoundingClientRect().top)
+                if (top !== 0 && img.getBoundingClientRect().top < window.innerHeight * 2) {
                     img.classList.add('fmc-cover-loaded')
                     img.onload = () => img.style.opacity = 1;
                     if (!cached.includes(img.dataset.src)) {
@@ -76,6 +92,21 @@ plugin.onLoad(function () {
         }
         window.addEventListener("wheel", lazyLoad);
         setInterval(lazyLoad, 1000);
+
+        // check if hijack succeeded
+        const hijackSucceeded = (await betterncm.app.getSucceededHijacks()).includes("FluentMusicCover::fluentMusicCover.hackNCMTemplateParse");
+        if (!hijackSucceeded) {
+            const toast = document.createElement('div');
+            toast.classList.add('fmc-toast');
+            toast.style.opacity = '0';
+            toast.innerText = "FluentMusicCover Hijack 失败，插件将不会启用"
+            document.body.appendChild(toast);
+            setTimeout(() => toast.style.opacity = '1');
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                setTimeout(() => toast.remove(), 200);
+            }, 10000);
+        }
     }
 
     init();
