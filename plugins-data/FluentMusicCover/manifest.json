@@ -1,0 +1,26 @@
+{
+    "manifest_version": 1,
+    "name": "FluentMusicCover",
+    "version": "1.0.0",
+    "author":"MicroBlock",
+    "description": "展示歌单内歌曲封面，且尽量保证不造成卡顿",
+    "betterncm_version": ">=1.0.0",
+    "injects": {
+        "Main": [
+            {
+                "file": "index.js"
+            }
+        ]
+    },
+    "preview":"preview.png",
+    "hijacks":{
+        ">= 2.10.0":{
+            "orpheus://orpheus/pub/core.":{
+                "type":"replace",
+                "id":"fluentMusicCover.hackNCMTemplateParse",
+                "from":"TrimPath.parse=(r=+new Date,function(n,e){",
+                "to":"TrimPath.parse=(r=+new Date,function(n,e){ const hdc=window.loadedPlugins?.FluentMusicCover?.hackNCMTemplateParse; if(hdc) n = hdc({template:n,name:e});"
+            }
+        }
+    }
+}
