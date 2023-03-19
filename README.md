@@ -65,6 +65,6 @@
             }
         }
     },
-    "native_plugin": "native.dll", // 需要注入的 native dll （可选）（接口参考已有  native 插件）
+    "native_plugin": "native.dll", // 需要注入的 native dll （可选）（接口参考文档及已有 native 插件）
 }
 ```
