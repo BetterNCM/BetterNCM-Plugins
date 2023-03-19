@@ -1,0 +1,17 @@
+{
+    "manifest_version": 1,
+    "name": "VocaloidInfo",
+    "slug": "vocaloid-info",
+    "version": "1.0.0",
+    "author": "samyyc",
+    "description": "通过VocaDB/Bilibili获取vocaloid歌曲数据并显示", 
+    "preview": "preview.png", 
+    
+    "injects": {
+        "Main": [ 
+            {
+                "file": "main.js"
+            }
+        ]
+    }
+}
