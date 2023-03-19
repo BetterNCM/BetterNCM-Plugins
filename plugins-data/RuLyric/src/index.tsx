@@ -312,6 +312,12 @@ function MainMenu() {
                         />
                     </FormGroup>
 
+                    <Button onClick={
+                        () => {
+                            document.location.reload();
+                        }
+                    }>保存</Button>
+
                     <Button onClick={() => betterncm_native.native_plugin.call('rulyrics.reset_pos', [])}>
                         重置歌词位置
                     </Button>
