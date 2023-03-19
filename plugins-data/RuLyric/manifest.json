@@ -2,7 +2,7 @@
     "manifest_version": 1,
     "name": "RuLyrics [支持11新/老任务栏]",
     "slug": "RuLyrics",
-    "version": "0.3.3",
+    "version": "0.3.4",
     "description": "桌面歌词插件，支持逐词，嵌入任务栏 【支持 Win11 新/老任务栏，Win10】",
     "betterncm_version": ">=1.0.0",
     "author_links": ["https://github.com/MicroCBer"],
