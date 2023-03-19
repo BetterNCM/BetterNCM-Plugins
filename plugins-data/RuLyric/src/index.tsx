@@ -1,4 +1,4 @@
-import { Alert, Button, FormControl, FormControlLabel, FormGroup, Grid, InputLabel, MenuItem, Paper, Select, Switch, TextField, Typography, styled } from '@mui/material';
+import { Alert, Button, ButtonGroup, FormControl, FormControlLabel, FormGroup, Grid, InputLabel, MenuItem, Paper, Select, Switch, TextField, Typography, styled } from '@mui/material';
 import { Error as ErrIcon } from '@mui/icons-material';
 import { Stack } from '@mui/system';
 import { createRoot } from 'react-dom/client';
@@ -69,9 +69,14 @@ function MainMenu() {
         "#ffffff22",
     ]);
 
+    const [align, setAlign] = useLocalStorage("rulyrics.align", 0)
+
+    const [inited, setInited] = React.useState(false)
+
     const [taskbar, setTaskbar] = useLocalStorage("rulyrics.taskbar", false);
 
     React.useEffect(() => {
+        if (!inited) return;
         if (taskbar) {
             setTimeout(() => {
                 betterncm_native.native_plugin.call('rulyrics.embed_into_taskbar', [])
@@ -236,15 +241,16 @@ function MainMenu() {
     }, [])
 
     function initRustApp() {
-        betterncm_native.native_plugin.call('rulyrics.init_lyrics_app', [...fontConfig, ...secFontConfig]);
+        betterncm_native.native_plugin.call('rulyrics.init_lyrics_app', [...fontConfig, ...secFontConfig, align]);
         if (taskbar) {
+            setInited(true);
             setTimeout(() => {
                 betterncm_native.native_plugin.call('rulyrics.embed_into_taskbar', [])
             }, 500);
         }
     }
 
-    React.useEffect(initRustApp, [])
+    React.useEffect(() => { setTimeout(initRustApp, 2000) }, [])
 
     return (<Stack spacing={2}>
 
@@ -293,7 +299,19 @@ function MainMenu() {
                             }
                             label="嵌入到任务栏"
                         />
+
+                        <FormControlLabel
+                            control={
+                                <ButtonGroup variant="outlined" aria-label="outlined button group">
+                                    <Button onClick={() => setAlign(0)} variant={align === 0 ? 'contained' : 'outlined'}>居左</Button>
+                                    <Button onClick={() => setAlign(1)} variant={align === 1 ? 'contained' : 'outlined'}>居中</Button>
+                                    <Button onClick={() => setAlign(2)} variant={align === 2 ? 'contained' : 'outlined'}>居右</Button>
+                                </ButtonGroup>
+                            }
+                            label="对齐方式（重启生效）"
+                        />
                     </FormGroup>
+
 
                 </AccordionDetails>
             </Accordion>
