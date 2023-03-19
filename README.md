@@ -44,7 +44,7 @@
     "description": "Description of the plugin", // 插件描述
     "preview": "preview.png", // 插件预览图
     "type": "extension", // 插件类型（可选）：extension (默认) | theme | dependency"
-    "requirements": ["example-dependency"], // 依赖的插件（可选）
+    "requirements": ["example-dependency"], // 依赖的插件 Slug（可选）
 
 
     "injects": { // 普通注入
