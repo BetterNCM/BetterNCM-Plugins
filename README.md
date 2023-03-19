@@ -19,7 +19,9 @@
 ```
 
 3. 提交 PR
-4. 脚本会定时抓取插件 Manifest 中的版本号，并自动提交更新及审核
+4. 脚本会定时抓取插件 Manifest 中的版本号，并自动提交更新及审核。你还可以在 QQ 群中发送 `update` 以手动触发抓取脚本。
+![image](https://user-images.githubusercontent.com/66859419/226158790-c6d3a57e-9ea3-4337-9a91-373838e83cc0.png)
+
 
 ## 注意
 
