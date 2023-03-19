@@ -87,14 +87,17 @@
     betterncm.utils.waitForElement("div[class='name f-thide s-fc1 j-flag']").then((result) => {
       if (!initialized) {
         new MutationObserver((records, observer) => {
-          update();
+          betterncm.utils.waitForElement('span[class="name j-flag"]').then((span) => {
+            document.querySelectorAll(".vi-song-item").forEach((node) => node.remove());
+          });
+          debouncedUpdate();
         }).observe(document.body.querySelector("div[class='name f-thide s-fc1 j-flag']"), { childList: true });
         initialized = true;
       }
     });
     new MutationObserver((records, observer) => {
       if (records[0].addedNodes[0] && records[0].addedNodes[0].className == "g-single") {
-        update();
+        debouncedUpdate();
       }
     }).observe(document.body, { childList: true });
     window.addEventListener("hashchange", (event) => {
@@ -117,16 +120,17 @@
       }
     });
   });
+  var debouncedUpdate = betterncm.utils.debounce(update, 500);
   function update() {
     betterncm.utils.waitForElement('span[class="name j-flag"]').then((span) => {
+      if (document.querySelector(".vi-song-item")) {
+        document.querySelectorAll(".vi-song-item").forEach((node) => node.remove());
+      }
       const songName = span.innerText;
       searchSong(songName).then((data) => {
         if (data == null)
           return;
         songDetails(data).then((descriptions) => {
-          if (document.querySelector(".vi-song-item")) {
-            document.querySelector(".vi-song-item").remove();
-          }
           let dd1 = dom(
             "dd",
             { "class": ["inf", "s-fc2", "vi-song-item"] },
