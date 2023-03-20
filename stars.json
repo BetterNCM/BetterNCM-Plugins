@@ -3,7 +3,7 @@
   "BetterNCM/ArkTheme": 5,
   "BetterNCM/CrashFix": 2,
   "BetterNCM/CrossfadeLFP": 3,
-  "nexmoe/betterncm-plugin-customize": 2,
+  "nexmoe/betterncm-plugin-customize": 3,
   "keiko233/elaina-theme-netease": 7,
   "BetterNCM/FluentMusicCover": 0,
   "BetterNCM/FluentProgessBar": 7,
@@ -40,5 +40,5 @@
   "solstice23/lyric-bar-netease": 9,
   "solstice23/material-you-theme-netease": 85,
   "solstice23/refined-now-playing-netease": 168,
-  "BetterNCM/TinyNCM": 2
+  "BetterNCM/TinyNCM": 3
 }
