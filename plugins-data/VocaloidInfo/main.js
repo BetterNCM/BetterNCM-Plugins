@@ -44,7 +44,6 @@
         if (element.classList != void 0) {
           element.classList.remove("inf", "s-fc1");
         }
-        console.log(element);
         if (element.hasChildNodes) {
           element.childNodes.forEach((child) => {
             child.style.fontFamily = document.getElementsByTagName("body")[0].style.fontFamily;
@@ -53,7 +52,6 @@
           });
         }
       }
-      console.log(element);
       father.appendChild(element);
     });
     return father;
@@ -90,38 +88,39 @@
           betterncm.utils.waitForElement('span[class="name j-flag"]').then((span) => {
             document.querySelectorAll(".vi-song-item").forEach((node) => node.remove());
           });
-          debouncedUpdate();
+          debouncedSongUpdate();
         }).observe(document.body.querySelector("div[class='name f-thide s-fc1 j-flag']"), { childList: true });
         initialized = true;
       }
     });
     new MutationObserver((records, observer) => {
-      if (records[0].addedNodes[0] && records[0].addedNodes[0].className == "g-single") {
-        debouncedUpdate();
+      if (records[0].addedNodes[0] && records[0].addedNodes[0].className.includes("g-single")) {
+        debouncedSongUpdate();
       }
     }).observe(document.body, { childList: true });
     window.addEventListener("hashchange", (event) => {
       const url = new URL(event.newURL);
       if (url.hash.startsWith("#/m/artist/?")) {
         nowPage = url.hash;
-        betterncm.utils.waitForElement(".name-artist").then((result) => {
-          const name = result.querySelector(".f-ust").innerText;
-          searchArtist(name).then((data) => {
-            if (url.hash != nowPage)
-              return;
-            if (document.getElementsByClassName("vi-hidden-item").length != 0)
-              return;
-            if (data != null) {
-              setArtistHTML(data);
-              displayed = true;
-            }
-          });
-        });
+        debouncedArtistUpdate();
       }
     });
   });
-  var debouncedUpdate = betterncm.utils.debounce(update, 500);
-  function update() {
+  var debouncedArtistUpdate = betterncm.utils.debounce(() => {
+    betterncm.utils.waitForElement(".name-artist").then((result) => {
+      const name = result.querySelector(".f-ust").innerText;
+      searchArtist(name).then((data) => {
+        if (document.getElementsByClassName("vi-hidden-item").length != 0)
+          return;
+        if (data != null) {
+          setArtistHTML(data);
+          displayed = true;
+        }
+      });
+    });
+  }, 400);
+  var debouncedSongUpdate = betterncm.utils.debounce(updateSong, 400);
+  function updateSong() {
     betterncm.utils.waitForElement('span[class="name j-flag"]').then((span) => {
       if (document.querySelector(".vi-song-item")) {
         document.querySelectorAll(".vi-song-item").forEach((node) => node.remove());
@@ -134,15 +133,20 @@
           let dd1 = dom(
             "dd",
             { "class": ["inf", "s-fc2", "vi-song-item"] },
-            dom("span", { innerText: "\u5728VocaDB\u4E2D\u67E5\u627E\u5230\u8BB0\u5F55  ", "class": ["item", "s-fc1"] }),
-            dom("a", { innerText: "\u70B9\u51FB\u67E5\u770B", "class": [] }),
+            dom("span", { innerText: "\u5728VocaDB\u4E2D\u67E5\u627E\u5230\u8BB0\u5F55  ", "class": ["item", "s-fc1", "mq-yahei"], style: { "font-size": "13px" } }),
+            dom("a", { innerText: "\u70B9\u51FB\u67E5\u770B", "class": ["mq-yahei"], style: { "font-size": "13px" } }),
             BR(),
             BR()
           );
           dd1.childNodes[1].addEventListener("click", showHidden, false);
           descriptions.forEach((description) => {
-            dd1.appendChild(hideItem(description));
+            description = hideItem(description);
+            description.classList.add("mq-yahei");
+            description.style.fontSize = "13px";
+            dd1.appendChild(description);
           });
+          dd1.appendChild(hideItem(BR()));
+          dd1.appendChild(hideItem(BR()));
           betterncm.utils.waitForElement('div[class="m-comment m-comment-play"]').then((result) => {
             result.insertBefore(dd1, result.firstChild);
           });
@@ -179,9 +183,6 @@
           dd1.appendChild(hideItem(text(`\u7C7B\u578B: ${data.artistType}`)));
           dd1.appendChild(BR());
           dd1.appendChild(hideItem(text(`\u7B80\u4ECB: ${data.description.original}`)));
-      }
-      if (data.artistType == "Producer") {
-      } else {
       }
       addMaterialYouStyle(result, dd1);
     });
@@ -253,33 +254,41 @@
   async function songDetails(data) {
     let descriptions = [];
     descriptions.push(text(`\u6B4C\u66F2\u7C7B\u578B: ${data.song.songType}`), BR());
+    const date = new Date(data.song.publishDate);
+    descriptions.push(text(`\u53D1\u5E03\u65E5\u671F: ${date.getFullYear()}\u5E74${date.getMonth()}\u6708${date.getDay()}\u65E5`), BR());
     for (let pool of data.pools) {
       switch (pool.id) {
         case 30:
-          descriptions.push(BR(), text("NicoNico\u4F20\u8BF4\u8FBE\u6210"));
+          descriptions.push(BR(), dom("span", { innerText: "NicoNico\u4F20\u8BF4\u8FBE\u6210", "style": { "color": "#FFD700" } }));
           break;
         case 2665:
-          descriptions.push(BR(), text("Youtube\u4F20\u8BF4\u8FBE\u6210"));
+          descriptions.push(BR(), dom("span", { innerText: "Youtube\u4F20\u8BF4\u8FBE\u6210", "style": { "color": "#FFD700" } }));
           break;
         case 6477:
-          descriptions.push(BR(), text("NicoNico\u795E\u8BDD\u8FBE\u6210"));
+          descriptions.push(BR(), dom("span", { innerText: "NicoNico\u795E\u8BDD\u8FBE\u6210", "style": { "color": "#FF4D4D" } }));
           break;
         case 6478:
-          descriptions.push(BR(), text("Youtube\u795E\u8BDD\u8FBE\u6210"));
+          descriptions.push(BR(), dom("span", { innerText: "Youtube\u795E\u8BDD\u8FBE\u6210", "style": { "color": "#FF4D4D" } }));
       }
+    }
+    if (data.alternateVersions.length != 0) {
+      descriptions.push(BR(), text("\u5176\u4ED6\u7248\u672C (\u7FFB\u8C03/\u7FFB\u5531/Remix):"));
+      data.alternateVersions.forEach((version) => {
+        descriptions.push(BR(), text(`${version.name} (${version.songType}) - ${version.artistString}`));
+      });
     }
     for (let pv of data.pvs) {
       if (pv.service == "Bilibili") {
-        descriptions.push(BR(), text("\u6B64\u6B4C\u66F2B\u7AD9\u6570\u636E: "), BR());
+        descriptions.push(BR(), BR(), text("\u6B64\u6B4C\u66F2B\u7AD9\u6570\u636E: "), BR());
         let av = pv.url.split("/").slice(-1)[0];
         let data2 = await searchVideo(av);
         if (data2.code == 0) {
           data2 = data2.data;
           let view = data2.stat.view;
           if (view >= 1e7) {
-            descriptions.push(text(`\u64AD\u653E\u91CF ${view} (\u795E\u8BDD)`));
+            descriptions.push(dom("span", { innerText: `\u64AD\u653E\u91CF ${view} (\u795E\u8BDD)`, "style": { "color": "#FF4D4D" } }));
           } else if (view >= 1e6) {
-            descriptions.push(text(`\u64AD\u653E\u91CF ${view} (\u4F20\u8BF4)`));
+            descriptions.push(dom("span", { innerText: `\u64AD\u653E\u91CF ${view} (\u4F20\u8BF4)`, "style": { "color": "#FFD700" } }));
           } else {
             descriptions.push(text(`\u64AD\u653E\u91CF ${view}`));
           }
