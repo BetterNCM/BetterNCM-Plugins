@@ -229,7 +229,7 @@
     descriptions.push(BR(), text(`\u6240\u5C5E\u516C\u53F8: ${data.groups.map((g) => g.defaultName).join(", ")}`), BR());
     descriptions.push(text(`\u753B\u5E08: ${data.illustrators.map((i2) => i2.defaultName).join(", ")}`), BR());
     const date = new Date(data.releaseDate);
-    descriptions.push(text(`\u53D1\u5E03\u65E5\u671F: ${date.getFullYear()}\u5E74${date.getMonth()}\u6708${date.getDay()}\u65E5`), BR());
+    descriptions.push(text(`\u53D1\u5E03\u65E5\u671F: ${date.getFullYear()}\u5E74${date.getMonth() + 1}\u6708${date.getDate()}\u65E5`), BR());
     descriptions.push(text(`\u58F0\u6E90: ${data.voiceProviders.map((v) => v.name).join(", ")}`), BR());
     descriptions.push(BR());
     descriptions.push(text(`\u603B\u4E13\u8F91\u6570: ${data.sharedStats.albumCount}`), BR());
@@ -255,7 +255,7 @@
     let descriptions = [];
     descriptions.push(text(`\u6B4C\u66F2\u7C7B\u578B: ${data.song.songType}`), BR());
     const date = new Date(data.song.publishDate);
-    descriptions.push(text(`\u53D1\u5E03\u65E5\u671F: ${date.getFullYear()}\u5E74${date.getMonth()}\u6708${date.getDay()}\u65E5`), BR());
+    descriptions.push(text(`\u53D1\u5E03\u65E5\u671F: ${date.getFullYear()}\u5E74${date.getMonth() + 1}\u6708${date.getDate()}\u65E5`), BR());
     for (let pool of data.pools) {
       switch (pool.id) {
         case 30:
@@ -289,6 +289,8 @@
             descriptions.push(dom("span", { innerText: `\u64AD\u653E\u91CF ${view} (\u795E\u8BDD)`, "style": { "color": "#FF4D4D" } }));
           } else if (view >= 1e6) {
             descriptions.push(dom("span", { innerText: `\u64AD\u653E\u91CF ${view} (\u4F20\u8BF4)`, "style": { "color": "#FFD700" } }));
+          } else if (view >= 1e5) {
+            descriptions.push(dom("span", { innerText: `\u64AD\u653E\u91CF ${view} (\u6BBF\u5802)`, "style": { "color": "#66CCFF" } }));
           } else {
             descriptions.push(text(`\u64AD\u653E\u91CF ${view}`));
           }
