@@ -3,7 +3,7 @@
 
 plugin.onLoad(async () => {
     const TaskbarLyricsAPI = this.api.TaskbarLyricsAPI;
-    const { defaultConfig, pluginConfig } = this.base;
+    const pluginConfig = this.base.pluginConfig;
     const liblyric = loadedPlugins.liblyric;
 
 
@@ -131,7 +131,7 @@ plugin.onLoad(async () => {
             legacyNativeCmder.appendRegisterCall("Load", "audioplayer", play_load);
             legacyNativeCmder.appendRegisterCall("PlayProgress", "audioplayer", play_progress);
             const playingSong = betterncm.ncm.getPlayingSong();
-            if (playingSong.data.id != musicId) {
+            if (playingSong && playingSong.data.id != musicId) {
                 play_load();
             }
         }
