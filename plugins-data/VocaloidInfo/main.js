@@ -6,19 +6,34 @@
     return response.json();
   }
   async function searchArtist(name) {
-    const datas = await get(`artists?query=${name}&allowBaseVoicebanks=true&childTags=false&start=0&maxResults=10&getTotalCount=false&preferAccurateMatches=false&lang=Default`);
-    if (datas.items[0] == void 0)
-      return null;
-    return await get(`artists/${datas.items[0].id}/details`);
+    let id = await getArtistIdByName(name);
+    if (id == 0)
+      return 0;
+    return await get(`artists/${id}/details`);
   }
-  async function searchSong(name) {
-    const datas = await get(`songs?query=${name}&sort=SongType`);
+  async function searchSong(name, artistsName) {
+    let result = /(.*)\s\(.*\)/g.exec(name);
+    name = result == null ? name : result[1];
+    let url = `songs?query=${name}&sort=SongType&childVoicebanks=true&nameMatchMode=Partial`;
+    artistsName = artistsName.slice(0, 4);
+    for (let artistName of artistsName) {
+      let id = await getArtistIdByName(artistName);
+      if (id != 0) {
+        url += `&artistId%5B%5D=${id}`;
+      }
+    }
+    console.log(url);
+    const datas = await get(url);
     if (datas.items[0] == void 0)
       return null;
-    return await get(`songs/${datas.items[0].id}/details`);
+    return getSongById(datas.items[0].id);
   }
   async function getSongById(id) {
     return await get(`songs/${id}/details`);
+  }
+  async function getArtistIdByName(name) {
+    const datas = await get(`artists?query=${name}&allowBaseVoicebanks=true&childTags=false&start=0&maxResults=10&getTotalCount=false&preferAccurateMatches=false&lang=Default`);
+    return datas.items[0] == void 0 ? 0 : datas.items[0].id;
   }
 
   // bilibili.js
@@ -78,7 +93,7 @@
 
   // main.js
   var BR = () => dom("br", {});
-  var text = (text2) => dom("span", { innerText: text2 });
+  var text = (text2) => dom("span", { innerText: text2, "style": { "-webkit-user-select": "text" } });
   var nowPage;
   var initialized = false;
   var overrideMap = new Map(Object.entries(override_default));
@@ -132,42 +147,47 @@
     });
   }, 400);
   var debouncedSongUpdate = betterncm.utils.debounce(updateSong, 400);
-  function updateSong() {
-    betterncm.utils.waitForElement('span[class="name j-flag"]').then((span) => {
-      if (document.querySelector(".vi-song-item")) {
-        document.querySelectorAll(".vi-song-item").forEach((node) => node.remove());
-      }
-      const songName = span.innerText.replace(/(\s*$)/g, "");
-      let promise;
-      if (overrideMap.has(songName)) {
-        promise = getSongById(overrideMap.get(songName));
-      } else {
-        promise = searchSong(songName);
-      }
-      promise.then((data) => {
-        if (data == null)
-          return;
-        songDetails(data).then((descriptions) => {
-          let dd1 = dom(
-            "dd",
-            { "class": ["inf", "s-fc2", "vi-song-item"] },
-            dom("span", { innerText: "\u5728VocaDB\u4E2D\u67E5\u627E\u5230\u8BB0\u5F55  ", "class": ["item", "s-fc1", "mq-yahei"], style: { "font-size": "13px" } }),
-            dom("a", { innerText: "\u70B9\u51FB\u67E5\u770B", "class": ["mq-yahei"], style: { "font-size": "13px" } }),
-            BR(),
-            BR()
-          );
-          dd1.childNodes[1].addEventListener("click", showHidden, false);
-          descriptions.forEach((description) => {
-            description = hideItem(description);
-            description.classList.add("mq-yahei");
-            description.style.fontSize = "13px";
-            dd1.appendChild(description);
-          });
-          dd1.appendChild(hideItem(BR()));
-          dd1.appendChild(hideItem(BR()));
-          betterncm.utils.waitForElement('div[class="m-comment m-comment-play"]').then((result) => {
-            result.insertBefore(dd1, result.firstChild);
-          });
+  async function updateSong() {
+    let title = await betterncm.utils.waitForElement('span[class="name j-flag"]');
+    let artists = await betterncm.utils.waitForElement('li[class="f-thide f-ust f-ust-1"]');
+    if (document.querySelector(".vi-song-item")) {
+      document.querySelectorAll(".vi-song-item").forEach((node) => node.remove());
+    }
+    const songName = title.innerText.replace(/(\s*$)/g, "");
+    let artistsName = [];
+    artists.childNodes.forEach((child) => {
+      if (child.title)
+        artistsName.push(child.title);
+    });
+    let promise;
+    if (overrideMap.has(songName)) {
+      promise = getSongById(overrideMap.get(songName));
+    } else {
+      promise = searchSong(songName, artistsName);
+    }
+    promise.then((data) => {
+      if (data == null)
+        return;
+      songDetails(data).then((descriptions) => {
+        let dd1 = dom(
+          "dd",
+          { "class": ["inf", "s-fc2", "vi-song-item"] },
+          dom("span", { innerText: "\u5728VocaDB\u4E2D\u67E5\u627E\u5230\u8BB0\u5F55  ", "class": ["item", "s-fc1", "mq-yahei"], style: { "font-size": "13px" } }),
+          dom("a", { innerText: "\u70B9\u51FB\u67E5\u770B", "class": ["mq-yahei"], style: { "font-size": "13px" } }),
+          BR(),
+          BR()
+        );
+        dd1.childNodes[1].addEventListener("click", showHidden, false);
+        descriptions.forEach((description) => {
+          description = hideItem(description);
+          description.classList.add("mq-yahei");
+          description.style.fontSize = "13px";
+          dd1.appendChild(description);
+        });
+        dd1.appendChild(hideItem(BR()));
+        dd1.appendChild(hideItem(BR()));
+        betterncm.utils.waitForElement('div[class="m-comment m-comment-play"]').then((result) => {
+          result.insertBefore(dd1, result.firstChild);
         });
       });
     });
