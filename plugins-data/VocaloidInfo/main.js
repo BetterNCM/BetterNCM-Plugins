@@ -106,7 +106,7 @@
       }
     });
     new MutationObserver((records, observer) => {
-      if (records[0].addedNodes[0] && records[0].addedNodes[0].className.includes("g-single")) {
+      if (records[0].addedNodes[0] && records[0].addedNodes[0].className && records[0].addedNodes[0].className.includes("g-single")) {
         debouncedSongUpdate();
       }
     }).observe(document.body, { childList: true });
@@ -137,7 +137,7 @@
       if (document.querySelector(".vi-song-item")) {
         document.querySelectorAll(".vi-song-item").forEach((node) => node.remove());
       }
-      const songName = span.innerText.slice(0, -2);
+      const songName = span.innerText.replace(/(\s*$)/g, "");
       let promise;
       if (overrideMap.has(songName)) {
         promise = getSongById(overrideMap.get(songName));
