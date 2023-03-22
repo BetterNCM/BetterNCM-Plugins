@@ -1,7 +1,7 @@
 {
     "manifest_version": 1,
     "name": "FluentMusicCover",
-    "version": "1.1.3",
+    "version": "1.1.4",
     "author":"MicroBlock & solstice23",
     "description": "展示歌单内歌曲封面，且尽量保证不造成卡顿",
     "betterncm_version": ">=1.0.0",
