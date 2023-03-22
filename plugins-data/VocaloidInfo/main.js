@@ -17,6 +17,9 @@
       return null;
     return await get(`songs/${datas.items[0].id}/details`);
   }
+  async function getSongById(id) {
+    return await get(`songs/${id}/details`);
+  }
 
   // bilibili.js
   var BASE_URL2 = "http://api.bilibili.com/x/web-interface/";
@@ -65,11 +68,20 @@
     return defaultName;
   }
 
+  // override.json
+  var override_default = {
+    "\u304A\u3058\u3083\u307E\u866B\u2161": 340768,
+    \u611B\u8A00\u8449IV: 409527,
+    \u611B\u8A00\u8449III: 207153,
+    "\u3044\uFF5E\u3084\u3044\uFF5E\u3084\u3044\uFF5E\u3084": 174236
+  };
+
   // main.js
   var BR = () => dom("br", {});
   var text = (text2) => dom("span", { innerText: text2 });
   var nowPage;
   var initialized = false;
+  var overrideMap = new Map(Object.entries(override_default));
   plugin.onConfig((tools) => {
     let page = dom("div", {});
     page.appendChild(dom("a", { innerText: "\u70B9\u6211\u524D\u5F80 Github \u4ED3\u5E93", onclick: function() {
@@ -125,8 +137,14 @@
       if (document.querySelector(".vi-song-item")) {
         document.querySelectorAll(".vi-song-item").forEach((node) => node.remove());
       }
-      const songName = span.innerText;
-      searchSong(songName).then((data) => {
+      const songName = span.innerText.slice(0, -2);
+      let promise;
+      if (overrideMap.has(songName)) {
+        promise = getSongById(overrideMap.get(songName));
+      } else {
+        promise = searchSong(songName);
+      }
+      promise.then((data) => {
         if (data == null)
           return;
         songDetails(data).then((descriptions) => {
