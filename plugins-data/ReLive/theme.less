@@ -22,26 +22,50 @@
 .menu-mixin() {
     .m-layer:not(.m-layer *),
     .m-card:not(.m-card *) {
-        background: var(--layer-background);
-        backdrop-filter: blur(20px);
+        background: rgba(255, 255, 255, 0.5) !important;
+        backdrop-filter: blur(var(--layer-blur));
+
+        body.mq-playing.rnp-dark &,
+        body.mq-playing.rnp-auto.rnp-system-dark &,
+        body:not(.mq-playing.s-theme-white) & {
+            background: rgba(46, 46, 46, 0.5) !important;
+        }
+        body.mq-playing.rnp-light &,
+        body.mq-playing.rnp-auto.rnp-system-light & {
+            background: rgba(255, 255, 255, 0.5) !important;
+        }
         &.m-card-arrow-left::before,
         &.m-card-arrow-right::before {
             border-color: var(--layer-background) transparent transparent
                 var(--layer-background);
         }
         .lyct,
-        .zcnt {
+        .zcnt,
+        .m-card,
+        .m-layer {
             background: none !important;
         }
         * {
             color: rgb(0, 0, 0) !important;
-            body:not(.s-theme-white) & {
+            body.mq-playing.rnp-dark &,
+            body.mq-playing.rnp-auto.rnp-system-dark &,
+            body:not(.mq-playing.s-theme-white) & {
                 color: rgb(255, 255, 255) !important;
+            }
+            body.mq-playing.rnp-light &,
+            body.mq-playing.rnp-auto.rnp-system-light & {
+                color: rgb(0, 0, 0) !important;
             }
             &.u-ibtn1 {
                 color: rgb(255, 255, 255) !important;
-                body:not(.s-theme-white) & {
+                body.mq-playing.rnp-dark &,
+                body.mq-playing.rnp-auto.rnp-system-dark &,
+                body:not(.mq-playing.s-theme-white) & {
                     color: rgb(0, 0, 0) !important;
+                }
+                body.mq-playing.rnp-light &,
+                body.mq-playing.rnp-auto.rnp-system-light & {
+                    color: rgb(255, 255, 255) !important;
                 }
             }
             &.u-ibtn1,
@@ -53,10 +77,19 @@
             }
         }
     }
+    div .u-lg32.logo {
+        background-color: transparent;
+    }
     div.m-card-sharecard li:hover {
         background: rgba(0, 0, 0, 0.1);
-        body:not(.s-theme-white) & {
+        body.mq-playing.rnp-dark &,
+        body.mq-playing.rnp-auto.rnp-system-dark &,
+        body:not(.mq-playing.s-theme-white) & {
             background: rgba(255, 255, 255, 0.1);
+        }
+        body.mq-playing.rnp-light &,
+        body.mq-playing.rnp-auto.rnp-system-light & {
+            background: rgba(0, 0, 0, 0.1);
         }
     }
     .m-layer,
@@ -64,8 +97,33 @@
     .sltwrap,
     .u-arrlay,
     div.u-arrlay {
-        background: var(--layer-background) !important;
+        background: rgba(255, 255, 255, 0.5) !important;
         backdrop-filter: blur(var(--layer-blur));
+
+        body.mq-playing.rnp-dark &,
+        body.mq-playing.rnp-auto.rnp-system-dark &,
+        body:not(.mq-playing.s-theme-white) & {
+            background: rgba(46, 46, 46, 0.5) !important;
+        }
+        body.mq-playing.rnp-light &,
+        body.mq-playing.rnp-auto.rnp-system-light & {
+            background: rgba(255, 255, 255, 0.5) !important;
+        }
+
+        .m-card &,
+        .m-layer & {
+            background: none !important;
+            backdrop-filter: none !important;
+            body.mq-playing.rnp-dark &,
+            body.mq-playing.rnp-auto.rnp-system-dark &,
+            body:not(.mq-playing.s-theme-white) & {
+                background: none !important;
+            }
+            body.mq-playing.rnp-light &,
+            body.mq-playing.rnp-auto.rnp-system-light & {
+                background: none !important;
+            }
+        }
     }
     .m-timeline {
         .head.f-cb {
@@ -174,18 +232,19 @@
     body.rnp-auto.rnp-system-light.mq-playing {
         .s-fc4,
         a.s-fc4.z-nohvr:hover {
-            &:not(.rnp-settings-menu *, .rnp-lyrics-switch *) {
+            &:not(.rnp-settings-menu *, .rnp-lyrics-switch *, .content *) {
                 color: rgba(0, 0, 0, 0.4);
             }
         }
         .s-fc3 {
-            &:not(.rnp-settings-menu *, .rnp-lyrics-switch *) {
+            &:not(.rnp-settings-menu *, .rnp-lyrics-switch *, .content *) {
                 color: rgba(0, 0, 0, 0.6);
             }
         }
         .n-single .head .title,
         .s-fc1,
         .u-ibtn5,
+        .u-load,
         a,
         textarea,
         input,
@@ -194,24 +253,24 @@
         keygen,
         legend,
         & {
-            &:not(.rnp-settings-menu *, .rnp-lyrics-switch *) {
+            &:not(.rnp-settings-menu *, .rnp-lyrics-switch *, .content *) {
                 color: rgba(0, 0, 0, 0.8);
             }
         }
         .n-single .head .detail svg,
         .u-ibtn5-inplay svg,
         .u-ibtn5 svg {
-            &:not(.rnp-settings-menu *, .rnp-lyrics-switch *) {
+            &:not(.rnp-settings-menu *, .rnp-lyrics-switch *, .content *) {
                 fill: rgba(0, 0, 0, 0.8);
             }
         }
         .g-single-program .n-single .mn .program-recommend {
-            &:not(.rnp-settings-menu *, .rnp-lyrics-switch *) {
+            &:not(.rnp-settings-menu *, .rnp-lyrics-switch *, .content *) {
                 border-top: 1px solid rgba(0, 0, 0, 0.2);
             }
         }
         .u-ibtn5 {
-            &:not(.rnp-settings-menu *, .rnp-lyrics-switch *) {
+            &:not(.rnp-settings-menu *, .rnp-lyrics-switch *, .content *) {
                 border-color: rgba(0, 0, 0, 0.2);
             }
         }
@@ -796,13 +855,56 @@
                 flex-direction: row;
                 align-items: center;
                 justify-content: center;
+                transition: background 0.1s ease, color 0.1s ease;
+                background-color: transparent;
+                border: none;
+                outline: none;
+                color: #ffffff;
+                svg {
+                    fill: #ffffff;
+                }
+
+                .rnp-light &,
+                .rnp-auto.rnp-system-light & {
+                    color: #000000;
+                    svg {
+                        fill: #000000;
+                    }
+                }
+
                 &.js-selected {
                     background: var(--rnp-accent-color-shade-2);
                     color: #000000;
+                    svg {
+                        fill: #000000;
+                    }
 
                     .rnp-light &,
                     .rnp-auto.rnp-system-light & {
                         color: #ffffff;
+                        svg {
+                            fill: #ffffff;
+                        }
+                    }
+                }
+
+                &.js-disabled {
+                    opacity: 0.3;
+                }
+
+                &:not(.js-disabled):hover {
+                    background: var(--rnp-accent-color-shade-2);
+                    color: #000000;
+                    svg {
+                        fill: #000000;
+                    }
+
+                    .rnp-light &,
+                    .rnp-auto.rnp-system-light & {
+                        color: #ffffff;
+                        svg {
+                            fill: #ffffff;
+                        }
                     }
                 }
             }
