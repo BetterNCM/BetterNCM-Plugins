@@ -4,11 +4,11 @@ let styleSnippetConfig = JSON.parse(
     ) || "{}"
 );
 
-if (styleSnippetConfig["@modify-play-page"])
+if (styleSnippetConfig["@modify-play-page"] == "true")
     window.localStorage.setItem("refined-now-playing-refined-control-bar", "false");
 
-plugin.onLoad(async () => {
-    if (!loadedPlugins.StyleSnippet?.addExternalSnippet) {
+plugin.onAllPluginsLoaded(async function (plugins) {
+    if (!plugins.StyleSnippet?.addExternalSnippet) {
         setTimeout(async () => {
             (await betterncm.utils.waitForElement("header")).prepend(
                 dom("div", {
@@ -32,7 +32,7 @@ plugin.onLoad(async () => {
         return;
     }
 
-    loadedPlugins.StyleSnippet.addExternalSnippet(
+    plugins.StyleSnippet.addExternalSnippet(
         await betterncm.fs.readFileText(this.pluginPath + "./theme.less"),
         "ReLiveTheme",
         "relive-theme"
