@@ -1,14 +1,15 @@
-const FORCE_SETTINGS = {
-    "refined-now-playing-refined-control-bar": "false",
-};
+let styleSnippetConfig = JSON.parse(
+    window.localStorage.getItem(
+        "cc.microblock.betterncm.stylesnippets.snippetsConfig.relive-theme"
+    ) || "{}"
+);
 
-for (const setting in FORCE_SETTINGS) {
-    window.localStorage.setItem(setting, FORCE_SETTINGS[setting]);
-}
+if (styleSnippetConfig["@modify-play-page"])
+    window.localStorage.setItem("refined-now-playing-refined-control-bar", "false");
 
-plugin.onAllPluginsLoaded(async function (plugins) {
-    if (plugins.StyleSnippet?.addExternalSnippet == undefined) {
-        async function addTips() {
+plugin.onLoad(async () => {
+    if (!loadedPlugins.StyleSnippet?.addExternalSnippet) {
+        setTimeout(async () => {
             (await betterncm.utils.waitForElement("header")).prepend(
                 dom("div", {
                     innerText:
@@ -26,19 +27,24 @@ plugin.onAllPluginsLoaded(async function (plugins) {
                     },
                 })
             );
-        }
+        }, 1000);
 
-        setTimeout(addTips, 1000);
+        return;
     }
 
-    plugins.StyleSnippet.addExternalSnippet(
+    loadedPlugins.StyleSnippet.addExternalSnippet(
         await betterncm.fs.readFileText(this.pluginPath + "./theme.less"),
         "ReLiveTheme",
         "relive-theme"
     );
 
-    let isDark = JSON.parse(window.localStorage.getItem("relive-theme-dark") || "false");
+    document.addEventListener("fullscreenchange", () => {
+        if (document.fullscreenElement) document.body.classList.add("fullscreen");
+        else document.body.classList.remove("fullscreen");
+    });
 
+    // light/dark theme switcher
+    let isDark = JSON.parse(window.localStorage.getItem("relive-theme-dark") || "false");
     function loadDark() {
         if (isDark) {
             document.body.classList.add("s-theme-white");
@@ -53,20 +59,20 @@ plugin.onAllPluginsLoaded(async function (plugins) {
                 "orpheus://skin/pub/web/css/skin.ls.css";
         }
     }
-
     loadDark();
-
-    betterncm.utils.waitForElement(".m-tool > .skin").then((item) => {
-        item.addEventListener("click", (e) => {
+    let lastSkinNode;
+    new MutationObserver(async () => {
+        let skinNode = document.querySelector(".m-tool > .skin");
+        if (!skinNode || skinNode == lastSkinNode) return;
+        lastSkinNode = skinNode;
+        skinNode.addEventListener("click", (e) => {
             isDark = !isDark;
             window.localStorage.setItem("relive-theme-dark", JSON.stringify(isDark));
             loadDark();
         });
-    });
-
-    document.addEventListener("fullscreenchange", () => {
-        if (document.fullscreenElement) document.body.classList.add("fullscreen");
-        else document.body.classList.remove("fullscreen");
+    }).observe(document.querySelector("html"), {
+        childList: true,
+        subtree: true,
     });
 
     // fullscreen popup fix
