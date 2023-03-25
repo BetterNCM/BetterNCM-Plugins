@@ -12,9 +12,7 @@ body:not(.mq-playing) {
 }
 
 @modify-play-page: true; //: name: 修改播放页面 | type: checkbox
-html when (@modify-play-page) {
-    .play-page-mixin();
-}
+.play-page-mixin();
 
 @main-player-left: 7%;
 @main-player-width: clamp(200px, 25%, 500px);
@@ -680,7 +678,7 @@ html when (@modify-play-page) {
     }
 }
 
-.play-page-mixin() {
+.play-page-mixin() when (@modify-play-page) {
     #rnp-settings-menu > div.rnp-settings-menu-inner {
         & > .rnp-group:nth-child(1) > *:nth-child(7) {
             display: none;
