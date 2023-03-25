@@ -1,9 +1,9 @@
 {
     "manifest_version": 1,
     "name": "TinyNCM", 
-    "version": "0.2.3",
+    "version": "1.0.0",
     "author": "MicroBlock", 
-    "description": "更改字体，删除无用组件",
+    "description": "更改字体，更改颜色，删除无用组件",
     "betterncm_version": ">=0.2.5",
     "preview": "preview.png",
     "injects": {
