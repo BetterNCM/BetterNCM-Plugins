@@ -6,7 +6,7 @@
     "author_links": ["https://github.com/xy-cloud-cn"],
     "description": "在5sing,微博,bilibili搜索歌手(5s钟内,我要这个人的所有信息!(×))",
     "preview": "preview.jpg",
-    "version": "0.0.1",
+    "version": "0.0.2",
     "type": "extension",
     "requirements": [],
     "betterncm_version": ">=1.0.0",

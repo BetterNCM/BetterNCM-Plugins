@@ -52,4 +52,54 @@ plugin.onLoad(async () => {
         prev.parentNode.insertBefore(weibo_btn, prev.nextSibling.nextSibling);
         prev.parentNode.insertBefore(sing_btn, prev.nextSibling.nextSibling.nextSibling);
     }).observe(await betterncm.utils.waitForElement('.m-yrsh'), {childList: true, subtree: true});
+
+
+    new MutationObserver(() => {
+        if (document.querySelector('.g-wrap0,.j-flag,.m-info,.m-info-profile,.f-cb')==null) return;
+        if (document.querySelector('.search')!=null) return;
+        const prev = document.querySelector('.u-ibtn5-artist');
+        const bili_btn = document.createElement('div');
+        bili_btn.className = 'u-ibtn5 u-ibtn5-artist search';
+        bili_btn.style = '--text:"bilibili";';
+        bili_btn.innerHTML = `
+            <svg><use xlink:href="orpheus://orpheus/style/res/svg/icon.sp.svg#btn_profile"></use></svg>
+			bilibili
+		`;
+        bili_btn.addEventListener('click', () => {
+            const artist = document.getElementsByClassName("f-brk s-fc1 f-fwb f-ff2")[0].innerText;
+            const url = `https://search.bilibili.com/upuser?keyword=${encodeURIComponent(`${artist}`)}`;
+            console.log(url)
+            betterncm.app.exec(url);
+        });
+        const weibo_btn = document.createElement('div');
+        weibo_btn.className = 'u-ibtn5 u-ibtn5-artist search';
+        weibo_btn.style = '--text:"微博";';
+        weibo_btn.innerHTML = `
+			<svg><use xlink:href="orpheus://orpheus/style/res/svg/icon.sp.svg#btn_profile"></use></svg>
+			微博
+		`;
+        weibo_btn.addEventListener('click', () => {
+            const artist = document.getElementsByClassName("f-brk s-fc1 f-fwb f-ff2")[0].innerText;
+            const url = `https://s.weibo.com/user?q=${encodeURIComponent(`${artist}`)}`;
+            console.log(url)
+            betterncm.app.exec(url);
+        });
+        const sing_btn = document.createElement('div');
+        sing_btn.className = 'u-ibtn5 u-ibtn5-artist search';
+        sing_btn.style = '--text:"5sing";';
+        sing_btn.innerHTML = `
+			<svg><use xlink:href="orpheus://orpheus/style/res/svg/icon.sp.svg#btn_profile"></use></svg>
+			5sing
+		`;
+        sing_btn.addEventListener('click', () => {
+            const artist = document.getElementsByClassName("f-brk s-fc1 f-fwb f-ff2")[0].innerText;
+            const url = `http://search.5sing.kugou.com/?keyword=${encodeURIComponent(`${artist}`)}`;
+            console.log(url)
+            betterncm.app.exec(url);
+        });
+
+        prev.parentNode.insertBefore(bili_btn, prev.nextSibling);
+        prev.parentNode.insertBefore(weibo_btn, prev.nextSibling.nextSibling);
+        prev.parentNode.insertBefore(sing_btn, prev.nextSibling.nextSibling.nextSibling);
+    }).observe(await betterncm.utils.waitForElement('.m-ypersonal-show'), {childList: true, subtree: true});
 });
