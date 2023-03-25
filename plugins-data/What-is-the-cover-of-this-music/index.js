@@ -8,6 +8,7 @@ async function styleLoader() {
         .m-recordscroll .m-plylist .itm,
         .m-search .m-plylist:not(.m-plylist-lrc-mult) .itm,
         .m-yrsh .m-plylist .itm,
+        .m-yash .m-plylist .itm,
         .m-plylist_playlist .lst .itm {
             min-height: calc(var(--cover-size, 32px) + 10px);
         }
@@ -17,6 +18,7 @@ async function styleLoader() {
         .m-recordscroll .m-plylist .itm:before,
         .m-search .m-plylist .itm:before,
         .m-yrsh .m-plylist .itm::before,
+        .m-yash .m-plylist .itm::before,
         .m-plylist_playlist .lst .itm:before {
             height: calc(var(--cover-size, 32px) + 10px);
             line-height: calc(var(--cover-size, 32px) + 10px);
@@ -27,6 +29,7 @@ async function styleLoader() {
         .m-recordscroll .m-plylist .td,
         .m-search .m-plylist .td,
         .m-yrsh .m-plylist .td,
+        .m-yash .m-plylist .td,
         .m-plylist_playlist .lst .td {
             height: calc(var(--cover-size, 32px) + 10px);
             line-height: var(--cover-size, 32px);
@@ -37,6 +40,7 @@ async function styleLoader() {
         .m-recordscroll .m-plylist .ico,
         .m-search .m-plylist .ico,
         .m-yrsh .m-plylist .ico,
+        .m-yash .m-plylist .ico,
         .m-plylist_playlist .lst .ico {
             margin: calc(var(--cover-size, 12px)) 0 0 8px;
         }
@@ -46,6 +50,7 @@ async function styleLoader() {
         .m-recordscroll .m-plylist .title:not(.cover-loaded)::before,
         .m-search .m-plylist .title:not(.cover-loaded)::before,
         .m-yrsh .m-plylist .title:not(.cover-loaded)::before,
+        .m-yash .m-plylist .title:not(.cover-loaded)::before,
         .m-plylist_playlist .lst .title:not(.cover-loaded)::before {
             content: "";
             position: absolute;
@@ -61,6 +66,7 @@ async function styleLoader() {
         .m-recordscroll .m-plylist .tit,
         .m-search .m-plylist .tit,
         .m-yrsh .m-plylist .tit,
+        .m-yash .m-plylist .tit,
         .m-plylist_playlist .lst .tit {
             margin-left: calc(var(--cover-size, 32px) + 10px);
         }
@@ -70,6 +76,7 @@ async function styleLoader() {
         .m-recordscroll .m-plylist .cover,
         .m-search .m-plylist .cover,
         .m-yrsh .m-plylist .cover,
+        .m-yash .m-plylist .cover,
         .m-plylist_playlist .lst .cover {
             position: absolute;
             width: var(--cover-size, 32px);
@@ -78,15 +85,19 @@ async function styleLoader() {
         }
     `;
     const style = document.createElement("style");
-    style.innerHTML = cssText;
+    style.textContent = cssText;
     document.head.appendChild(style);
 }
 
-let observer = null;
 
+let observer = null;
 let cache = {};
 
+
 const setCover = async (title, url) => {
+    // 检查是否已经添加了封面图片
+    if (title.children[0] instanceof HTMLImageElement) return;
+
     const img = document.createElement("img");
     img.src = `orpheus://cache/?${url}?param=64y64`;
     img.classList.add("cover");
@@ -101,44 +112,45 @@ const fetchCovers = async (title, resId) => {
     const res = await fetch(`https://music.163.com/api/v3/song/detail?${params}`);
 
     (await res.json()).songs.forEach((value, index) => {
-        cache[value.id] = value.al.picUrl;
+        cache[value.id] = value.al.picUrl;      // 缓存图片
         setCover(title[index], value.al.picUrl);
     });
 }
 
 const addCover = async (result) => {
-    const func = async () => {
-        let titles = [], resIds = [];
-        result.classList.add("list-with-covers");
+    const func = () => {
+        let titles = [];
+        let resIds = [];
+
         for (const item of result.querySelectorAll(".itm:not(.cover-initialized)")) {
             item.classList.add("cover-initialized");
+
+            // 有缓存就先使用缓存的
             if (cache[item.dataset.resId]) {
                 setCover(item.querySelector(".title"), cache[item.dataset.resId]);
                 continue;
             }
+
             titles.push(item.querySelector(".title"));
             resIds.push(item.dataset.resId);
 
             if (titles.length == 20) {
-                await fetchCovers([...new Set(titles)], [...new Set(resIds)]);
+                fetchCovers(titles, resIds);
                 titles = [];
                 resIds = [];
             }
         }
 
+        // 将剩余不满20的添加进去
         if (titles.length) {
-            await fetchCovers([...new Set(titles)], [...new Set(resIds)]);
+            fetchCovers(titles, resIds);
         }
     }
 
     observer = new MutationObserver(func);
     observer.observe(result, { childList: true, subtree: true });
-    const interval = setInterval(() => {
-        if (result.querySelector(".itm")) {
-            func();
-            clearInterval(interval);
-        }
-    }, 100);
+
+    result.classList.add("list-with-covers");
 }
 
 
@@ -164,9 +176,14 @@ async function onHashchange(event) {
         result = await betterncm.utils.waitForElement(".m-search");
     }
 
-    // 歌手专辑
+    // 歌手详情
     if (event.newURL.includes("#/m/artist/")) {
         result = await betterncm.utils.waitForElement(".m-yrsh");
+    }
+
+    // 音乐专辑
+    if (event.newURL.includes("#/m/album/")) {
+        result = await betterncm.utils.waitForElement(".m-yash");
     }
 
     // 歌单列表
