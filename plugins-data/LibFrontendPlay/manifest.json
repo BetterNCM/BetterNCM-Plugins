@@ -1,9 +1,9 @@
 {
     "manifest_version": 1,
     "name": "LibFrontendPlay",
-    "version": "1.0.0",
-    "author":"MicroBlock",
-    "description": "在前端播放音乐，而不是 C++ 后端！\n【支持 AMLL 音频可视化视效】",
+    "version": "1.1.0",
+    "author": "MicroBlock",
+    "description": "在前端播放音乐，而不是 C++ 后端！\n【支持 AMLL 音频可视化视效，支持 VIP 歌曲】",
     "betterncm_version": ">=1.0.0",
     "injects": {
         "Main": [
@@ -12,13 +12,41 @@
             }
         ]
     },
-    "hijacks":{
-        ">= 2.10.0":{
-            "orpheus://orpheus/pub/hybrid/vendors~app~checkdata~download~login~mp~next-empty~sns~tipbuy.chunk":{
-                "type":"replace",
-                "from":"window.channel.registerCall=function",
-                "to":"window.channel.registerCall=(...args)=>{registeredCalls[args[0]]=registeredCalls[args[0]] || [];registeredCalls[args[0]].push(args[1]);ncmHackChannelFunc(...args);},window.ncmHackChannelFunc=function"
-            }
+    "hijacks": {
+        ">= 2.10.0": {
+            "orpheus://orpheus/pub/hybrid/vendors~app~checkdata~download~login~mp~next-empty~sns~tipbuy.chunk": [
+                {
+                    "type": "replace",
+                    "from": "window.channel.registerCall=function",
+                    "to": "window.channel.registerCall=(...args)=>{registeredCalls[args[0]]=registeredCalls[args[0]] || [];registeredCalls[args[0]].push(args[1]);ncmHackChannelFunc(...args);},window.ncmHackChannelFunc=function"
+                }
+            ],
+            "orpheus://orpheus/pub/core.": [
+                {
+                    "type": "replace",
+                    "from": "v!=o.filename",
+                    "to": "/*LFP Patched v=>ignorePath */ (o.filename.endsWith('.ncm') ? false : v!=o.filename)",
+                    "id": "PatchOfflineEncryptedMusic::1"
+                },
+                {
+                    "type": "replace",
+                    "from": "l.audioFile!=v",
+                    "to": "/*LFP Patched v=>ignorePath */ (l.audioFile.endsWith('.ncm') ? false : v!=l.audioFile)",
+                    "id": "PatchOfflineEncryptedMusic::2"
+                },
+                {
+                    "type": "replace",
+                    "from": "(l=dc.setting.wS(s.path))!=v",
+                    "to": "/*LFP Patched v=>ignorePath */ ((l=dc.setting.wS(s.path)),l.endsWith('.ncm') ?  false : v!=l)",
+                    "id": "PatchOfflineEncryptedMusic::3"
+                },
+                {
+                    "type": "replace",
+                    "from": "v!=e",
+                    "to": "/*LFP Patched v=>ignorePath */ ((e?.endsWith('.ncm')) ? false : v!=e)",
+                    "id": "PatchOfflineEncryptedMusic::4"
+                }
+            ]
         }
     }
 }
