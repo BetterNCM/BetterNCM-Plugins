@@ -104,11 +104,11 @@ fs.mkdirSync(path.resolve(tmpPath, 'previews'));
 		const fileSizeInBytes = stats.size;
 		const fileSizeInKiB = fileSizeInBytes / 1024;
 		if (fileSizeInKiB > 800) {
-		  console.warn(`⚠ 插件 ${slug} 文件大于 800KiB，正在跳过`);
-		  console.warn(`📦 ${slug} ${manifest.version} skipped.`);
+		  console.warn(`⚠️ 插件 ${slug} 文件大于 800KiB，正在跳过`);
+		  console.warn(`⏩ ${slug} ${manifest.version} skipped.`);
 		  continue;
 		} else if (fileSizeInKiB > 600) {
-		  console.warn(`⚠ 插件 ${slug} 文件大于 600KiB`);
+		  console.warn(`⚠️ 插件 ${slug} 文件大于 600KiB`);
 		}
 
 		addField(pluginJson, 'file', `${slug}-${manifest.version}.plugin`);
