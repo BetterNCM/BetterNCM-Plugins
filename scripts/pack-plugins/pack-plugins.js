@@ -94,9 +94,20 @@ plugins.forEach((plugin) => {
 	}
 
 
-	compressing.zip.compressDir(path.resolve(process.cwd(), `../../plugins-data/${plugin}`), path.resolve(process.cwd(), `../../tmp/plugins/${slug}-${manifest.version}.plugin`), {
+	const pluginPath = path.resolve(process.cwd(), `../../tmp/plugins/${slug}-${manifest.version}.plugin`);
+	compressing.zip.compressDir(path.resolve(process.cwd(), `../../plugins-data/${plugin}`), pluginPath, {
 		ignoreBase: true
 	});
+	
+	const stats = fs.statSync(pluginPath);
+	const fileSizeInBytes = stats.size;
+	const fileSizeInKiB = fileSizeInBytes / 1024;
+	if (fileSizeInKiB > 800) {
+	  console.warn('⚠ 插件文件大于 800KiB，正在跳过');
+	  console.warn(`📦 ${slug} ${manifest.version} skipped.`);
+	} else if (fileSizeInKiB > 600) {
+	  console.warn('⚠ 插件文件大于 600KiB');
+	}
 
 	addField(pluginJson, 'file', `${slug}-${manifest.version}.plugin`);
 	addField(pluginJson, 'file-url', `plugins/${slug}-${manifest.version}.plugin`);
