@@ -43,10 +43,10 @@ fs.mkdirSync(path.resolve(tmpPath, 'previews'));
 
 	const plugins = fs.readdirSync(path.resolve(process.cwd(), '../../plugins-data'));
 	for(const plugin of plugins){
-		if (plugin.startsWith('.')) return;
+		if (plugin.startsWith('.')) continue;
 		if (!fs.existsSync(path.resolve(process.cwd(), `../../plugins-data/${plugin}/manifest.json`))) {
 			console.log(`❌ Plugin ${plugin} has no manifest.json.`);
-			return;
+			continue;
 		}
 		const manifest = JSON.parse(fs.readFileSync(path.resolve(process.cwd(), `../../plugins-data/${plugin}/manifest.json`)));
 
@@ -56,7 +56,7 @@ fs.mkdirSync(path.resolve(tmpPath, 'previews'));
 		}
 		if (!checkCompulsoryFields(pluginJson, plugin)) {
 			console.log(`⏩ Packing skipped.`);
-			return;
+			continue;
 		}
 		for (const field of optionalFields) {
 			addField(pluginJson, field, manifest[field]);
@@ -104,10 +104,11 @@ fs.mkdirSync(path.resolve(tmpPath, 'previews'));
 		const fileSizeInBytes = stats.size;
 		const fileSizeInKiB = fileSizeInBytes / 1024;
 		if (fileSizeInKiB > 800) {
-		  console.warn('⚠ 插件文件大于 800KiB，正在跳过');
+		  console.warn(`⚠ 插件 ${slug} 文件大于 800KiB，正在跳过`);
 		  console.warn(`📦 ${slug} ${manifest.version} skipped.`);
+		  continue;
 		} else if (fileSizeInKiB > 600) {
-		  console.warn('⚠ 插件文件大于 600KiB');
+		  console.warn(`⚠ 插件 ${slug} 文件大于 600KiB`);
 		}
 
 		addField(pluginJson, 'file', `${slug}-${manifest.version}.plugin`);
