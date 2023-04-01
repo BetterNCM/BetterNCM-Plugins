@@ -236,7 +236,7 @@ const updatePlugin = async (plugin) => {
 	if (dangerousLevel === 2) {
 		body += `> **Warning**\n> 该更新含有 \`force-install\` 字段`;
 	}
-	const emoji = ['', '🔵 ', '🟠 '];
+	const emoji = ['', '🔵 ', '🟠 '][dangerousLevel];
 	const { data: pullRequest } = await octokit.rest.pulls.create({
 		owner: repoOwner,
 		repo: repoName,
