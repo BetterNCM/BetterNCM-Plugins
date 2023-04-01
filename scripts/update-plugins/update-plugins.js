@@ -45,7 +45,8 @@ const getPluginLatestVersion = async (plugin) => {
 	const url = `https://github.com/${plugin.repo}/raw/${plugin.branch}${plugin.subpath}/manifest.json?${Date.now()}`;
 	try {
 		const response = await fetch(url, {
-			method: 'GET'
+			method: 'GET',
+			headers: {'Authorization': `Bearer ${githubToken}`}
 		});
 		if (!response.ok) {
 			return "0";
