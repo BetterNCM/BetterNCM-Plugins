@@ -231,10 +231,10 @@ const updatePlugin = async (plugin) => {
 	body += `Repo: https://github.com/${plugin.repo}/\n\n`;
 	body += `[🔀 Compare changes](https://github.com/${plugin.repo}/compare/${lastCommitHash.substring(0, 7)}...${defaultBranch})`;
 	if (dangerousLevel === 1) {
-		body += `> **Info**\n> 该更新含有 \`force-update\` 或 \`force-uninstall\` 字段`;
+		body += `\n\n> **Info**\n> 该更新含有 \`force-update\` 或 \`force-uninstall\` 字段`;
 	}
 	if (dangerousLevel === 2) {
-		body += `> **Warning**\n> 该更新含有 \`force-install\` 字段`;
+		body += `\n\n> **Warning**\n> 该更新含有 \`force-install\` 字段`;
 	}
 	const emoji = ['', '🔵 ', '🟠 '][dangerousLevel];
 	const { data: pullRequest } = await octokit.rest.pulls.create({
