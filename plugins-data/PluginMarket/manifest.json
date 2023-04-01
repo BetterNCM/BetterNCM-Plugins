@@ -1,0 +1,13 @@
+{
+    "manifest_version": 1,
+    "name": "PluginMarket",
+    "version": "0.5.0",
+    "author": "BetterNCM",
+    "injects": {
+        "Main": [
+            {
+                "file": "./main.js"
+            }
+        ]
+    }
+}
