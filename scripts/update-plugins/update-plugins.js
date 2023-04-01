@@ -46,7 +46,6 @@ const getPluginLatestVersion = async (plugin) => {
 	try {
 		const response = await fetch(url, {
 			method: 'GET',
-			headers: {'Authorization': `Bearer ${githubToken}`}
 		});
 		if (!response.ok) {
 			return "0";
@@ -193,6 +192,20 @@ const updatePlugin = async (plugin) => {
 		console.log("❌ " + error);
 	}
 	console.log(`🔀 commit hash: ${lastCommitHash.substring(0, 7)} -> ${currentCommitHash.substring(0, 7)}`);
+	// get manifest
+	const manifestPath = path.resolve(process.cwd(), `../../plugins-data/${plugin.slug}/manifest.json`);
+	if (!fs.existsSync(manifestPath)) {
+		console.log(`❌ manifest.json not found`);
+		return;
+	}
+	const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+	let dangerousLevel = 0;
+	if (manifest['force-update'] || manifest['force-uninstall']) {
+		dangerousLevel = 1;
+	}
+	if (manifest['force-install']) {
+		dangerousLevel = 2;
+	}
 	// write commit info
 	if (!fs.existsSync(commitInfoJson)) {
 		fs.writeFileSync(commitInfoJson, JSON.stringify({
@@ -214,11 +227,21 @@ const updatePlugin = async (plugin) => {
 		console.log(`🔼 The branch for PR has been updated`);
 		return;
 	}
+	let body = `\`${plugin.currentVersion}\` -> \`${plugin.latestVersion}\`\n\n`;
+	body += `Repo: https://github.com/${plugin.repo}/\n\n`;
+	body += `[🔀 Compare changes](https://github.com/${plugin.repo}/compare/${lastCommitHash.substring(0, 7)}...${defaultBranch})`;
+	if (dangerousLevel === 1) {
+		body += `> **Info**\n> 该更新含有 \`force-update\` 或 \`force-uninstall\` 字段`;
+	}
+	if (dangerousLevel === 2) {
+		body += `> **Warning**\n> 该更新含有 \`force-install\` 字段`;
+	}
+	const emoji = ['', '🔵 ', '🟠 '];
 	const { data: pullRequest } = await octokit.rest.pulls.create({
 		owner: repoOwner,
 		repo: repoName,
-		title: `Update ${plugin.name} to ${plugin.latestVersion}`,
-		body: `\`${plugin.currentVersion}\` -> \`${plugin.latestVersion}\`\n\nRepo: https://github.com/${plugin.repo}/\n\n[🔀 Compare changes](https://github.com/${plugin.repo}/compare/${lastCommitHash.substring(0, 7)}...${defaultBranch})`,
+		title: `${emoji}Update ${plugin.name} to ${plugin.latestVersion}`,
+		body: body,
 		head: `update-${plugin.slug}-${plugin.latestVersion}`,
 		base: 'master'
 	});
