@@ -47,7 +47,7 @@
     "type": "extension", // 插件类型（可选）：extension (默认) | theme | dependency"
     "requirements": ["example-dependency"], // 依赖的插件 Slug（可选）
     "force-install": false, // 强制安装（需要在审核中告知理由）
-    "force-update": "< 0.1.0", // 强制更新
+    "force-update": "< 0.1.0", // 强制更新（如此处强制更新版本号 < 0.1.0 的版本到最新）
     "force-uninstall": false, // 强制卸载（适用于插件崩了的情况）
 
     "injects": { // 普通注入
