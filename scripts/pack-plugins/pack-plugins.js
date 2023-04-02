@@ -95,10 +95,16 @@ fs.mkdirSync(path.resolve(tmpPath, 'previews'));
 		}
 
 
-		const pluginPath = path.resolve(process.cwd(), `../../tmp/plugins/${slug}-${manifest.version}.plugin`);
+		let fileName = `${slug}-${manifest.version}.plugin`;
+		const pluginPath = path.resolve(process.cwd(), `../../tmp/plugins/${fileName}`);
 		await compressing.zip.compressDir(path.resolve(process.cwd(), `../../plugins-data/${plugin}`), pluginPath, {
 			ignoreBase: true
 		});
+
+		if (slug === 'PluginMarket') {
+			fs.copyFileSync(pluginPath, path.resolve(process.cwd(), `../../tmp/plugins/${slug}.plugin`));
+			fileName = `${slug}.plugin`;
+		}
 
 		const stats = fs.statSync(pluginPath);
 		const fileSizeInBytes = stats.size;
@@ -111,8 +117,8 @@ fs.mkdirSync(path.resolve(tmpPath, 'previews'));
 		  console.warn(`⚠️ 插件 ${slug} 文件大于 600KiB`);
 		}
 
-		addField(pluginJson, 'file', `${slug}-${manifest.version}.plugin`);
-		addField(pluginJson, 'file-url', `plugins/${slug}-${manifest.version}.plugin`);
+		addField(pluginJson, 'file', fileName);
+		addField(pluginJson, 'file-url', `plugins/${fileName}`);
 
 		pluginList.push(pluginJson);
 		console.log(`📦 ${slug} ${manifest.version} packed.`);
