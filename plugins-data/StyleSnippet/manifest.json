@@ -1,7 +1,7 @@
 {
     "manifest_version": 1,
     "name": "StyleSnippet",
-    "version": "0.2.0",
+    "version": "0.2.1",
     "author":"MicroBlock",
     "description":"界面美化 CSS 片段，支持本地一键修改，应用。",
     "preview":"preview.png",
