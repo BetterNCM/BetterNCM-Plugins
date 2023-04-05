@@ -1,0 +1,16 @@
+{
+    "manifest_version": 1,
+    "name": "PlaybackRate", 
+    "version": "0.1.0",
+    "author": "MicroBlock", 
+    "description": "快放，慢放，倒放",
+    "betterncm_version": ">=0.2.5",
+    "preview": "preview.png",
+    "injects": {
+        "Main": [ 
+            {
+                "file": "./main.js"
+            }
+        ]
+    }
+}
