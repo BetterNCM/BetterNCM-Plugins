@@ -1,7 +1,7 @@
 {
     "name": "RevivedUnblockInstaller",
-    "repo": "RevivedUnblockInstaller/RevivedUnblockInstaller",
+    "repo": "ReviveUnblockNCMInstaller/RevivedUnblockInstaller",
     "branch": "master",
     "subpath": "/dist",
-    "author": "RevivedUnblockInstaller"
+    "author": "ReviveUnblockNCMInstaller"
 }
