@@ -10,7 +10,7 @@
     <!-- 主体内容 -->
     <main class="content_box">
         <!-- 字体 -->
-        <div class="content show">
+        <div class="content font show">
             <!-- 更换字体 -->
             <section class="font-settings">
                 <h1>
@@ -153,12 +153,11 @@
         </div>
 
         <!-- 歌词 -->
-        <div class="content">
+        <div class="content lyrics">
             <!-- 歌词设置 -->
             <section class="lyrics-settings">
                 <h1>
                     <strong>歌词设置：</strong>
-                    <button class="u-ibtn5 u-ibtnsz8 apply">立即应用</button>
                     <button class="u-ibtn5 u-ibtnsz8 reset">恢复默认</button>
                 </h1>
                 <div class="item_container">
@@ -167,7 +166,7 @@
                 </div>
                 <div class="item_container">
                     <span>获取方法：</span>
-                    <div class="u-select" style="z-index: 2;">
+                    <div class="u-select">
                         <div class="value retrieval-method"></div>
                         <div class="sltwrap">
                             <ul class="select retrieval-method">
@@ -177,9 +176,33 @@
                         </div>
                     </div>
                 </div>
+            </section>
+
+            <hr />
+
+            <!-- 显示效果 -->
+            <section class="effect-settings">
+                <h1>
+                    <strong>显示效果：</strong>
+                    <button class="u-ibtn5 u-ibtnsz8 apply">立即应用</button>
+                    <button class="u-ibtn5 u-ibtnsz8 reset">恢复默认</button>
+                </h1>
                 <div class="item_container">
                     <span>延迟调整：</span>
                     <input type="number" class="u-txt sc-flag number-input adjust" step="0.1" min="-10" max="10">
+                </div>
+                <div class="item_container">
+                    <span>下句歌词位置：</span>
+                    <div class="u-select" style="z-index: 2;">
+                        <div class="value next-line-lyrics-position"></div>
+                        <div class="sltwrap">
+                            <ul class="select next-line-lyrics-position">
+                                <li class="option f-thide" data-value="0">副歌词，下句歌词显示在这</li>
+                                <li class="option f-thide" data-value="1">主歌词，下句歌词显示在这</li>
+                                <li class="option f-thide" data-value="2">交错式，就跟桌面歌词一样</li>
+                            </ul>
+                        </div>
+                    </div>
                 </div>
                 <div class="item_container">
                     <span>副歌词显示：</span>
@@ -221,7 +244,7 @@
         </div>
 
         <!-- 窗口 -->
-        <div class="content">
+        <div class="content window">
             <!-- 修改位置 -->
             <section class="position-settings">
                 <h1>
@@ -272,7 +295,7 @@
         </div>
 
         <!-- 关于 -->
-        <div class="content">
+        <div class="content about">
             <!-- 关于插件 -->
             <section>
                 <h1>

@@ -11,12 +11,13 @@ plugin.onLoad(async () => {
     let parsedLyric = null;
     let currentIndex = 0;
     let musicId = 0;
+    let currentLine = 0;
 
 
     // 监视软件内歌词变动
     const watchLyricsChange = async () => {
         const mLyric = await betterncm.utils.waitForElement("#x-g-mn .m-lyric");
-        observer = new MutationObserver(mutations => {
+        const MutationCallback = mutations => {
             for (const mutation of mutations) {
                 let lyrics = {
                     basic: "",
@@ -30,9 +31,11 @@ plugin.onLoad(async () => {
                     lyrics.basic = mutation.addedNodes[0].textContent;
                 }
 
-                TaskbarLyricsAPI.lyric(lyrics);
+                TaskbarLyricsAPI.lyrics(lyrics);
             }
-        });
+        }
+
+        observer = new MutationObserver(MutationCallback);
         observer.observe(mLyric, { childList: true, subtree: true });
     }
 
@@ -53,7 +56,7 @@ plugin.onLoad(async () => {
         artistName = artistName.slice(3);
 
         // 发送歌曲信息
-        TaskbarLyricsAPI.lyric({
+        TaskbarLyricsAPI.lyrics({
             "basic": name,
             "extra": artistName
         });
@@ -82,7 +85,7 @@ plugin.onLoad(async () => {
 
     // 音乐进度发生变化时
     async function play_progress(_, time) {
-        const adjust = Number(pluginConfig.get("lyrics")["adjust"]);
+        const adjust = Number(pluginConfig.get("effect")["adjust"]);
         if (parsedLyric) {
             let nextIndex = parsedLyric.findIndex(item => item.time > (time + adjust) * 1000);
             nextIndex = (nextIndex <= -1) ? parsedLyric.length : nextIndex;
@@ -96,14 +99,40 @@ plugin.onLoad(async () => {
                     "extra": currentLyric?.translatedLyric ?? nextLyric?.originalLyric ?? ""
                 };
 
-                const extra_show_value = pluginConfig.get("lyrics")["extra_show"]["value"];
+                const extra_show_value = pluginConfig.get("effect")["extra_show"]["value"];
                 switch (extra_show_value) {
                     case "0": {
                         lyrics.extra = "";
                     } break;
 
                     case "1": {
-                        lyrics.extra = nextLyric?.originalLyric ?? "";
+                        const next_line_lyrics_position_value = pluginConfig.get("effect")["next_line_lyrics_position"]["value"];
+                        switch (next_line_lyrics_position_value) {
+                            case "0": {
+                                lyrics.extra = nextLyric?.originalLyric ?? "";
+                            } break;
+
+                            case "1": {
+                                lyrics.basic = nextLyric?.originalLyric ?? "";
+                                lyrics.extra = currentLyric?.originalLyric ?? "";
+                            } break;
+
+                            case "2": {
+                                if (currentLine == 0) {
+                                    lyrics.basic = currentLyric?.originalLyric ?? "";
+                                    lyrics.extra = nextLyric?.originalLyric ?? "";
+                                    currentLine = 1;
+                                } else {
+                                    lyrics.basic = nextLyric?.originalLyric ?? "";
+                                    lyrics.extra = currentLyric?.originalLyric ?? "";
+                                    currentLine = 0;
+                                }
+                            } break;
+
+                            default: {
+                                lyrics.extra = nextLyric?.originalLyric ?? "";
+                            } break;
+                        }
                     } break;
 
                     case "2": {
@@ -126,7 +155,7 @@ plugin.onLoad(async () => {
                     } break;
                 }
 
-                TaskbarLyricsAPI.lyric(lyrics);
+                TaskbarLyricsAPI.lyrics(lyrics);
                 currentIndex = nextIndex;
             }
         }
