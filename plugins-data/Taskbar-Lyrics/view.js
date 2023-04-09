@@ -75,16 +75,16 @@ plugin.onLoad(async () => {
         const apply = configView.querySelector(".content.font .font-settings .apply");
         const reset = configView.querySelector(".content.font .font-settings .reset");
 
-        const font_family = configView.querySelector(".content.font .font-settings .font-family");
+        const fontFamily = configView.querySelector(".content.font .font-settings .font-family");
 
         const elements = {
-            font_family
+            fontFamily
         };
 
-        apply.addEventListener("click", () => font.set(elements));
-        reset.addEventListener("click", () => font.default(elements));
+        apply.addEventListener("click", () => font.apply(elements));
+        reset.addEventListener("click", () => font.reset(elements));
 
-        font_family.value = pluginConfig.get("font")["font_family"];
+        fontFamily.value = pluginConfig.get("font")["font_family"];
     }
 
 
@@ -113,8 +113,8 @@ plugin.onLoad(async () => {
             extraDarkOpacity
         }
 
-        apply.addEventListener("click", () => color.set(elements));
-        reset.addEventListener("click", () => color.default(elements));
+        apply.addEventListener("click", () => color.apply(elements));
+        reset.addEventListener("click", () => color.reset(elements));
 
         basicLightColor.value = `#${pluginConfig.get("color")["basic"]["light"]["hex_color"].toString(16)}`;
         basicLightOpacity.value = pluginConfig.get("color")["basic"]["light"]["opacity"];
@@ -131,15 +131,15 @@ plugin.onLoad(async () => {
     const setStyleSettings = async () => {
         const reset = configView.querySelector(".content.font .style-settings .reset");
 
-        const basicWeightValue = configView.querySelector(".content.font .style-settings .basic-weight.value");
-        const basicWeightSelect = configView.querySelector(".content.font .style-settings .basic-weight.select");
+        const basicWeightValue = configView.querySelector(".content.font .style-settings .basic-weight .value");
+        const basicWeightSelect = configView.querySelector(".content.font .style-settings .basic-weight .select");
         const basicNormal = configView.querySelector(".content.font .style-settings .basic-normal");
         const basicOblique = configView.querySelector(".content.font .style-settings .basic-oblique");
         const basicItalic = configView.querySelector(".content.font .style-settings .basic-italic");
         const basicUnderline = configView.querySelector(".content.font .style-settings .basic-underline");
         const basicStrikethrough = configView.querySelector(".content.font .style-settings .basic-strikethrough");
-        const extraWeightValue = configView.querySelector(".content.font .style-settings .extra-weight.value");
-        const extraWeightSelect = configView.querySelector(".content.font .style-settings .extra-weight.select");
+        const extraWeightValue = configView.querySelector(".content.font .style-settings .extra-weight .value");
+        const extraWeightSelect = configView.querySelector(".content.font .style-settings .extra-weight .select");
         const extraNormal = configView.querySelector(".content.font .style-settings .extra-normal");
         const extraOblique = configView.querySelector(".content.font .style-settings .extra-oblique");
         const extraItalic = configView.querySelector(".content.font .style-settings .extra-italic");
@@ -155,7 +155,7 @@ plugin.onLoad(async () => {
             extraStrikethrough
         }
 
-        reset.addEventListener("click", () => style.default(elements));
+        reset.addEventListener("click", () => style.reset(elements));
 
         basicNormal.addEventListener("click", event => style.setSlopeNormal(event));
         basicOblique.addEventListener("click", event => style.setSlopeOblique(event));
@@ -208,16 +208,16 @@ plugin.onLoad(async () => {
         const reset = configView.querySelector(".content.lyrics .lyrics-settings .reset");
 
         const lyricsSwitch = configView.querySelector(".content.lyrics .lyrics-settings .lyrics-switch");
-        const retrievalMethodValue = configView.querySelector(".content.lyrics .lyrics-settings .retrieval-method.value");
-        const retrievalMethodSelect = configView.querySelector(".content.lyrics .lyrics-settings .retrieval-method.select");
+        const retrievalMethodValue = configView.querySelector(".content.lyrics .lyrics-settings .retrieval-method .value");
+        const retrievalMethodSelect = configView.querySelector(".content.lyrics .lyrics-settings .retrieval-method .select");
 
         const elements = {
             retrievalMethodValue
         }
 
-        reset.addEventListener("click", () => lyrics.default(elements));
+        reset.addEventListener("click", () => lyrics.reset(elements));
 
-        lyricsSwitch.addEventListener("change", event => lyrics.switch(event));
+        lyricsSwitch.addEventListener("change", event => lyrics.lyricsSwitch(event));
 
         retrievalMethodValue.addEventListener("click", event => {
             const open = event.target.parentElement.classList.contains("z-open");
@@ -240,10 +240,10 @@ plugin.onLoad(async () => {
         const apply = configView.querySelector(".content.lyrics .effect-settings .apply");
         const reset = configView.querySelector(".content.lyrics .effect-settings .reset");
 
-        const nextLineLyricsPositionValue = configView.querySelector(".content.lyrics .effect-settings .next-line-lyrics-position.value");
-        const nextLineLyricsPositionSelect = configView.querySelector(".content.lyrics .effect-settings .next-line-lyrics-position.select");
-        const extraShowValue = configView.querySelector(".content.lyrics .effect-settings .extra-show.value");
-        const extraShowSelect = configView.querySelector(".content.lyrics .effect-settings .extra-show.select");
+        const nextLineLyricsPositionValue = configView.querySelector(".content.lyrics .effect-settings .next-line-lyrics-position .value");
+        const nextLineLyricsPositionSelect = configView.querySelector(".content.lyrics .effect-settings .next-line-lyrics-position .select");
+        const extraShowValue = configView.querySelector(".content.lyrics .effect-settings .extra-show .value");
+        const extraShowSelect = configView.querySelector(".content.lyrics .effect-settings .extra-show .select");
         const adjust = configView.querySelector(".content.lyrics .effect-settings .adjust");
 
         const elements = {
@@ -252,8 +252,8 @@ plugin.onLoad(async () => {
             adjust
         }
 
-        apply.addEventListener("click", () => effect.set(elements));
-        reset.addEventListener("click", () => effect.default(elements));
+        apply.addEventListener("click", () => effect.apply(elements));
+        reset.addEventListener("click", () => effect.reset(elements));
 
         nextLineLyricsPositionValue.addEventListener("click", event => {
             const open = event.target.parentElement.classList.contains("z-open");
@@ -296,7 +296,7 @@ plugin.onLoad(async () => {
         const extraCenter = configView.querySelector(".content.lyrics .align-settings .extra-center");
         const extraRight = configView.querySelector(".content.lyrics .align-settings .extra-right");
 
-        reset.addEventListener("click", () => align.default());
+        reset.addEventListener("click", () => align.reset());
 
         basicLeft.addEventListener("click", event => align.setLeft(event));
         basicCenter.addEventListener("click", event => align.setCenter(event));
@@ -311,15 +311,28 @@ plugin.onLoad(async () => {
     const setPositionSettings = async () => {
         const reset = configView.querySelector(".content.window .position-settings .reset");
 
-        const left = configView.querySelector(".content.window .position-settings .left");
-        const center = configView.querySelector(".content.window .position-settings .center");
-        const right = configView.querySelector(".content.window .position-settings .right");
+        const windowPositionValue = configView.querySelector(".content.window .position-settings .window-position .value");
+        const windowPositionSelect = configView.querySelector(".content.window .position-settings .window-position .select");
 
-        reset.addEventListener("click", () => position.default());
+        const elements = {
+            windowPositionValue
+        }
 
-        left.addEventListener("click", () => position.setLeft());
-        center.addEventListener("click", () => position.setCenter());
-        right.addEventListener("click", () => position.setRight());
+        reset.addEventListener("click", () => position.reset(elements));
+
+        windowPositionValue.addEventListener("click", event => {
+            const open = event.target.parentElement.classList.contains("z-open");
+            if (open) event.target.parentElement.classList.remove("z-open");
+            else event.target.parentElement.classList.add("z-open");
+        });
+        windowPositionSelect.addEventListener("click", event => {
+            const value = event.target.dataset.value;
+            const textContent = event.target.textContent;
+            position.setWindowPosition(value, textContent);
+            windowPositionValue.textContent = textContent;
+        });
+
+        windowPositionValue.textContent = pluginConfig.get("position")["position"]["textContent"];
     }
 
 
@@ -336,8 +349,8 @@ plugin.onLoad(async () => {
             right
         }
 
-        apply.addEventListener("click", () => margin.set(elements));
-        reset.addEventListener("click", () => margin.default(elements));
+        apply.addEventListener("click", () => margin.apply(elements));
+        reset.addEventListener("click", () => margin.reset(elements));
 
         left.value = pluginConfig.get("margin")["left"];
         right.value = pluginConfig.get("margin")["right"];
@@ -348,13 +361,28 @@ plugin.onLoad(async () => {
     const setScreenSettings = async () => {
         const reset = configView.querySelector(".content.window .screen-settings .reset");
 
-        const primary = configView.querySelector(".content.window .screen-settings .primary");
-        const secondary = configView.querySelector(".content.window .screen-settings .secondary");
+        const parentTaskbarValue = configView.querySelector(".content.window .screen-settings .parent-taskbar .value");
+        const parentTaskbarSelect = configView.querySelector(".content.window .screen-settings .parent-taskbar .select");
 
-        reset.addEventListener("click", () => screen.default());
+        const elements = {
+            parentTaskbarValue
+        }
 
-        primary.addEventListener("click", () => screen.setPrimary());
-        secondary.addEventListener("click", () => screen.setSecondary());
+        reset.addEventListener("click", () => screen.reset(elements));
+
+        parentTaskbarValue.addEventListener("click", event => {
+            const open = event.target.parentElement.classList.contains("z-open");
+            if (open) event.target.parentElement.classList.remove("z-open");
+            else event.target.parentElement.classList.add("z-open");
+        });
+        parentTaskbarSelect.addEventListener("click", event => {
+            const value = event.target.dataset.value;
+            const textContent = event.target.textContent;
+            screen.setParentTaskbar(value, textContent);
+            parentTaskbarValue.textContent = textContent;
+        });
+
+        parentTaskbarValue.textContent = pluginConfig.get("screen")["parent_taskbar"]["textContent"];
     }
 
 

@@ -2,12 +2,52 @@
 
 
 plugin.onLoad(async () => {
+    const TaskbarLyricsPort = BETTERNCM_API_PORT + 2;
+
+    const TaskbarLyricsFetch = (path, params) => fetch(
+        `http://127.0.0.1:${TaskbarLyricsPort}/taskbar${path}`,
+        {
+            method: "POST",
+            body: JSON.stringify(params),
+            headers: {
+                "Content-Type": "application/json"
+            }
+        }
+    );
+
+    const TaskbarLyricsAPI = {
+        // 字体设置
+        font: {
+            font: params => TaskbarLyricsFetch("/font/font", params),
+            color: params => TaskbarLyricsFetch("/font/color", params),
+            style: params => TaskbarLyricsFetch("/font/style", params),
+        },
+
+        // 歌词设置
+        lyrics: {
+            lyrics: params => TaskbarLyricsFetch("/lyrics/lyrics", params),
+            align: params => TaskbarLyricsFetch("/lyrics/align", params),
+        },
+
+        // 窗口设置
+        window: {
+            position: params => TaskbarLyricsFetch("/window/position", params),
+            margin: params => TaskbarLyricsFetch("/window/margin", params),
+            screen: params => TaskbarLyricsFetch("/window/screen", params),
+        },
+
+        // 关闭
+        close: params => TaskbarLyricsFetch("/close", params)
+    };
+
+
     // 对应Windows的枚举
     const WindowsEnum = {
         WindowAlignment: {
-            WindowAlignmentLeft: 0,
-            WindowAlignmentCenter: 1,
-            WindowAlignmentRight: 2
+            WindowAlignmentAdaptive: 0,
+            WindowAlignmentLeft: 1,
+            WindowAlignmentCenter: 2,
+            WindowAlignmentRight: 3
         },
         DWRITE_TEXT_ALIGNMENT: {
             DWRITE_TEXT_ALIGNMENT_LEADING: 0,
@@ -39,7 +79,7 @@ plugin.onLoad(async () => {
             DWRITE_FONT_STYLE_OBLIQUE: 1,
             DWRITE_FONT_STYLE_ITALIC: 2
         }
-    }
+    };
 
 
     // 默认的配置
@@ -111,14 +151,20 @@ plugin.onLoad(async () => {
             "extra": WindowsEnum.DWRITE_TEXT_ALIGNMENT.DWRITE_TEXT_ALIGNMENT_LEADING
         },
         "position": {
-            "position": WindowsEnum.WindowAlignment.WindowAlignmentLeft
+            "position": {
+                "value": WindowsEnum.WindowAlignment.WindowAlignmentAdaptive,
+                "textContent": "自动，自适应选择左或右"
+            }
         },
         "margin": {
             "left": 0,
             "right": 0
         },
         "screen": {
-            "parent_taskbar": "Shell_TrayWnd"
+            "parent_taskbar": {
+                "value": "Shell_TrayWnd",
+                "textContent": "主屏幕任务栏"
+            }
         }
     };
 
@@ -126,10 +172,12 @@ plugin.onLoad(async () => {
     const pluginConfig = {
         get: name => Object.assign({}, defaultConfig[name], plugin.getConfig(name, defaultConfig[name])),
         set: (name, value) => plugin.setConfig(name, value)
-    }
+    };
 
 
     this.base = {
+        TaskbarLyricsPort,
+        TaskbarLyricsAPI,
         WindowsEnum,
         defaultConfig,
         pluginConfig
