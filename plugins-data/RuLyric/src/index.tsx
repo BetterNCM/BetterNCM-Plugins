@@ -192,7 +192,7 @@ function MainMenu() {
             "audioplayer",
             (_, time) => {
                 const ms = Math.round(time * 1000);
-                if (_currentLyrics) {
+                if (_currentLyrics && _currentLyrics.length > 0) {
                     if (!_currentLyrics[_currentLine]) _currentLine = 0;
 
                     while (_currentLyrics[_currentLine + 1] && (_currentLyrics[_currentLine + 1].time < ms))
@@ -227,7 +227,7 @@ function MainMenu() {
                                 _currentLyrics[_currentLine].translatedLyric,
                                 Math.max(ms - _currentLyrics[_currentLine].time, 0)
                             ])
-                    } else {
+                    } else if (_currentLyrics[_currentLine]?.time){
                         const time = Math.round(ms - _currentLyrics[_currentLine].time);
                         if (time > 100)
                             betterncm_native.native_plugin.call('rulyrics.seek', [
