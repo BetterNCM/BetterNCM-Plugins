@@ -22,8 +22,7 @@ plugin.onLoad(() => {
                 return;
 
             const animCT = progress / totalLength * animMaxLen;
-            if (animOper?.playState === 'running')
-                animOper.currentTime = animCT;
+            animOper.currentTime = animCT;
         });
         legacyNativeCmder.appendRegisterCall('PlayState', 'audioplayer', (_, __, state) => {
             if (state === 2) {
