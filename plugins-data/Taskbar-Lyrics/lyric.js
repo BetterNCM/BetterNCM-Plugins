@@ -2,8 +2,7 @@
 
 
 plugin.onLoad(async () => {
-    const TaskbarLyricsAPI = this.api.TaskbarLyricsAPI;
-    const pluginConfig = this.base.pluginConfig;
+    const { TaskbarLyricsAPI, pluginConfig } = { ...this.base };
     const liblyric = loadedPlugins.liblyric;
 
 
@@ -31,7 +30,7 @@ plugin.onLoad(async () => {
                     lyrics.basic = mutation.addedNodes[0].textContent;
                 }
 
-                TaskbarLyricsAPI.lyrics(lyrics);
+                TaskbarLyricsAPI.lyrics.lyrics(lyrics);
             }
         }
 
@@ -56,7 +55,7 @@ plugin.onLoad(async () => {
         artistName = artistName.slice(3);
 
         // 发送歌曲信息
-        TaskbarLyricsAPI.lyrics({
+        TaskbarLyricsAPI.lyrics.lyrics({
             "basic": name,
             "extra": artistName
         });
@@ -128,10 +127,6 @@ plugin.onLoad(async () => {
                                     currentLine = 0;
                                 }
                             } break;
-
-                            default: {
-                                lyrics.extra = nextLyric?.originalLyric ?? "";
-                            } break;
                         }
                     } break;
 
@@ -147,15 +142,9 @@ plugin.onLoad(async () => {
                             ?? nextLyric?.originalLyric
                             ?? "";
                     } break;
-
-                    default: {
-                        lyrics.extra = currentLyric?.translatedLyric
-                            ?? nextLyric?.originalLyric
-                            ?? ""
-                    } break;
                 }
 
-                TaskbarLyricsAPI.lyrics(lyrics);
+                TaskbarLyricsAPI.lyrics.lyrics(lyrics);
                 currentIndex = nextIndex;
             }
         }
