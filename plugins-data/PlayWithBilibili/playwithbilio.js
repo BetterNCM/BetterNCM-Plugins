@@ -47,13 +47,14 @@ const updatePluginStyle = () => {
     `;
 }
 
-const switchUrl = (url, after = () => { }) => {
+const switchUrl = (url, after) => {
     return new Promise(async rs => {
         await fadeOut()
         ifr.src = url;
         ifr.onload = async () => {
+            await fadeIn();
             await after();
-            await fadeIn()
+            rs();
         }
     })
 }
@@ -181,8 +182,9 @@ plugin.onLoad(() => {
 
         if (url) {
             await switchUrl(urlMap[kwd].data.result[0].arcurl, initBiliPlayer);
-            ifrVideo = ifr.contentDocument.querySelector('video');
-            ifrVideo.volume = 0
+            ifrVideo = await betterncm.utils.waitForFunction(() => ifr.contentDocument.querySelector('video'), 100);
+            console.log("[ PlayWithBili ] Video loaded", ifrVideo);
+            ifrVideo.volume = 0;
         } else {
             await fadeOut();
             ifr.src = "about:blank"
@@ -298,7 +300,12 @@ plugin.onConfig(tools => {
     }
 
     const loginIfr = dom("div", {}, dom("button", {
-        innerHTML: "登录", onclick: () => {
+        innerHTML: "登录", style: {
+            color: 'black',
+            border: 'none',
+            padding: '20px 20px',
+            width: '100%'
+        }, onclick: () => {
             loginIfr.firstChild.remove()
             loginIfr.prepend(dom('iframe',
                 {
