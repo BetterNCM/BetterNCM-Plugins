@@ -4,6 +4,7 @@ plugin.onLoad(() => {
     document.head.appendChild(fluentProgressBarController);
     
     let playing = false;
+    let seeking = false;
 
     const animateProgressBar = eleHas => {
         const animMaxLen = 10000;
@@ -22,7 +23,7 @@ plugin.onLoad(() => {
                 return;
 
             const animCT = progress / totalLength * animMaxLen;
-            animOper.currentTime = animCT;
+            if (!seeking) animOper.currentTime = animCT;
         });
         legacyNativeCmder.appendRegisterCall('PlayState', 'audioplayer', (_, __, state) => {
             if (state === 2) {
@@ -36,11 +37,14 @@ plugin.onLoad(() => {
 
         new MutationObserver(() => {
             if (document.querySelector('.prg.hvr')) {
+                seeking = true;
                 animOper.pause();
                 animOper.currentTime = parseFloat(document.querySelector('.prg .has').style.width) / 100 * animMaxLen;
             }
-            else if (playing)
-                animOper.play();
+            else {
+                seeking = false;
+                if (playing) animOper.play();
+            }
         }).observe(document.querySelector('.prg .has'), { attributes: true, attributeFilter: ['style'] });
     }
 
