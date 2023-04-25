@@ -12,17 +12,7 @@
     return await get(`artists/${id}/details`);
   }
   async function searchSong(name, artistsName) {
-    let result = /(.*)\s\(.*\)/g.exec(name);
-    name = result == null ? name : result[1];
     let url = `songs?query=${name}&sort=SongType&childVoicebanks=true&nameMatchMode=Partial`;
-    artistsName = artistsName.slice(0, 4);
-    for (let artistName of artistsName) {
-      let id = await getArtistIdByName(artistName);
-      if (id != 0) {
-        url += `&artistId%5B%5D=${id}`;
-      }
-    }
-    console.log(url);
     const datas = await get(url);
     if (datas.items[0] == void 0)
       return null;
@@ -90,6 +80,214 @@
     \u611B\u8A00\u8449III: 207153,
     "\u3044\uFF5E\u3084\u3044\uFF5E\u3084\u3044\uFF5E\u3084": 174236
   };
+
+  // component.js
+  function createNode(html) {
+    let tempNode = document.createElement("div");
+    tempNode.innerHTML = html;
+    return tempNode.firstElementChild;
+  }
+  var parser = new DOMParser();
+  var Youtube1 = createNode(`
+    <b class="vi-achievement-yt1 f-ust f-ust-1">
+        <style>
+            .vi-achievement-yt1 {
+                display: flex;
+                justify-content: center;
+                vertical-align: middle;
+                align-items: center;
+                border: 1px solid #FFD700;
+                font-size: 10px;
+                background-color: #FFD70030;
+                border-radius: 20px;
+                height: 20px;
+                width: 60px;
+
+            }
+            .vi-achievement-yt1 p {
+                margin: 0;
+                margin-left: 5px;
+            }
+        </style>
+        <img src="https://vocadb.net/Content/youtube.png" width="16px" height="16px"/>
+        <p>\u4F20\u8BF4</p>
+    </b>
+`);
+  var Youtube2 = createNode(`
+    <b class="vi-achievement-yt2 f-ust f-ust-1">
+        <style>
+            .vi-achievement-yt2 {
+                display: flex;
+                justify-content: center;
+                vertical-align: middle;
+                align-items: center;
+                border: 1px solid #FF4D4D;
+                font-size: 10px;
+                background-color: #FF4D4D30;
+                border-radius: 20px;
+                height: 20px;
+                width: 60px;
+
+            }
+            .vi-achievement-yt2 p {
+                margin: 0;
+                margin-left: 5px;
+            }
+        </style>
+        <img src="https://vocadb.net/Content/youtube.png" width="16px" height="16px"/>
+        <p>\u795E\u8BDD</p>
+    </b>
+`);
+  var Niconico1 = createNode(`
+    <b class="vi-achievement-nico1 f-ust f-ust-1">
+        <style>
+            .vi-achievement-nico1 {
+                display: flex;
+                justify-content: center;
+                vertical-align: middle;
+                align-items: center;
+                border: 1px solid #FFD700;
+                font-size: 10px;
+                background-color: #FFD70030;
+                border-radius: 20px;
+                height: 20px;
+                width: 60px;
+
+            }
+            .vi-achievement-nico1 p {
+                margin: 0;
+                margin-left: 5px;
+            }
+        </style>
+        <img src="https://vocadb.net/Content/nico.png" width="16px" height="16px"/>
+        <p>\u4F20\u8BF4</p>
+    </b>
+`);
+  var Niconico2 = createNode(`
+    <b class="vi-achievement-nico2 f-ust f-ust-1">
+        <style>
+            .vi-achievement-nico2 {
+                display: flex;
+                justify-content: center;
+                vertical-align: middle;
+                align-items: center;
+                border: 1px solid #FF4D4D;
+                font-size: 10px;
+                background-color: #FF4D4D30;
+                border-radius: 20px;
+                height: 20px;
+                width: 60px;
+
+            }
+            .vi-achievement-nico2 p {
+                margin: 0;
+                margin-left: 5px;
+            }
+        </style>
+        <img src="https://vocadb.net/Content/nico.png" width="16px" height="16px"/>
+        <p>\u795E\u8BDD</p>
+    </b>
+`);
+  var Bilibili1 = createNode(`
+<b class="vi-achievement-bili1 f-ust f-ust-1">
+    <style>
+        .vi-achievement-bili1 {
+            display: flex;
+            justify-content: center;
+            vertical-align: middle;
+            align-items: center;
+            border: 1px solid #66CCFF;
+            font-size: 10px;
+            background-color: #66CCFF30;
+            border-radius: 20px;
+            height: 20px;
+            width: 60px;
+
+        }
+        .vi-achievement-bili1 p {
+            margin: 0;
+            margin-left: 5px;
+        }
+    </style>
+    <img src="https://www.bilibili.com/favicon.ico" width="32px" height="32px"/>
+    <p>\u6BBF\u5802</p>
+</b>
+`);
+  var Bilibili2 = createNode(`
+<b class="vi-achievement-bili2 f-ust f-ust-1">
+    <style>
+        .vi-achievement-bili2 {
+            display: flex;
+            justify-content: center;
+            vertical-align: middle;
+            align-items: center;
+            border: 1px solid #FFD700;
+            font-size: 10px;
+            background-color: #FFD70030;
+            border-radius: 20px;
+            height: 20px;
+            width: 60px;
+
+        }
+        .vi-achievement-bili2 p {
+            margin: 0;
+            margin-left: 5px;
+        }
+    </style>
+    <img src="https://www.bilibili.com/favicon.ico" width="16px" height="16px"/>
+    <p>\u4F20\u8BF4</p>
+</b>
+`);
+  var Bilibili3 = createNode(`
+<b class="vi-achievement-bili3 f-ust f-ust-1">
+    <style>
+        .vi-achievement-bili3 {
+            display: flex;
+            justify-content: center;
+            vertical-align: middle;
+            align-items: center;
+            border: 1px solid #FF4D4D;
+            font-size: 10px;
+            background-color: #FF4D4D30;
+            border-radius: 20px;
+            height: 20px;
+            width: 60px;
+
+        }
+        .vi-achievement-bili3 p {
+            margin: 0;
+            margin-left: 5px;
+        }
+    </style>
+    <img src="https://www.bilibili.com/favicon.ico" width="16px" height="16px"/>
+    <p>\u795E\u8BDD</p>
+</b>
+`);
+  var Bilibili4 = (view) => createNode(`
+<b class="vi-achievement-bili3 f-ust f-ust-1">
+    <style>
+        .vi-achievement-bili3 {
+            display: flex;
+            justify-content: center;
+            vertical-align: middle;
+            align-items: center;
+            border: 1px solid #66CCFF;
+            font-size: 10px;
+            background-color: #66CCFF30;
+            border-radius: 20px;
+            height: 20px;
+            width: 60px;
+
+        }
+        .vi-achievement-bili3 p {
+            margin: 0;
+            margin-left: 5px;
+        }
+    </style>
+    <img src="https://www.bilibili.com/favicon.ico" width="16px" height="16px"/>
+    <p>${view}</p>
+</b>
+`);
 
   // main.js
   var BR = () => dom("br", {});
@@ -171,13 +369,13 @@
       songDetails(data).then((descriptions) => {
         let dd1 = dom(
           "dd",
-          { "class": ["inf", "s-fc2", "vi-song-item"] },
+          { "class": ["inf", "s-fc2", "vi-song-item"], id: "vi-control" },
           dom("span", { innerText: "\u5728VocaDB\u4E2D\u67E5\u627E\u5230\u8BB0\u5F55  ", "class": ["item", "s-fc1", "mq-yahei"], style: { "font-size": "13px" } }),
-          dom("a", { innerText: "\u70B9\u51FB\u67E5\u770B", "class": ["mq-yahei"], style: { "font-size": "13px" } }),
+          dom("a", { innerText: "\u67E5\u770B\u4FE1\u606F", "class": ["mq-yahei"], style: { "font-size": "13px" } }),
           BR(),
           BR()
         );
-        dd1.childNodes[1].addEventListener("click", showHidden, false);
+        dd1.childNodes[1].addEventListener("click", switchHidden, false);
         descriptions.forEach((description) => {
           description = hideItem(description);
           description.classList.add("mq-yahei");
@@ -196,13 +394,13 @@
     betterncm.utils.waitForElement(".m-info-artist").then((result) => {
       let dd1 = dom(
         "dd",
-        { "class": ["inf", "s-fc2"] },
+        { "class": ["inf", "s-fc2"], "id": "vi-control" },
         dom("span", { innerText: "\u5728VocaDB\u4E2D\u67E5\u627E\u5230\u8BB0\u5F55  ", "class": ["item", "s-fc1"] }),
-        dom("a", { innerText: "\u70B9\u51FB\u67E5\u770B" }),
+        dom("a", { innerText: "\u67E5\u770B\u4FE1\u606F" }),
         BR(),
         BR()
       );
-      dd1.childNodes[1].addEventListener("click", showHidden, false);
+      dd1.childNodes[1].addEventListener("click", switchHidden, false);
       switch (data.artistType) {
         case "Producer":
           producerDetails(data).forEach((child) => {
@@ -294,19 +492,25 @@
     descriptions.push(text(`\u6B4C\u66F2\u7C7B\u578B: ${data.song.songType}`), BR());
     const date = new Date(data.song.publishDate);
     descriptions.push(text(`\u53D1\u5E03\u65E5\u671F: ${date.getFullYear()}\u5E74${date.getMonth() + 1}\u6708${date.getDate()}\u65E5`), BR());
+    let info = await betterncm.utils.waitForElement("div[class='info']");
+    let achievementsLine = dom("h2", { "class": ["u-tit", "f-ff2", "f-thide", "s-fc4"] });
+    achievementsLine.style.marginLeft = "0";
+    achievementsLine.style.display = "flex";
+    achievementsLine.style.alignItems = "center";
+    achievementsLine.style.height = "auto";
     for (let pool of data.pools) {
       switch (pool.id) {
         case 30:
-          descriptions.push(BR(), dom("span", { innerText: "NicoNico\u4F20\u8BF4\u8FBE\u6210", "style": { "color": "#FFD700" } }));
+          achievementsLine.appendChild(Niconico1);
           break;
         case 2665:
-          descriptions.push(BR(), dom("span", { innerText: "Youtube\u4F20\u8BF4\u8FBE\u6210", "style": { "color": "#FFD700" } }));
+          achievementsLine.appendChild(Youtube1);
           break;
         case 6477:
-          descriptions.push(BR(), dom("span", { innerText: "NicoNico\u795E\u8BDD\u8FBE\u6210", "style": { "color": "#FF4D4D" } }));
+          achievementsLine.appendChild(Niconico2);
           break;
         case 6478:
-          descriptions.push(BR(), dom("span", { innerText: "Youtube\u795E\u8BDD\u8FBE\u6210", "style": { "color": "#FF4D4D" } }));
+          achievementsLine.appendChild(Youtube2);
       }
     }
     if (data.alternateVersions.length != 0) {
@@ -324,13 +528,13 @@
           data2 = data2.data;
           let view = data2.stat.view;
           if (view >= 1e7) {
-            descriptions.push(dom("span", { innerText: `\u64AD\u653E\u91CF ${view} (\u795E\u8BDD)`, "style": { "color": "#FF4D4D" } }));
+            achievementsLine.appendChild(Bilibili3);
           } else if (view >= 1e6) {
-            descriptions.push(dom("span", { innerText: `\u64AD\u653E\u91CF ${view} (\u4F20\u8BF4)`, "style": { "color": "#FFD700" } }));
+            achievementsLine.appendChild(Bilibili2);
           } else if (view >= 1e5) {
-            descriptions.push(dom("span", { innerText: `\u64AD\u653E\u91CF ${view} (\u6BBF\u5802)`, "style": { "color": "#66CCFF" } }));
+            achievementsLine.appendChild(Bilibili1);
           } else {
-            descriptions.push(text(`\u64AD\u653E\u91CF ${view}`));
+            achievementsLine.appendChild(Bilibili4(view));
           }
           descriptions.push(BR());
           descriptions.push(text(`\u559C\u6B22\u6570 ${data2.stat.like}`), BR());
@@ -350,6 +554,10 @@
         }
       }
     }
+    for (let node of Array(...achievementsLine.children).slice()) {
+      node.style.marginRight = "5px";
+    }
+    info.insertBefore(achievementsLine, info.firstChild);
     return descriptions;
   }
   function hideItem(element) {
@@ -357,10 +565,21 @@
     element.setAttribute("class", "vi-hidden-item item s-fc1");
     return element;
   }
-  function showHidden() {
+  function switchHidden() {
+    let vicontrol = document.getElementById("vi-control");
     const hiddenItems = document.getElementsByClassName("vi-hidden-item");
-    for (let i = 0; i < hiddenItems.length; i++) {
-      hiddenItems.item(i).hidden = false;
+    if (vicontrol.classList.contains("vi-hidden-displayed")) {
+      for (let i = 0; i < hiddenItems.length; i++) {
+        hiddenItems.item(i).hidden = true;
+      }
+      vicontrol.classList.remove("vi-hidden-displayed");
+      vicontrol.childNodes[1].innerText = "\u67E5\u770B\u4FE1\u606F";
+    } else {
+      for (let i = 0; i < hiddenItems.length; i++) {
+        hiddenItems.item(i).hidden = false;
+      }
+      vicontrol.classList.add("vi-hidden-displayed");
+      vicontrol.childNodes[1].innerText = "\u9690\u85CF\u4FE1\u606F";
     }
   }
 })();
