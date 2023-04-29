@@ -72,6 +72,35 @@
     }
     return defaultName;
   }
+  function createNode(html) {
+    let tempNode = document.createElement("div");
+    tempNode.innerHTML = html;
+    return tempNode.firstElementChild;
+  }
+  function injectCSS() {
+    betterncm.utils.waitForElement("head").then((head) => {
+      head.appendChild(createNode(`
+        <style>
+            .vi-achievement {
+                display: flex;
+                justify-content: center;
+                vertical-align: middle;
+                align-items: center;
+                font-size: 10px;
+                border-radius: 20px;
+                height: 20px;
+                width: 60px;
+
+            }
+            .vi-achievement p {
+                margin: 0;
+                margin-left: 5px;
+                color: black;
+            }
+
+        `));
+    });
+  }
 
   // override.json
   var override_default = {
@@ -82,212 +111,25 @@
   };
 
   // component.js
-  function createNode(html) {
-    let tempNode = document.createElement("div");
-    tempNode.innerHTML = html;
-    return tempNode.firstElementChild;
+  function newAchievement(color, img, text2) {
+    return createNode(`
+        <b class="vi-achievement f-ust f-ust-1" style="border: 1px solid ${color}; background-color: ${color}30">
+            <img src="${img}" width="16px" height="16px"/>
+            <p>${text2}</p>
+        </b>
+    `);
   }
-  var parser = new DOMParser();
-  var Youtube1 = createNode(`
-    <b class="vi-achievement-yt1 f-ust f-ust-1">
-        <style>
-            .vi-achievement-yt1 {
-                display: flex;
-                justify-content: center;
-                vertical-align: middle;
-                align-items: center;
-                border: 1px solid #FFD700;
-                font-size: 10px;
-                background-color: #FFD70030;
-                border-radius: 20px;
-                height: 20px;
-                width: 60px;
-
-            }
-            .vi-achievement-yt1 p {
-                margin: 0;
-                margin-left: 5px;
-            }
-        </style>
-        <img src="https://vocadb.net/Content/youtube.png" width="16px" height="16px"/>
-        <p>\u4F20\u8BF4</p>
-    </b>
-`);
-  var Youtube2 = createNode(`
-    <b class="vi-achievement-yt2 f-ust f-ust-1">
-        <style>
-            .vi-achievement-yt2 {
-                display: flex;
-                justify-content: center;
-                vertical-align: middle;
-                align-items: center;
-                border: 1px solid #FF4D4D;
-                font-size: 10px;
-                background-color: #FF4D4D30;
-                border-radius: 20px;
-                height: 20px;
-                width: 60px;
-
-            }
-            .vi-achievement-yt2 p {
-                margin: 0;
-                margin-left: 5px;
-            }
-        </style>
-        <img src="https://vocadb.net/Content/youtube.png" width="16px" height="16px"/>
-        <p>\u795E\u8BDD</p>
-    </b>
-`);
-  var Niconico1 = createNode(`
-    <b class="vi-achievement-nico1 f-ust f-ust-1">
-        <style>
-            .vi-achievement-nico1 {
-                display: flex;
-                justify-content: center;
-                vertical-align: middle;
-                align-items: center;
-                border: 1px solid #FFD700;
-                font-size: 10px;
-                background-color: #FFD70030;
-                border-radius: 20px;
-                height: 20px;
-                width: 60px;
-
-            }
-            .vi-achievement-nico1 p {
-                margin: 0;
-                margin-left: 5px;
-            }
-        </style>
-        <img src="https://vocadb.net/Content/nico.png" width="16px" height="16px"/>
-        <p>\u4F20\u8BF4</p>
-    </b>
-`);
-  var Niconico2 = createNode(`
-    <b class="vi-achievement-nico2 f-ust f-ust-1">
-        <style>
-            .vi-achievement-nico2 {
-                display: flex;
-                justify-content: center;
-                vertical-align: middle;
-                align-items: center;
-                border: 1px solid #FF4D4D;
-                font-size: 10px;
-                background-color: #FF4D4D30;
-                border-radius: 20px;
-                height: 20px;
-                width: 60px;
-
-            }
-            .vi-achievement-nico2 p {
-                margin: 0;
-                margin-left: 5px;
-            }
-        </style>
-        <img src="https://vocadb.net/Content/nico.png" width="16px" height="16px"/>
-        <p>\u795E\u8BDD</p>
-    </b>
-`);
-  var Bilibili1 = createNode(`
-<b class="vi-achievement-bili1 f-ust f-ust-1">
-    <style>
-        .vi-achievement-bili1 {
-            display: flex;
-            justify-content: center;
-            vertical-align: middle;
-            align-items: center;
-            border: 1px solid #66CCFF;
-            font-size: 10px;
-            background-color: #66CCFF30;
-            border-radius: 20px;
-            height: 20px;
-            width: 60px;
-
-        }
-        .vi-achievement-bili1 p {
-            margin: 0;
-            margin-left: 5px;
-        }
-    </style>
-    <img src="https://www.bilibili.com/favicon.ico" width="32px" height="32px"/>
-    <p>\u6BBF\u5802</p>
-</b>
-`);
-  var Bilibili2 = createNode(`
-<b class="vi-achievement-bili2 f-ust f-ust-1">
-    <style>
-        .vi-achievement-bili2 {
-            display: flex;
-            justify-content: center;
-            vertical-align: middle;
-            align-items: center;
-            border: 1px solid #FFD700;
-            font-size: 10px;
-            background-color: #FFD70030;
-            border-radius: 20px;
-            height: 20px;
-            width: 60px;
-
-        }
-        .vi-achievement-bili2 p {
-            margin: 0;
-            margin-left: 5px;
-        }
-    </style>
-    <img src="https://www.bilibili.com/favicon.ico" width="16px" height="16px"/>
-    <p>\u4F20\u8BF4</p>
-</b>
-`);
-  var Bilibili3 = createNode(`
-<b class="vi-achievement-bili3 f-ust f-ust-1">
-    <style>
-        .vi-achievement-bili3 {
-            display: flex;
-            justify-content: center;
-            vertical-align: middle;
-            align-items: center;
-            border: 1px solid #FF4D4D;
-            font-size: 10px;
-            background-color: #FF4D4D30;
-            border-radius: 20px;
-            height: 20px;
-            width: 60px;
-
-        }
-        .vi-achievement-bili3 p {
-            margin: 0;
-            margin-left: 5px;
-        }
-    </style>
-    <img src="https://www.bilibili.com/favicon.ico" width="16px" height="16px"/>
-    <p>\u795E\u8BDD</p>
-</b>
-`);
-  var Bilibili4 = (view) => createNode(`
-<b class="vi-achievement-bili3 f-ust f-ust-1">
-    <style>
-        .vi-achievement-bili3 {
-            display: flex;
-            justify-content: center;
-            vertical-align: middle;
-            align-items: center;
-            border: 1px solid #66CCFF;
-            font-size: 10px;
-            background-color: #66CCFF30;
-            border-radius: 20px;
-            height: 20px;
-            width: 60px;
-
-        }
-        .vi-achievement-bili3 p {
-            margin: 0;
-            margin-left: 5px;
-        }
-    </style>
-    <img src="https://www.bilibili.com/favicon.ico" width="16px" height="16px"/>
-    <p>${view}</p>
-</b>
-`);
+  var YOUTUBE_ICO = "https://vocadb.net/Content/youtube.png";
+  var NICO_ICO = "https://vocadb.net/Content/nico.png";
+  var BILI_ICO = "https://www.bilibili.com/favicon.ico";
+  var Youtube1 = newAchievement("#FFD700", YOUTUBE_ICO, "\u4F20\u8BF4");
+  var Youtube2 = newAchievement("#FF4D4D", YOUTUBE_ICO, "\u795E\u8BDD");
+  var Niconico1 = newAchievement("#FFD700", NICO_ICO, "\u4F20\u8BF4");
+  var Niconico2 = newAchievement("#FF4D4D", NICO_ICO, "\u795E\u8BDD");
+  var Bilibili1 = newAchievement("#66CCFF", BILI_ICO, "\u6BBF\u5802");
+  var Bilibili2 = newAchievement("#FFD700", BILI_ICO, "\u4F20\u8BF4");
+  var Bilibili3 = newAchievement("#FF4D4D", BILI_ICO, "\u795E\u8BDD");
+  var Bilibili4 = (view) => newAchievement("#66CCFF", BILI_ICO, view);
 
   // main.js
   var BR = () => dom("br", {});
@@ -318,6 +160,7 @@
         initialized = true;
       }
     });
+    injectCSS();
     new MutationObserver((records, observer) => {
       if (records[0].addedNodes[0] && records[0].addedNodes[0].className && records[0].addedNodes[0].className.includes("g-single")) {
         debouncedSongUpdate();
@@ -492,7 +335,7 @@
     descriptions.push(text(`\u6B4C\u66F2\u7C7B\u578B: ${data.song.songType}`), BR());
     const date = new Date(data.song.publishDate);
     descriptions.push(text(`\u53D1\u5E03\u65E5\u671F: ${date.getFullYear()}\u5E74${date.getMonth() + 1}\u6708${date.getDate()}\u65E5`), BR());
-    let info = await betterncm.utils.waitForElement("div[class='info']");
+    let info = await betterncm.utils.waitForElement(".inf > .info");
     let achievementsLine = dom("h2", { "class": ["u-tit", "f-ff2", "f-thide", "s-fc4"] });
     achievementsLine.style.marginLeft = "0";
     achievementsLine.style.display = "flex";
