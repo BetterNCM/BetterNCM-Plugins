@@ -1,9 +1,9 @@
 {
     "manifest_version": 1,
     "name": "InfLink",
-    "version": "0.1.8",
+    "version": "1.0.0",
     "author":"MicroBlock",
-    "description":"连接各种歌曲信息协议\n目前：SMTC（Windows自带）",
+    "description":"连接各种歌曲信息协议\n目前：SMTC（Windows自带）, Discord Rich Presence",
     "preview":"preview.png",
     "betterncm_version": ">=1.0.0",
     "injects": {
