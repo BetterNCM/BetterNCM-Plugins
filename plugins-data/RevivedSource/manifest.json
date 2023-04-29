@@ -1,0 +1,18 @@
+{
+    "manifest_version": 1,
+    "name": "RevivedSource",
+    "version": "0.1.0",
+    "betterncm_version": ">=1.0.0",
+    "author": "Revived@Unblocked",
+    "description": "向插件商店中添加 Revive 源，包含无法上架至插件商店的某些插件。",
+    "preview": "preview.svg",
+    "type": "extension",
+    "requirements": [],
+    "injects": {
+        "Main": [
+            {
+                "file": "main.js"
+            }
+        ]
+    }
+}
