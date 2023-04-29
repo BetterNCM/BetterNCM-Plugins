@@ -72,14 +72,12 @@
     }
     return defaultName;
   }
-  function createNode(html) {
-    let tempNode = document.createElement("div");
-    tempNode.innerHTML = html;
-    return tempNode.firstElementChild;
+  function htmlToNode(html) {
+    return dom("div", { innerHTML: html }).firstElementChild;
   }
   function injectCSS() {
     betterncm.utils.waitForElement("head").then((head) => {
-      head.appendChild(createNode(`
+      head.appendChild(htmlToNode(`
         <style>
             .vi-achievement {
                 display: flex;
@@ -101,6 +99,16 @@
         `));
     });
   }
+  function xss(str) {
+    const map = {
+      "<": "&lt;",
+      ">": "&gt;",
+      "&": "&amp;",
+      '"': "&quot;",
+      "'": "&#39;"
+    };
+    return str.replace(/[<>&"']/g, (m) => map[m]);
+  }
 
   // override.json
   var override_default = {
@@ -112,10 +120,10 @@
 
   // component.js
   function newAchievement(color, img, text2) {
-    return createNode(`
-        <b class="vi-achievement f-ust f-ust-1" style="border: 1px solid ${color}; background-color: ${color}30">
-            <img src="${img}" width="16px" height="16px"/>
-            <p>${text2}</p>
+    return htmlToNode(`
+        <b class="vi-achievement f-ust f-ust-1" style="border: 1px solid ${xss(color)}; background-color: ${color}30">
+            <img src="${xss(img)}" width="16px" height="16px"/>
+            <p>${xss(text2)}</p>
         </b>
     `);
   }
