@@ -2,8 +2,8 @@
     "manifest_version": 1,
     "name": "ActionEnhancement",
     "author": "MicroBlock",
-    "description": "右键“分享”复制歌曲ID，鼠标在声音图标上滚轮调节音量",
-    "version": "0.1.6",
+    "description": "右键“分享”复制歌曲ID，右键“下载”打开歌曲外链，鼠标在声音图标上滚轮调节音量",
+    "version": "0.1.7",
     "betterncm_version": ">=0.2.5",
     "preview": "preview.png",
     "injects": {

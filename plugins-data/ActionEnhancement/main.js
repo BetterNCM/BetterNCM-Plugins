@@ -26,10 +26,10 @@ setTimeout(() => {
     }
 
     setInterval(() => {
-        // document.querySelector(".btn-dld").oncontextmenu = async e => {
-        //     await betterncm.app.exec(`cmd /c start http://music.163.com/song/media/outer/url?id=${getPlayingID()}.mp3`)
-        //     e.preventDefault()
-        // }
+         document.querySelector(".btn-dld").oncontextmenu = async e => {
+             await betterncm.app.exec(`cmd /c start http://music.163.com/song/media/outer/url?id=${getPlayingID()}.mp3`)
+             e.preventDefault()
+         }
         document.querySelector(".btn-share").oncontextmenu = e => {
             copyTextToClipboard(getPlayingID())
             e.preventDefault()
