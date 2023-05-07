@@ -4,8 +4,13 @@ let styleSnippetConfig = JSON.parse(
     ) || "{}"
 );
 
-if (styleSnippetConfig["@modify-play-page"] == true)
-    window.localStorage.setItem("refined-now-playing-refined-control-bar", "false");
+window.localStorage.setItem(
+    "refined-now-playing-refined-control-bar",
+    styleSnippetConfig["@modify-play-page"] == true ||
+        styleSnippetConfig["@modify-play-page"] == undefined
+        ? "false"
+        : "true"
+);
 
 plugin.onAllPluginsLoaded(async function (plugins) {
     if (!plugins.StyleSnippet?.addExternalSnippet) {
@@ -104,5 +109,16 @@ plugin.onAllPluginsLoaded(async function (plugins) {
         }
     }).observe(document.querySelector("body"), {
         childList: true,
+    });
+
+    new MutationObserver(async () => {
+        let fmPlayer = document.querySelector(".m-player.m-player-fm");
+        document.body.classList.toggle(
+            "mq-playing-fm",
+            fmPlayer ? !fmPlayer.classList.contains("f-dn") : false
+        );
+    }).observe(document.querySelector("html"), {
+        childList: true,
+        subtree: true,
     });
 });
