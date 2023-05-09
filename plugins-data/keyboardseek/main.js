@@ -78,6 +78,11 @@
 				document.querySelector("a[data-action='max']").click();
 			}
 
+			// o
+			if (e.code.match(/(KeyO)/)) {
+				document.querySelector(".m-player:not(.f-dn) .type").click();
+			}
+
 			// up and down arrow
 			if (e.code.match(/(ArrowUp)|(ArrowDown)/)) {
 				const direction = e.code.match(/(ArrowUp)/) ? 1 : -1;
