@@ -8,7 +8,7 @@
   "BetterNCM/FluentMusicCover": 2,
   "BetterNCM/FluentProgessBar": 8,
   "RingZc/HideScrollbar": 0,
-  "BetterNCM/InfinityLink": 10,
+  "BetterNCM/InfinityLink": 11,
   "BetterNCM/LibEAPIRequest": 3,
   "BetterNCM/LibFrontendPlay": 4,
   "Steve-xmh/LibLyric": 10,
@@ -34,7 +34,7 @@
   "mo-jinran/VisualRecord": 1,
   "samyycX/VocaloidInfo": 3,
   "mo-jinran/What-is-the-cover-of-this-music": 9,
-  "Steve-xmh/applemusic-like-lyrics": 123,
+  "Steve-xmh/applemusic-like-lyrics": 124,
   "BetterNCM/BGEnhanced": 15,
   "BetterNCM/CustomSongInfo": 2,
   "solstice23/gpt-trans-netease": 8,
@@ -43,6 +43,6 @@
   "solstice23/lyric-bar-netease": 12,
   "solstice23/material-you-theme-netease": 99,
   "BetterNCM/Plugin-Market": 0,
-  "solstice23/refined-now-playing-netease": 238,
+  "solstice23/refined-now-playing-netease": 239,
   "BetterNCM/TinyNCM": 6
 }
