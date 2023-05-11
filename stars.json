@@ -9,9 +9,9 @@
   "BetterNCM/FluentProgessBar": 8,
   "RingZc/HideScrollbar": 0,
   "BetterNCM/InfinityLink": 10,
-  "BetterNCM/LibEAPIRequest": 2,
+  "BetterNCM/LibEAPIRequest": 3,
   "BetterNCM/LibFrontendPlay": 4,
-  "Steve-xmh/LibLyric": 9,
+  "Steve-xmh/LibLyric": 10,
   "Steve-xmh/LibSongInfo": 4,
   "MicroCBer/LiveSongPlayer-MKII": 1,
   "miku3333/miku-plugin": 11,
@@ -43,6 +43,6 @@
   "solstice23/lyric-bar-netease": 12,
   "solstice23/material-you-theme-netease": 99,
   "BetterNCM/Plugin-Market": 0,
-  "solstice23/refined-now-playing-netease": 237,
+  "solstice23/refined-now-playing-netease": 238,
   "BetterNCM/TinyNCM": 6
 }
