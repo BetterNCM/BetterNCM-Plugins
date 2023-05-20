@@ -7,7 +7,7 @@ plugin.onLoad(async () => {
             "trayicon.popBalloon",
             () => { },
             [{
-                title: "BGEnhanced扩展",
+                title: "BGEnhanced Extra",
                 text: "没有找到BGEnhanced插件！\n请先安装此插件后重试",
                 icon: "path",
                 hasSound: true,
