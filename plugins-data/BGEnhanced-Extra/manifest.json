@@ -1,0 +1,26 @@
+{
+    "manifest_version": 1,
+    "name": "BGEnhanced Extra",
+    "slug": "BGEnhanced-Extra",
+    "description": "让BGEnhanced插件的背景跟随鼠标缩放偏移",
+    "preview": "preview.gif",
+    "version": "0.1.0",
+    "author": "沫烬染",
+    "author_links": [
+        "https://github.com/mo-jinran"
+    ],
+    "type": "extension",
+    "loadAfter": [
+        "BGEnhanced"
+    ],
+    "requirements": [
+        "BGEnhanced"
+    ],
+    "injects": {
+        "Main": [
+            {
+                "file": "index.js"
+            }
+        ]
+    }
+}
