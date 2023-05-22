@@ -1,0 +1,80 @@
+<div id="BGEnhanced-Extra-Dom">
+    <section class="pointermove">
+        <h1 class="title">
+            <strong>指针移动</strong>
+            <button class="u-ibtn5 u-ibtnsz8 apply">立即应用</button>
+            <button class="u-ibtn5 u-ibtnsz8 reset">恢复默认</button>
+        </h1>
+        <div class="item_container">
+            <span>延迟：</span>
+            <input type="number" class="u-txt sc-flag number-input transitionDelay" step="50">
+            <span>毫秒(ms)</span>
+        </div>
+        <div class="item_container">
+            <span>缩放：</span>
+            <input type="number" class="u-txt sc-flag number-input transformScale" step="0.01">
+        </div>
+    </section>
+
+    <hr />
+
+    <section class="pointerleave">
+        <h1 class="title">
+            <strong>指针离开</strong>
+            <button class="u-ibtn5 u-ibtnsz8 apply">立即应用</button>
+            <button class="u-ibtn5 u-ibtnsz8 reset">恢复默认</button>
+        </h1>
+        <div class="item_container">
+            <span>延迟：</span>
+            <input type="number" class="u-txt sc-flag number-input transitionDelay" step="50">
+            <span>毫秒(ms)</span>
+        </div>
+        <div class="item_container">
+            <span>缩放：</span>
+            <input type="number" class="u-txt sc-flag number-input transformScale" step="0.01">
+        </div>
+    </section>
+</div>
+
+<style>
+    #BGEnhanced-Extra-Dom .title {
+        height: 30px;
+        display: flex;
+        align-items: center;
+        margin: 10px 0;
+        gap: 10px;
+    }
+
+    #BGEnhanced-Extra-Dom .title strong {
+        font-size: 1.25rem;
+        font-weight: bold;
+    }
+
+    #BGEnhanced-Extra-Dom hr {
+        margin: 20px 0;
+        border: none;
+        height: 1px;
+        background-color: rgba(255, 255, 255, 0.2);
+    }
+
+    body.s-theme-white #BGEnhanced-Extra-Dom hr {
+        background-color: rgba(0, 0, 0, 0.2);
+    }
+
+    #BGEnhanced-Extra-Dom .item_container {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        gap: 10px;
+        margin: 5px 0;
+        min-height: 30px;
+    }
+
+    #BGEnhanced-Extra-Dom .item_container input.number-input {
+        width: 150px;
+    }
+
+    #BGEnhanced-Extra-Dom .item_container input.u-txt {
+        border-radius: 4px;
+    }
+</style>
