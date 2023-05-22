@@ -1,46 +1,74 @@
 "use strict";
 
-plugin.onLoad(async () => {
-    // 检测是否存在BGEnhanced插件，没有就弹出通知
-    if (!("BGEnhanced" in loadedPlugins)) {
-        channel.call(
-            "trayicon.popBalloon",
-            () => { },
-            [{
-                title: "BGEnhanced Extra",
-                text: "没有找到BGEnhanced插件！\n请先安装此插件后重试",
-                icon: "path",
-                hasSound: true,
-                delayTime: 2e3,
-            }]
-        );
-        return;
+
+// 检查插件是否存在
+function checkPluginExistence() {
+    if ("BGEnhanced" in loadedPlugins) {
+        return true;
     }
+    // 不存在就弹出通知
+    throw channel.call(
+        "trayicon.popBalloon",
+        () => { },
+        [{
+            title: "BGEnhanced Extra",
+            text: "没有找到BGEnhanced插件！\n请先安装此插件后重试",
+            icon: "path",
+            hasSound: true,
+            delayTime: 2e3,
+        }]
+    );
+}
 
-    // 加载样式
+
+// 注入CSS样式
+function injectCSSStyles() {
     const element = document.createElement("style");
-    element.textContent = `.BGEnhanced-BackgoundDom { transition: all 300ms ease-out; }`;
+    element.textContent = `
+    .BGEnhanced-BackgoundDom {
+        transition:
+            all
+            var(--transitionDelay, 0ms)
+            ease-out
+        ;
+        transform:
+            scale(var(--transformScale, 1))
+            translateX(var(--translateX, 0px))
+            translateY(var(--translateY, 0px))
+        ;
+    }`;
     document.head.appendChild(element);
+}
 
-    const backgoundDom = document.querySelector(".BGEnhanced-BackgoundDom");
+
+plugin.onLoad(async () => {
+    checkPluginExistence();
+    injectCSSStyles();
+
+    const backgroundDom = document.querySelector(".BGEnhanced-BackgoundDom");
+    const transitionDelay = 200;
     const transformScale = 1.1;
 
     // 鼠标进入
-    document.addEventListener("pointerenter", (event) => {
-        backgoundDom.style.transform = `scale(${transformScale})`;
+    document.addEventListener("pointerenter", () => {
+        backgroundDom.style.setProperty("--transitionDelay", `${transitionDelay}ms`);
+        backgroundDom.style.setProperty("--transformScale", transformScale);
     });
 
     // 鼠标离开
-    document.addEventListener("pointerleave", (event) => {
-        backgoundDom.removeAttribute("style");
+    document.addEventListener("pointerleave", () => {
+        backgroundDom.style.setProperty("--transformScale", 1);
+        backgroundDom.style.setProperty("--translateX", 0);
+        backgroundDom.style.setProperty("--translateY", 0);
     });
 
-    // 鼠标进入
-    document.addEventListener("pointermove", (event) => {
+    // 鼠标移动
+    document.addEventListener("pointermove", event => {
         let translateX = window.innerWidth / 2 - event.clientX;
         let translateY = window.innerHeight / 2 - event.clientY;
         translateX = translateX - translateX / transformScale;
         translateY = translateY - translateY / transformScale;
-        backgoundDom.style.transform = `scale(${transformScale}) translate(${translateX}px, ${translateY}px)`;
+        backgroundDom.style.setProperty("--translateX", `${translateX}px`);
+        backgroundDom.style.setProperty("--translateY", `${translateY}px`);
     });
 });
