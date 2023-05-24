@@ -2,9 +2,9 @@
     "manifest_version": 1,
     "name": "BGEnhanced Extra",
     "slug": "BGEnhanced-Extra",
-    "description": "让BGEnhanced插件的背景跟随鼠标缩放与移动",
+    "description": "让BGEnhanced插件的背景跟随指针变化，可简单自定义效果",
     "preview": "preview.webp",
-    "version": "0.2.0",
+    "version": "0.3.0",
     "author": "沫烬染",
     "author_links": [
         "https://github.com/mo-jinran"
