@@ -6,13 +6,24 @@
             <button class="u-ibtn5 u-ibtnsz8 reset">恢复默认</button>
         </h1>
         <div class="item_container">
-            <span>延迟：</span>
+            <span>过度：</span>
             <input type="number" class="u-txt sc-flag number-input transitionDelay" step="50">
             <span>毫秒(ms)</span>
         </div>
         <div class="item_container">
             <span>缩放：</span>
             <input type="number" class="u-txt sc-flag number-input transformScale" step="0.01">
+            <span>数字(小数)</span>
+        </div>
+        <div class="item_container">
+            <span>亮度：</span>
+            <input type="number" class="u-txt sc-flag number-input filterBrightness" step="0.01">
+            <span>数字(小数)</span>
+        </div>
+        <div class="item_container">
+            <span>模糊：</span>
+            <input type="number" class="u-txt sc-flag number-input filterBlur" step="1">
+            <span>像素(px)</span>
         </div>
     </section>
 
@@ -25,13 +36,29 @@
             <button class="u-ibtn5 u-ibtnsz8 reset">恢复默认</button>
         </h1>
         <div class="item_container">
-            <span>延迟：</span>
+            <span>复位：</span>
+            <input type="checkbox" class="switch-btn positionResetSwitch">
+            <span>(关闭后，建议统一缩放)</span>
+        </div>
+        <div class="item_container">
+            <span>过度：</span>
             <input type="number" class="u-txt sc-flag number-input transitionDelay" step="50">
             <span>毫秒(ms)</span>
         </div>
         <div class="item_container">
             <span>缩放：</span>
             <input type="number" class="u-txt sc-flag number-input transformScale" step="0.01">
+            <span>数字(小数)</span>
+        </div>
+        <div class="item_container">
+            <span>亮度：</span>
+            <input type="number" class="u-txt sc-flag number-input filterBrightness" step="0.01">
+            <span>数字(小数)</span>
+        </div>
+        <div class="item_container">
+            <span>模糊：</span>
+            <input type="number" class="u-txt sc-flag number-input filterBlur" step="1">
+            <span>像素(px)</span>
         </div>
     </section>
 </div>
@@ -76,5 +103,53 @@
 
     #BGEnhanced-Extra-Dom .item_container input.u-txt {
         border-radius: 4px;
+    }
+
+    #BGEnhanced-Extra-Dom .item_container input.switch-btn {
+        width: 44px;
+        height: 22px;
+        appearance: none;
+        border-radius: 20px;
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        position: relative;
+    }
+
+    #BGEnhanced-Extra-Dom .item_container input.switch-btn::before {
+        content: "关";
+        text-align: center;
+        line-height: 18px;
+        font-size: 12px;
+        position: absolute;
+        top: 1px;
+        left: 1px;
+        height: 18px;
+        width: 18px;
+        background-color: rgba(255, 255, 255, 0.3);
+        border-radius: 50%;
+        transition: all 0.1s ease-out;
+    }
+
+    #BGEnhanced-Extra-Dom .item_container input.switch-btn:checked {
+        background-color: rgba(255, 255, 255, 0.1);
+    }
+
+    #BGEnhanced-Extra-Dom .item_container input.switch-btn:checked::before {
+        content: "开";
+        text-align: center;
+        line-height: 18px;
+        font-size: 12px;
+        left: calc(100% - 19px);
+    }
+
+    body.s-theme-white #BGEnhanced-Extra-Dom .item_container input.switch-btn {
+        border: 1px solid rgba(0, 0, 0, 0.15);
+    }
+
+    body.s-theme-white #BGEnhanced-Extra-Dom .item_container input.switch-btn::before {
+        background-color: rgba(0, 0, 0, 0.3);
+    }
+
+    body.s-theme-white #BGEnhanced-Extra-Dom .item_container input.switch-btn:checked {
+        background-color: rgba(0, 0, 0, 0.1);
     }
 </style>
