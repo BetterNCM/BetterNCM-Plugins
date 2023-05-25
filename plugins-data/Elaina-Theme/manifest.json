@@ -1,1 +1,1 @@
-{"manifest_version":1,"name":"ElainaTheme","slug":"elaina-theme","betterncm_version":">=1.0.0","author_link":["https://elaina.moe"],"description":"可爱的UI，伊蕾娜元素，还有一点自定义。","preview":"preview.png","type":"theme","injects":{"Main":[{"file":"index.js"}]},"version":"1.0.0","author":"keiko233"}
+{"manifest_version":1,"name":"ElainaTheme","slug":"elaina-theme","betterncm_version":">=1.0.0","author_link":["https://elaina.moe"],"description":"可爱的UI，伊蕾娜元素，还有一点自定义。","preview":"preview.png","type":"theme","injects":{"Main":[{"file":"index.js"}]},"version":"1.0.1","author":"keiko233"}
