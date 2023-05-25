@@ -6,24 +6,34 @@
             <button class="u-ibtn5 u-ibtnsz8 reset">恢复默认</button>
         </h1>
         <div class="item_container">
+            <span>跟随指针：</span>
+            <input type="checkbox" class="switch-btn followPointerSwitch">
+            <span>(关闭后，背景不再跟随指针移动)</span>
+        </div>
+        <div class="item_container">
             <span>过度：</span>
             <input type="number" class="u-txt sc-flag number-input transitionDelay" step="50">
             <span>毫秒(ms)</span>
         </div>
         <div class="item_container">
             <span>缩放：</span>
-            <input type="number" class="u-txt sc-flag number-input transformScale" step="0.01">
-            <span>数字(小数)</span>
-        </div>
-        <div class="item_container">
-            <span>亮度：</span>
-            <input type="number" class="u-txt sc-flag number-input filterBrightness" step="0.01">
-            <span>数字(小数)</span>
+            <input type="number" class="u-txt sc-flag number-input transformScale" step="1">
+            <span>百分比(%)</span>
         </div>
         <div class="item_container">
             <span>模糊：</span>
             <input type="number" class="u-txt sc-flag number-input filterBlur" step="1">
             <span>像素(px)</span>
+        </div>
+        <div class="item_container">
+            <span>亮度：</span>
+            <input type="number" class="u-txt sc-flag number-input filterBrightness" step="1">
+            <span>百分比(%)</span>
+        </div>
+        <div class="item_container">
+            <span>饱和：</span>
+            <input type="number" class="u-txt sc-flag number-input filterSaturate" step="1">
+            <span>百分比(%)</span>
         </div>
     </section>
 
@@ -36,9 +46,9 @@
             <button class="u-ibtn5 u-ibtnsz8 reset">恢复默认</button>
         </h1>
         <div class="item_container">
-            <span>复位：</span>
+            <span>位置复位：</span>
             <input type="checkbox" class="switch-btn positionResetSwitch">
-            <span>(关闭后，建议统一缩放)</span>
+            <span>(关闭后，背景不再复位中心位置)</span>
         </div>
         <div class="item_container">
             <span>过度：</span>
@@ -47,23 +57,98 @@
         </div>
         <div class="item_container">
             <span>缩放：</span>
-            <input type="number" class="u-txt sc-flag number-input transformScale" step="0.01">
-            <span>数字(小数)</span>
-        </div>
-        <div class="item_container">
-            <span>亮度：</span>
-            <input type="number" class="u-txt sc-flag number-input filterBrightness" step="0.01">
-            <span>数字(小数)</span>
+            <input type="number" class="u-txt sc-flag number-input transformScale" step="1">
+            <span>百分比(%)</span>
         </div>
         <div class="item_container">
             <span>模糊：</span>
             <input type="number" class="u-txt sc-flag number-input filterBlur" step="1">
             <span>像素(px)</span>
         </div>
+        <div class="item_container">
+            <span>亮度：</span>
+            <input type="number" class="u-txt sc-flag number-input filterBrightness" step="1">
+            <span>百分比(%)</span>
+        </div>
+        <div class="item_container">
+            <span>饱和：</span>
+            <input type="number" class="u-txt sc-flag number-input filterSaturate" step="1">
+            <span>百分比(%)</span>
+        </div>
+    </section>
+
+    <hr />
+
+    <section class="windowFocus">
+        <h1 class="title">
+            <strong>窗口聚焦</strong>
+            <button class="u-ibtn5 u-ibtnsz8 apply">立即应用</button>
+            <button class="u-ibtn5 u-ibtnsz8 reset">恢复默认</button>
+        </h1>
+        <div class="item_container">
+            <span>过度：</span>
+            <input type="number" class="u-txt sc-flag number-input transitionDelay" step="50">
+            <span>毫秒(ms)</span>
+        </div>
+        <div class="item_container">
+            <span>缩放：</span>
+            <input type="number" class="u-txt sc-flag number-input transformScale" step="1">
+            <span>百分比(%)</span>
+        </div>
+        <div class="item_container">
+            <span>模糊：</span>
+            <input type="number" class="u-txt sc-flag number-input filterBlur" step="1">
+            <span>像素(px)</span>
+        </div>
+        <div class="item_container">
+            <span>亮度：</span>
+            <input type="number" class="u-txt sc-flag number-input filterBrightness" step="1">
+            <span>百分比(%)</span>
+        </div>
+        <div class="item_container">
+            <span>饱和：</span>
+            <input type="number" class="u-txt sc-flag number-input filterSaturate" step="1">
+            <span>百分比(%)</span>
+        </div>
+    </section>
+
+    <hr />
+
+    <section class="windowBlur">
+        <h1 class="title">
+            <strong>窗口失焦</strong>
+            <button class="u-ibtn5 u-ibtnsz8 apply">立即应用</button>
+            <button class="u-ibtn5 u-ibtnsz8 reset">恢复默认</button>
+        </h1>
+        <div class="item_container">
+            <span>过度：</span>
+            <input type="number" class="u-txt sc-flag number-input transitionDelay" step="50">
+            <span>毫秒(ms)</span>
+        </div>
+        <div class="item_container">
+            <span>缩放：</span>
+            <input type="number" class="u-txt sc-flag number-input transformScale" step="1">
+            <span>百分比(%)</span>
+        </div>
+        <div class="item_container">
+            <span>模糊：</span>
+            <input type="number" class="u-txt sc-flag number-input filterBlur" step="1">
+            <span>像素(px)</span>
+        </div>
+        <div class="item_container">
+            <span>亮度：</span>
+            <input type="number" class="u-txt sc-flag number-input filterBrightness" step="1">
+            <span>百分比(%)</span>
+        </div>
+        <div class="item_container">
+            <span>饱和：</span>
+            <input type="number" class="u-txt sc-flag number-input filterSaturate" step="1">
+            <span>百分比(%)</span>
+        </div>
     </section>
 </div>
 
-<style>
+<style id="BGEnhanced-Extra-Style">
     #BGEnhanced-Extra-Dom .title {
         height: 30px;
         display: flex;
@@ -98,7 +183,7 @@
     }
 
     #BGEnhanced-Extra-Dom .item_container input.number-input {
-        width: 150px;
+        width: 100px;
     }
 
     #BGEnhanced-Extra-Dom .item_container input.u-txt {
