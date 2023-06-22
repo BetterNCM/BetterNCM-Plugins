@@ -49,6 +49,7 @@
     "force-install": false, // 强制安装（需要在审核中告知理由）
     "force-update": "< 0.1.0", // 强制更新（如此处强制更新版本号 < 0.1.0 的版本到最新）
     "force-uninstall": false, // 强制卸载（适用于插件崩了的情况）
+    "ncm3-compatible": true, // 是否兼容网易云 3.0.0+ 版本
 
     "injects": { // 普通注入
         "Main": [  // 网易云主页面
