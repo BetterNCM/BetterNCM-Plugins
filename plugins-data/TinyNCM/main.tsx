@@ -48,7 +48,13 @@ function Expandable({ children, title }) {
     </div>)
 }
 
-const ElementMap = {
+const ElementMap = betterncm.ncm.getNCMVersion().startsWith('3.') ? {
+    "顶栏": {
+        '网易云Logo': '#topArea',
+        'VIP图标': '[data-log*="vipicon"]',
+        '消息': '[aria-label="message"]',
+    }
+} : {
     "顶栏": {
         "网易云Logo": ".m-logo",
         "听歌识曲": ".j-listentosong",
