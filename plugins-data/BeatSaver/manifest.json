@@ -1,1 +1,1 @@
-{"manifest_version":1,"name":"BeatSaver","slug":"beat-saver","betterncm_version":">=1.0.0","author_link":"https://elaina.moe","description":"BeatSaver 一键快速搜索。","preview":"preview.png","type":"extension","injects":{"Main":[{"file":"index.js"}]},"version":"0.1.0","author":"keiko233"}
+{"manifest_version":1,"name":"BeatSaver","slug":"beat-saver","betterncm_version":">=1.0.0","author_link":"https://elaina.moe","description":"BeatSaver 一键快速搜索。","preview":"preview.png","type":"extension","injects":{"Main":[{"file":"index.js"}]},"version":"0.1.1","author":"keiko233"}
