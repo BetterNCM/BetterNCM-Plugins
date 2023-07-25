@@ -1,11 +1,12 @@
 {
     "manifest_version": 1,
     "name": "StyleSnippet",
-    "version": "0.2.1",
+    "version": "0.2.2",
     "author":"MicroBlock",
     "description":"界面美化 CSS 片段，支持本地一键修改，应用。",
     "preview":"preview.png",
     "betterncm_version": ">=0.2.5",
+    "ncm3-compatible": true,
     "injects": {
         "Main": [
             {
