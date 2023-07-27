@@ -5337,7 +5337,7 @@
       }
       setBackgroundPreviewList(previewList);
     }, [backgroundList]);
-    return /* @__PURE__ */ h(f, null, backgroundList.filter((v, i) => backgroundPreviewList[i]?.[0]).map((v, i) => PreviewBackground(v, (0, import_react3.createElement)(backgroundPreviewList[i]?.[0]))));
+    return /* @__PURE__ */ h(f, null, backgroundList.filter((v, i) => backgroundPreviewList[i]?.[0]).map((v, i) => backgroundPreviewList[i]?.[0] && PreviewBackground(v, (0, import_react3.createElement)(backgroundPreviewList[i]?.[0]))).filter((v) => v));
   }
   function Main() {
     const stylesheet = React.useMemo(
