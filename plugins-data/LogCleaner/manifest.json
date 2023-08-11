@@ -1,0 +1,16 @@
+{
+    "manifest_version": 1,
+    "name": "LogCleaner", 
+    "version": "0.0.1",
+    "author": "MicroBlock", 
+    "description": "每次退出后自动删除日志，节省（很多）硬盘空间",
+    "betterncm_version": ">=0.2.5",
+    "preview": "preview.png",
+    "injects": {
+        "Main": [ 
+            {
+                "file": "./main.js"
+            }
+        ]
+    }
+}
