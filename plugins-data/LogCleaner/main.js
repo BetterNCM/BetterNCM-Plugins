@@ -25,7 +25,7 @@ const performHook = () => {
         if (!enableIntercept) return oldChannelCall(name, ...args);
 
         if (name.includes('log')
-            || (name === 'storage.savetofile' && args[0].includes('crash_report'))) {
+            || (name === 'storage.savetofile' && args && args[0] && args[0].includes('crash_report'))) {
             for (const log of args)
                 if (log instanceof String) collectedGarbageLogSize += log.length;
             collectedGarbageLogCount++;
