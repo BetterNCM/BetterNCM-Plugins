@@ -24,12 +24,16 @@ const performHook = () => {
     channel.call = (name, ...args) => {
         if (!enableIntercept) return oldChannelCall(name, ...args);
 
-        if (name.includes('log')
-            || (name === 'storage.savetofile' && args && args[0] && args[0].includes('crash_report'))) {
-            for (const log of args)
-                if (log instanceof String) collectedGarbageLogSize += log.length;
-            collectedGarbageLogCount++;
-            return;
+        try {
+            if (name.includes('log')
+                || (name === 'storage.savetofile' && args[0] && args[0].includes && args[0].includes('crash_report'))) {
+                for (const log of args)
+                    if (log instanceof String) collectedGarbageLogSize += log.length;
+                collectedGarbageLogCount++;
+                return;
+            }
+        } catch (e) {
+
         }
 
         try {
@@ -113,7 +117,8 @@ plugin.onConfig(() => {
             cleanedLogCountDom,
             dom('span', { innerText: ' 条日志' }),
         ),
-        dom('style', { innerHTML:`
+        dom('style', {
+            innerHTML: `
         .logCleanConfig {
             padding: 10px;
             display: flex;
