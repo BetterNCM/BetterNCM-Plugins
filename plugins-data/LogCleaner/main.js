@@ -4,7 +4,7 @@ plugin.onLoad(() => {
 
 const kLogCount = 'logCleaner::collectedGarbageLogCount';
 const kLogSize = 'logCleaner::collectedGarbageLogSize';
-const kEnableIntercept = 'logCleaner::enableIntercept';
+const kEnableIntercept = 'logCleaner::enableIntercept::fixed';
 
 let collectedGarbageLogCount = parseInt(localStorage[kLogCount] || '0');
 let collectedGarbageLogSize = parseInt(localStorage[kLogSize] || '0');
@@ -28,7 +28,7 @@ const performHook = () => {
             if (name.includes('log')
                 || (name === 'storage.savetofile' && args[0] && args[0].includes && args[0].includes('crash_report'))) {
                 for (const log of args)
-                    if (log instanceof String) collectedGarbageLogSize += log.length;
+                    if (typeof log === "string") collectedGarbageLogSize += log.length;
                 collectedGarbageLogCount++;
                 return;
             }
@@ -58,7 +58,8 @@ const performHook = () => {
         console[logFnName] = (...logs) => {
             if (!enableIntercept) return originConsole[logFnName](...logs);
             for (const log of logs) {
-                if (log instanceof String) collectedGarbageLogSize += log.length;
+                if(!log) continue;
+                if (typeof log === "string") collectedGarbageLogSize += log.length;
                 else collectedGarbageLogSize += JSON.stringify(log).length;
                 collectedGarbageLogCount++;
             }
