@@ -58,9 +58,9 @@ const performHook = () => {
         console[logFnName] = (...logs) => {
             if (!enableIntercept) return originConsole[logFnName](...logs);
             for (const log of logs) {
-                if(!log) continue;
+                if (!log) continue;
                 if (typeof log === "string") collectedGarbageLogSize += log.length;
-                else collectedGarbageLogSize += JSON.stringify(log).length;
+                else if (JSON.stringify(log) && JSON.stringify(log)?.length) collectedGarbageLogSize += JSON.stringify(log).length;
                 collectedGarbageLogCount++;
             }
         }
