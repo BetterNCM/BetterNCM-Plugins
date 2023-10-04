@@ -26,16 +26,42 @@ setTimeout(() => {
     }
 
     setInterval(() => {
-         document.querySelector(".btn-dld").oncontextmenu = async e => {
-             await betterncm.app.exec(`cmd /c start http://music.163.com/song/media/outer/url?id=${getPlayingID()}.mp3`)
-             e.preventDefault()
-         }
+        document.querySelector(".btn-dld").oncontextmenu = async e => {
+            await betterncm.app.exec(`cmd /c start http://music.163.com/song/media/outer/url?id=${getPlayingID()}.mp3`)
+            e.preventDefault()
+        }
         document.querySelector(".btn-share").oncontextmenu = e => {
             copyTextToClipboard(getPlayingID())
             e.preventDefault()
         }
     }, 100)
 }, 100)
+
+window.addEventListener('paste', function (event) {
+    const data = (event.clipboardData || event.originalEvent.clipboardData)
+    const regexGetNCMId = /music\.163\.com\/song\?id=(\d+)/
+    const id = regexGetNCMId.exec(data.getData('text'))?.[1]
+
+    if (id && id.length >= 5) {
+        const jsInput = document.querySelector('.j-search-input')
+        jsInput.style.color = '#fff0'
+        const lastInputValue = jsInput.value
+        setTimeout(() => {
+            jsInput.value = id;
+            document.querySelector('.sch-btn').click()
+        })
+        setTimeout(() => {
+            jsInput.value = lastInputValue
+            jsInput.style.color = ''
+            for (const history of [...document.querySelectorAll("#panel_pc_search_start > div.side.history .hotlst > *")]) {
+                if (history.innerText.trim() === id) {
+                    history.querySelector('.cl.j-item').click()
+                    break;
+                }
+            }
+        }, 10)
+    }
+});
 
 setInterval(_ => {
     document.querySelector(".j-vol").onmousewheel = (e => {
