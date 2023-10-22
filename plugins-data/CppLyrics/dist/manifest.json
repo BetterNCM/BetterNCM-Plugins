@@ -1,0 +1,27 @@
+{
+    "manifest_version": 1,
+    "name": "CppLyrics ⚠ 开发中 ⚠",
+    "version": "0.0.2",
+    "author":"MicroBlock",
+    "description":"⚠ 开发中 ⚠\n最快，最流畅的歌词插件",
+    "preview":"preview.png",
+    "betterncm_version": ">=9.0.0",
+    "ncm3-compatible": false,
+    "injects": {
+        "Main": [
+            {
+                "file": "./index.js"
+            }
+        ]
+    },
+    "hijacks": {
+        ">= 2.10.4": {
+            "orpheus://orpheus/pub/core": {
+                "type": "replace",
+                "from": "function(t,i,e,r,n,a){var o;if(((this.U()||C).from||C).id==t)",
+                "to": "async function(t,i,e,r,n,a){;i='online';window.onProcessLyrics&&(a=(await onProcessLyrics(a,e)));var o;if(((this.U()||C).from||C).id==t)"
+            }
+        }
+    },
+    "native_plugin":"./bncm-plugin.dll"
+}

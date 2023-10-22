@@ -1,0 +1,16 @@
+{
+  "name": "CppLyrics",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/BetterNCM/CppLyrics-Plugin.git",
+  "author": "MicroBlock <microblock@qq.com>",
+  "license": "MIT",
+  "dependencies": {
+    "@material/material-color-utilities": "^0.2.7",
+    "esbuild": "^0.19.5"
+  },
+  "scripts": {
+    "build": "esbuild index.js --bundle --minify --outdir=dist",
+    "watch": "esbuild index.js --bundle --watch --minify --outdir=dist"
+  }
+}
