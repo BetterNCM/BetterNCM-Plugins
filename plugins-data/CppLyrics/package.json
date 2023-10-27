@@ -10,7 +10,7 @@
     "esbuild": "^0.19.5"
   },
   "scripts": {
-    "build": "esbuild index.js --bundle --minify --outdir=dist",
-    "watch": "esbuild index.js --bundle --watch --minify --outdir=dist"
+    "build": "esbuild index.ts --bundle --minify --outdir=dist",
+    "watch": "esbuild index.ts --bundle --watch --minify --outdir=dist"
   }
 }
