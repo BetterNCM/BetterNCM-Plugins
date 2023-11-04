@@ -1,0 +1,17 @@
+{
+    "manifest_version": 1,
+    "name": "Furigana",
+    "version": "0.0.1",
+    "author": "Mutton_String",
+    "description": "给日文歌词的汉字标注假名。不兼容网易云音乐2.x。",
+    "preview": "preview.jpg",
+    "betterncm_version": ">=1.3.0",
+    "ncm3-compatible": true,
+    "injects": {
+        "Main": [
+            {
+                "file": "main.js"
+            }
+        ]
+    }
+}
