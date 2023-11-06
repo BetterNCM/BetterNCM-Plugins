@@ -30,13 +30,18 @@ plugin.onLoad(pl => {
             betterncm_native.native_plugin.call('cpplyrics.set_lyrics', ['(0:100000)暂无逐词歌词']);
     }, 1000)
 
-    let lastTime = 0;
+    let lastTime = 0, paused = true;
     legacyNativeCmder.appendRegisterCall("PlayProgress", "audioplayer", (_, time) => {
         lastTime = time * 1000;
-        betterncm_native.native_plugin.call('cpplyrics.set_time', [lastTime, 0]);
+        paused = false;
     });
 
+    setInterval(()=>{
+        betterncm_native.native_plugin.call('cpplyrics.set_time', [lastTime, paused]);
+    }, 400)
+
     legacyNativeCmder.appendRegisterCall("PlayState", "audioplayer", (_, __, state) => {
+        paused = state === 2;
         betterncm_native.native_plugin.call('cpplyrics.set_time', [lastTime, state === 2]);
     });
 
