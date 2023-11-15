@@ -9,4 +9,4 @@ https://kuroshiro.org/
 3. 兼容了Apple Music-like lyrics
 
 ## Version 0.1.1
-测试出Apple Music-like lyrics开启逐词歌词后，使用本插件会产生问题。故在设置界面做出提示。
+测试出Apple Music-like lyrics开启逐词歌词后，使用本插件的部分功能会产生问题。故在设置界面做出提示。

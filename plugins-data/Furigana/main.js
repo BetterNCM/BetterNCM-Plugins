@@ -91,7 +91,7 @@ const settingDiv = `
     <p>
         <input type="checkbox" id="ruby">
         <label for="ruby">给汉字标注振假名</label>
-        <span><br>本功能依赖kuroshiro的在线API，需要联网<br>注音准确率有限，特别是单汉字</span>
+        <span><br>Apple Music-like lyrics的逐词歌词开启后会出错！<br>本功能依赖kuroshiro的在线API，需要联网<br>注音准确率有限，特别是单汉字</span>
         <br><br>
     </p>
     <p>
@@ -110,6 +110,7 @@ const settingDiv = `
         <input type="checkbox" id="jpnfont-check">
         <label for="jpnfont-check">更改主歌词的字体<br></label>
         <input type="text" id="jpnfont">
+        <span><br>不兼容Apple Music-like lyrics的逐词歌词</span>
         <br><br>
     </p>
     <p>
