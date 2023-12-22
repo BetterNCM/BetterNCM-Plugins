@@ -1,7 +1,3 @@
-plugin.onLoad(() => {
-    betterncm.app.exec("cmd /k cd /d %AppData%/../Local/NetEase/CloudMusic/ && for /L %i in () do @(del cloudmusic.elog 2>nul && del web.log 2>nul && if not exist cloudmusic.elog exit) & timeout /T 5", 0, 0)
-});
-
 const kLogCount = 'logCleaner::collectedGarbageLogCount';
 const kLogSize = 'logCleaner::collectedGarbageLogSize';
 const kEnableIntercept = 'logCleaner::enableIntercept::fixed';
@@ -11,13 +7,6 @@ let collectedGarbageLogSize = parseInt(localStorage[kLogSize] || '0');
 
 if (localStorage[kEnableIntercept] == undefined) localStorage[kEnableIntercept] = 'true';
 let enableIntercept = localStorage[kEnableIntercept] === 'true';
-
-const updateStorage = () => {
-    localStorage[kLogCount] = collectedGarbageLogCount;
-    localStorage[kLogSize] = collectedGarbageLogCount;
-    localStorage[kEnableIntercept] = enableIntercept;
-};
-setInterval(updateStorage, 20 * 1000)
 
 const performHook = () => {
     const oldChannelCall = channel.call;
@@ -67,7 +56,20 @@ const performHook = () => {
     }
 };
 
-performHook();
+plugin.onLoad(() => {
+    betterncm.app.exec("cmd /k cd /d %AppData%/../Local/NetEase/CloudMusic/ && for /L %i in () do @(del cloudmusic.elog 2>nul && del web.log 2>nul && if not exist cloudmusic.elog exit) & timeout /T 5", 0, 0)
+    if(loadedPlugins.BGEnhanced) enableIntercept = false;
+    performHook();
+});
+
+const updateStorage = () => {
+    localStorage[kLogCount] = collectedGarbageLogCount;
+    localStorage[kLogSize] = collectedGarbageLogCount;
+    localStorage[kEnableIntercept] = enableIntercept;
+};
+setInterval(updateStorage, 20 * 1000)
+
+
 
 plugin.onConfig(() => {
     const cleanedLogCountDom = dom('span', { class: ['cleanedLogCount'] });
