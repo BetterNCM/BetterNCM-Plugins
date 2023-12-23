@@ -1,0 +1,254 @@
+<html>
+<script>
+    const NCM21012 = `https://d1.music.126.net/dmusic/NeteaseCloudMusic_Music_official_2.10.12.201849_32.exe`;
+    const SAVE_FILENAME = `NeteaseCloudMusic_Music_official_2.10.12.201849_32.exe`;
+    const DATA_DIR = parent.window.betterncm_native.app.datapath() + '/downgrade_ok'
+    const CURRENT_VERSION = parent.window.APP_CONF.appver;
+    const TARGET_VERSION = '2.10.12.201849';
+
+    if (!parent.window.betterncm_native.fs.exists(DATA_DIR)) {
+        parent.window.betterncm.fs.mkdir(DATA_DIR);
+    }
+    const esc = JSON.stringify.bind(JSON);
+    const switchToPage = (page) => {
+        for (const page of document.querySelectorAll('.page')) {
+            page.style.opacity = '0';
+            page.style.pointerEvents = 'none';
+            page.style.maxHeight = '0';
+        }
+        const rPage = document.querySelector('.page' + page)
+        rPage.style.opacity = '1';
+        rPage.style.pointerEvents = 'all';
+        rPage.style.maxHeight = '1000px';
+    }
+
+    window.onload = () => {
+        switchToPage('1');
+        curr.innerText = `当前：${CURRENT_VERSION}\n目标：${TARGET_VERSION}`
+    }
+
+    const resourceList = [
+        'default.skin',
+        'native.ntpk',
+        'orpheus.ntpk',
+    ]
+
+    const checkResources = () => {
+        for (const resource of resourceList) {
+            if (!parent.window.betterncm_native.fs.exists(DATA_DIR + '/data/' + resource)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    const unzipResource = () => {
+        if (checkResources()) {
+            switchToPage('4');
+            return;
+        }
+        setTimeout(async () => {
+            const Path7Z = parent.window.dgOk_pluginPath + '/7z.exe';
+
+            await parent.window.betterncm.app.exec(`${esc(Path7Z)} e -o${esc(
+                DATA_DIR + '/data'
+            )} -aoa ${esc(
+                DATA_DIR + '/' + SAVE_FILENAME
+            )}`, 0, 1)
+
+            while (!checkResources()) {
+                await new Promise((resolve) => setTimeout(resolve, 400));
+            }
+
+            switchToPage('4');
+        }, 100)
+    }
+    const checkAndDownloadResource = async () => {
+        if (parent.window.betterncm_native.fs.exists(DATA_DIR + '/' + SAVE_FILENAME)) {
+            switchToPage('4');
+            // unzipResource()
+            return;
+        }
+        const res = await fetch(NCM21012);
+        // download with progress
+        const total = res.headers.get('content-length');
+        const reader = res.body.getReader();
+        let loaded = 0;
+        const chunks = [];
+        while (true) {
+            const {
+                done,
+                value
+            } = await reader.read();
+            if (done) {
+                break;
+            }
+            loaded += value.length;
+            chunks.push(value);
+            document.querySelector('.progressBar').style.setProperty('--progress', `${loaded / total * 100}%`);
+        }
+
+        // download complete
+        const blob = new Blob(chunks);
+        const url = URL.createObjectURL(blob);
+        parent.window.betterncm.fs.writeFile(
+            DATA_DIR + '/' + SAVE_FILENAME,
+            blob).then(() => {
+                switchToPage('4');
+                // unzipResource()
+            })
+    }
+    const runDowngrade = async () => {
+        const cmdUnlock = `powershell Set-ExecutionPolicy -ExecutionPolicy Unrestricted -Scope CurrentUser -Force`
+        await parent.window.betterncm.app.exec(cmdUnlock, 1, 1)
+        await new Promise((resolve) => setTimeout(resolve, 500));
+        const PathScript = parent.window.dgOk_pluginPath + '/downgrade.ps1';
+        const cmd = `powershell ${esc(PathScript)} ${esc(DATA_DIR + '/' + SAVE_FILENAME)} ;pause`
+        console.log(cmd)
+        await parent.window.betterncm.app.exec(cmd, 1, 1)
+    }
+</script>
+
+<body>
+    <div class="container">
+        <div class="page1 page">
+            <div class="title">降级引导</div>
+            <div class="content">
+                <div id="curr"></div></br></br>
+                接下来，插件将把网易云前端版本降级至 2.10.12，以保证插件的正常运行。<br>
+            </div>
+            <div class="button">
+                <button onclick="switchToPage('2'); checkAndDownloadResource()">下一步</button>
+                <button onclick="parent.document.querySelector('body > iframe').remove()">取消</button>
+            </div>
+        </div>
+        <div class="page2 page">
+            <div class="title">下载旧版本资源</div>
+            <div class="content">
+                请稍等，正在下载资源...
+            </div>
+            <div class="progressBar" style="--progress:0%">
+
+            </div>
+        </div>
+        <div class="page3 page">
+            <div class="title">释放资源</div>
+            <div class="content">
+                请稍等，正在释放资源...
+            </div>
+        </div>
+        <div class="page4 page">
+            <div class="title">资源准备完成</div>
+            <div class="content">
+                点击确定以重启网易云音乐并完成前端降级。
+            </div>
+            <div class="button">
+                <button onclick="runDowngrade()">确定</button>
+            </div>
+        </div>
+    </div>
+</body>
+
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@100;400;500;600;700;800;900&family=Noto+Sans:wght@100;200;300;400;500;600;700;800;900&display=swap');
+
+    body,
+    html {
+        background: #00000034;
+        border-radius: 8px;
+    }
+
+    * {
+        font-family: 'Noto Sans', 'Noto Sans SC';
+    }
+
+    .container {
+        height: max-content;
+        width: 400px;
+        min-height: 300px;
+        border-radius: 10px;
+        display: flex;
+        padding: 30px 50px;
+        background: rgba(0, 0, 0, 0.274);
+        transform: translate(-50%, -50%);
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        backdrop-filter: blur(50px) brightness(0.5);
+        user-select: none;
+    }
+
+    .page {
+        transition: all .3s;
+        position: absolute;
+        top: 30px;
+        left: 50px;
+
+        opacity: 0;
+        pointer-events: none;
+    }
+
+    .title {
+        font-size: 30px;
+        font-weight: 800;
+        color: #fff;
+    }
+
+    .content {
+        font-size: 20px;
+        font-weight: 500;
+        color: #fff;
+        margin-top: 20px;
+        height: auto;
+    }
+
+    .button {
+        bottom: 40px;
+        position: fixed;
+    }
+
+    button {
+        background: #3e5661;
+        border: none;
+        border-radius: 500px;
+        padding: 10px 20px;
+        font-size: 20px;
+        font-weight: 500;
+        color: #ffffff;
+        margin-right: 20px;
+        cursor: pointer;
+        transition: 0.2s;
+    }
+
+    button:hover {
+        background: #3e5661a8;
+    }
+
+    button:active {
+        background: #3e566181;
+    }
+
+    .progressBar {
+        width: 100%;
+        height: 10px;
+        background: #ffffff23;
+        border-radius: 500px;
+        margin-top: 20px;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .progressBar::before {
+        content: '';
+        width: var(--progress);
+        height: 100%;
+        background: #587583;
+        position: absolute;
+        top: 0;
+        left: 0;
+        transition: 0.3s;
+        border-radius: 500px;
+    }
+</style>
+
+</html>
