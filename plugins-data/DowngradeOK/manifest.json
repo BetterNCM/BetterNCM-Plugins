@@ -1,0 +1,18 @@
+{
+    "manifest_version": 1,
+    "name": "DowngradeOK",
+    "version": "0.0.1",
+    "author": "MicroBlock",
+    "description": "降级网易云至 2.10.12，并干掉自动更新",
+    "preview": "preview.png",
+    "betterncm_version": ">=1.0.0",
+    "ncm-version-req": ">= 2.10.3",
+    "ncm3-compatible": true,
+    "injects": {
+        "Main": [
+            {
+                "file": "./index.js"
+            }
+        ]
+    }
+}
