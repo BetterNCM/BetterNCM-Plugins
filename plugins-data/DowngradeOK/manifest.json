@@ -1,7 +1,7 @@
 {
     "manifest_version": 1,
     "name": "DowngradeOK",
-    "version": "0.0.2",
+    "version": "0.0.3",
     "author": "MicroBlock",
     "description": "降级网易云至 2.10.12，并干掉自动更新",
     "preview": "preview.png",

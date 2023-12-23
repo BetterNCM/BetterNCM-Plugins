@@ -1,5 +1,5 @@
 plugin.onLoad(async ({pluginPath})=>{
-    const is300 = !APP_CONF.appver.startsWith('3.');
+    const is300 = APP_CONF.appver.startsWith('3.');
     if (is300) {
         const iframe = document.createElement('iframe');
         const dataPath = await betterncm.app.getDataPath()
