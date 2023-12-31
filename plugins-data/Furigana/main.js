@@ -63,7 +63,7 @@ const settingDiv = `
         <div id="lyrics">
             <ul class="lyric">
                 <li class="present">
-                    <p _nk="vpjX51">歌词效果预览</p>
+                    <p _nk="vpjX51">预览</p>
                 </li>
                 <li>
                     <p _nk="vpjX51">未来（ミク）</p>
@@ -91,7 +91,7 @@ const settingDiv = `
     <p>
         <input type="checkbox" id="ruby">
         <label for="ruby">给汉字标注振假名</label>
-        <span><br>Apple Music-like lyrics的逐词歌词开启后会出错！<br>本功能依赖kuroshiro的在线API，需要联网<br>注音准确率有限，特别是单汉字</span>
+        <span><br>Apple Music-like lyrics的逐词歌词开启后会出错！<br>本功能依赖kuromoji的在线API，需要联网<br>注音准确率有限</span>
         <br><br>
     </p>
     <p>
@@ -105,6 +105,10 @@ const settingDiv = `
         <label for="convert">将“音译歌词”的罗马音转换为平假名</label>
         <span><br>对网易云音乐2.x版本无效，但兼容Apple Music-like lyrics<br>读wa的“は”、读e的“へ”可能会误转为“わ”“え”<br>“ぢ”“づ”“うぉ”都会被转换为“じ”“ず”“を”</span>
         <br><br>
+    </p>
+    <p>
+        <span>字体格式示例：<br>'Yu Gothic UI', 'Microsoft YaHei UI'</span>
+        <br>
     </p>
     <p>
         <input type="checkbox" id="jpnfont-check">
@@ -265,7 +269,7 @@ const hiragana = {
     n: 'ん'
 };
 
-let rubyEnabled, convertEnabled, rubyStart;
+let rubyEnabled, convertEnabled, rubyStart, postFailed = false, cache = new Map();
 
 const lyricType = ['', 'jpn', 'cn', 'ruby'];
 
@@ -348,7 +352,27 @@ function doRuby() {
     }
     const isAcc = isAccompany(lyrics);
     rubyStart = true;
-    fetch("https://api.kuroshiro.org/convert", {
+    const process = function (result) {
+        const convertedLyric = result.split('<br>');
+        for (let i = 0; i < convertedLyric.length; i++)
+            if (lyrics[i]) {
+                let temp = convertedLyric[i];
+                temp = temp.replace(/<rp>\(<\/rp><rt>[^ぁ-ヿ]<\/rt><rp>\)<\/rp>/g, ''); // 简体中文独有汉字会把本字注音上去，需删除
+                if (!isAcc) {
+                    temp = temp.replace(/<ruby>([㐀-鿿々]+?)<\/ruby>[（\(]([ぁ-ヿ]+?)[）\)]/g, '<ruby>$1<rp>(</rp><rt>$2</rt><rp>)</rp></ruby>（$2）'); // 将未能成功机器注音，但后面跟着括号注音的汉字注音
+                    // temp = temp.replace(/<ruby>([㐀-鿿々]+?)<rp>\(<\/rp><rt>([ぁ-ヿ]+?)<\/rt><rp>\)<\/rp><\/ruby><ruby>([㐀-鿿々]+?)<rp>\(<\/rp><rt>([ぁ-ヿ]+?)<\/rt><rp>\)<\/rp><\/ruby>[（\(]([ぁ-ヿ]+?)[）\)]/g, '<ruby>$1$3<rp>(</rp><rt>$5</rt><rp>)</rp></ruby>（$5）'); // 修改已成功机器注音，但后面跟着括号注音的两个汉字词的注音
+                    temp = temp.replace(/<ruby>([㐀-鿿々]+?)<rp>\(<\/rp><rt>([ぁ-ヿ]*?)<\/rt><rp>\)<\/rp><\/ruby>[（\(]([ぁ-ヿ]+?)[）\)]/g, '<ruby>$1<rp>(</rp><rt>$3</rt><rp>)</rp></ruby>（$3）'); // 修改已成功机器注音，但后面跟着括号注音的单个汉字词的注音
+                }
+                lyrics[i].innerHTML = temp;
+            }
+    }
+    const value = cache.get(longLyric);
+    if (value) {
+        process(value);
+        rubyStart = false;
+        return;
+    }
+    fetch("https://convert-kuromoji-xhbfvqbgdc.cn-shenzhen.fcapp.run", {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json;charset=UTF-8'
@@ -356,30 +380,22 @@ function doRuby() {
         body: JSON.stringify({
             str: longLyric,
             mode: 'furigana',
+            to: 'hiragana',
+            romajiSystem: 'hepburn'
         })
     })
         .then((resp) => {
             if (resp.ok) {
                 return resp.json();
-            } else if (resp.status == 429) {
-                throw new Error("Kuroshiro: Too many request");
             } else {
-                throw new Error("Kuroshiro: Something wrong");
+                if (!postFailed) {
+                    alert(`Furigana：\n汉字标注假名在线API出错\n错误代码：${resp.status}`);
+                }
             }
         })
         .then((result) => {
-            const convertedLyric = result.result.split('<br>');
-            for (let i = 0; i < convertedLyric.length; i++)
-                if (lyrics[i]) {
-                    let temp = convertedLyric[i];
-                    temp = temp.replace(/<rp>\(<\/rp><rt>[^ぁ-ヿ]<\/rt><rp>\)<\/rp>/g, ''); // 简体中文独有汉字会把本字注音上去，需删除
-                    if (!isAcc) {
-                        temp = temp.replace(/<ruby>([㐀-鿿々]+?)<\/ruby>[（\(]([ぁ-ヿ]+?)[）\)]/g, '<ruby>$1<rp>(</rp><rt>$2</rt><rp>)</rp></ruby>（$2）'); // 将未能成功机器注音，但后面跟着括号注音的汉字注音
-                        temp = temp.replace(/<ruby>([㐀-鿿々]+?)<rp>\(<\/rp><rt>([ぁ-ヿ]+?)<\/rt><rp>\)<\/rp><\/ruby><ruby>([㐀-鿿々]+?)<rp>\(<\/rp><rt>([ぁ-ヿ]+?)<\/rt><rp>\)<\/rp><\/ruby>[（\(]([ぁ-ヿ]+?)[）\)]/g, '<ruby>$1$3<rp>(</rp><rt>$5</rt><rp>)</rp></ruby>（$5）'); // 修改已成功机器注音，但后面跟着括号注音的两个汉字词的注音
-                        temp = temp.replace(/<ruby>([㐀-鿿々]+?)<rp>\(<\/rp><rt>([ぁ-ヿ]*?)<\/rt><rp>\)<\/rp><\/ruby>[（\(]([ぁ-ヿ]+?)[）\)]/g, '<ruby>$1<rp>(</rp><rt>$3</rt><rp>)</rp></ruby>（$3）'); // 修改已成功机器注音，但后面跟着括号注音的单个汉字词的注音
-                    }
-                    lyrics[i].innerHTML = temp;
-                }
+            process(result);
+            cache.set(longLyric, result);
             rubyStart = false;
         })
         .catch((err) => {
@@ -394,7 +410,7 @@ function removeRuby() {
     localStorage.setItem('rubyEnabled', 'false');
     rubyEnabled = false;
     const lyrics = document.querySelectorAll('ul[class="lyric"] li p[_nk = "vpjX51"]');
-    lyrics[0].innerHTML = '歌词效果预览';
+    lyrics[0].innerHTML = '预览';
     lyrics[1].innerHTML = '未来（ミク）';
     lyrics[2].innerHTML = '悲しみの海に沈んだ私';
     lyrics[3].innerHTML = '目を開けるのも億劫';
@@ -585,7 +601,7 @@ plugin.onConfig(() => {
 
     if (rubyEnabled) {
         const lyrics = div.querySelectorAll('ul[class="lyric"] li p[_nk="vpjX51"]');
-        lyrics[0].innerHTML = '<ruby>歌<rp>(</rp><rt>うた</rt><rp>)</rp></ruby><ruby>词</ruby><ruby>效</ruby><ruby>果<rp>(</rp><rt>はて</rt><rp>)</rp></ruby><ruby>预</ruby><ruby>览</ruby>';
+        lyrics[0].innerHTML = '<ruby>预</ruby><ruby>览</ruby>';
         lyrics[1].innerHTML = '<ruby>未来<rp>(</rp><rt>ミク</rt><rp>)</rp></ruby>（ミク）';
         lyrics[2].innerHTML = '<ruby>悲<rp>(</rp><rt>かな</rt><rp>)</rp></ruby>しみの<ruby>海<rp>(</rp><rt>うみ</rt><rp>)</rp></ruby>に<ruby>沈<rp>(</rp><rt>しず</rt><rp>)</rp></ruby>んだ<ruby>私<rp>(</rp><rt>わたし</rt><rp>)</rp></ruby>';
         lyrics[3].innerHTML = '<ruby>目<rp>(</rp><rt>め</rt><rp>)</rp></ruby>を<ruby>開<rp>(</rp><rt>あ</rt><rp>)</rp></ruby>けるのも<ruby>億劫<rp>(</rp><rt>おっくう</rt><rp>)</rp></ruby>';
