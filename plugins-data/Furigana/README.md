@@ -19,3 +19,7 @@
 1. 由于kuroshiro在线API不可用，将在线API换为kuromoji
 2. 对于已经注音过的歌词会进行缓存，以加快再次注音的速度
 3. 设置页面的小更改
+
+## Version 0.2.1
+
+发现插件不再兼容新版Apple Music-like lyrics，即“类苹果歌词”，故在设置界面做出提示。

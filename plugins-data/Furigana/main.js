@@ -85,13 +85,13 @@ const settingDiv = `
     </div>
     <br><br>
     <p>
-        注意：不支持修改桌面歌词！
+        注意：不支持修改桌面歌词！对“类苹果歌词”和“RefinedNowPlaying”的兼容会在未来版本加入
         <br><br>
     </p>
     <p>
         <input type="checkbox" id="ruby">
         <label for="ruby">给汉字标注振假名</label>
-        <span><br>Apple Music-like lyrics的逐词歌词开启后会出错！<br>本功能依赖kuromoji的在线API，需要联网<br>注音准确率有限</span>
+        <span><br>本功能依赖kuromoji的在线API，需要联网<br>注音准确率有限</span>
         <br><br>
     </p>
     <p>
@@ -103,7 +103,7 @@ const settingDiv = `
     <p>
         <input type="checkbox" id="convert">
         <label for="convert">将“音译歌词”的罗马音转换为平假名</label>
-        <span><br>对网易云音乐2.x版本无效，但兼容Apple Music-like lyrics<br>读wa的“は”、读e的“へ”可能会误转为“わ”“え”<br>“ぢ”“づ”“うぉ”都会被转换为“じ”“ず”“を”</span>
+        <span><br>对网易云音乐2.x版本无效<br>读wa的“は”、读e的“へ”可能会误转为“わ”“え”<br>“ぢ”“づ”“うぉ”都会被转换为“じ”“ず”“を”</span>
         <br><br>
     </p>
     <p>
@@ -114,21 +114,20 @@ const settingDiv = `
         <input type="checkbox" id="jpnfont-check">
         <label for="jpnfont-check">更改主歌词的字体<br></label>
         <input type="text" id="jpnfont">
-        <span><br>不兼容Apple Music-like lyrics的逐词歌词</span>
         <br><br>
     </p>
     <p>
         <input type="checkbox" id="rubyfont-check">
         <label for="rubyfont-check">更改音译歌词的字体<br></label>
         <input type="text" id="rubyfont">
-        <span><br>对网易云音乐2.x版本无效，但兼容Apple Music-like lyrics</span>
+        <span><br>对网易云音乐2.x版本无效</span>
         <br><br>
     </p>
     <p>
         <input type="checkbox" id="cnfont-check">
         <label for="cnfont-check">更改翻译歌词的字体<br></label>
         <input type="text" id="cnfont">
-        <span><br>对网易云音乐2.x版本无效，但兼容Apple Music-like lyrics</span>
+        <span><br>对网易云音乐2.x版本无效</span>
         <br><br>
     </p>
 `;
