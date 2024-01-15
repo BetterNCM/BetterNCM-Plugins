@@ -347,20 +347,22 @@ function doRuby() {
     for (let i = 0; i < lyrics.length; i++) {
         if (lyrics[i].querySelector('ruby') || rubyStart)
             return;
-        longLyric += lyrics[i].innerHTML + '<br>';
+        longLyric += lyrics[i].innerHTML + '\n';
     }
     const isAcc = isAccompany(lyrics);
     rubyStart = true;
     const process = function (result) {
-        const convertedLyric = result.split('<br>');
+        const convertedLyric = result.split('\n');
         for (let i = 0; i < convertedLyric.length; i++)
             if (lyrics[i]) {
                 let temp = convertedLyric[i];
                 temp = temp.replace(/<rp>\(<\/rp><rt>[^ぁ-ヿ]<\/rt><rp>\)<\/rp>/g, ''); // 简体中文独有汉字会把本字注音上去，需删除
                 if (!isAcc) {
                     temp = temp.replace(/<ruby>([㐀-鿿々]+?)<\/ruby>[（\(]([ぁ-ヿ]+?)[）\)]/g, '<ruby>$1<rp>(</rp><rt>$2</rt><rp>)</rp></ruby>（$2）'); // 将未能成功机器注音，但后面跟着括号注音的汉字注音
-                    // temp = temp.replace(/<ruby>([㐀-鿿々]+?)<rp>\(<\/rp><rt>([ぁ-ヿ]+?)<\/rt><rp>\)<\/rp><\/ruby><ruby>([㐀-鿿々]+?)<rp>\(<\/rp><rt>([ぁ-ヿ]+?)<\/rt><rp>\)<\/rp><\/ruby>[（\(]([ぁ-ヿ]+?)[）\)]/g, '<ruby>$1$3<rp>(</rp><rt>$5</rt><rp>)</rp></ruby>（$5）'); // 修改已成功机器注音，但后面跟着括号注音的两个汉字词的注音
+                    temp = temp.replace(/<ruby>([㐀-鿿々]+?)<rp>\(<\/rp><rt>([ぁ-ヿ]+?)<\/rt><rp>\)<\/rp><\/ruby><ruby>([㐀-鿿々]+?)<rp>\(<\/rp><rt>([ぁ-ヿ]+?)<\/rt><rp>\)<\/rp><\/ruby>[（\(]([ぁ-ヿ]+?)[）\)]/g, '<ruby>$1$3<rp>(</rp><rt>$5</rt><rp>)</rp></ruby>（$5）'); // 修改已成功机器注音，但后面跟着括号注音的两个汉字词的注音
                     temp = temp.replace(/<ruby>([㐀-鿿々]+?)<rp>\(<\/rp><rt>([ぁ-ヿ]*?)<\/rt><rp>\)<\/rp><\/ruby>[（\(]([ぁ-ヿ]+?)[）\)]/g, '<ruby>$1<rp>(</rp><rt>$3</rt><rp>)</rp></ruby>（$3）'); // 修改已成功机器注音，但后面跟着括号注音的单个汉字词的注音
+                    temp = temp.replaceAll('<ruby>一<rp>(</rp><rt>いち</rt><rp>)</rp></ruby><ruby>人<rp>(</rp><rt>にん</rt><rp>)</rp></ruby>', '<ruby>一人<rp>(</rp><rt>ひとり</rt><rp>)</rp></ruby>'); // 改正特定词的发音 功能测试start
+                    temp = temp.replaceAll('<ruby>二<rp>(</rp><rt>に</rt><rp>)</rp></ruby><ruby>人<rp>(</rp><rt>にん</rt><rp>)</rp></ruby>', '<ruby>二人<rp>(</rp><rt>ふたり</rt><rp>)</rp></ruby>'); // 改正特定词的发音 功能测试end
                 }
                 lyrics[i].innerHTML = temp;
             }
@@ -371,6 +373,9 @@ function doRuby() {
         rubyStart = false;
         return;
     }
+    const replaceChars = [['词', '詞'], ['编', '編']]; // 简中汉字替换日标汉字 功能测试start
+    for (const chr of replaceChars)
+        longLyric = longLyric.replaceAll(chr[0], chr[1]); // 简中汉字替换日标汉字 功能测试end
     fetch("https://convert-kuromoji-xhbfvqbgdc.cn-shenzhen.fcapp.run", {
         method: 'POST',
         headers: {
