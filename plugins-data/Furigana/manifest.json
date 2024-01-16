@@ -1,7 +1,7 @@
 {
     "manifest_version": 1,
     "name": "Furigana",
-    "version": "0.2.2",
+    "version": "0.2.3",
     "author": "Mutton_String",
     "description": "给日文歌词的汉字标注假名",
     "preview": "preview.jpg",

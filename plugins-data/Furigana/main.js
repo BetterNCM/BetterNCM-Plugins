@@ -66,11 +66,6 @@ const settingDiv = `
                     <p _nk="vpjX51">预览</p>
                 </li>
                 <li>
-                    <p _nk="vpjX51">未来（ミク）</p>
-                    <p _nk="vpjX52" style="display: none">初音未来</p>
-                    <p _nk="vpjX53" style="display: none">mi ku</p>
-                </li>
-                <li>
                     <p _nk="vpjX51">悲しみの海に沈んだ私</p>
                     <p _nk="vpjX52" style="display: none">沉入悲伤之海的我</p>
                     <p _nk="vpjX53" style="display: none">ka na shi mi no u mi ni shi zu n da wa ta shi</p>
@@ -333,6 +328,8 @@ function removeFont(type) {
  * 给歌词的汉字标注振假名
  */
 function doRuby() {
+    if (rubyStart)
+        return;
     const lyricDiv = document.querySelector('div[class="am-lyric"]') || document.querySelector('ul[class^="sc-AxjAm sc-AxirZ"]') || document.querySelector('div[class^="sc-fzoaKM hNuJKS"]') || document.querySelector('div[class^="CoverBackgroundContainer"]');
     let lyrics = (lyricDiv ? lyricDiv : document).querySelectorAll('ul[class="lyric"] li p[_nk = "vpjX51"]');
     if (!lyrics.length)
@@ -343,14 +340,15 @@ function doRuby() {
         lyrics = lyricDiv.querySelectorAll('div[class^="j-line"] p[class="lyric-next-p f-ust f-ust-1"]:first-child');
     if (!isJapanese(lyrics))
         return;
-    let longLyric = '';
-    for (let i = 0; i < lyrics.length; i++) {
-        if (lyrics[i].querySelector('ruby') || rubyStart)
+    for (let i = lyrics.length - 1; i > 0; i--)
+        if (lyrics[i].querySelector('ruby'))
             return;
-        longLyric += lyrics[i].innerHTML + '\n';
-    }
-    const isAcc = isAccompany(lyrics);
+    lyrics[0].innerHTML = lyrics[0].innerHTML.replace(/<ruby>([㐀-鿿々]+?)<rp>\(<\/rp><rt>([ぁ-ヿ]*?)<\/rt><rp>\)<\/rp><\/ruby>/g, '$1');
     rubyStart = true;
+    let longLyric = '';
+    for (let i = 0; i < lyrics.length; i++)
+        longLyric += lyrics[i].innerHTML + '\n';
+    const isAcc = isAccompany(lyrics);
     const process = function (result) {
         const convertedLyric = result.split('\n');
         for (let i = 0; i < convertedLyric.length; i++)
@@ -359,8 +357,9 @@ function doRuby() {
                 temp = temp.replace(/<rp>\(<\/rp><rt>[^ぁ-ヿ]<\/rt><rp>\)<\/rp>/g, ''); // 简体中文独有汉字会把本字注音上去，需删除
                 if (!isAcc) {
                     temp = temp.replace(/<ruby>([㐀-鿿々]+?)<\/ruby>[（\(]([ぁ-ヿ]+?)[）\)]/g, '<ruby>$1<rp>(</rp><rt>$2</rt><rp>)</rp></ruby>（$2）'); // 将未能成功机器注音，但后面跟着括号注音的汉字注音
-                    temp = temp.replace(/<ruby>([㐀-鿿々]+?)<rp>\(<\/rp><rt>([ぁ-ヿ]+?)<\/rt><rp>\)<\/rp><\/ruby><ruby>([㐀-鿿々]+?)<rp>\(<\/rp><rt>([ぁ-ヿ]+?)<\/rt><rp>\)<\/rp><\/ruby>[（\(]([ぁ-ヿ]+?)[）\)]/g, '<ruby>$1$3<rp>(</rp><rt>$5</rt><rp>)</rp></ruby>（$5）'); // 修改已成功机器注音，但后面跟着括号注音的两个汉字词的注音
-                    temp = temp.replace(/<ruby>([㐀-鿿々]+?)<rp>\(<\/rp><rt>([ぁ-ヿ]*?)<\/rt><rp>\)<\/rp><\/ruby>[（\(]([ぁ-ヿ]+?)[）\)]/g, '<ruby>$1<rp>(</rp><rt>$3</rt><rp>)</rp></ruby>（$3）'); // 修改已成功机器注音，但后面跟着括号注音的单个汉字词的注音
+                    // temp = temp.replace(/<ruby>([㐀-鿿々]+?)<rp>\(<\/rp><rt>([ぁ-ヿ]+?)<\/rt><rp>\)<\/rp><\/ruby><ruby>([㐀-鿿々]+?)<rp>\(<\/rp><rt>([ぁ-ヿ]+?)<\/rt><rp>\)<\/rp><\/ruby>[（\(]([ぁ-ヿ]+?)[）\)]/g, '<ruby>$1$3<rp>(</rp><rt>$5</rt><rp>)</rp></ruby>（$5）'); // 修改已成功机器注音，但后面跟着括号注音的两个汉字词的注音
+                    // temp = temp.replace(/<ruby>([㐀-鿿々]+?)<rp>\(<\/rp><rt>([ぁ-ヿ]*?)<\/rt><rp>\)<\/rp><\/ruby>[（\(]([ぁ-ヿ]+?)[）\)]/g, '<ruby>$1<rp>(</rp><rt>$3</rt><rp>)</rp></ruby>（$3）'); // 修改已成功机器注音，但后面跟着括号注音的单个汉字词的注音
+                    temp = temp.replace(/<ruby>([㐀-鿿々]+?)<rp>\(<\/rp><rt>([ぁ-ヿ]*?)<\/rt><rp>\)<\/rp><\/ruby>[（\(]([ぁ-ヿ]+?)[）\)]/g, '$1（$3）'); // 临时 删除已成功机器注音，但后面跟着括号注音的单个汉字词的注音
                     temp = temp.replaceAll('<ruby>一<rp>(</rp><rt>いち</rt><rp>)</rp></ruby><ruby>人<rp>(</rp><rt>にん</rt><rp>)</rp></ruby>', '<ruby>一人<rp>(</rp><rt>ひとり</rt><rp>)</rp></ruby>'); // 改正特定词的发音 功能测试start
                     temp = temp.replaceAll('<ruby>二<rp>(</rp><rt>に</rt><rp>)</rp></ruby><ruby>人<rp>(</rp><rt>にん</rt><rp>)</rp></ruby>', '<ruby>二人<rp>(</rp><rt>ふたり</rt><rp>)</rp></ruby>'); // 改正特定词的发音 功能测试end
                 }
@@ -373,6 +372,7 @@ function doRuby() {
         rubyStart = false;
         return;
     }
+    const raw = longLyric;
     const replaceChars = [['词', '詞'], ['编', '編']]; // 简中汉字替换日标汉字 功能测试start
     for (const chr of replaceChars)
         longLyric = longLyric.replaceAll(chr[0], chr[1]); // 简中汉字替换日标汉字 功能测试end
@@ -394,16 +394,19 @@ function doRuby() {
             } else {
                 if (!postFailed) {
                     alert(`Furigana：\n汉字标注假名在线API出错\n错误代码：${resp.status}`);
+                    postFailed = true;
+                    rubyStart = false;
                 }
             }
         })
         .then((result) => {
             process(result);
-            cache.set(longLyric, result);
+            cache.set(raw, result);
             rubyStart = false;
         })
         .catch((err) => {
             console.error(err);
+            rubyStart = false;
         })
 }
 
@@ -415,9 +418,8 @@ function removeRuby() {
     rubyEnabled = false;
     const lyrics = document.querySelectorAll('ul[class="lyric"] li p[_nk = "vpjX51"]');
     lyrics[0].innerHTML = '预览';
-    lyrics[1].innerHTML = '未来（ミク）';
-    lyrics[2].innerHTML = '悲しみの海に沈んだ私';
-    lyrics[3].innerHTML = '目を開けるのも億劫';
+    lyrics[1].innerHTML = '悲しみの海に沈んだ私';
+    lyrics[2].innerHTML = '目を開けるのも億劫';
 }
 
 /**
@@ -472,9 +474,8 @@ function removeConvert() {
     localStorage.setItem('convertEnabled', 'false');
     convertEnabled = false;
     const lyrics = document.querySelectorAll('ul[class="lyric"] li p[_nk = "vpjX53"]');
-    lyrics[0].innerHTML = 'mi ku';
-    lyrics[1].innerHTML = 'ka na shi mi no u mi ni shi zu n da wa ta shi';
-    lyrics[2].innerHTML = 'me wo a ke ru no mo o kku u';
+    lyrics[0].innerHTML = 'ka na shi mi no u mi ni shi zu n da wa ta shi';
+    lyrics[1].innerHTML = 'me wo a ke ru no mo o kku u';
 }
 
 plugin.onLoad(() => {
@@ -606,9 +607,8 @@ plugin.onConfig(() => {
     if (rubyEnabled) {
         const lyrics = div.querySelectorAll('ul[class="lyric"] li p[_nk="vpjX51"]');
         lyrics[0].innerHTML = '<ruby>预</ruby><ruby>览</ruby>';
-        lyrics[1].innerHTML = '<ruby>未来<rp>(</rp><rt>ミク</rt><rp>)</rp></ruby>（ミク）';
-        lyrics[2].innerHTML = '<ruby>悲<rp>(</rp><rt>かな</rt><rp>)</rp></ruby>しみの<ruby>海<rp>(</rp><rt>うみ</rt><rp>)</rp></ruby>に<ruby>沈<rp>(</rp><rt>しず</rt><rp>)</rp></ruby>んだ<ruby>私<rp>(</rp><rt>わたし</rt><rp>)</rp></ruby>';
-        lyrics[3].innerHTML = '<ruby>目<rp>(</rp><rt>め</rt><rp>)</rp></ruby>を<ruby>開<rp>(</rp><rt>あ</rt><rp>)</rp></ruby>けるのも<ruby>億劫<rp>(</rp><rt>おっくう</rt><rp>)</rp></ruby>';
+        lyrics[1].innerHTML = '<ruby>悲<rp>(</rp><rt>かな</rt><rp>)</rp></ruby>しみの<ruby>海<rp>(</rp><rt>うみ</rt><rp>)</rp></ruby>に<ruby>沈<rp>(</rp><rt>しず</rt><rp>)</rp></ruby>んだ<ruby>私<rp>(</rp><rt>わたし</rt><rp>)</rp></ruby>';
+        lyrics[2].innerHTML = '<ruby>目<rp>(</rp><rt>め</rt><rp>)</rp></ruby>を<ruby>開<rp>(</rp><rt>あ</rt><rp>)</rp></ruby>けるのも<ruby>億劫<rp>(</rp><rt>おっくう</rt><rp>)</rp></ruby>';
     }
     return div;
 });
