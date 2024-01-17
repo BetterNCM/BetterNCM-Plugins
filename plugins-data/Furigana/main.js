@@ -15,23 +15,6 @@ const settingDiv = `
             width: calc(100% - 96px);
         }
 
-        #this button {
-            float: right;
-            width: 32px;
-            height: 32px;
-            color: white;
-            background: transparent;
-            border: 1px solid white;
-            border-radius: 100%;
-            opacity: 0.5;
-            margin: 8px 8px 0 0;
-        }
-
-        #this button:hover,
-        #this button[class="enabled"] {
-            opacity: 1;
-        }
-
         #this li {
             margin: 24px 0;
             color: white;
@@ -58,35 +41,29 @@ const settingDiv = `
         }
     </style>
     <div id="example">
-        <button>译</button>
-        <button>音</button>
         <div id="lyrics">
             <ul class="lyric">
                 <li class="present">
                     <p _nk="vpjX51">预览</p>
                 </li>
                 <li>
-                    <p _nk="vpjX51">悲しみの海に沈んだ私</p>
-                    <p _nk="vpjX52" style="display: none">沉入悲伤之海的我</p>
-                    <p _nk="vpjX53" style="display: none">ka na shi mi no u mi ni shi zu n da wa ta shi</p>
+                    <p _nk="vpjX51"><ruby>悲<rp>(</rp><rt>かな</rt><rp>)</rp></ruby>しみの<ruby>海<rp>(</rp><rt>うみ</rt><rp>)</rp></ruby>に<ruby>沈<rp>(</rp><rt>しず</rt><rp>)</rp></ruby>んだ<ruby>私<rp>(</rp><rt>わたし</rt><rp>)</rp></ruby></p>
                 </li>
                 <li>
-                    <p _nk="vpjX51">目を開けるのも億劫</p>
-                    <p _nk="vpjX52" style="display: none">就连想睁开眼也彷佛永劫</p>
-                    <p _nk="vpjX53" style="display: none">me wo a ke ru no mo o kku u</p>
+                    <p _nk="vpjX51"><ruby>目<rp>(</rp><rt>め</rt><rp>)</rp></ruby>を<ruby>開<rp>(</rp><rt>あ</rt><rp>)</rp></ruby>けるのも<ruby>億劫<rp>(</rp><rt>おっくう</rt><rp>)</rp></ruby></p>
                 </li>
             </ul>
         </div>
     </div>
     <br><br>
     <p>
-        注意：不支持修改桌面歌词！对“类苹果歌词”和“RefinedNowPlaying”的兼容会在未来版本加入
+        注意：不支持修改桌面歌词！对于“类苹果歌词”“RefinedNowPlaying”插件的兼容尚不完善，尚未适配逐字歌词
         <br><br>
     </p>
     <p>
         <input type="checkbox" id="ruby">
         <label for="ruby">给汉字标注振假名</label>
-        <span><br>本功能依赖kuromoji的在线API，需要联网<br>注音准确率有限</span>
+        <span><br>本功能依赖kuromoji的在线API，需要联网。注音准确率有限，仅供参考</span>
         <br><br>
     </p>
     <p>
@@ -96,176 +73,18 @@ const settingDiv = `
         <br><br>
     </p>
     <p>
-        <input type="checkbox" id="convert">
-        <label for="convert">将“音译歌词”的罗马音转换为平假名</label>
-        <span><br>对网易云音乐2.x版本无效<br>读wa的“は”、读e的“へ”可能会误转为“わ”“え”<br>“ぢ”“づ”“うぉ”都会被转换为“じ”“ず”“を”</span>
-        <br><br>
-    </p>
-    <p>
         <span>字体格式示例：<br>'Yu Gothic UI', 'Microsoft YaHei UI'</span>
         <br>
     </p>
     <p>
         <input type="checkbox" id="jpnfont-check">
-        <label for="jpnfont-check">更改主歌词的字体<br></label>
+        <label for="jpnfont-check">更改歌词字体<br></label>
         <input type="text" id="jpnfont">
-        <br><br>
-    </p>
-    <p>
-        <input type="checkbox" id="rubyfont-check">
-        <label for="rubyfont-check">更改音译歌词的字体<br></label>
-        <input type="text" id="rubyfont">
-        <span><br>对网易云音乐2.x版本无效</span>
-        <br><br>
-    </p>
-    <p>
-        <input type="checkbox" id="cnfont-check">
-        <label for="cnfont-check">更改翻译歌词的字体<br></label>
-        <input type="text" id="cnfont">
-        <span><br>对网易云音乐2.x版本无效</span>
         <br><br>
     </p>
 `;
 
-const hiragana = {
-    a: 'あ',
-    i: 'い',
-    u: 'う',
-    e: 'え',
-    o: 'お',
-
-    ka: 'か',
-    ki: 'き',
-    ku: 'く',
-    ke: 'け',
-    ko: 'こ',
-    kya: 'きゃ',
-    kyu: 'きゅ',
-    kyo: 'きょ',
-
-    ga: 'が',
-    gi: 'ぎ',
-    gu: 'ぐ',
-    ge: 'げ',
-    go: 'ご',
-    gya: 'ぎゃ',
-    gyu: 'ぎゅ',
-    gyo: 'ぎょ',
-
-    sa: 'さ',
-    su: 'す',
-    se: 'せ',
-    so: 'そ',
-    sha: 'しゃ',
-    shi: 'し',
-    shu: 'しゅ',
-    she: 'しぇ',
-    sho: 'しょ',
-
-    za: 'ざ',
-    zu: 'ず',
-    ze: 'ぜ',
-    zo: 'ぞ',
-    ja: 'じゃ',
-    ji: 'じ',
-    ju: 'じゅ',
-    je: 'じぇ',
-    jo: 'じょ',
-
-    ta: 'た',
-    ti: 'てぃ',
-    tu: 'てぅ',
-    te: 'て',
-    to: 'と',
-    cha: 'ちゃ',
-    chi: 'ち',
-    chu: 'ちゅ',
-    che: 'ちぇ',
-    cho: 'ちょ',
-    tsa: 'つぁ',
-    tsu: 'つ',
-    tse: 'つぇ',
-    tso: 'つぉ',
-
-    da: 'だ',
-    di: 'でぃ',
-    du: 'でぅ',
-    de: 'で',
-    do: 'ど',
-    dyu: 'でゅ',
-
-    na: 'な',
-    ni: 'に',
-    nu: 'ぬ',
-    ne: 'ね',
-    no: 'の',
-    nya: 'にゃ',
-    nyu: 'にゅ',
-    nyo: 'にょ',
-
-    ha: 'は',
-    hi: 'ひ',
-    he: 'へ',
-    ho: 'ほ',
-    fa: 'ふぁ',
-    fi: 'ふぃ',
-    fu: 'ふ',
-    fe: 'ふぇ',
-    fo: 'ふぉ',
-    hya: 'ひゃ',
-    hyu: 'ひゅ',
-    hyo: 'ひょ',
-
-    pa: 'ぱ',
-    pi: 'ぴ',
-    pu: 'ぷ',
-    pe: 'ぺ',
-    po: 'ぽ',
-    pya: 'ぴゃ',
-    pyu: 'ぴゅ',
-    pyo: 'ぴょ',
-
-    ba: 'ば',
-    bi: 'び',
-    bu: 'ぶ',
-    be: 'べ',
-    bo: 'ぼ',
-    bya: 'びゃ',
-    byu: 'びゅ',
-    byo: 'びょ',
-
-    ma: 'ま',
-    mi: 'み',
-    mu: 'む',
-    me: 'め',
-    mo: 'も',
-    mya: 'みゃ',
-    myu: 'みゅ',
-    myo: 'みょ',
-
-    ya: 'や',
-    yu: 'ゆ',
-    yo: 'よ',
-
-    ra: 'ら',
-    ri: 'り',
-    ru: 'る',
-    re: 'れ',
-    ro: 'ろ',
-    rya: 'りゃ',
-    ryu: 'りゅ',
-    ryo: 'りょ',
-
-    wa: 'わ',
-    wi: 'うぃ',
-    we: 'うぇ',
-    wo: 'を',
-    n: 'ん'
-};
-
-let rubyEnabled, convertEnabled, rubyStart, postFailed = false, cache = new Map();
-
-const lyricType = ['', 'jpn', 'cn', 'ruby'];
+let rubyEnabled, rubyStart, cache = new Map();
 
 /**
  * 判断该歌是否是日文歌
@@ -296,32 +115,30 @@ function isAccompany(lyrics) {
 }
 
 /**
- * 改变指定歌词的字体
-* @param {Number} type 歌词类型。1.主歌词 2.翻译歌词 3.音译歌词
+ * 改变歌词的字体
 */
-function changeFont(type) {
-    const font = document.querySelector(`#${lyricType[type]}font`).value;
-    let styleElement = document.querySelector(`#style-${lyricType[type]}font`);
+function changeFont() {
+    const font = document.querySelector(`#jpnfont`).value;
+    let styleElement = document.querySelector(`#style-jpnfont`);
     if (!styleElement) {
         styleElement = document.createElement('style');
-        styleElement.id = `style-${lyricType[type]}font`;
+        styleElement.id = `style-jpnfont`;
         document.querySelector('head').appendChild(styleElement);
     }
-    const lyricTypeSelector = ['', ', li[class^="sc-fzocqA glbESi"] p:first-child, div[class^="j-line"] p[class="lyric-next-p f-ust f-ust-1"]:first-child, div[class="am-lyric"] div[class="am-lyric-line-original"]', ', div[class="am-lyric"] div[class="am-lyric-line-translated"]', ', div[class="am-lyric"] div[class="am-lyric-line-roman"]'];
-    styleElement.innerHTML = `ul[class="lyric"] li p[_nk="vpjX5${type}"]${lyricTypeSelector[type]} { font-family: ${font} !important; }`;
-    localStorage.setItem(`${lyricType[type]}font`, font);
-    localStorage.setItem(`${lyricType[type]}fontEnabled`, 'true');
+    const lyricSelector = 'ul[class="lyric"] li p[_nk="vpjX51"], li[class^="sc-fzocqA glbESi"] p:first-child, div[class^="j-line"] p[class="lyric-next-p f-ust f-ust-1"]:first-child, div[class="amll-lyric-player-wrapper"] div[class^="lyricPlayer"] div[class^="lyricMainLine"], div[class^="rnp-lyrics"] div[class^="rnp-lyrics-line"] div[class^="rnp-lyrics-line-karaoke"], div[class^="rnp-lyrics"] div[class^="rnp-lyrics-line"] div[class^="rnp-lyrics-line-original"]';
+    styleElement.innerHTML = `${lyricSelector} { font-family: ${font} !important; }`;
+    localStorage.setItem(`jpnfont`, font);
+    localStorage.setItem(`jpnfontEnabled`, 'true');
 }
 
 /**
- * 移除指定歌词的自定义字体
-* @param {Number} type 歌词类型。1.主歌词 2.翻译歌词 3.音译歌词
+ * 移除歌词的自定义字体
 */
-function removeFont(type) {
+function removeFont() {
     const head = document.querySelector('head');
-    const styleElement = head.querySelector(`#style-${lyricType[type]}font`);
+    const styleElement = head.querySelector(`#style-jpnfont`);
     head.removeChild(styleElement);
-    localStorage.setItem(`${lyricType[type]}fontEnabled`, 'false');
+    localStorage.setItem(`jpnfontEnabled`, 'false');
 }
 
 /**
@@ -330,10 +147,12 @@ function removeFont(type) {
 function doRuby() {
     if (rubyStart)
         return;
-    const lyricDiv = document.querySelector('div[class="am-lyric"]') || document.querySelector('ul[class^="sc-AxjAm sc-AxirZ"]') || document.querySelector('div[class^="sc-fzoaKM hNuJKS"]') || document.querySelector('div[class^="CoverBackgroundContainer"]');
+    const lyricDiv = document.querySelector('div[class="amll-lyric-player-wrapper"]') || document.querySelector('div[class="lyric"] div[class^="rnp-lyrics"]') || document.querySelector('div[class^="lyric-bar-inner"]') || document.querySelector('ul[class^="sc-AxjAm sc-AxirZ"]') || document.querySelector('div[class^="sc-fzoaKM hNuJKS"]') || document.querySelector('div[class^="CoverBackgroundContainer"]');
     let lyrics = (lyricDiv ? lyricDiv : document).querySelectorAll('ul[class="lyric"] li p[_nk = "vpjX51"]');
     if (!lyrics.length)
-        lyrics = lyricDiv.querySelectorAll('div[class="am-lyric-line-original"]');
+        lyrics = lyricDiv.querySelectorAll('div[class^="lyricPlayer"] div[class^="lyricMainLine"]');
+    if (!lyrics.length)
+        lyrics = lyricDiv.querySelectorAll('div[class^="rnp-lyrics-line"] div[class^= "rnp-lyrics-line-original"]');
     if (!lyrics.length)
         lyrics = lyricDiv.querySelectorAll('li[class^="sc-fzocqA glbESi"] p:first-child');
     if (!lyrics.length)
@@ -392,11 +211,8 @@ function doRuby() {
             if (resp.ok) {
                 return resp.json();
             } else {
-                if (!postFailed) {
-                    alert(`Furigana：\n汉字标注假名在线API出错\n错误代码：${resp.status}`);
-                    postFailed = true;
-                    rubyStart = false;
-                }
+                console.error(`Furigana: Response Error, code ${resp.status}`);
+                rubyStart = false;
             }
         })
         .then((result) => {
@@ -405,7 +221,7 @@ function doRuby() {
             rubyStart = false;
         })
         .catch((err) => {
-            console.error(err);
+            console.error('Furigana:\n' + err);
             rubyStart = false;
         })
 }
@@ -416,91 +232,36 @@ function doRuby() {
 function removeRuby() {
     localStorage.setItem('rubyEnabled', 'false');
     rubyEnabled = false;
-    const lyrics = document.querySelectorAll('ul[class="lyric"] li p[_nk = "vpjX51"]');
-    lyrics[0].innerHTML = '预览';
-    lyrics[1].innerHTML = '悲しみの海に沈んだ私';
-    lyrics[2].innerHTML = '目を開けるのも億劫';
-}
-
-/**
- * 将音译歌词的罗马音转换为平假名
- */
-function doConvert() {
-    const lyricDiv = document.querySelector('div[class="am-lyric"]') || document.querySelector('div[class^="CoverBackgroundContainer"]');
-    let mainLyrics = (lyricDiv ? lyricDiv : document).querySelectorAll('ul[class="lyric"] li p[_nk = "vpjX51"]');
-    if (!mainLyrics.length)
-        mainLyrics = lyricDiv.querySelectorAll('div[class="am-lyric-line-original"]');
-    if (!mainLyrics.length)
-        mainLyrics = lyricDiv.querySelectorAll('li[class^="sc-fzocqA glbESi"] p:first-child');
-    if (!mainLyrics.length)
-        mainLyrics = lyricDiv.querySelectorAll('div[class^="j-line"] p[class="lyric-next-p f-ust f-ust-1"]:first-child');
-    if (!isJapanese(mainLyrics))
-        return;
-
-    let lyrics = (lyricDiv ? lyricDiv : document).querySelectorAll('ul[class="lyric"] li p[_nk = "vpjX53"]');
-    if (!lyrics.length)
-        lyrics = lyricDiv.querySelectorAll('div[class="am-lyric-line-roman"]');
-    for (let i = 0; i < lyrics.length; i++) {
-        if (/[ぁ-ヿ]/g.test(lyrics[i].innerHTML))
-            return;
-        lyrics[i].innerHTML = lyrics[i].innerHTML.replace(/\&nbsp;/g, ' ');
-        lyrics[i].innerHTML = lyrics[i].innerHTML.replace(/([^a-z])/g, ' $1 ');
-        const lyric = lyrics[i].innerHTML.split(' ');
-        let convertedLyric = '';
-        for (let j = 0; j < lyric.length; j++) {
-            let lyricArr = [...lyric[j]];
-            const tail = lyricArr.length - 1;
-            if (lyric[j] && tail > 1 && lyricArr[0] == lyricArr[1]) {
-                lyric[j] = lyric[j].substring(1);
-                convertedLyric += 'っ';
-            }
-            let mark = false;
-            if (lyric[j] && lyricArr[tail] == lyricArr[tail - 1]) {
-                lyric[j] = lyric[j].substring(0, tail);
-                mark = true;
-            }
-            convertedLyric += hiragana[lyric[j]] || lyric[j];
-            if (mark)
-                convertedLyric += 'ー';
-        }
-        lyrics[i].innerHTML = convertedLyric;
-    }
-}
-
-/**
- * 取消将音译歌词的罗马音转换为平假名
- */
-function removeConvert() {
-    localStorage.setItem('convertEnabled', 'false');
-    convertEnabled = false;
-    const lyrics = document.querySelectorAll('ul[class="lyric"] li p[_nk = "vpjX53"]');
-    lyrics[0].innerHTML = 'ka na shi mi no u mi ni shi zu n da wa ta shi';
-    lyrics[1].innerHTML = 'me wo a ke ru no mo o kku u';
+    const head = document.querySelector('head');
+    const styleElement = head.querySelector(`#furigana-fit`);
+    head.removeChild(styleElement);
 }
 
 plugin.onLoad(() => {
     // 载入字体设置
-    for (let i = 1; i <= 3; i++) {
-        if (localStorage.getItem(`${lyricType[i]}fontEnabled`) == 'true') {
-            const styleElement = document.createElement('style');
-            styleElement.id = `style-${lyricType[i]}font`;
-            document.querySelector('head').appendChild(styleElement);
-            const font = localStorage.getItem(`${lyricType[i]}font`);
-            const lyricTypeSelector = ['', ', li[class^="sc-fzocqA glbESi"] p:first-child, div[class^="j-line"] p[class="lyric-next-p f-ust f-ust-1"]:first-child, div[class="am-lyric"] div[class="am-lyric-line-original"]', ', div[class="am-lyric"] div[class="am-lyric-line-translated"]', ', div[class="am-lyric"] div[class="am-lyric-line-roman"]'];
-            styleElement.appendChild(document.createTextNode(`ul[class="lyric"] li p[_nk="vpjX5${i}"]${lyricTypeSelector[i]} { font-family: ${font} !important; }`));
-        }
+    if (localStorage.getItem(`jpnfontEnabled`) == 'true') {
+        const styleElement = document.createElement('style');
+        styleElement.id = `style-jpnfont`;
+        document.querySelector('head').appendChild(styleElement);
+        const font = localStorage.getItem(`jpnfont`);
+        const lyricSelector = 'ul[class="lyric"] li p[_nk="vpjX51"], li[class^="sc-fzocqA glbESi"] p:first-child, div[class^="j-line"] p[class="lyric-next-p f-ust f-ust-1"]:first-child, div[class="amll-lyric-player-wrapper"] div[class^="lyricPlayer"] div[class^="lyricMainLine"], div[class^="rnp-lyrics"] div[class^="rnp-lyrics-line"] div[class^="rnp-lyrics-line-karaoke"], div[class^="rnp-lyrics"] div[class^="rnp-lyrics-line"] div[class^="rnp-lyrics-line-original"]';
+        styleElement.appendChild(document.createTextNode(`${lyricSelector} { font-family: ${font} !important; }`));
     }
     rubyEnabled = localStorage.getItem('rubyEnabled') != 'false';
-    convertEnabled = localStorage.getItem('convertEnabled') == 'true';
+    let styleElement = document.querySelector('#furigana-fit');
+    if (!styleElement) {
+        styleElement = document.createElement('style');
+        styleElement.id = 'furigana-fit';
+        document.querySelector('head').appendChild(styleElement);
+    }
+    styleElement.innerHTML = '.lyricMainLine-0-1-5 { margin-top: auto !important; }';
 
     // 持续判断歌词界面是否打开
     setInterval(() => {
-        const lyricOpened = document.querySelector('div[class="am-lyric"]') || document.querySelector('ul[class^="sc-AxjAm sc-AxirZ"]') || document.querySelector('div[class^="sc-fzoaKM hNuJKS"]') || document.querySelector('div[class^="CoverBackgroundContainer"]');
+        const lyricOpened = document.querySelector('div[class="amll-lyric-player-wrapper"]') || document.querySelector('div[class^="rnp-lyrics"]') || document.querySelector('ul[class^="sc-AxjAm sc-AxirZ"]') || document.querySelector('div[class^="sc-fzoaKM hNuJKS"]') || document.querySelector('div[class^="CoverBackgroundContainer"]');
         if (lyricOpened) {
             if (rubyEnabled)
                 doRuby();
-            if (convertEnabled)
-                doConvert();
         }
     }, 500);
 });
@@ -511,42 +272,20 @@ plugin.onConfig(() => {
     div.innerHTML = settingDiv;
 
     // 字体设置相关的元素
-    for (let i = 1; i <= 3; i++) {
-        const xxfont = div.querySelector(`#${lyricType[i]}font`);
-        const xxfontCheck = div.querySelector(`#${lyricType[i]}font-check`);
-        xxfont.addEventListener('change', () => changeFont(i));
-        xxfontCheck.addEventListener('change', () => {
-            if (xxfontCheck.checked) {
-                xxfont.disabled = false;
-                changeFont(i);
-            } else {
-                xxfont.disabled = true;
-                removeFont(i);
-            }
-        });
-        xxfont.value = localStorage.getItem(`${lyricType[i]}font`);
-        xxfont.disabled = !(xxfontCheck.checked = localStorage.getItem(`${lyricType[i]}fontEnabled`) == 'true');
-    }
-
-    // 歌词效果预览界面的两个按钮
-    const button = div.querySelectorAll('button');
-    for (let i = 0; i < 2; i++)
-        button[i].addEventListener('click', () => {
-            button[i].classList.toggle('enabled');
-            if (button[i].classList.contains('enabled')) {
-                button[i ? 0 : 1].classList.remove('enabled');
-                let lyrics = div.querySelectorAll(`ul[class="lyric"] li p[_nk="vpjX5${i + 2}"]`);
-                for (let j = 0; j < lyrics.length; j++)
-                    lyrics[j].style.display = '';
-                lyrics = div.querySelectorAll(`ul[class="lyric"] li p[_nk="vpjX5${3 - i}"]`);
-                for (let j = 0; j < lyrics.length; j++)
-                    lyrics[j].style.display = 'none';
-            } else {
-                let lyrics = div.querySelectorAll(`ul[class="lyric"] li p[_nk="vpjX5${i + 2}"]`);
-                for (let j = 0; j < lyrics.length; j++)
-                    lyrics[j].style.display = 'none';
-            }
-        });
+    const jpnfont = div.querySelector(`#jpnfont`);
+    const jpnfontCheck = div.querySelector(`#jpnfont-check`);
+    jpnfont.addEventListener('change', () => changeFont());
+    jpnfontCheck.addEventListener('change', () => {
+        if (jpnfontCheck.checked) {
+            jpnfont.disabled = false;
+            changeFont();
+        } else {
+            jpnfont.disabled = true;
+            removeFont();
+        }
+    });
+    jpnfont.value = localStorage.getItem(`jpnfont`);
+    jpnfont.disabled = !(jpnfontCheck.checked = localStorage.getItem(`jpnfontEnabled`) == 'true');
 
     // 歌词效果预览界面的歌词
     const lyrics = div.querySelectorAll('ul[class="lyric"] li');
@@ -584,31 +323,16 @@ plugin.onConfig(() => {
             localStorage.setItem('rubyEnabled', 'true');
             rubyEnabled = true;
             doRuby();
+            let styleElement = document.querySelector('#furigana-fit');
+            if (!styleElement) {
+                styleElement = document.createElement('style');
+                styleElement.id = 'furigana-fit';
+                document.querySelector('head').appendChild(styleElement);
+            }
+            styleElement.innerHTML = '.lyricMainLine-0-1-5 { margin-top: auto !important; }';
         } else {
             removeRuby();
         }
     });
-
-    // 罗马音转假名相关的元素
-    const convert = div.querySelector('#convert');
-    convert.checked = convertEnabled;
-    const checkConvert = () => {
-        if (convert.checked) {
-            localStorage.setItem('convertEnabled', 'true');
-            convertEnabled = true;
-            doConvert();
-        } else {
-            removeConvert();
-        }
-    };
-    convert.addEventListener('change', checkConvert);
-    button[1].addEventListener('click', checkConvert);
-
-    if (rubyEnabled) {
-        const lyrics = div.querySelectorAll('ul[class="lyric"] li p[_nk="vpjX51"]');
-        lyrics[0].innerHTML = '<ruby>预</ruby><ruby>览</ruby>';
-        lyrics[1].innerHTML = '<ruby>悲<rp>(</rp><rt>かな</rt><rp>)</rp></ruby>しみの<ruby>海<rp>(</rp><rt>うみ</rt><rp>)</rp></ruby>に<ruby>沈<rp>(</rp><rt>しず</rt><rp>)</rp></ruby>んだ<ruby>私<rp>(</rp><rt>わたし</rt><rp>)</rp></ruby>';
-        lyrics[2].innerHTML = '<ruby>目<rp>(</rp><rt>め</rt><rp>)</rp></ruby>を<ruby>開<rp>(</rp><rt>あ</rt><rp>)</rp></ruby>けるのも<ruby>億劫<rp>(</rp><rt>おっくう</rt><rp>)</rp></ruby>';
-    }
     return div;
 });
