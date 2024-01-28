@@ -2,6 +2,6 @@
 	"name": "CppLyrics",
 	"repo": "BetterNCM/CppLyrics-Plugin",
 	"branch": "master",
-	"subpath": "/",
+	"subpath": "/dist/",
 	"author": "MicroBlock"
 }
