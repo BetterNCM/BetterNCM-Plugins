@@ -1,6 +1,12 @@
 import "./lyric_provider"
 import { Blend, Cam16, Hct, MaterialDynamicColors, QuantizerCelebi, QuantizerWsmeans, SchemeExpressive, SchemeVibrant, Score, blueFromArgb, greenFromArgb, redFromArgb } from "@material/material-color-utilities"
 
+const Internals = {
+    currentLyrics: null
+}
+
+globalThis.CPPLYRICS_INTERNALS = Internals
+
 plugin.onLoad(pl => {
     let lastId = ''
 
@@ -24,6 +30,8 @@ plugin.onLoad(pl => {
         const lyricsData = currentLyrics.lyrics.filter(v => v.dynamicLyric).map(v =>
             v.dynamicLyric.map(o => `(${o.time}:${o.time + o.duration})${o.word.replaceAll('`', `'`)}`).join('`') + (v.translatedLyric ? `|${v.translatedLyric}` : '')).join('\n');
 
+
+        Internals.currentLyrics = lyricsData;
         if (lyricsData)
             betterncm_native.native_plugin.call('cpplyrics.set_lyrics', [lyricsData])
         else
@@ -36,7 +44,7 @@ plugin.onLoad(pl => {
         paused = false;
     });
 
-    setInterval(()=>{
+    setInterval(() => {
         betterncm_native.native_plugin.call('cpplyrics.set_time', [lastTime, paused]);
     }, 400)
 
@@ -81,7 +89,7 @@ plugin.onLoad(pl => {
                 blueFromArgb(argb)
             ]);
 
-            
+
 
             const coverPath = `${await betterncm.app.getDataPath()}/cover.jpg`
             await betterncm.fs.remove(coverPath);
@@ -91,7 +99,7 @@ plugin.onLoad(pl => {
 
             const pickedColors = [getColor(colors[0], SchemeVibrant), getColor(colors[1], SchemeExpressive)]
             pickedColors[1] = Blend.cam16Ucs(pickedColors[0], pickedColors[1], 0.8);
-            
+
             // use console.log css to show
             const showColor = (color) => console.log(`%c${color[0]}, ${color[1]}, ${color[2]}`, `background-color: rgb(${color[0]}, ${color[1]}, ${color[2]}`)
             console.log('Primary color:')
@@ -99,7 +107,7 @@ plugin.onLoad(pl => {
             console.log('Secondary color:')
             showColor(getRGB(pickedColors[1]))
 
-            betterncm_native.native_plugin.call('cpplyrics.set_song_color', pickedColors.map(v=>getRGB(v)).flat());
+            betterncm_native.native_plugin.call('cpplyrics.set_song_color', pickedColors.map(v => getRGB(v)).flat());
 
             betterncm_native.native_plugin.call('cpplyrics.set_song_info', [
                 song.data.name,
