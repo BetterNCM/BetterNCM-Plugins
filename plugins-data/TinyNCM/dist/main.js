@@ -271,6 +271,22 @@ function MinifyEle() {
                 } });
         }));
 }
+window.addEventListener('keypress', (e) => {
+    if (e.ctrlKey && e.altKey && e.key === 'F3') {
+        const res = prompt('确定要清除 TinyNCM 规则吗 | OK - 清除自定义规则 | 输入 All 并 OK - 清除所有 | Cancel - 取消');
+        if (res.toLocaleLowerCase() === 'all') {
+            localStorage.removeItem("cc.microblock.betterncm.tinyncm.minify");
+            localStorage.removeItem("cc.microblock.betterncm.tinyncm.custom");
+        }
+        else if (res === null) {
+            return;
+        }
+        else {
+            localStorage.removeItem("cc.microblock.betterncm.tinyncm.custom");
+        }
+        applyTinyNCM();
+    }
+});
 applyTinyNCM();
 function applyFont() {
     const config = JSON.parse(localStorage["cc.microblock.betterncm.tinyncm.font"] || "{}");
