@@ -3551,7 +3551,7 @@
         const showLoading = (buttonToReplace) => {
           let popup = getPopup();
           if (!popup) {
-            new Swal6();
+            new Swal8();
           }
           popup = getPopup();
           const loader = getLoader();
@@ -3910,11 +3910,11 @@
           return params;
         };
         function fire() {
-          const Swal7 = this;
+          const Swal9 = this;
           for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
             args[_key] = arguments[_key];
           }
-          return new Swal7(...args);
+          return new Swal9(...args);
         }
         function mixin(mixinParams) {
           class MixinSwal extends this {
@@ -4514,9 +4514,9 @@
         });
         SweetAlert.DismissReason = DismissReason;
         SweetAlert.version = "11.6.16";
-        const Swal6 = SweetAlert;
-        Swal6.default = Swal6;
-        return Swal6;
+        const Swal8 = SweetAlert;
+        Swal8.default = Swal8;
+        return Swal8;
       });
       if (typeof exports !== "undefined" && exports.Sweetalert2) {
         exports.swal = exports.sweetAlert = exports.Swal = exports.SweetAlert = exports.Sweetalert2;
@@ -4872,6 +4872,7 @@
   }, 300);
 
   // src/background/imageBackground.tsx
+  var import_sweetalert22 = __toESM(require_sweetalert2_all());
   var _mountedImageUrl;
   var _ImageBackground = class extends BaseBackground {
     constructor(ImageUrl) {
@@ -4901,7 +4902,17 @@
       return new _ImageBackground("");
     }
     static async askAndCreate() {
-      const path = await betterncm.app.openFileDialog(".webp .png .jpg\0", "./");
+      const path = await betterncm.app.openFileDialog(".webp .png .jpg .jpeg .bmp .gif\0", "./");
+      if (!betterncm_native.fs.exists(path)) {
+        import_sweetalert22.default.fire(
+          "\u6DFB\u52A0\u80CC\u666F\u5931\u8D25",
+          `\u539F\u56E0\u53EF\u80FD\u4E3A\uFF1A
+1. \u4F60\u9009\u4E2D\u7684\u8DEF\u5F84\u5185\u6709\u7279\u6B8A\u5B57\u7B26\uFF08\u4E2D\u6587\uFF0C\u5236\u8868\u7B26\u7B49\uFF09
+2. \u4F60\u9009\u4E2D\u7684\u8DEF\u5F84\u4E0D\u5B58\u5728`,
+          "error"
+        );
+        return null;
+      }
       if (path)
         return new _ImageBackground(path);
       return null;
@@ -4912,7 +4923,7 @@
   __publicField(ImageBackground, "backgroundTypeName", "\u56FE\u7247");
 
   // src/background/maskedBackground.tsx
-  var import_sweetalert22 = __toESM(require_sweetalert2_all());
+  var import_sweetalert23 = __toESM(require_sweetalert2_all());
 
   // src/background/RecursiveLockBackground.ts
   var RecursiveLockBackground = class extends BaseBackground {
@@ -4976,7 +4987,7 @@
           }
         ));
       };
-      const p = import_sweetalert22.default.fire({ title: "\u906E\u7F69\u80CC\u666F\u8BBE\u7F6E", html: "<div id=MaskedBackgroundConfigContainer class=BGEnhanced-Config style='font-size:.5em;' />" });
+      const p = import_sweetalert23.default.fire({ title: "\u906E\u7F69\u80CC\u666F\u8BBE\u7F6E", html: "<div id=MaskedBackgroundConfigContainer class=BGEnhanced-Config style='font-size:.5em;' />" });
       ReactDOM.render(/* @__PURE__ */ h(ConfigMenu, null), document.getElementById("MaskedBackgroundConfigContainer"));
       await p;
       __privateSet(this, _targetBGElement, void 0);
@@ -5033,7 +5044,7 @@
   __publicField(MaskedBackground, "attributes", ["recursive"]);
 
   // src/background/randomBackground.tsx
-  var import_sweetalert23 = __toESM(require_sweetalert2_all());
+  var import_sweetalert24 = __toESM(require_sweetalert2_all());
   var _randBGElement, _randomBackground, randomBackground_fn;
   var _RandomBackground = class extends RecursiveLockBackground {
     constructor() {
@@ -5078,7 +5089,7 @@
           }
         ));
       };
-      const p = import_sweetalert23.default.fire({ title: "\u968F\u673A\u80CC\u666F\u8BBE\u7F6E", html: "<div id=RandBGConfigContainer class=BGEnhanced-Config style='font-size:.5em;' />" });
+      const p = import_sweetalert24.default.fire({ title: "\u968F\u673A\u80CC\u666F\u8BBE\u7F6E", html: "<div id=RandBGConfigContainer class=BGEnhanced-Config style='font-size:.5em;' />" });
       ReactDOM.render(/* @__PURE__ */ h(ConfigMenu, null), document.getElementById("RandBGConfigContainer"));
       await p;
       this.resetRecursiveCount();
@@ -5128,7 +5139,7 @@
   __publicField(RandomBackground, "attributes", ["recursive"]);
 
   // src/background/remoteImageBackground.tsx
-  var import_sweetalert24 = __toESM(require_sweetalert2_all());
+  var import_sweetalert25 = __toESM(require_sweetalert2_all());
   var _RemoteImageBackground = class extends BaseBackground {
     constructor(ImageUrl) {
       super();
@@ -5150,7 +5161,7 @@
       return new _RemoteImageBackground("");
     }
     async onConfig() {
-      const result = await import_sweetalert24.default.fire({
+      const result = await import_sweetalert25.default.fire({
         title: "\u4FEE\u6539\u5728\u7EBF\u56FE\u7247\u80CC\u666FURL",
         inputValue: this.ImageUrl,
         input: "text"
@@ -5160,7 +5171,7 @@
       return;
     }
     static async askAndCreate() {
-      const result = await import_sweetalert24.default.fire({
+      const result = await import_sweetalert25.default.fire({
         title: "\u521B\u5EFA\u4E00\u4E2A\u5728\u7EBF\u56FE\u7247\u80CC\u666F",
         text: "\u4F60\u53EF\u4EE5\u5728\u6B64\u5199\u5165\u4E00\u4E2A\u6307\u5411\u56FE\u7247\u7684URL\u3002",
         input: "text"
@@ -5175,7 +5186,7 @@
   __publicField(RemoteImageBackground, "backgroundTypeName", "\u5728\u7EBF\u56FE\u7247");
 
   // src/background/remoteRandImageBackgroundLoli.tsx
-  var import_sweetalert25 = __toESM(require_sweetalert2_all());
+  var import_sweetalert26 = __toESM(require_sweetalert2_all());
   var _RemoteRandImageBackgroundLoli = class extends RemoteImageBackground {
     constructor(url) {
       super(url);
@@ -5184,9 +5195,9 @@
       return new _RemoteRandImageBackgroundLoli("");
     }
     static async askAndCreate() {
-      import_sweetalert25.default.showLoading(null);
+      import_sweetalert26.default.showLoading(null);
       const redirectedUrl = await fetch("https://www.loliapi.com/acg/pc/");
-      import_sweetalert25.default.clickCancel();
+      import_sweetalert26.default.clickCancel();
       return new _RemoteRandImageBackgroundLoli(redirectedUrl.url);
     }
   };
@@ -5221,6 +5232,7 @@
   __publicField(RemoteRandImageBackgroundScenery, "backgroundTypeName", "\u5FC5\u5E94\u6BCF\u65E5");
 
   // src/background/videoBackground.tsx
+  var import_sweetalert27 = __toESM(require_sweetalert2_all());
   var _mountedVideoUrl;
   var _VideoBackground = class extends BaseBackground {
     constructor(videoUrl) {
@@ -5254,6 +5266,16 @@
     }
     static async askAndCreate() {
       const path = await betterncm.app.openFileDialog(".mp4, .webm\0", "./");
+      if (!betterncm_native.fs.exists(path)) {
+        import_sweetalert27.default.fire(
+          "\u6DFB\u52A0\u80CC\u666F\u5931\u8D25",
+          `\u539F\u56E0\u53EF\u80FD\u4E3A\uFF1A
+1. \u4F60\u9009\u4E2D\u7684\u8DEF\u5F84\u5185\u6709\u7279\u6B8A\u5B57\u7B26\uFF08\u4E2D\u6587\uFF0C\u5236\u8868\u7B26\u7B49\uFF09
+2. \u4F60\u9009\u4E2D\u7684\u8DEF\u5F84\u4E0D\u5B58\u5728`,
+          "error"
+        );
+        return null;
+      }
       if (path)
         return new _VideoBackground(path);
       return null;
