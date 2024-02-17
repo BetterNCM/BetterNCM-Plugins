@@ -1,10 +1,10 @@
 {
     "manifest_version": 1,
     "name": "Furigana",
-    "version": "0.3.0",
+    "version": "1.0.0",
     "author": "Mutton_String",
     "description": "给日文歌词的汉字标注假名",
-    "preview": "preview.jpg",
+    "preview": "preview.png",
     "betterncm_version": ">=1.0.0",
     "ncm3-compatible": true,
     "injects": {
