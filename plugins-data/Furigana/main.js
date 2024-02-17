@@ -287,9 +287,9 @@ function fix(text) {
 function process(result, isAcc) {
     result = result.replace(/<rp>.<\/rp>/g, ''); // 删去rp标签，节约空间
     result = result.replace(/<rt>[^ぁ-ヿ]<\/rt>/g, '<rt></rt>'); // 简体中文独有汉字会把本字注音上去，删除
-    result = result.replace(/<ruby>([㐀-鿿々0-9０-９]]+?)<\/ruby>/g, '<ruby>$1<rt></rt></ruby>'); // 统一格式，让无注音的汉字的ruby标签内也有rt标签
+    result = result.replace(/<ruby>([㐀-鿿々0-9０-９]+?)<\/ruby>/g, '<ruby>$1<rt></rt></ruby>'); // 统一格式，让无注音的汉字的ruby标签内也有rt标签
     if (!isAcc)
-        result = result.replace(/<ruby>([㐀-鿿々0-9０-９]]+?)<rt>([ぁ-ヿ]*?)<\/rt><\/ruby>[（\(]([ぁ-ヿ]+?)[）\)]/g, '<ruby>$1<rt></rt></ruby>（$3）'); // 删除已成功机器注音，但后面跟着括号注音的单个汉字词的注音
+        result = result.replace(/<ruby>([㐀-鿿々0-9０-９]+?)<rt>([ぁ-ヿ]*?)<\/rt><\/ruby>[（\(]([ぁ-ヿ]+?)[）\)]/g, '<ruby>$1<rt></rt></ruby>（$3）'); // 删除已成功机器注音，但后面跟着括号注音的单个汉字词的注音
     result = result.replaceAll('<ruby>一<rt>いち</rt></ruby><ruby>人<rt>にん</rt></ruby>', '<ruby>一人<rt>ひとり</rt></ruby>'); // 改正“一人”的发音
     result = result.replaceAll('<ruby>二<rt>に</rt></ruby><ruby>人<rt>にん</rt></ruby>', '<ruby>二人<rt>ふたり</rt></ruby>'); // 改正“二人”的发音
     return result.split('\n');
