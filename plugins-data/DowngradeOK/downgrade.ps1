@@ -51,8 +51,14 @@ if ($cloudMusicProcess -ne $null) {
 
     [System.IO.File]::WriteAllBytes($cloudMusicDllPath, $cloudMusicContent)
     Write-Host "| cloudmusic.dll patched."
+    Write-Host "| Setting privs..."
+    $updateFolder = "$env:AppData/../Local/NetEase/CloudMusic/update"
+    rm $updateFolder -Recurse -ErrorAction SilentlyContinue
+    New-Item -Pat $updateFolder -ItemType File -Force
+    
     Write-Host "| Finished! Starting cloudmusic.exe..."
     Start-Process -FilePath $cloudMusicPath -Verb RunAs
+    Set-ItemProperty -Path $updateFolder -Name IsReadOnly -Value $true
 }
 else {
     Write-Host "cloudmusic.exe is not running."
