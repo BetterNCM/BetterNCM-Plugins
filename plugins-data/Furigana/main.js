@@ -456,12 +456,19 @@ function pronouncePlus(lyricElem) {
         const value = cache.get(lyricArr[0]);
         if (value) {
             let val = value[0];
+            if (config['fix']) { //逐字歌词每个字的汉字修正
+                const fixed = fix(lyricArr[0]);
+                for (let i = 0, start = 0; i < lyricArr[1].length; i++) {
+                    const len = lyricArr[1][i].innerHTML.length;
+                    lyricArr[1][i].innerHTML = fixed.substring(start, start + len);
+                    start += len;
+                }
+            }
             for (let i = 0, cnt = 0, match = '', endWithSpace = false; i < lyricArr[1].length; i++) {
                 if (!/[㐀-鿿々0-9０-９]+?/.test(lyricArr[1][i].innerHTML)) continue;
                 switch (cnt) {
                     case 0:
-                        let trimed = lyricArr[1][i].innerHTML.trimEnd();
-                        if (config['fix']) trimed = fix(trimed);
+                        const trimed = lyricArr[1][i].innerHTML.trimEnd();
                         endWithSpace = trimed.length !== lyricArr[1][i].innerHTML;
                         match = val.match(`<ruby>(${trimed}.*?)<rt>(.*?)<\/rt><\/ruby>`);
                         if (!match) continue;
@@ -477,8 +484,8 @@ function pronouncePlus(lyricElem) {
                             const nextEle = lyricArr[1][i].nextElementSibling;
                             if (nextEle) nextEle.innerHTML = lyricArr[1][i].innerHTML;
                             cnt--;
-                        break;
-                    }
+                            break;
+                        }
                     case 1: {
                         lyricArr[1][i].innerHTML = match[0] + (endWithSpace ? ' ' : '');
                         const nextEle = lyricArr[1][i].nextElementSibling;
@@ -554,6 +561,14 @@ function pronouncePlus(lyricElem) {
         for (let i = 0; i < map.size; i++) {
             const lyricArr = map.get(str[i]);
             let val = result[i];
+            if (config['fix']) { //逐字歌词每个字的汉字修正
+                const fixed = fix(lyricArr[0]);
+                for (let j = 0, start = 0; j < lyricArr[1].length; j++) {
+                    const len = lyricArr[1][j].innerHTML.length;
+                    lyricArr[1][j].innerHTML = fixed.substring(start, start + len);
+                    start += len;
+                }
+            }
             for (let j = 0, cnt = 0, match = '', endWithSpace = false; j < lyricArr[1].length; j++) {
                 if (!/[㐀-鿿々0-9０-９]+?/.test(lyricArr[1][j].innerHTML)) continue;
                 switch (cnt) {
