@@ -78,6 +78,10 @@ body:not(.s-theme-white){
 }
 
 @tweaks-mixin: {
+    .g-sd2.recommend.j-flag {
+        display: none !important;
+    }
+    
     [class$='-icon']{
         display: none !important;
     }
@@ -275,7 +279,7 @@ body:not(.s-theme-white){
         .fix-corner();
     }
 
-    .m-player {
+    .m-player,.m-player#main-player {
         box-shadow: 1px 2px 6px rgba(0, 0, 0, 0.137);
         bottom: calc(@main-player-height - 3 * @main-player-margin);
         margin: @main-player-margin auto;
