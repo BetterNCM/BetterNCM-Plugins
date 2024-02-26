@@ -54,13 +54,13 @@ plugin.onConfig(() => {
     <br>
     <p>
         <input type="checkbox" id="pronounce">
-        <label for="pronounce">日文振假名</label>
+        <label for="pronounce"><del>日文振假名</del>（失效）</label>
         <a title="给日文歌的汉字上方注音
 需要联网，且准确率有限">?</a>
     </p>
     <p>
         <input type="checkbox" id="karaoke_support">
-        <label for="karaoke_support">逐字歌词支持</label>
+        <label for="karaoke_support"><del>逐字歌词支持</del>（失效）</label>
         <a title="注意：无法支持“类苹果歌词”插件
         
 本插件对逐字歌词的支持尚不完善，关闭后则不会在逐字歌词标注振假名
@@ -68,7 +68,7 @@ plugin.onConfig(() => {
 如此功能造成了崩溃、性能问题或是其他的错误，也建议关闭">?</a>
     </p>
     <p>
-        <label for="furigana_size">注音字体尺寸</label>
+        <label for="furigana_size"><del>注音字体尺寸</del>（失效）</label>
         <input type="range" id="furigana_size" value="50" min="10" max="100" step="1">
         <label id="furigana_size-num"></label>
         <a title="注音与被注音汉字的大小之比">?</a>
@@ -91,7 +91,7 @@ plugin.onConfig(() => {
     </p>
     <p>
         <input type="checkbox" id="fix">
-        <label for="fix">汉字修正</label>
+        <label for="fix"><del>汉字修正</del>（失效）</label>
         <a title="1. 将日文歌词当中被“繁转简”的汉字还原，例：
 简体中国语⇒簡体中国語
 2. 将日文歌词当中被“简转繁”的汉字还原，例：
@@ -101,7 +101,7 @@ plugin.onConfig(() => {
 对桌面歌词无效">?</a>
     </p>
     <p>
-    <button id="cache-clear">清除缓存</button>
+    <button id="cache-clear"><del>清除缓存</del>（失效）</button>
     <a title="原歌词以及处理后的歌词会存入本地缓存中，过期时间为72小时
 如果设置有更改，而缓存内容是基于旧的设置，可以尝试清除缓存
 若缓存内容过多，可能导致性能上的问题或是写入缓存失败，此时也可尝试清除缓存">?</a>
@@ -232,11 +232,11 @@ plugin.onLoad(() => {
 
     // 持续判断歌词页面是否打开
     setInterval(() => {
-        if (config['pronounce'] && !posted)
-            for (const selector of LYRIC_SELECTOR) {
-                const elem = document.querySelectorAll(selector);
-                if (elem && elem.length) pronounce(elem);
-            }
+        // if (config['pronounce'] && !posted)
+        for (const selector of LYRIC_SELECTOR) {
+            const elem = document.querySelectorAll(selector);
+            if (elem && elem.length) pronounce(elem);
+        }
     }, 500);
 });
 
@@ -300,9 +300,9 @@ function process(result, isAcc) {
  * @param {Element[]} lyricElem 多句歌词的DOM元素
  */
 function pronounce(lyricElem) {
-    const markStr = '<furigana></furigana>'; // 标记一句歌词是否已被注音
-    let updated = false; // 标记缓存是否被更新
-    let date = 0; // 记录当前时间 精确到小时
+    // const markStr = '<furigana></furigana>'; // 标记一句歌词是否已被注音
+    // let updated = false; // 标记缓存是否被更新
+    // let date = 0; // 记录当前时间 精确到小时
 
     // 判断该歌是否为日文歌
     let isJapanese = false;
@@ -327,7 +327,7 @@ function pronounce(lyricElem) {
         if (style) head.removeChild(style);
         return;
     }
-
+    return;
     // 判断是否是逐字歌词
     for (const elem of lyricElem) {
         if (elem.querySelector('span')) {
@@ -399,6 +399,7 @@ function pronounce(lyricElem) {
             posted = false;
         }
     }).then(result => {
+        if (!result) return;
         result = process(result, isAcc);
         str = str.split('\n');
         for (let i = 0; i < map.size; i++) {
@@ -556,6 +557,7 @@ function pronouncePlus(lyricElem) {
             posted = false;
         }
     }).then(result => {
+        if (!result) return;
         result = process(result, isAcc);
         str = str.split('\n');
         for (let i = 0; i < map.size; i++) {

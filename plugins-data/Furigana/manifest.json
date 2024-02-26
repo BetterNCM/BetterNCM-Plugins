@@ -1,10 +1,9 @@
 {
     "manifest_version": 1,
-    "name": "Furigana",
-    "version": "1.0.2",
+    "name": "JapaneseFonts",
+    "version": "1.0.3",
     "author": "Mutton_String",
-    "description": "给日文歌词的汉字标注假名",
-    "preview": "preview.png",
+    "description": "替换日文歌字体为日文字体",
     "betterncm_version": ">=1.0.0",
     "ncm3-compatible": true,
     "injects": {
