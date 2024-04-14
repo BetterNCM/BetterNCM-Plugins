@@ -1,6 +1,6 @@
 plugin.onAllPluginsLoaded(() => {
     var crStyle = document.createElement('style');
-    crStyle.setAttribute('id', 'LyricBBG');
+    crStyle.setAttribute('id', 'LyricBarBlurStyles');
     crStyle.innerHTML = "\
     .lyric-bar {\
         background: rgba(var(--md-accent-color-bg-rgb ,var(--ncm-bg-rgb)), 0.75);\
