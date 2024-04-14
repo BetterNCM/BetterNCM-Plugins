@@ -1,0 +1,21 @@
+{
+    "manifest_version": 1,
+    "name": "LyricBarBlur", 
+    "slug": "LyricBarBlur", 
+    "type": "extension",
+    "version": "0.0.1",
+    "author": "Lukoning", 
+    "author_link": "https://github.com/Lukoning",
+    "description": "为LyricBar添加背景模糊",
+    "requirements": ["LyricBar"],
+    "loadAfter": ["LyricBar"],
+    "betterncm_version": ">=1.0.0",
+    "preview": "preview.png",
+    "injects": {
+        "Main": [ 
+            {
+                "file": "./main.js"
+            }
+        ]
+    }
+}
