@@ -1,0 +1,7 @@
+{
+    "name": "LyricBarBlur", // 插件名
+    "repo": "Lukoning/LyricBarBlur", // 插件的 Repo
+    "branch": "dist", // 分支名
+    "subpath": "/", // 插件在 repo 中的子目录 （可选）
+    "author": "Lukoning" // 作者
+}
