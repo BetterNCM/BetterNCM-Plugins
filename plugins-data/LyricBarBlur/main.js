@@ -177,9 +177,7 @@ function resetStyles() { //应用新设置
     var cssCobAll = `
     .lyric-bar {
         top: unset !important;
-        right: calc(1px + var(--extra-pos-margin, 0px)) !important;
         bottom: calc(var(--bottombar-height, 72px) + var(--bottombar-elevation, 0px)) !important;
-        left: calc(var(--leftbar-width, 199px) + var(--extra-pos-margin, 0px)) !important;
         margin: 0 auto !important;
         border-bottom-width: 0 !important;
         border-bottom-left-radius: 0 !important;
@@ -200,8 +198,6 @@ function resetStyles() { //应用新设置
     `;
     var cssWeltLeftRight = `
         width: clamp(200px, 100%, 100vw - var(--sidebar-width, 199px) - (2px * ` + readCfg.bdWidth + `px)) !important; 
-        right: calc(1px + var(--extra-pos-margin, 0px)) !important;
-        left: calc(var(--leftbar-width, 199px) + var(--extra-pos-margin, 0px)) !important;
     `;
     var cssWlrFloatBtBarAll = `
     body.floating-bottombar .lyric-bar {
@@ -224,6 +220,10 @@ function resetStyles() { //应用新设置
     .MoTheme-bottomMusicBar_dockMode .m-player {
         border-top-right-radius: 0 !important;
     }
+    `;
+    var cssWlrOrCobFloatBtBar = `
+        right: calc(1px + var(--extra-pos-margin, 0px)) !important;
+        left: calc(var(--leftbar-width, 199px) + var(--extra-pos-margin, 0px)) !important;
     `;
     var cssNoFadeLyrics = `
         --mask-image: unset !important;
@@ -289,6 +289,10 @@ function resetStyles() { //应用新设置
 
     if (readCfg.weltLeftRight) {
         var cssIn = cssIn + cssWeltLeftRight;
+    }
+
+    if (readCfg.weltLeftRight || readCfg.centerOfBottom) {
+        var cssIn = cssIn + cssWlrOrCobFloatBtBar;
     }
 
     if (readCfg.noFadeLyrics) {
@@ -625,7 +629,7 @@ function backToDefault() {
     cancel();
 }
 
-plugin.onLoad(() => { //插件初始化
+plugin.onAllPluginsLoaded(() => { //插件初始化
     if (!readCfg) { //初始化设置
         resetCfg();
         localStorage.setItem("isLyricBarBlurEnable", true);
@@ -789,7 +793,7 @@ plugin.onConfig(() => {
         var textOlSetsDisable = "Disabled";
         var textOlWayShadowRadioCheck = "Checked";
         var textOlWidth = 0.5
-        var textOlTrans = 1
+        var textOlTrans = 100
         var textOlColorCustomRadioCheck = "Checked";
         var textOlColorSetBoxDisable = "Disabled";
         var textOlRed = 0
@@ -840,6 +844,7 @@ plugin.onConfig(() => {
 
         #LyricBarBlurSettings .part {
             display: inline-block;
+            vertical-align: top;
             width: 420px;
             outline: 0;
             margin: 5px 0 0 0;
@@ -851,6 +856,8 @@ plugin.onConfig(() => {
             backdrop-filter: blur(12px);
             transition: .5s;
         }
+        #LyricBarBlurSettings .part * {
+        }
         #LyricBarBlurSettings .parting {
             height: 1px;
             margin: 10px 0;
@@ -861,6 +868,10 @@ plugin.onConfig(() => {
         #LyricBarBlurSettings .partTitle {
             font-size: 23px;
             line-height: 45px;
+        }
+        #LyricBarBlurSettings .titlePart {
+            width: 420px;
+            margin: 0;
         }
 
         #LyricBarBlurSettings .topBar {
@@ -1082,29 +1093,11 @@ plugin.onConfig(() => {
             background: rgba(0, 0, 0, 0);
             border: 0 solid;
         }
-    
-        /*@media (min-width: 1333px) {
-            #LyricBarBlurSettings {
-                width: 845px;
-            }
-            #LyricBarBlurSettings .topBar {
-                padding: 5px 280px;
-            }
-        }
-        @media (min-width: 1777px) {
-            #LyricBarBlurSettings {
-                width: 1280px;
-            }
-            #LyricBarBlurSettings .topBar {
-                padding: 5px 490px;
-            }
-        }*/
     </style>
-    <div class="part">
+    <div class="part titlePart">
         <p style="font-size: 40px; line-height: 80px;">LyricBarBlur 设置</p>
         <br />
         <p>修改LyricBar外观，比如…添加背景模糊？</p>
-        <br />
         <div style="float: right;">
             <p>总开关</p>
             <label class="switch">
@@ -1369,6 +1362,7 @@ plugin.onConfig(() => {
                 <span class="slider button"></span> 
             </label>
             <p>强制左右贴边(忽略自定义宽度)(测试)</p>
+            <br />
             <label class="switch">
                 <input id="noFadeLyricsSwitch" type="checkbox" ` + noFadeLyricsSwitchCheck + `/>
                 <span class="slider button"></span>
@@ -1377,7 +1371,7 @@ plugin.onConfig(() => {
             <br />
     </div>
     <div class="part" style="font-size: 14px; line-height: 16px;">
-        <p>Version 0.2.5</p>
+        <p>Version 0.2.6</p>
         <input class="link" style="float: right;" type="button" onclick="betterncm.ncm.openUrl('https://github.com/Lukoning/LyricBarBlur')" value="源代码(GitHub)" />
         <br />
         <p>by Lukoning</p>
