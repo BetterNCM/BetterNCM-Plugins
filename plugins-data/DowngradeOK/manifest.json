@@ -1,9 +1,9 @@
 {
     "manifest_version": 1,
     "name": "DowngradeOK",
-    "version": "0.0.4",
+    "version": "0.0.5",
     "author": "MicroBlock",
-    "description": "降级网易云至 2.10.12，并干掉自动更新",
+    "description": "降级网易云至 2.10.13，并干掉自动更新",
     "preview": "preview.png",
     "betterncm_version": ">=1.0.0",
     "ncm-version-req": ">= 2.10.3",
