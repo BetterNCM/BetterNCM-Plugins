@@ -41,6 +41,13 @@
   position: absolute;
   height: 100%;
 }
+.BGEnhanced-BackgoundDom .BGE-coverImageBG .BGE-coverImageBG-a,
+.BGEnhanced-BackgoundDom .BGE-coverImageBG .BGE-coverImageBG-b {
+  transition: opacity 1s;
+  position: absolute;
+  left: 0;
+  width: 100%;
+}
 .BGEnhanced-Config {
   overflow: scroll;
 }
