@@ -1,12 +1,12 @@
 {
     "manifest_version": 1,
     "name": "BGEnhanced",
-    "version": "0.3.7",
+    "version": "0.3.8",
     "author":"MicroBlock",
     "preview":"preview.png",
     "betterncm_version": ">=0.2.5",
     "ncm3-compatible": true,
-    "description":"自定义网易云背景！（需安装任意主题）",
+    "description":"自定义网易云背景！",
     "injects": {
         "Main": [
             {
