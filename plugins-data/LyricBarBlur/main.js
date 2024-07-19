@@ -41,6 +41,7 @@ let cfgDefault = ({
     multiline3: false,
     weltLeftRight: false,
     noFadeLyrics: false,
+    mdThemeFloatBtBarBugFix: true,
 });
 
 function resetStyles() { //应用新设置
@@ -147,11 +148,10 @@ function resetStyles() { //应用新设置
             var(--lbb-text-outline-width) var(--lbb-text-outline-width) var(--lbb-text-outline-color),
             calc(var(--lbb-text-outline-width) * -1) var(--lbb-text-outline-width) var(--lbb-text-outline-color),
             calc(var(--lbb-text-outline-width) * -1) calc(var(--lbb-text-outline-width) * -1) var(--lbb-text-outline-color),
-            var(--lbb-text-outline-width) calc(var(--lbb-text-outline-width) * -1) var(--lbb-text-outline-color)
-            ` + isTextCompel + `;
+            var(--lbb-text-outline-width) calc(var(--lbb-text-outline-width) * -1) var(--lbb-text-outline-color);
     `;
     var cssTextOlStroke = `
-        -webkit-text-stroke: var(--lbb-text-outline-width) var(--lbb-text-outline-color) ` + isTextCompel + `;
+        -webkit-text-stroke: var(--lbb-text-outline-width) var(--lbb-text-outline-color);
     `;
     var cssWidth = `
         --lyric-bar-width: ` + readCfg.widthCustom + `px !important;
@@ -227,6 +227,11 @@ function resetStyles() { //应用新设置
     `;
     var cssNoFadeLyrics = `
         --mask-image: unset !important;
+    `;
+    var cssMdThemeFloatBtBarBugFixAll = `
+    body.floating-bottombar .lyric-bar.posx-left {
+        left: max(calc(var(--leftbar-width, 199px) + 15px + var(--extra-pos-margin, 0px)), calc(50vw - var(--bottombar-width)/2));
+    }
     `;
     var cssEnd = `
     }
@@ -334,6 +339,10 @@ function resetStyles() { //应用新设置
         var cssIn = cssIn + cssWlrAndCobFloatBtBarAll;
     }
 
+    if (readCfg.mdThemeFloatBtBarBugFix) {
+        var cssIn = cssIn + cssMdThemeFloatBtBarBugFixAll;
+    }
+
     try {
         document.querySelector("#LyricBarBlurStyles").innerHTML = cssIn;
     } catch {
@@ -356,11 +365,15 @@ function disableSaveCancel(onoff) {
 
 
 function onOffAnySets() {
-    var SoRInput = document.querySelectorAll(".switchBinding label:nth-of-type(1) input");
-    for (n = 0; n < SoRInput.length; n++) {
-        var isChecked = SoRInput[n].checked;
-        var allInput = document.querySelectorAll(".switchBinding")[n].querySelectorAll("input");
-        if (SoRInput[n].disabled) {
+    var allBinding = document.querySelectorAll(".switchBinding");
+    var bindingInput = document.querySelectorAll(".switchBinding:not(.part) > label:nth-of-type(1) input, .switchBinding .partTitle + div > label:nth-of-type(1) input");
+    if (allBinding.length != bindingInput.length) {
+        console.warn("LyricBarBlurSettings WARNING: allBinding.length != bindingInput.length")
+    }
+    for (n = 0; n < allBinding.length; n++) { try{
+        var allInput = allBinding[n].querySelectorAll("input");
+        var isChecked = bindingInput[n].checked;
+        if (bindingInput[n].disabled) {
             for (i = 1; i < allInput.length; i++) {
                 allInput[i].disabled = true;
             }
@@ -369,12 +382,7 @@ function onOffAnySets() {
                 allInput[i].disabled = !isChecked;
             }
         }
-    }
-
-    var SoRInputDisabled = document.querySelectorAll(".switchBinding label:nth-of-type(1) input:disabled");
-    for (n = 0; n < SoRInputDisabled.length; n++) {
-        var allInput = document.querySelectorAll(".switchBinding")[n].querySelectorAll("input");
-    }
+    } catch (err) { console.error(err + n) }}
 }
 function onOffAllSets() {
     var isChecked = document.querySelector("#mainSwitch").checked;
@@ -489,6 +497,7 @@ function saveCfg() { //保存设置
     var multiline3 = getSwitchSet("multiline3");
     var weltLeftRight = getSwitchSet("weltLeftRight");
     var noFadeLyrics = getSwitchSet("noFadeLyrics");
+    var mdThemeFloatBtBarBugFix = getSwitchSet("mdThemeFloatBtBarBugFix");
 
     var cfgWillWrite = ({
         blur,
@@ -531,6 +540,7 @@ function saveCfg() { //保存设置
         multiline3,
         weltLeftRight,
         noFadeLyrics,
+        mdThemeFloatBtBarBugFix,
     });
 
     writeCfg(cfgWillWrite);
@@ -613,6 +623,7 @@ function cancel() {
     d.querySelector("#multiline3Switch").checked = readCfg.multiline3;
     d.querySelector("#weltLeftRightSwitch").checked = readCfg.weltLeftRight;
     d.querySelector("#noFadeLyricsSwitch").checked = readCfg.noFadeLyrics;
+    d.querySelector("#mdThemeFloatBtBarBugFixSwitch").checked = readCfg.mdThemeFloatBtBarBugFix;
     console.log("cancel");
     disableSaveCancel(true);
 }
@@ -749,6 +760,9 @@ plugin.onConfig(() => {
         if (readCfg.noFadeLyrics) {
             var noFadeLyricsSwitchCheck = "Checked";
         }
+        if (readCfg.mdThemeFloatBtBarBugFix) {
+            var mdThemeFloatBtBarBugFixSwitchCheck = "Checked";
+        }
 
         var customFonts = readCfg.customFonts.replaceAll("\"", "&quot;");
     } catch {
@@ -811,6 +825,7 @@ plugin.onConfig(() => {
         var widthCustomSetBoxDisable = "Disabled";
         var widthCustom = 400
         var doNotHideWithoutLyricsSwitchCheck = "Checked";
+        var mdThemeFloatBtBarBugFixSwitchCheck = "Checked";
     };
 
     //创建DOM
@@ -847,13 +862,13 @@ plugin.onConfig(() => {
             vertical-align: top;
             width: 420px;
             outline: 0;
-            margin: 5px 0 0 0;
+            margin: 5px 0 0;
             padding: 15px 25px;
-            border: 1px solid var(--lbbs-fg);
+            border: 1px solid var(--lbbs-bg);
             border-radius: 12px;
-            box-shadow: 0 0 3px var(--lbbs-fg);
+            box-shadow: 0 0 3px 1px var(--lbbs-fg);
             background: var(--lbbs-bg);
-            backdrop-filter: blur(12px);
+            backdrop-filter: blur(24px);
             transition: .5s;
         }
         #LyricBarBlurSettings .part * {
@@ -869,22 +884,35 @@ plugin.onConfig(() => {
             font-size: 23px;
             line-height: 45px;
         }
-        #LyricBarBlurSettings .titlePart {
-            width: 420px;
-            margin: 0;
+
+        #LyricBarBlurSettings .center {
+            display: flex;
+            flex-flow: column wrap;
+        }
+        #LyricBarBlurSettings .centerInner {
+            margin: 5px auto auto;
         }
 
         #LyricBarBlurSettings .topBar {
-            height: 50px;
-            padding: 5px 70px;
             position: sticky;
             top: -20px;
             z-index: 1;
             pointer-events: none;
         }
-        #LyricBarBlurSettings .topBar > * {
+        #LyricBarBlurSettings .topBarInner {
+            height: 50px;
+            margin: 5px auto auto;
+            pointer-events: none;
+        }
+        #LyricBarBlurSettings .topBarInner > * {
             backdrop-filter: blur(12px);
             pointer-events: auto;
+        }
+
+        #LyricBarBlurSettings .middle {
+            display: flex;
+            flex-flow: column wrap;
+            align-items: center;
         }
 
         #LyricBarBlurSettings .button {
@@ -910,7 +938,7 @@ plugin.onConfig(() => {
         }
 
         #LyricBarBlurSettings .button:disabled {
-            color: #888888;
+            color: #888888 !important;
             box-shadow: 0 0 3px #888888;
             border: 1px solid #888888;
             background: var(--lbbs-bg);
@@ -960,7 +988,7 @@ plugin.onConfig(() => {
             position: absolute;
             width: 50px;
             height: 25px;
-            margin: 10px 0;
+            margin: 11px 0;
             border-radius: 8px;
             transition: .2s, box-shadow .1s;
         }
@@ -1041,6 +1069,7 @@ plugin.onConfig(() => {
             width: 27px;
             left: -5px;
             bottom: -5px;
+            border-radius: 5px;
             transition: .2s;
         }
 
@@ -1093,24 +1122,52 @@ plugin.onConfig(() => {
             background: rgba(0, 0, 0, 0);
             border: 0 solid;
         }
+
+        @media (min-width: 1310px) {
+            #LyricBarBlurSettings {
+                width: 850px;
+            }
+            #LyricBarBlurSettings .centerInner {
+                width: 500px;
+            }
+            #LyricBarBlurSettings .topBarInner {
+                width: auto;
+            }
+            #LyricBarBlurSettings .middle {
+                max-height: 1500px;
+            }
+        }
+        @media (min-width: 1750px) {
+            #LyricBarBlurSettings {
+                width: 1275px;
+            }
+            #LyricBarBlurSettings .middle {
+                max-height: 1000px;
+            }
+        }
     </style>
-    <div class="part titlePart">
-        <p style="font-size: 40px; line-height: 80px;">LyricBarBlur 设置</p>
-        <br />
-        <p>修改LyricBar外观，比如…添加背景模糊？</p>
-        <div style="float: right;">
-            <p>总开关</p>
-            <label class="switch">
-                <input id="mainSwitch" type="checkbox" />
-                <span class="slider button"></span>
-            </label>
+    <div class="center">
+        <div class="part centerInner">
+            <p style="font-size: 40px; line-height: 80px;">LyricBarBlur 设置</p>
+            <br />
+            <p>修改LyricBar外观，比如…添加背景模糊？</p>
+            <div style="float: right;">
+                <p>总开关</p>
+                <label class="switch">
+                    <input id="mainSwitch" type="checkbox" />
+                    <span class="slider button"></span>
+                </label>
+            </div>
         </div>
     </div>
-    <div class="topBar">
-        <input class="button" id="saveButton" type="button" value="应用" disabled/>
-        <input class="button" id="cancelButton" type="button" value="撤销" disabled/>
-        <input class="button" id="resetButton" type="button" value="重置" />
+    <div class="topBar center">
+        <div class="topBarInner centerInner">
+            <input class="button" id="saveButton" type="button" value="应用" disabled/>
+            <input class="button" id="cancelButton" type="button" value="撤销" disabled/>
+            <input class="button" id="resetButton" type="button" value="重置" />
+        </div>
     </div>
+    <div class="middle">
     <div class="part">
         <p class="partTitle">模糊</p>
         <div style="float: right;">
@@ -1162,17 +1219,8 @@ plugin.onConfig(() => {
             </div>
     </div>
     <div class="part">
-        <p class="partTitle">文字</p>
-        <div style="float: right;">
-            <p>覆盖其他插件的设置</p>
-            <label class="switch">
-                <input id="textCompelSwitch" type="checkbox" ` + textCompelSwitchCheck + `/>
-                <span class="slider button"></span>
-            </label>
-        </div>
+        <p class="partTitle">字体</p>
         <div class="parting"></div>
-            <p>字体</p>
-            <br />
             <label class="radio">
                 <input type="radio" id="fontsDefaultRadio" name="fonts" value="default" ` + fontsDefaultRadioCheck + `/>
                 <span class="slider button"></span>
@@ -1193,7 +1241,17 @@ plugin.onConfig(() => {
                 <p>使用自定义字体(CSS font-family)</p>
                 <br />
                 <input class="button textBox" id="fontsSetBox" type="search" placeholder='"华文彩云"' value="` + customFonts + `" ` + fontsSetBoxDisable + `/>
-            </div>
+        </div>
+    </div>
+    <div class="part">
+        <p class="partTitle">文本</p>
+        <div style="float: right;">
+            <p>覆盖其他插件的设置</p>
+            <label class="switch">
+                <input id="textCompelSwitch" type="checkbox" ` + textCompelSwitchCheck + `/>
+                <span class="slider button"></span>
+            </label>
+        </div>
         <div class="parting"></div>
             <p>文本不透明度(测试 · 不稳定)</p>  
             <br />
@@ -1214,53 +1272,58 @@ plugin.onConfig(() => {
                 <p style="color: #00F; text-shadow: 0 1px 10px #00F;">B</p>
                 <input class="button textBox" id="textBlueSetBox" type="number" step="1" placeholder="255" value="` + textBlue + `" ` + textColorSetBoxDisable + `/>
             </div>
+    </div>
+    <div class="part switchBinding">
+        <p class="partTitle">文字描边</p>
+        <div style="float: right;">
+            <p>使用描边</p>
+            <label class="switch">
+                <input id="textOlSwitch" type="checkbox" ` + textOlSwitchCheck + `/>
+                <span class="slider button"></span>
+            </label>
+        </div>
         <div class="parting"></div>
-            <div class="switchBinding">
-                <p>文本描边</p>
-                <label class="switch">
-                    <input id="textOlSwitch" type="checkbox" ` + textOlSwitchCheck + `/>
-                    <span class="slider button"></span>
-                </label>
-                <br />
-                <p>实现方式</p>
-                <br />
-                <label class="radio">
-                    <input type="radio" id="textOlWayShadowRadio" name="textOlWay" value="shadow" ` + textOlWayShadowRadioCheck + ` ` + textOlSetsDisable + `/>
-                    <span class="slider button"></span>
-                </label>
-                <p>text-shadow</p>
-                <br />
-                <label class="radio">
-                    <input type="radio" id="textOlWayStrokeRadio" name="textOlWay" value="stroke" ` + textOlWayStrokeRadioCheck + ` ` + textOlSetsDisable + `/>
-                    <span class="slider button"></span>
-                </label>
-                <p>-webkit-text-stroke</p>
-                <br />
-                <p>文本描边宽度</p>
+            <p>实现方式</p>
+            <br />
+            <label class="radio">
+                <input type="radio" id="textOlWayShadowRadio" name="textOlWay" value="shadow" ` + textOlWayShadowRadioCheck + ` ` + textOlSetsDisable + `/>
+                <span class="slider button"></span>
+            </label>
+            <p>text-shadow</p>
+            <br />
+            <label class="radio">
+                <input type="radio" id="textOlWayStrokeRadio" name="textOlWay" value="stroke" ` + textOlWayStrokeRadioCheck + ` ` + textOlSetsDisable + `/>
+                <span class="slider button"></span>
+            </label>
+            <p>-webkit-text-stroke</p>
+            <br />
+            <div style="display: inline-block;">
+                <p>描边宽度</p>
                 <br />
                 <input class="button textBox" id="textOlWidthSetBox" type="number" step="0.1" placeholder="0.5" value="` + textOlWidth + `" ` + textOlSetsDisable + `/>
                 <p>px</p>
-                <br />
-                <p>文本描边不透明度</p>
+            </div>
+            <div style="display: inline-block; margin-left: 60px;">
+                <p>描边不透明度</p>
                 <br />
                 <input class="button textBox" id="textOlTransSetBox" type="number" step="1" placeholder="100" value="` + textOlTrans + `" ` + textOlSetsDisable + `/>
                 <p>%</p>
+            </div>
+            <br />
+            <p>描边颜色</p>
+            <div class="switchBinding">
+                <label class="radio">
+                    <input type="radio" id="textOlColorCustomRadio" name="textOlColor" value="custom" ` + textOlColorCustomRadioCheck + ` ` + textOlSetsDisable + `/>
+                    <span class="slider button"></span>
+                </label>
+                <p>自定义颜色</p>
                 <br />
-                <p>文本描边颜色</p>
-                <div class="switchBinding">
-                    <label class="radio">
-                        <input type="radio" id="textOlColorCustomRadio" name="textOlColor" value="custom" ` + textOlColorCustomRadioCheck + ` ` + textOlSetsDisable + `/>
-                        <span class="slider button"></span>
-                    </label>
-                    <p>自定义颜色</p>
-                    <br />
-                    <p style="color: #F00; text-shadow: 0 1px 10px #F00;">R</p>
-                    <input class="button textBox" id="textOlRedSetBox" type="number" step="1" placeholder="0" value="` + textOlRed + `" ` + textOlColorSetBoxDisable + `/>
-                    <p style="color: #0F0; text-shadow: 0 1px 10px #0F0;">G</p>
-                    <input class="button textBox" id="textOlGreenSetBox" type="number" step="1" placeholder="0" value="` + textOlGreen + `" ` + textOlColorSetBoxDisable + `/>
-                    <p style="color: #00F; text-shadow: 0 1px 10px #00F;">B</p>
-                    <input class="button textBox" id="textOlBlueSetBox" type="number" step="1" placeholder="0" value="` + textOlBlue + `" ` + textOlColorSetBoxDisable + `/>
-                </div>
+                <p style="color: #F00; text-shadow: 0 1px 10px #F00;">R</p>
+                <input class="button textBox" id="textOlRedSetBox" type="number" step="1" placeholder="0" value="` + textOlRed + `" ` + textOlColorSetBoxDisable + `/>
+                <p style="color: #0F0; text-shadow: 0 1px 10px #0F0;">G</p>
+                <input class="button textBox" id="textOlGreenSetBox" type="number" step="1" placeholder="0" value="` + textOlGreen + `" ` + textOlColorSetBoxDisable + `/>
+                <p style="color: #00F; text-shadow: 0 1px 10px #00F;">B</p>
+                <input class="button textBox" id="textOlBlueSetBox" type="number" step="1" placeholder="0" value="` + textOlBlue + `" ` + textOlColorSetBoxDisable + `/>
             </div>
     </div>
     <div class="part">
@@ -1273,25 +1336,30 @@ plugin.onConfig(() => {
             </label>
         </div>
         <div class="parting"></div>
-            <p>内边距</p>
-            <br />
-            <input class="button textBox" id="paddingSetBox" type="number" step="1" placeholder="0" value="` + padding + `"/>
-            <p>px</p>
-            <br />
-            <p>边框宽度</p>
-            <br />
-            <input class="button textBox" id="bdWidthSetBox" type="number" step="1" placeholder="1" value="` + bdWidth + `"/>
-            <p>px</p>
-            <br />
-            <p>边框不透明度</p>
-            <br />
-            <input class="button textBox" id="bdTransSetBox" type="number" step="1" placeholder="5" value="` + bdTrans + `"/>
-            <p>%</p>
-            <br />
-            <p>圆角大小</p>
-            <br />
-            <input class="button textBox" id="bdRadiusSetBox" type="number" step="1" placeholder="12" value="` + bdRadius + `"/>
-            <p>px</p>
+            <div style="display: inline-block;">
+                <p>边框宽度</p>
+                <br />
+                <input class="button textBox" id="bdWidthSetBox" type="number" step="1" placeholder="1" value="` + bdWidth + `"/>
+                <p>px</p>
+            </div>
+            <div style="display: inline-block; margin-left: 60px;">
+                <p>边框不透明度</p>
+                <br />
+                <input class="button textBox" id="bdTransSetBox" type="number" step="1" placeholder="5" value="` + bdTrans + `"/>
+                <p>%</p>
+            </div>
+            <div style="display: inline-block;">
+                <p>内边距</p>
+                <br />
+                <input class="button textBox" id="paddingSetBox" type="number" step="1" placeholder="0" value="` + padding + `"/>
+                <p>px</p>
+            </div>
+            <div style="display: inline-block; margin-left: 60px;">
+                <p>圆角大小</p>
+                <br />
+                <input class="button textBox" id="bdRadiusSetBox" type="number" step="1" placeholder="12" value="` + bdRadius + `"/>
+                <p>px</p>
+            </div>
             <br />
             <p>边框颜色</p>
             <br />
@@ -1369,15 +1437,23 @@ plugin.onConfig(() => {
             </label>
             <p>禁用左右歌词超出渐隐效果</p>
             <br />
-    </div>
-    <div class="part" style="font-size: 14px; line-height: 16px;">
-        <p>Version 0.2.6</p>
-        <input class="link" style="float: right;" type="button" onclick="betterncm.ncm.openUrl('https://github.com/Lukoning/LyricBarBlur')" value="源代码(GitHub)" />
-        <br />
-        <p>by Lukoning</p>
-        <input class="link" type="button" onclick="betterncm.ncm.openUrl('https://github.com/Lukoning')" value="GitHub" />
-        <input class="link" type="button" onclick="betterncm.ncm.openUrl('https://space.bilibili.com/1922780115')" value="bilibili" />
-        <input class="link" style="float: right;" type="button" onclick="betterncm.ncm.openUrl('https://github.com/Lukoning/LyricBarBlur/issues')" value="问题反馈(GitHub issues)" />
+            <label class="switch">
+                <input id="mdThemeFloatBtBarBugFixSwitch" type="checkbox" ` + mdThemeFloatBtBarBugFixSwitchCheck + `/>
+                <span class="slider button"></span>
+            </label>
+            <p>Material You悬浮底栏左对齐BUG修复</p>
+            <br />
+    </div></div>
+    <div class="center">
+        <div class="part centerInner" style="font-size: 14px; line-height: 18px;">
+            <p>Version 0.2.7</p>
+            <input class="link" style="float: right;" type="button" onclick="betterncm.ncm.openUrl('https://github.com/Lukoning/LyricBarBlur')" value="插件源代码(GitHub)" />
+            <br />
+            <p>by Lukoning</p>
+            <input class="link" type="button" onclick="betterncm.ncm.openUrl('https://github.com/Lukoning')" value="GitHub" />
+            <input class="link" type="button" onclick="betterncm.ncm.openUrl('https://space.bilibili.com/1922780115')" value="bilibili" />
+            <input class="link" style="float: right;" type="button" onclick="betterncm.ncm.openUrl('https://github.com/Lukoning/LyricBarBlur/issues')" value="问题反馈(GitHub issues)" />
+        </div>
     </div>
     `;
 

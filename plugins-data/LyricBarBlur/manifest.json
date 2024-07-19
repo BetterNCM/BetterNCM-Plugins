@@ -3,7 +3,7 @@
     "name": "LyricBarBlur", 
     "slug": "LyricBarBlur", 
     "type": "extension",
-    "version": "0.2.6",
+    "version": "0.2.7",
     "author": "Lukoning", 
     "author_links": ["https://github.com/Lukoning"],
     "description": "修改LyricBar外观，比如添加背景模糊",
