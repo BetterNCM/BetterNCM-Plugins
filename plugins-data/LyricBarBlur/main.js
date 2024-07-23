@@ -720,7 +720,8 @@ plugin.onAllPluginsLoaded(async () => { //插件初始化
 });
 
 plugin.onConfig( () => {
-    if (!readCfg) { //初始化设置
+    var readCfg = JSON.parse(localStorage.getItem("LyricBarBlurSettings"));
+    if (!readCfg) { //如果读不到就使用初始设置
         var readCfg = cfgDefault;
     };
     //设置读取
@@ -776,7 +777,10 @@ plugin.onConfig( () => {
         if (readCfg.textCompel) {
             var textCompelSwitchCheck = "Checked";
         }
+        console.log(readCfg.fonts);
         var f = readCfg.fonts;
+        console.log(f);
+        console.log(f == "rnp");
         var fontsSetBoxDisable = "Disabled";
         if (f == "rnp") {
             var fontsRnpRadioCheck = "Checked";
@@ -1544,7 +1548,7 @@ plugin.onConfig( () => {
     </div></div>
     <div class="center">
         <div class="part centerInner" style="font-size: 14px; line-height: 18px;">
-            <p>Version 0.3.0</p>
+            <p>Version 0.3.1</p>
             <input class="link" style="float: right;" type="button" onclick="betterncm.ncm.openUrl('https://github.com/Lukoning/LyricBarBlur')" value="插件源代码(GitHub)" />
             <br />
             <p>by Lukoning</p>
