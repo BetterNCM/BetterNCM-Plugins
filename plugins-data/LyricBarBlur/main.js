@@ -4,7 +4,7 @@ let cfgDefault = ({
     blur: 12,
     blurCompel: false,
     bgTrans: 0.75,
-    bgColor: false,
+    bgColor: "defaultWom",
     bgRed: 0,
     bgGreen: 120,
     bgBlue: 215,
@@ -12,10 +12,10 @@ let cfgDefault = ({
     fonts: "default",
     customFonts: "\"华文彩云\"",
     textTrans: 1,
-    textColor: false,
-    textRed: 255,
-    textGreen: 255,
-    textBlue: 255,
+    textColor: "theme",
+    textRed: 127,
+    textGreen: 127,
+    textBlue: 127,
     textOl: false,
     textOlWay: "shadow",
     textOlWidth: 0.5,
@@ -27,12 +27,13 @@ let cfgDefault = ({
     textCompel: false,
     padding: 0,
     bdWidth: 1,
-    bdTrans: 0.05,
+    bdTrans: 0.1,
     bdRadius: 12,
     bdColor: "custom",
-    bdRed: 255,
-    bdGreen: 255,
-    bdBlue: 255,
+    bdRed: 127,
+    bdGreen: 127,
+    bdBlue: 127,
+    noBdBgBlend: true,
     bdCompel: false,
     isWidthEnable: false,
     widthCustom: 400,
@@ -44,7 +45,7 @@ let cfgDefault = ({
     mdThemeFloatBtBarBugFix: true,
 });
 
-function resetStyles() { //应用新设置
+async function resetStyles() { //应用新设置
     if (!JSON.parse(localStorage.getItem("isLyricBarBlurEnable"))) { //清空！
         try {
             document.querySelector("#LyricBarBlurStyles").innerHTML = ``;
@@ -57,18 +58,18 @@ function resetStyles() { //应用新设置
 
     let readCfg = JSON.parse(localStorage.getItem("LyricBarBlurSettings"));
 
-    var blur = readCfg.blur
-    var bgTrans = readCfg.bgTrans
+    var blur = readCfg.blur;
+    var bgTrans = readCfg.bgTrans;
     if (bgTrans == undefined || bgTrans == null || bgTrans == NaN) {
-        var bgTrans = readCfg.trans
-        var bgRed = readCfg.colorRed
-        var bgGreen = readCfg.colorGreen
-        var bgBlue = readCfg.colorBlue
+        var bgTrans = readCfg.trans;
+        var bgRed = readCfg.colorRed;
+        var bgGreen = readCfg.colorGreen;
+        var bgBlue = readCfg.colorBlue;
     } else {
-        var bgTrans = readCfg.bgTrans
-        var bgRed = readCfg.bgRed
-        var bgGreen = readCfg.bgGreen
-        var bgBlue = readCfg.bgBlue
+        var bgTrans = readCfg.bgTrans;
+        var bgRed = readCfg.bgRed;
+        var bgGreen = readCfg.bgGreen;
+        var bgBlue = readCfg.bgBlue;
     }
 
     if (readCfg.blurCompel) {
@@ -103,10 +104,21 @@ function resetStyles() { //应用新设置
         transition: opacity .35s, all .5s !important;
     `;
     var cssLbiTop = `
+    .lyric-bar-inner {
+    `;
+    var cssLbiaTop = `
     .lyric-bar-inner * {
     `;
     var cssBgDefault = ` 
         background: linear-gradient(0deg, rgba(var(--md-accent-color-rgb, var(--ncm-fg-rgb)), ` + bgTrans/10 +`), rgba(var(--md-accent-color-rgb, var(--ncm-fg-rgb)), ` + bgTrans/10 +`)), rgba(var(--md-accent-color-bg-rgb, var(--ncm-bg-rgb)), ` + bgTrans +`) ` + isBgCompel + `;
+    `;
+    var cssBgDefaultWom = ` 
+        background: rgba(var(--md-accent-color-bg-rgb, var(--ncm-fg-rgb)), ` + bgTrans +`) ` + isBgCompel + `;
+    `;
+    var cssBgDefaultWomAll = `
+    body.ncm-light-theme .lyric-bar {
+        background: rgba(var(--md-accent-color-bg-rgb, var(--ncm-bg-rgb)), ` + bgTrans +`) ` + isBgCompel + `;
+    }
     `;
     var cssBgCustom = `
         background: rgba(` + bgRed + `,` + bgGreen + `,` + bgBlue + `,` + bgTrans +`) ` + isBgCompel + `;
@@ -114,32 +126,28 @@ function resetStyles() { //应用新设置
     var cssBgBlur = `
         backdrop-filter: blur(` + blur + `px) ` + isBlurCompel + `;
     `;
-    var cssFontsRnp = `
+    /*  一开始Rnp并不会加载，所以这里读取了Rnp的字体设置，并通过CSS应用。
+     *  :not选择器的作用是判断Rnp播放页是否被加载，解决在Rnp内关闭自定义字体后，
+     *  这里的设置仍被应用的问题。
+     */ 
+    var cssFontsRnpAll = `
+    body:not(.rnp-auto, .rnp-light, .rnp-dark) .lyric-bar-inner * {
         font-family: ` + localStorage.getItem("refined-now-playing-font-family").replace("[", "").replace("]", "") + `;
+    }
     `;
-    var cssFontsCustom = `
+    var cssFontsCustomLbia = `
         font-family: ` + readCfg.customFonts + `;
     `;
-    var cssTextTrans = `
+    var cssTextTransLbi = `
+        opacity: ` + readCfg.textTrans + ` ` + isTextCompel + `;
     `;
-    var cssTextTransAll = `
-    .lyric-bar .rnp-lyrics .rnp-lyrics-line[offset="0"] > div > div.rnp-lyrics-line-karaoke .rnp-karaoke-word {
-        opacity: ` + readCfg.textTrans + isTextCompel + `;
-    }
-    .lyric-bar .rnp-lyrics .rnp-lyrics-line:not([offset="0"]) > div > div.rnp-lyrics-line-karaoke .rnp-karaoke-word {
-        opacity: ` + readCfg.textTrans/2.5 + isTextCompel + `;
-    }
-    .lyric-bar .rnp-lyrics .rnp-lyrics-line .rnp-lyrics-single-line-wrapper > *:not(.rnp-lyrics-line-karaoke) {
-        opacity: ` + readCfg.textTrans + isTextCompel + `;
-    }
-    .lyric-bar .rnp-lyrics .rnp-lyrics-line.rnp-interlude[offset="0"] .rnp-interlude-inner {
-        opacity: ` + readCfg.textTrans + isTextCompel + `;
-    } 
+    var cssTextTheme = `
+        --lbb-custom-text-color: var(--themeC1);
     `;
     var cssTextCustom = `
-        --lbb-custom-text-color: rgba(` + readCfg.textRed + `,` + readCfg.textGreen + `,` + readCfg.textBlue + `,` + readCfg.textTrans + `);
+        --lbb-custom-text-color: rgb(` + readCfg.textRed + `,` + readCfg.textGreen + `,` + readCfg.textBlue + `);
     `;
-    var cssTextCustomLbi = `
+    var cssTextCustomLbia = `
         --rnp-accent-color-shade-2: var(--lbb-custom-text-color) ` + isTextCompel + `;
         color: var(--lbb-custom-text-color) ` + isTextCompel + `;
     `;
@@ -170,6 +178,9 @@ function resetStyles() { //应用新设置
     `;
     var cssBdCustom = `
         border-color: rgba(` + readCfg.bdRed + `,` + readCfg.bdGreen + `,` + readCfg.bdBlue + `,` + readCfg.bdTrans +`) ` + isBdCompel + `;
+    `;
+    var cssNoBdBgBlend = `
+        background-clip: padding-box;
     `;
     var cssBdRadius = `
         border-radius: ` + readCfg.bdRadius + `px ` + isBdCompel + `;
@@ -233,9 +244,20 @@ function resetStyles() { //应用新设置
         left: max(calc(var(--leftbar-width, 199px) + 15px + var(--extra-pos-margin, 0px)), calc(50vw - var(--bottombar-width)/2));
     }
     `;
+    var css0 = `
+    body.rnp-shadow.rnp-text-glow .lyric-bar, body.rnp-text-glow.rnp-text-glow .lyric-bar {
+        --rnp-drop-shadow: drop-shadow(0px 4px 5px rgba(var(--rnp-accent-color-shade-2-rgb), 0.27)) !important;
+    }
+    `;
     var cssEnd = `
     }
     `;
+
+    var bgc = readCfg.bgColor;
+    var textc = readCfg.textColor;
+    var olw = readCfg.textOlWay;
+    var bdc = readCfg.bdColor;
+    var f = readCfg.fonts;
 
     var cssIn = cssLbTop + cssBgBlur + cssPadding + cssBdRadius;
 
@@ -245,12 +267,24 @@ function resetStyles() { //应用新设置
         var cssIn = cssIn + cssBgDefault;
     }
 
-    if (readCfg.textColor) { 
+    if (bgc == "default") {
+        var cssIn = cssIn + cssBgDefault;
+    }
+    if (bgc == "defaultWom") {
+        var cssIn = cssIn + cssBgDefaultWom;
+    }
+    if (bgc == "custom") {
+        var cssIn = cssIn + cssBgCustom;
+    }
+
+    if (textc == "theme") {
+        var cssIn = cssIn + cssTextTheme;
+    }
+    if (textc == "custom") {
         var cssIn = cssIn + cssTextCustom;
     }
 
     if (readCfg.textOl) {
-        var olw = readCfg.textOlWay;
         if (olw == "shadow") {
             var cssIn = cssIn + cssTextOlShadow;
         } 
@@ -260,7 +294,6 @@ function resetStyles() { //应用新设置
         console.log(olw);
     }
 
-    var bdc = readCfg.bdColor
     var cssIn = cssIn + cssBdWidth;
     if (bdc == "default") {
         var cssIn = cssIn + cssBdDefault;
@@ -272,17 +305,9 @@ function resetStyles() { //应用新设置
         var cssIn = cssIn + cssBdCustom;
     }
 
-    var f = readCfg.fonts;
-    try {
-        document.querySelector(".lyric-bar").classList.remove("g-single-track");
-        document.querySelector(".lyric-bar-inner").classList.remove("lyric");
-        if (f == "rnp") {
-            var cssIn = cssIn + cssFontsRnp;
-            document.querySelector(".lyric-bar").classList.add("g-single-track");
-            document.querySelector(".lyric-bar-inner").classList.add("lyric");
-            console.log("yes");
-        }
-    } catch { console.log("LyricBarBlur classList edit fail"); }
+    if (readCfg.noBdBgBlend) {
+        var cssIn = cssIn + cssNoBdBgBlend;
+    }
 
     if (readCfg.isWidthEnable) {
         var cssIn = cssIn + cssWidth;
@@ -305,23 +330,44 @@ function resetStyles() { //应用新设置
     }
 
     var cssIn = cssIn + cssEnd;
-
-    if (readCfg.textColor) {
-        var cssTextTransAll = " ";
-    }
-    var cssIn = cssIn + cssTextTransAll;
-
     var cssIn = cssIn + cssLbiTop;
 
-    if (readCfg.textColor) { 
-        var cssIn = cssIn + cssTextCustomLbi;
+    var cssIn = cssIn + cssTextTransLbi;
+
+    var cssIn = cssIn + cssEnd;
+    var cssIn = cssIn + cssLbiaTop;
+
+    if (textc == "theme" || textc == "custom") {
+        var cssIn = cssIn + cssTextCustomLbia;
     }
 
+    try {
+        //先移除类…
+        document.querySelector(".lyric-bar").classList.remove("g-single-track");
+        document.querySelector(".lyric-bar-inner").classList.remove("lyric");
+        if (f == "rnp") {
+            //添加Rnp歌词的类以动态更换字体
+            document.querySelector(".lyric-bar").classList.add("g-single-track");
+            document.querySelector(".lyric-bar-inner").classList.add("lyric");
+            console.log("yes");
+        }
+    } catch { console.log("LyricBarBlur classList edit fail"); }
+
     if (f == "custom") {
-        var cssIn = cssIn + cssFontsCustom;
+        var cssIn = cssIn + cssFontsCustomLbia;
     }
 
     var cssIn = cssIn + cssEnd;
+
+    //读取Rnp设置
+    if (f == "rnp" && localStorage.getItem("refined-now-playing-custom-font") == "true") {
+        var cssIn = cssIn + cssFontsRnpAll;
+        console.log("oh yes");
+    }
+
+    if (bgc == "defaultWom") {
+        var cssIn = cssIn + cssBgDefaultWomAll;
+    }
 
     if (readCfg.centerOfBottom) {
         var cssIn = cssIn + cssCobAll;
@@ -353,7 +399,7 @@ function resetStyles() { //应用新设置
     console.log("reset styles");
 };
 
-function disableSaveCancel(onoff) {
+async function disableSaveCancel(onoff) {
     if (onoff) {
         document.querySelector("#saveButton").disabled = true;
         document.querySelector("#cancelButton").disabled = true;
@@ -364,11 +410,11 @@ function disableSaveCancel(onoff) {
 }
 
 
-function onOffAnySets() {
+async function onOffAnySets() {
     var allBinding = document.querySelectorAll(".switchBinding");
     var bindingInput = document.querySelectorAll(".switchBinding:not(.part) > label:nth-of-type(1) input, .switchBinding .partTitle + div > label:nth-of-type(1) input");
     if (allBinding.length != bindingInput.length) {
-        console.warn("LyricBarBlurSettings WARNING: allBinding.length != bindingInput.length")
+        console.warn("LyricBarBlurSettings WARNING: allBinding.length != bindingInput.length");
     }
     for (n = 0; n < allBinding.length; n++) { try{
         var allInput = allBinding[n].querySelectorAll("input");
@@ -382,9 +428,9 @@ function onOffAnySets() {
                 allInput[i].disabled = !isChecked;
             }
         }
-    } catch (err) { console.error(err + n) }}
+    } catch (err) { console.error(err + n); }}
 }
-function onOffAllSets() {
+async function onOffAllSets() {
     var isChecked = document.querySelector("#mainSwitch").checked;
     var allInput = document.querySelectorAll("input");
     for (i = 0; i < allInput.length; i++) {
@@ -399,11 +445,11 @@ function onOffAllSets() {
     resetStyles();
 }
 
-function writeCfg(Cfg) { //写配置
+async function writeCfg(Cfg) { //写配置
     localStorage.setItem("LyricBarBlurSettings", JSON.stringify(Cfg));
 };
 
-function saveCfg() { //保存设置
+async function saveCfg() { //保存设置
 
     //获取纯数字设置
     function getNumSet(name, min, max) {
@@ -451,7 +497,7 @@ function saveCfg() { //保存设置
         var sets = document.getElementsByName(name);
         for (i = 0; i < sets.length; i++) {
             if(sets[i].checked) {
-                var set = sets[i].value
+                var set = sets[i].value;
             }
         }
         return set;
@@ -460,7 +506,7 @@ function saveCfg() { //保存设置
     var blur = getNumSet("blur", 0, "n");
     var blurCompel = getSwitchSet("blurCompel");
     var bgTrans = getNumSet("bgTrans", 0, 100)/100;
-    var bgColor = getSwitchSet("bgColor");
+    var bgColor = getRadioSet("bgColor");
     var bgRed = getNumSet("bgRed", 0, 255);
     var bgGreen = getNumSet("bgGreen", 0, 255);
     var bgBlue = getNumSet("bgBlue", 0, 255);
@@ -468,7 +514,7 @@ function saveCfg() { //保存设置
     var fonts = getRadioSet("fonts");
     var customFonts = getTextSet("fonts");
     var textTrans = getNumSet("textTrans", 0, 100)/100;
-    var textColor = getSwitchSet("textColor");
+    var textColor = getRadioSet("textColor");
     var textRed = getNumSet("textRed", 0, 255);
     var textGreen = getNumSet("textGreen", 0, 255);
     var textBlue = getNumSet("textBlue", 0, 255);
@@ -489,6 +535,7 @@ function saveCfg() { //保存设置
     var bdRed = getNumSet("bdRed", 0, 255);
     var bdGreen = getNumSet("bdGreen", 0, 255);
     var bdBlue = getNumSet("bdBlue", 0, 255);
+    var noBdBgBlend = getSwitchSet("noBdBgBlend");
     var bdCompel = getSwitchSet("bdCompel");
     var isWidthEnable = getSwitchSet("width");
     var widthCustom = getNumSet("widthCustom", 200, "n");
@@ -532,6 +579,7 @@ function saveCfg() { //保存设置
         bdRed,
         bdGreen,
         bdBlue,
+        noBdBgBlend,
         bdCompel,
         isWidthEnable,
         widthCustom,
@@ -553,13 +601,22 @@ function saveCfg() { //保存设置
     disableSaveCancel(true);
 };
 
-function cancel() {
+async function cancel() {
     var readCfg = JSON.parse(localStorage.getItem("LyricBarBlurSettings"));
     var d = document;
     d.querySelector("#blurSetBox").value = readCfg.blur;
     d.querySelector("#blurCompelSwitch").checked = readCfg.blurCompel;
     d.querySelector("#bgTransSetBox").value = readCfg.bgTrans*100;
-    d.querySelector("#bgColorSwitch").checked = readCfg.bgColor;
+    var bgc = readCfg.bgColor;
+    if (bgc == "default") {
+        d.querySelector("#bgColorDefaultRadio").checked = true;
+    }
+    if (bgc == "defaultWom") {
+        d.querySelector("#bgColorDefaultWomRadio").checked = true;
+    }
+    if (bgc == "custom") {
+        d.querySelector("#bgColorCustomRadio").checked = true;
+    }
     d.querySelector("#bgRedSetBox").value = readCfg.bgRed;
     d.querySelector("#bgGreenSetBox").value = readCfg.bgGreen;
     d.querySelector("#bgBlueSetBox").value = readCfg.bgBlue;
@@ -576,7 +633,16 @@ function cancel() {
     }
     d.querySelector("#fontsSetBox").value = readCfg.customFonts;
     d.querySelector("#textTransSetBox").value = readCfg.textTrans*100;
-    d.querySelector("#textColorSwitch").checked = readCfg.textColor;
+    var textc = readCfg.textColor;
+    if (textc == "default") {
+        d.querySelector("#textColorDefaultRadio").checked = true;
+    }
+    if (textc == "theme") {
+        d.querySelector("#textColorThemeRadio").checked = true;
+    }
+    if (textc == "custom") {
+        d.querySelector("#textColorCustomRadio").checked = true;
+    }
     d.querySelector("#textRedSetBox").value = readCfg.textRed;
     d.querySelector("#textGreenSetBox").value = readCfg.textGreen;
     d.querySelector("#textBlueSetBox").value = readCfg.textBlue;
@@ -615,6 +681,7 @@ function cancel() {
     d.querySelector("#bdRedSetBox").value = readCfg.bdRed;
     d.querySelector("#bdGreenSetBox").value = readCfg.bdGreen;
     d.querySelector("#bdBlueSetBox").value = readCfg.bdBlue;
+    d.querySelector("#noBdBgBlendSwitch").checked = readCfg.noBdBgBlend;
     d.querySelector("#bdCompelSwitch").checked = readCfg.bdCompel;
     d.querySelector("#widthSwitch").checked = readCfg.isWidthEnable;
     d.querySelector("#widthCustomSetBox").value = readCfg.widthCustom;
@@ -635,47 +702,51 @@ function resetCfg() { //重置设置
     resetStyles();
 };
 
-function backToDefault() {
+async function backToDefault() {
     resetCfg();
     cancel();
 }
 
-plugin.onAllPluginsLoaded(() => { //插件初始化
+plugin.onAllPluginsLoaded(async () => { //插件初始化
     if (!readCfg) { //初始化设置
         resetCfg();
         localStorage.setItem("isLyricBarBlurEnable", true);
     };
+    await betterncm.utils.waitForElement(".lyric-bar-inner"); //等待LyricBar加载完毕，否则一开始Rnp字体不生效
     //初始化样式
     crStyle.setAttribute("id", "LyricBarBlurStyles");
-    resetStyles();
+    await resetStyles();
     document.head.appendChild(crStyle);
 });
 
-plugin.onConfig(() => {
+plugin.onConfig( () => {
+    if (!readCfg) { //初始化设置
+        var readCfg = cfgDefault;
+    };
     //设置读取
     try {
-        var blur = readCfg.blur
-        var bgTrans = readCfg.bgTrans*100
-        var bgRed = readCfg.bgRed
-        var bgGreen = readCfg.bgGreen
-        var bgBlue = readCfg.bgBlue
-        var textTrans = readCfg.textTrans*100
-        var textRed = readCfg.textRed
-        var textGreen = readCfg.textGreen
-        var textBlue = readCfg.textBlue
-        var textOlWidth = readCfg.textOlWidth
-        var textOlTrans = readCfg.textOlTrans*100
-        var textOlRed = readCfg.textOlRed
-        var textOlGreen = readCfg.textOlGreen
-        var textOlBlue = readCfg.textOlBlue
-        var padding = readCfg.padding
-        var bdWidth = readCfg.bdWidth
-        var bdTrans = readCfg.bdTrans*100
-        var bdRadius = readCfg.bdRadius
-        var bdRed = readCfg.bdRed
-        var bdGreen = readCfg.bdGreen
-        var bdBlue = readCfg.bdBlue
-        var widthCustom = readCfg.widthCustom
+        var blur = readCfg.blur;
+        var bgTrans = readCfg.bgTrans*100;
+        var bgRed = readCfg.bgRed;
+        var bgGreen = readCfg.bgGreen;
+        var bgBlue = readCfg.bgBlue;
+        var textTrans = readCfg.textTrans*100;
+        var textRed = readCfg.textRed;
+        var textGreen = readCfg.textGreen;
+        var textBlue = readCfg.textBlue;
+        var textOlWidth = readCfg.textOlWidth;
+        var textOlTrans = readCfg.textOlTrans*100;
+        var textOlRed = readCfg.textOlRed;
+        var textOlGreen = readCfg.textOlGreen;
+        var textOlBlue = readCfg.textOlBlue;
+        var padding = readCfg.padding;
+        var bdWidth = readCfg.bdWidth;
+        var bdTrans = readCfg.bdTrans*100;
+        var bdRadius = readCfg.bdRadius;
+        var bdRed = readCfg.bdRed;
+        var bdGreen = readCfg.bdGreen;
+        var bdBlue = readCfg.bdBlue;
+        var widthCustom = readCfg.widthCustom;
 
         if (readCfg.blurCompel) {
         var blurCompelSwitchCheck = "Checked";
@@ -684,9 +755,21 @@ plugin.onConfig(() => {
         if (readCfg.bgCompel) {
             var bgCompelSwitchCheck = "Checked";
         }
-        if (readCfg.bgColor) {
-            var bgColorSwitchCheck = "Checked";
+        var bgc = readCfg.bgColor;
+        var bgColorSetBoxDisable = "Disabled";
+        if (bgc == "defaultWom") {
+            var bgColorDefaultWomRadioCheck = "Checked";
+        } else if (bgc == "custom") {
+            var bgColorCustomRadioCheck = "Checked";
+            var bgColorSetBoxDisable = "";
         } else {
+            var bgColorDefaultRadioCheck = "Checked";
+        }
+        //v0.2配置兼容
+        if (bgc == true) {
+            var bgColorCustomRadioCheck = "Checked";
+        } else if (bgc == false) {
+            var bgColorDefaultRadioCheck = "Checked";
             var bgColorSetBoxDisable = "Disabled";
         }
 
@@ -703,11 +786,24 @@ plugin.onConfig(() => {
         } else {
             var fontsDefaultRadioCheck = "Checked";
         }
-        if (readCfg.textColor) {
-            var textColorSwitchCheck = "Checked";
+        var textc = readCfg.textColor;
+        var textColorSetBoxDisable = "Disabled";
+        if (textc == "theme") {
+            var textColorThemeRadioCheck = "Checked";
+        } else if (textc == "custom") {
+            var textColorCustomRadioCheck = "Checked";
+            var textColorSetBoxDisable = "";
         } else {
+            var textColorDefaultRadioCheck = "Checked";
+        }
+        //v0.2配置兼容
+        if (textc == true) {
+            var textColorCustomRadioCheck = "Checked";
+        } else if (textc == false) {
+            var textColorDefaultRadioCheck = "Checked";
             var textColorSetBoxDisable = "Disabled";
         }
+
         if (readCfg.textOl) {
             var textOlSwitchCheck = "Checked";
         } else {
@@ -726,6 +822,9 @@ plugin.onConfig(() => {
             var textOlColorSetBoxDisable = "Disabled";
         }
 
+        if (readCfg.noBdBgBlend) {
+            var noBdBgBlendSwitchCheck = "Checked";
+        }
         if (readCfg.bdCompel) {
             var bdCompelSwitchCheck = "Checked";
         }
@@ -768,17 +867,17 @@ plugin.onConfig(() => {
     } catch {
         //v0.1配置兼容
         try {
-            var blur = readCfg.blur
-            var bgTrans = readCfg.trans*100
-            var bgRed = readCfg.colorRed
-            var bgGreen = readCfg.colorGreen
-            var bgBlue = readCfg.colorBlue
+            var blur = readCfg.blur;
+            var bgTrans = readCfg.trans*100;
+            var bgRed = readCfg.colorRed;
+            var bgGreen = readCfg.colorGreen;
+            var bgBlue = readCfg.colorBlue;
             if (readCfg.blurCompel) {
                 var blurCompelSwitchCheck = "Checked";
             }
             
             if (readCfg.color) {
-                var bgColorSwitchCheck = "Checked";
+                var bgColorCustomRadioCheck = "Checked";
                 var bgColorSetBoxDisable = "";
             } else {
                 var bgColorSetBoxDisable = "Disabled";
@@ -787,46 +886,8 @@ plugin.onConfig(() => {
             if (readCfg.colorCompel) {
                 var bgCompelSwitchCheck = "Checked";
             }
-        } catch { //第一次加载插件时加载默认设置
-            var blur = 12
-            var bgTrans = 75
-            var bgRed = 0
-            var bgGreen = 120
-            var bgBlue = 215
-            var bgColorSetBoxDisable = "Disabled";
-        };
-        var textTrans = 100
-        var textRed = 255
-        var textGreen = 255
-        var textBlue = 255
-        var fontsDefaultRadioCheck = "Checked";
-        var fontsSetBoxDisable = "Disabled";
-        var defaultFont = `"华文彩云"`;
-        var customFonts = defaultFont.replaceAll("\"", "&quot;");
-        var textColorSetBoxDisable = "Disabled";
-        var textOlSetsDisable = "Disabled";
-        var textOlWayShadowRadioCheck = "Checked";
-        var textOlWidth = 0.5
-        var textOlTrans = 100
-        var textOlColorCustomRadioCheck = "Checked";
-        var textOlColorSetBoxDisable = "Disabled";
-        var textOlRed = 0
-        var textOlGreen = 0
-        var textOlBlue = 0
-        var padding = 0
-        var bdWidth = 1
-        var bdTrans = 5
-        var bdRadius = 12
-        var bdColorCustomRadioCheck = "Checked";
-        var bdRed = 255
-        var bdGreen = 255
-        var bdBlue = 255
-        //var bdColorSetBoxDisable = "Disabled";
-        var widthCustomSetBoxDisable = "Disabled";
-        var widthCustom = 400
-        var doNotHideWithoutLyricsSwitchCheck = "Checked";
-        var mdThemeFloatBtBarBugFixSwitchCheck = "Checked";
-    };
+        } catch {}
+    }
 
     //创建DOM
     let crCfgPage = document.createElement("div");
@@ -835,13 +896,17 @@ plugin.onConfig(() => {
     <style>
         #LyricBarBlurSettings {
             --lbbs-fg: var(--themeC1);
-            --lbbs-bg: rgba(var(--md-accent-color-bg-rgb, var(--ncm-bg-rgb)), .3);
-            --lbbs-bg-wot: rgba(var(--md-accent-color-bg-rgb, var(--ncm-bg-rgb)), 1);
+            --lbbs-bg: rgba(var(--md-accent-color-bg-rgb, var(--ncm-fg-rgb)), .3);
+            --lbbs-bg-wot: rgba(var(--md-accent-color-bg-rgb, var(--ncm-fg-rgb)), 1);
             color: var(--md-accent-color-secondary, var(--ncm-text));
             width: 420px;
             margin: 0 auto 120px 0;
             line-height: 45px;
             font-size: 16px;
+        }
+        body.ncm-light-theme #LyricBarBlurSettings {
+            --lbbs-bg: rgba(var(--md-accent-color-bg-rgb, var(--ncm-bg-rgb)), .3);
+            --lbbs-bg-wot: rgba(var(--md-accent-color-bg-rgb, var(--ncm-bg-rgb)), 1);
         }
 
         #LyricBarBlurSettings p {
@@ -1134,7 +1199,7 @@ plugin.onConfig(() => {
                 width: auto;
             }
             #LyricBarBlurSettings .middle {
-                max-height: 1500px;
+                max-height: 1600px;
             }
         }
         @media (min-width: 1750px) {
@@ -1142,7 +1207,7 @@ plugin.onConfig(() => {
                 width: 1275px;
             }
             #LyricBarBlurSettings .middle {
-                max-height: 1000px;
+                max-height: 1100px;
             }
         }
     </style>
@@ -1203,12 +1268,26 @@ plugin.onConfig(() => {
             <input class="button textBox" id="bgTransSetBox" type="number" step="1" placeholder="75" value="` + bgTrans + `"/>
             <p>%</p>
             <br />
+            <p>背景颜色</p>
+            <br />
+            <label class="radio">
+                <input type="radio" id="bgColorDefaultRadio" name="bgColor" value="default" ` + bgColorDefaultRadioCheck +`/>
+                <span class="slider button"></span>
+            </label>
+            <p>使用默认颜色</p>
+            <br />
+            <label class="radio">
+                <input type="radio" id="bgColorDefaultWomRadio" name="bgColor" value="defaultWom" ` + bgColorDefaultWomRadioCheck +`/>
+                <span class="slider button"></span>
+            </label>
+            <p>使用默认颜色(去除混色)</p>
+            <br />
             <div class="switchBinding">
-                <p>自定义背景颜色</p>
-                <label class="switch">
-                    <input id="bgColorSwitch" type="checkbox" ` + bgColorSwitchCheck + `/>
+                <label class="radio">
+                    <input type="radio" id="bgColorCustomRadio" name="bgColor" value="custom" ` + bgColorCustomRadioCheck +`/>
                     <span class="slider button"></span>
                 </label>
+                <p>自定义颜色</p>
                 <br />
                 <p style="color: #F00; text-shadow: 0 1px 10px #F00;">R</p>
                 <input class="button textBox" id="bgRedSetBox" type="number" step="1" placeholder="0" value="` + bgRed + `" ` + bgColorSetBoxDisable + `/>
@@ -1231,7 +1310,7 @@ plugin.onConfig(() => {
                 <input type="radio" id="fontsRnpRadio" name="fonts" value="rnp" ` + fontsRnpRadioCheck + `/>
                 <span class="slider button"></span>
             </label>
-            <p>使用RefinedNowPlaying内设置的字体(测试)</p>
+            <p>跟随RefinedNowPlaying的设置</p>
             <br />
             <div class="switchBinding">
                 <label class="radio">
@@ -1253,24 +1332,38 @@ plugin.onConfig(() => {
             </label>
         </div>
         <div class="parting"></div>
-            <p>文本不透明度(测试 · 不稳定)</p>  
+            <p>文本不透明度</p>  
             <br />
             <input class="button textBox" id="textTransSetBox" type="number" step="1" placeholder="100" value="` + textTrans + `"/>
             <p>%</p>
-            <br /> 
+            <br />
+            <p>文本颜色</p>
+            <br />
+            <label class="radio">
+                <input type="radio" id="textColorDefaultRadio" name="textColor" value="default" ` + textColorDefaultRadioCheck +`/>
+                <span class="slider button"></span>
+            </label>
+            <p>使用默认颜色</p>
+            <br />
+            <label class="radio">
+                <input type="radio" id="textColorThemeRadio" name="textColor" value="theme" ` + textColorThemeRadioCheck +`/>
+                <span class="slider button"></span>
+            </label>
+            <p>跟随主题色</p>
+            <br />
             <div class="switchBinding">
-                <p>自定义文本颜色</p>
-                <label class="switch">
-                    <input id="textColorSwitch" type="checkbox" ` + textColorSwitchCheck + `/>
+                <label class="radio">
+                    <input type="radio" id="textColorCustomRadio" name="textColor" value="custom" ` + textColorCustomRadioCheck +`/>
                     <span class="slider button"></span>
                 </label>
+                <p>自定义颜色</p>
                 <br />
                 <p style="color: #F00; text-shadow: 0 1px 10px #F00;">R</p>
-                <input class="button textBox" id="textRedSetBox" type="number" step="1" placeholder="255" value="` + textRed + `" ` + textColorSetBoxDisable + `/>
+                <input class="button textBox" id="textRedSetBox" type="number" step="1" placeholder="127" value="` + textRed + `" ` + textColorSetBoxDisable + `/>
                 <p style="color: #0F0; text-shadow: 0 1px 10px #0F0;">G</p>
-                <input class="button textBox" id="textGreenSetBox" type="number" step="1" placeholder="255" value="` + textGreen + `" ` + textColorSetBoxDisable + `/>
+                <input class="button textBox" id="textGreenSetBox" type="number" step="1" placeholder="127" value="` + textGreen + `" ` + textColorSetBoxDisable + `/>
                 <p style="color: #00F; text-shadow: 0 1px 10px #00F;">B</p>
-                <input class="button textBox" id="textBlueSetBox" type="number" step="1" placeholder="255" value="` + textBlue + `" ` + textColorSetBoxDisable + `/>
+                <input class="button textBox" id="textBlueSetBox" type="number" step="1" placeholder="127" value="` + textBlue + `" ` + textColorSetBoxDisable + `/>
             </div>
     </div>
     <div class="part switchBinding">
@@ -1345,7 +1438,7 @@ plugin.onConfig(() => {
             <div style="display: inline-block; margin-left: 60px;">
                 <p>边框不透明度</p>
                 <br />
-                <input class="button textBox" id="bdTransSetBox" type="number" step="1" placeholder="5" value="` + bdTrans + `"/>
+                <input class="button textBox" id="bdTransSetBox" type="number" step="1" placeholder="10" value="` + bdTrans + `"/>
                 <p>%</p>
             </div>
             <div style="display: inline-block;">
@@ -1367,13 +1460,13 @@ plugin.onConfig(() => {
                 <input type="radio" id="bdColorDefaultRadio" name="bdColor" value="default" ` + bdColorDefaultRadioCheck +`/>
                 <span class="slider button"></span>
             </label>
-            <p>使用主题色(不支持修改透明度咕咕咕)</p>
+            <p>跟随主题色(不支持修改透明度咕咕咕)</p>
             <br />
             <label class="radio">
                 <input type="radio" id="bdColorTextRadio" name="bdColor" value="text" ` + bdColorTextRadioCheck +`/>
                 <span class="slider button"></span>
             </label>
-            <p>使用文本色(也不支持修改透明度口古)</p>
+            <p>跟随文本色(也不支持修改透明度口古)</p>
             <br />
             <div class="switchBinding">
                 <label class="radio">
@@ -1383,12 +1476,17 @@ plugin.onConfig(() => {
                 <p>自定义颜色</p>
                 <br />
                 <p style="color: #F00; text-shadow: 0 1px 10px #F00;">R</p>
-                <input class="button textBox" id="bdRedSetBox" type="number" step="1" placeholder="255" value="` + bdRed + `" ` + bdColorSetBoxDisable + `/>
+                <input class="button textBox" id="bdRedSetBox" type="number" step="1" placeholder="127" value="` + bdRed + `" ` + bdColorSetBoxDisable + `/>
                 <p style="color: #0F0; text-shadow: 0 1px 10px #0F0;">G</p>
-                <input class="button textBox" id="bdGreenSetBox" type="number" step="1" placeholder="255" value="` + bdGreen + `" ` + bdColorSetBoxDisable + `/>
+                <input class="button textBox" id="bdGreenSetBox" type="number" step="1" placeholder="127" value="` + bdGreen + `" ` + bdColorSetBoxDisable + `/>
                 <p style="color: #00F; text-shadow: 0 1px 10px #00F;">B</p>
-                <input class="button textBox" id="bdBlueSetBox" type="number" step="1" placeholder="255" value="` + bdBlue + `" ` + bdColorSetBoxDisable + `/>
+                <input class="button textBox" id="bdBlueSetBox" type="number" step="1" placeholder="127" value="` + bdBlue + `" ` + bdColorSetBoxDisable + `/>
             </div>
+            <label class="switch">
+                <input id="noBdBgBlendSwitch" type="checkbox" ` + noBdBgBlendSwitchCheck + `/>
+                <span class="slider button"></span> 
+            </label>
+            <p>不混合背景色</p>
     </div>
     <div class="part">
         <p class="partTitle">杂项</p>
@@ -1446,7 +1544,7 @@ plugin.onConfig(() => {
     </div></div>
     <div class="center">
         <div class="part centerInner" style="font-size: 14px; line-height: 18px;">
-            <p>Version 0.2.7</p>
+            <p>Version 0.3.0</p>
             <input class="link" style="float: right;" type="button" onclick="betterncm.ncm.openUrl('https://github.com/Lukoning/LyricBarBlur')" value="插件源代码(GitHub)" />
             <br />
             <p>by Lukoning</p>
@@ -1489,6 +1587,6 @@ plugin.onConfig(() => {
         });
     }
 
-    console.log(crCfgPage)
+    console.log(crCfgPage);
     return crCfgPage;
 });
