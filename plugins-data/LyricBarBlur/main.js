@@ -1,4 +1,4 @@
-var readCfg = JSON.parse(localStorage.getItem("LyricBarBlurSettings"));
+let readCfg = JSON.parse(localStorage.getItem("LyricBarBlurSettings"));
 let crStyle = document.createElement("style");
 let cfgDefault = ({
     blur: 12,
@@ -35,6 +35,14 @@ let cfgDefault = ({
     bdBlue: 127,
     noBdBgBlend: true,
     bdCompel: false,
+    shadowX: 0,
+    shadowY: 1,
+    shadowBlur: 8,
+    shadowSpread: -4,
+    shadowTrans: 0.3,
+    shadowRed: 0,
+    shadowGreen: 0,
+    shadowBlue: 0,
     isWidthEnable: false,
     widthCustom: 400,
     centerOfBottom: false,
@@ -58,134 +66,137 @@ async function resetStyles() { //应用新设置
 
     let readCfg = JSON.parse(localStorage.getItem("LyricBarBlurSettings"));
 
-    var blur = readCfg.blur;
-    var bgTrans = readCfg.bgTrans;
+    let blur = readCfg.blur;
+    let bgTrans = readCfg.bgTrans;
     if (bgTrans == undefined || bgTrans == null || bgTrans == NaN) {
-        var bgTrans = readCfg.trans;
-        var bgRed = readCfg.colorRed;
-        var bgGreen = readCfg.colorGreen;
-        var bgBlue = readCfg.colorBlue;
+        bgTrans = readCfg.trans;
+        bgRed = readCfg.colorRed;
+        bgGreen = readCfg.colorGreen;
+        bgBlue = readCfg.colorBlue;
     } else {
-        var bgTrans = readCfg.bgTrans;
-        var bgRed = readCfg.bgRed;
-        var bgGreen = readCfg.bgGreen;
-        var bgBlue = readCfg.bgBlue;
+        bgTrans = readCfg.bgTrans;
+        bgRed = readCfg.bgRed;
+        bgGreen = readCfg.bgGreen;
+        bgBlue = readCfg.bgBlue;
     }
 
     if (readCfg.blurCompel) {
-        var isBlurCompel = "!important";
+        isBlurCompel = "!important";
     } else {
-        var isBlurCompel = "";
+        isBlurCompel = "";
     }
 
     if (readCfg.bgCompel || readCfg.colorCompel) {
-        var isBgCompel = "!important";
+        isBgCompel = "!important";
     } else {
-        var isBgCompel = "";
+        isBgCompel = "";
     }
 
     if (readCfg.textCompel) {
-        var isTextCompel = "!important";
+        isTextCompel = "!important";
     } else {
-        var isTextCompel = "";
+        isTextCompel = "";
     }
 
     if (readCfg.bdCompel) {
-        var isBdCompel = "!important";
+        isBdCompel = "!important";
     } else {
-        var isBdCompel = "";
+        isBdCompel = "";
     }
 
-    var cssLbTop = `
+    let cssLbTop = `
     .lyric-bar {
         --lbb-text-outline-width: ` + readCfg.textOlWidth + `px;
         --lbb-text-outline-color: rgba(` + readCfg.textOlRed + `, ` + readCfg.textOlGreen + `, ` + readCfg.textOlBlue + `, ` + readCfg.textOlTrans + `);
         opacity: 1 !important;
         transition: opacity .35s, all .5s !important;
     `;
-    var cssLbiTop = `
+    let cssLbiTop = `
     .lyric-bar-inner {
     `;
-    var cssLbiaTop = `
+    let cssLbiaTop = `
     .lyric-bar-inner * {
     `;
-    var cssBgDefault = ` 
+    let cssBgDefault = ` 
         background: linear-gradient(0deg, rgba(var(--md-accent-color-rgb, var(--ncm-fg-rgb)), ` + bgTrans/10 +`), rgba(var(--md-accent-color-rgb, var(--ncm-fg-rgb)), ` + bgTrans/10 +`)), rgba(var(--md-accent-color-bg-rgb, var(--ncm-bg-rgb)), ` + bgTrans +`) ` + isBgCompel + `;
     `;
-    var cssBgDefaultWom = ` 
+    let cssBgDefaultWom = ` 
         background: rgba(var(--md-accent-color-bg-rgb, var(--ncm-fg-rgb)), ` + bgTrans +`) ` + isBgCompel + `;
     `;
-    var cssBgDefaultWomAll = `
+    let cssBgDefaultWomAll = `
     body.ncm-light-theme .lyric-bar {
         background: rgba(var(--md-accent-color-bg-rgb, var(--ncm-bg-rgb)), ` + bgTrans +`) ` + isBgCompel + `;
     }
     `;
-    var cssBgCustom = `
+    let cssBgCustom = `
         background: rgba(` + bgRed + `,` + bgGreen + `,` + bgBlue + `,` + bgTrans +`) ` + isBgCompel + `;
     `;
-    var cssBgBlur = `
+    let cssBgBlur = `
         backdrop-filter: blur(` + blur + `px) ` + isBlurCompel + `;
     `;
     /*  一开始Rnp并不会加载，所以这里读取了Rnp的字体设置，并通过CSS应用。
      *  :not选择器的作用是判断Rnp播放页是否被加载，解决在Rnp内关闭自定义字体后，
      *  这里的设置仍被应用的问题。
      */ 
-    var cssFontsRnpAll = `
+    let cssFontsRnpAll = `
     body:not(.rnp-auto, .rnp-light, .rnp-dark) .lyric-bar-inner * {
         font-family: ` + localStorage.getItem("refined-now-playing-font-family").replace("[", "").replace("]", "") + `;
     }
     `;
-    var cssFontsCustomLbia = `
+    let cssFontsCustomLbia = `
         font-family: ` + readCfg.customFonts + `;
     `;
-    var cssTextTransLbi = `
+    let cssTextTransLbi = `
         opacity: ` + readCfg.textTrans + ` ` + isTextCompel + `;
     `;
-    var cssTextTheme = `
+    let cssTextTheme = `
         --lbb-custom-text-color: var(--themeC1);
     `;
-    var cssTextCustom = `
+    let cssTextCustom = `
         --lbb-custom-text-color: rgb(` + readCfg.textRed + `,` + readCfg.textGreen + `,` + readCfg.textBlue + `);
     `;
-    var cssTextCustomLbia = `
+    let cssTextCustomLbia = `
         --rnp-accent-color-shade-2: var(--lbb-custom-text-color) ` + isTextCompel + `;
         color: var(--lbb-custom-text-color) ` + isTextCompel + `;
     `;
-    var cssTextOlShadow = `
+    let cssTextOlShadow = `
         text-shadow:
             var(--lbb-text-outline-width) var(--lbb-text-outline-width) var(--lbb-text-outline-color),
             calc(var(--lbb-text-outline-width) * -1) var(--lbb-text-outline-width) var(--lbb-text-outline-color),
             calc(var(--lbb-text-outline-width) * -1) calc(var(--lbb-text-outline-width) * -1) var(--lbb-text-outline-color),
             var(--lbb-text-outline-width) calc(var(--lbb-text-outline-width) * -1) var(--lbb-text-outline-color);
     `;
-    var cssTextOlStroke = `
+    let cssTextOlStroke = `
         -webkit-text-stroke: var(--lbb-text-outline-width) var(--lbb-text-outline-color);
     `;
-    var cssWidth = `
+    let cssWidth = `
         --lyric-bar-width: ` + readCfg.widthCustom + `px !important;
     `;
-    var cssPadding = `
+    let cssPadding = `
         padding: ` + readCfg.padding + `px ` + isBdCompel + `;
     `;
-    var cssBdWidth = `
+    let cssBdWidth = `
         border: ` + readCfg.bdWidth + `px solid;
     `;
-    var cssBdDefault = `
+    let cssBdDefault = `
         border-color: var(--themeC1) ` + isBdCompel + `;
     `;
-    var cssBdText = `
+    let cssBdText = `
         border-color: var(--lbb-custom-text-color, var(--md-accent-color, var(--ncm-text)));
     `;
-    var cssBdCustom = `
+    let cssBdCustom = `
         border-color: rgba(` + readCfg.bdRed + `,` + readCfg.bdGreen + `,` + readCfg.bdBlue + `,` + readCfg.bdTrans +`) ` + isBdCompel + `;
     `;
-    var cssNoBdBgBlend = `
+    let cssNoBdBgBlend = `
         background-clip: padding-box;
     `;
-    var cssBdRadius = `
+    let cssBdRadius = `
         border-radius: ` + readCfg.bdRadius + `px ` + isBdCompel + `;
     `;
-    var cssCobAll = `
+    let cssShadow = `
+        box-shadow: ` + readCfg.shadowX + `px ` + readCfg.shadowY + `px ` + readCfg.shadowBlur + `px ` + readCfg.shadowSpread + `px rgba(` + readCfg.shadowRed + `,` + readCfg.shadowGreen + `,` + readCfg.shadowBlue + `,` + readCfg.shadowTrans +`);
+    `;
+    let cssCobAll = `
     .lyric-bar {
         top: unset !important;
         bottom: calc(var(--bottombar-height, 72px) + var(--bottombar-elevation, 0px)) !important;
@@ -198,19 +209,19 @@ async function resetStyles() { //应用新设置
         bottom: calc(var(--bottombar-height, 72px) + var(--bottombar-elevation, 0px) + 10px) !important;
     }
     `;
-    var cssDnhwolAll = `
+    let cssDnhwolAll = `
     .lyric-bar.no-lyrics {
         opacity: 1 !important; 
         pointer-events: auto;
     }
     `;
-    var cssLbMl3 = `
+    let cssLbMl3 = `
         height: calc(var(--lyric-bar-height)*3);
     `;
-    var cssWeltLeftRight = `
+    let cssWeltLeftRight = `
         width: clamp(200px, 100%, 100vw - var(--sidebar-width, 199px) - (2px * ` + readCfg.bdWidth + `px)) !important; 
     `;
-    var cssWlrFloatBtBarAll = `
+    let cssWlrFloatBtBarAll = `
     body.floating-bottombar .lyric-bar {
         right: calc(50vw - var(--bottombar-width)/2) !important;
         left: calc(50vw - var(--bottombar-width)/2) !important;
@@ -220,7 +231,7 @@ async function resetStyles() { //应用新设置
         right: calc(10px + var(--extra-pos-margin, 0px)) !important;
     }
     `;
-    var cssWlrAndCobFloatBtBarAll = `
+    let cssWlrAndCobFloatBtBarAll = `
     body.floating-bottombar:not(.mq-playing) #main-player, body.floating-bottombar:not(.mq-playing) .m-player-fm, body.floating-bottombar:not(.mq-playing) #main-player .prg, body.floating-bottombar:not(.mq-playing) .m-player-fm .prg {
         border-top-left-radius: 0 !important;
         border-top-right-radius: 0 !important;
@@ -232,113 +243,113 @@ async function resetStyles() { //应用新设置
         border-top-right-radius: 0 !important;
     }
     `;
-    var cssWlrOrCobFloatBtBar = `
+    let cssWlrOrCobFloatBtBar = `
         right: calc(1px + var(--extra-pos-margin, 0px)) !important;
         left: calc(var(--leftbar-width, 199px) + var(--extra-pos-margin, 0px)) !important;
     `;
-    var cssNoFadeLyrics = `
+    let cssNoFadeLyrics = `
         --mask-image: unset !important;
     `;
-    var cssMdThemeFloatBtBarBugFixAll = `
+    let cssMdThemeFloatBtBarBugFixAll = `
     body.floating-bottombar .lyric-bar.posx-left {
         left: max(calc(var(--leftbar-width, 199px) + 15px + var(--extra-pos-margin, 0px)), calc(50vw - var(--bottombar-width)/2));
     }
     `;
-    var css0 = `
+    let css0 = `
     body.rnp-shadow.rnp-text-glow .lyric-bar, body.rnp-text-glow.rnp-text-glow .lyric-bar {
         --rnp-drop-shadow: drop-shadow(0px 4px 5px rgba(var(--rnp-accent-color-shade-2-rgb), 0.27)) !important;
     }
     `;
-    var cssEnd = `
+    let cssEnd = `
     }
     `;
 
-    var bgc = readCfg.bgColor;
-    var textc = readCfg.textColor;
-    var olw = readCfg.textOlWay;
-    var bdc = readCfg.bdColor;
-    var f = readCfg.fonts;
+    let bgc = readCfg.bgColor;
+    let textc = readCfg.textColor;
+    let olw = readCfg.textOlWay;
+    let bdc = readCfg.bdColor;
+    let f = readCfg.fonts;
 
-    var cssIn = cssLbTop + cssBgBlur + cssPadding + cssBdRadius;
+    let cssIn = cssLbTop + cssBgBlur + cssPadding + cssBdRadius + cssShadow;
 
     if (readCfg.bgColor || readCfg.color) {
-        var cssIn = cssIn + cssBgCustom;
+        cssIn = cssIn + cssBgCustom;
     } else {
-        var cssIn = cssIn + cssBgDefault;
+        cssIn = cssIn + cssBgDefault;
     }
 
     if (bgc == "default") {
-        var cssIn = cssIn + cssBgDefault;
+        cssIn = cssIn + cssBgDefault;
     }
     if (bgc == "defaultWom") {
-        var cssIn = cssIn + cssBgDefaultWom;
+        cssIn = cssIn + cssBgDefaultWom;
     }
     if (bgc == "custom") {
-        var cssIn = cssIn + cssBgCustom;
+        cssIn = cssIn + cssBgCustom;
     }
 
     if (textc == "theme") {
-        var cssIn = cssIn + cssTextTheme;
+        cssIn = cssIn + cssTextTheme;
     }
     if (textc == "custom") {
-        var cssIn = cssIn + cssTextCustom;
+        cssIn = cssIn + cssTextCustom;
     }
 
     if (readCfg.textOl) {
         if (olw == "shadow") {
-            var cssIn = cssIn + cssTextOlShadow;
+            cssIn = cssIn + cssTextOlShadow;
         } 
         if (olw == "stroke") {
-            var cssIn = cssIn + cssTextOlStroke;
+            cssIn = cssIn + cssTextOlStroke;
         }
         console.log(olw);
     }
 
-    var cssIn = cssIn + cssBdWidth;
+    cssIn = cssIn + cssBdWidth;
     if (bdc == "default") {
-        var cssIn = cssIn + cssBdDefault;
+        cssIn = cssIn + cssBdDefault;
     }
     if (bdc == "text") {
-        var cssIn = cssIn + cssBdText;
+        cssIn = cssIn + cssBdText;
     }
     if (bdc == "custom") {
-        var cssIn = cssIn + cssBdCustom;
+        cssIn = cssIn + cssBdCustom;
     }
 
     if (readCfg.noBdBgBlend) {
-        var cssIn = cssIn + cssNoBdBgBlend;
+        cssIn = cssIn + cssNoBdBgBlend;
     }
 
     if (readCfg.isWidthEnable) {
-        var cssIn = cssIn + cssWidth;
+        cssIn = cssIn + cssWidth;
     }
 
     if (readCfg.multiline3) {
-        var cssIn = cssIn + cssLbMl3 + ``;
+        cssIn = cssIn + cssLbMl3 + ``;
     }
 
     if (readCfg.weltLeftRight) {
-        var cssIn = cssIn + cssWeltLeftRight;
+        cssIn = cssIn + cssWeltLeftRight;
     }
 
     if (readCfg.weltLeftRight || readCfg.centerOfBottom) {
-        var cssIn = cssIn + cssWlrOrCobFloatBtBar;
+        cssIn = cssIn + cssWlrOrCobFloatBtBar;
     }
 
     if (readCfg.noFadeLyrics) {
-        var cssIn = cssIn + cssNoFadeLyrics;
+        cssIn = cssIn + cssNoFadeLyrics;
     }
 
-    var cssIn = cssIn + cssEnd;
-    var cssIn = cssIn + cssLbiTop;
+    cssIn = cssIn + cssEnd;
+    cssIn = cssIn + cssLbiTop;
 
-    var cssIn = cssIn + cssTextTransLbi;
+    cssIn = cssIn + cssTextTransLbi;
 
-    var cssIn = cssIn + cssEnd;
-    var cssIn = cssIn + cssLbiaTop;
+    cssIn = cssIn + cssEnd;
+    cssIn = cssIn + cssLbiaTop;
 
     if (textc == "theme" || textc == "custom") {
-        var cssIn = cssIn + cssTextCustomLbia;
+        cssIn = cssIn + cssTextCustomLbia;
     }
 
     try {
@@ -354,39 +365,39 @@ async function resetStyles() { //应用新设置
     } catch { console.log("LyricBarBlur classList edit fail"); }
 
     if (f == "custom") {
-        var cssIn = cssIn + cssFontsCustomLbia;
+        cssIn = cssIn + cssFontsCustomLbia;
     }
 
-    var cssIn = cssIn + cssEnd;
+    cssIn = cssIn + cssEnd;
 
     //读取Rnp设置
     if (f == "rnp" && localStorage.getItem("refined-now-playing-custom-font") == "true") {
-        var cssIn = cssIn + cssFontsRnpAll;
+        cssIn = cssIn + cssFontsRnpAll;
         console.log("oh yes");
     }
 
     if (bgc == "defaultWom") {
-        var cssIn = cssIn + cssBgDefaultWomAll;
+        cssIn = cssIn + cssBgDefaultWomAll;
     }
 
     if (readCfg.centerOfBottom) {
-        var cssIn = cssIn + cssCobAll;
+        cssIn = cssIn + cssCobAll;
     }
 
     if (readCfg.doNotHideWithoutLyrics) {
-        var cssIn = cssIn + cssDnhwolAll;
+        cssIn = cssIn + cssDnhwolAll;
     }
 
     if (readCfg.weltLeftRight) {
-        var cssIn = cssIn + cssWlrFloatBtBarAll;
+        cssIn = cssIn + cssWlrFloatBtBarAll;
     }
 
     if (readCfg.weltLeftRight && readCfg.centerOfBottom) {
-        var cssIn = cssIn + cssWlrAndCobFloatBtBarAll;
+        cssIn = cssIn + cssWlrAndCobFloatBtBarAll;
     }
 
     if (readCfg.mdThemeFloatBtBarBugFix) {
-        var cssIn = cssIn + cssMdThemeFloatBtBarBugFixAll;
+        cssIn = cssIn + cssMdThemeFloatBtBarBugFixAll;
     }
 
     try {
@@ -411,14 +422,14 @@ async function disableSaveCancel(onoff) {
 
 
 async function onOffAnySets() {
-    var allBinding = document.querySelectorAll(".switchBinding");
-    var bindingInput = document.querySelectorAll(".switchBinding:not(.part) > label:nth-of-type(1) input, .switchBinding .partTitle + div > label:nth-of-type(1) input");
+    let allBinding = document.querySelectorAll(".switchBinding");
+    let bindingInput = document.querySelectorAll(".switchBinding:not(.part) > label:nth-of-type(1) input, .switchBinding .partTitle + div > label:nth-of-type(1) input");
     if (allBinding.length != bindingInput.length) {
         console.warn("LyricBarBlurSettings WARNING: allBinding.length != bindingInput.length");
     }
     for (n = 0; n < allBinding.length; n++) { try{
-        var allInput = allBinding[n].querySelectorAll("input");
-        var isChecked = bindingInput[n].checked;
+        let allInput = allBinding[n].querySelectorAll("input");
+        let isChecked = bindingInput[n].checked;
         if (bindingInput[n].disabled) {
             for (i = 1; i < allInput.length; i++) {
                 allInput[i].disabled = true;
@@ -431,8 +442,8 @@ async function onOffAnySets() {
     } catch (err) { console.error(err + n); }}
 }
 async function onOffAllSets() {
-    var isChecked = document.querySelector("#mainSwitch").checked;
-    var allInput = document.querySelectorAll("input");
+    let isChecked = document.querySelector("#mainSwitch").checked;
+    let allInput = document.querySelectorAll("input");
     for (i = 0; i < allInput.length; i++) {
         allInput[i].disabled = !isChecked;
     }
@@ -454,14 +465,14 @@ async function saveCfg() { //保存设置
     //获取纯数字设置
     function getNumSet(name, min, max) {
         let bName = name + "SetBox";
-        var set = document.getElementById(bName).value;
+        let set = document.getElementById(bName).value;
 
         //对字符串进行处理
         if (set == "undefined" || set == "null" || set == "") {
-            var set = document.getElementById(bName).placeholder;
+            set = document.getElementById(bName).placeholder;
         };
         //转换为数字
-        var setNum = set*1;
+        let setNum = set*1;
         //检查合法值
         if (min != "n" && setNum < min) {
             setNum = min;
@@ -477,10 +488,10 @@ async function saveCfg() { //保存设置
     //获取文本设置
     function getTextSet(name) {
         let bName = name + "SetBox";
-        var set = document.getElementById(bName).value;
+        let set = document.getElementById(bName).value;
 
         if (set == "undefined" || set == "null" || set == "") {
-            var set = document.getElementById(bName).placeholder;
+            set = document.getElementById(bName).placeholder;
         };
         return set;
     };
@@ -488,65 +499,71 @@ async function saveCfg() { //保存设置
     //获取开关设置
     function getSwitchSet(name) {
         let sName = name + "Switch";
-        var set = document.getElementById(sName).checked;
-        return set;
+        return document.getElementById(sName).checked;
     };
 
     //获取单选项设置
     function getRadioSet(name) {
-        var sets = document.getElementsByName(name);
+        let sets = document.getElementsByName(name);
         for (i = 0; i < sets.length; i++) {
             if(sets[i].checked) {
-                var set = sets[i].value;
+                return sets[i].value;
             }
         }
-        return set;
     };
 
-    var blur = getNumSet("blur", 0, "n");
-    var blurCompel = getSwitchSet("blurCompel");
-    var bgTrans = getNumSet("bgTrans", 0, 100)/100;
-    var bgColor = getRadioSet("bgColor");
-    var bgRed = getNumSet("bgRed", 0, 255);
-    var bgGreen = getNumSet("bgGreen", 0, 255);
-    var bgBlue = getNumSet("bgBlue", 0, 255);
-    var bgCompel = getSwitchSet("bgCompel");
-    var fonts = getRadioSet("fonts");
-    var customFonts = getTextSet("fonts");
-    var textTrans = getNumSet("textTrans", 0, 100)/100;
-    var textColor = getRadioSet("textColor");
-    var textRed = getNumSet("textRed", 0, 255);
-    var textGreen = getNumSet("textGreen", 0, 255);
-    var textBlue = getNumSet("textBlue", 0, 255);
-    var textOl = getSwitchSet("textOl");
-    var textOlWay = getRadioSet("textOlWay");
-    var textOlWidth = getNumSet("textOlWidth", 0, "n");
-    var textOlTrans = getNumSet("textOlTrans", 0, 100)/100;
-    var textOlColor = getRadioSet("textOlColor");
-    var textOlRed = getNumSet("textOlRed", 0, 255);
-    var textOlGreen = getNumSet("textOlGreen", 0, 255);
-    var textOlBlue = getNumSet("textOlBlue", 0, 255);
-    var textCompel = getSwitchSet("textCompel");
-    var padding = getNumSet("padding", 0, "n");
-    var bdWidth = getNumSet("bdWidth", 0, "n");
-    var bdTrans = getNumSet("bdTrans", 0, 100)/100;
-    var bdRadius = getNumSet("bdRadius", 0, "n");
-    var bdColor = getRadioSet("bdColor");
-    var bdRed = getNumSet("bdRed", 0, 255);
-    var bdGreen = getNumSet("bdGreen", 0, 255);
-    var bdBlue = getNumSet("bdBlue", 0, 255);
-    var noBdBgBlend = getSwitchSet("noBdBgBlend");
-    var bdCompel = getSwitchSet("bdCompel");
-    var isWidthEnable = getSwitchSet("width");
-    var widthCustom = getNumSet("widthCustom", 200, "n");
-    var centerOfBottom = getSwitchSet("centerOfBottom");
-    var doNotHideWithoutLyrics = getSwitchSet("doNotHideWithoutLyrics");
-    var multiline3 = getSwitchSet("multiline3");
-    var weltLeftRight = getSwitchSet("weltLeftRight");
-    var noFadeLyrics = getSwitchSet("noFadeLyrics");
-    var mdThemeFloatBtBarBugFix = getSwitchSet("mdThemeFloatBtBarBugFix");
+    let blur = getNumSet("blur", 0, "n");
+    let blurCompel = getSwitchSet("blurCompel");
+    let bgTrans = getNumSet("bgTrans", 0, 100)/100;
+    let bgColor = getRadioSet("bgColor");
+    let bgRed = getNumSet("bgRed", 0, 255);
+    let bgGreen = getNumSet("bgGreen", 0, 255);
+    let bgBlue = getNumSet("bgBlue", 0, 255);
+    let bgCompel = getSwitchSet("bgCompel");
+    let fonts = getRadioSet("fonts");
+    let customFonts = getTextSet("fonts");
+    let textTrans = getNumSet("textTrans", 0, 100)/100;
+    let textColor = getRadioSet("textColor");
+    let textRed = getNumSet("textRed", 0, 255);
+    let textGreen = getNumSet("textGreen", 0, 255);
+    let textBlue = getNumSet("textBlue", 0, 255);
+    let textOl = getSwitchSet("textOl");
+    let textOlWay = getRadioSet("textOlWay");
+    let textOlWidth = getNumSet("textOlWidth", 0, "n");
+    let textOlTrans = getNumSet("textOlTrans", 0, 100)/100;
+    let textOlColor = getRadioSet("textOlColor");
+    let textOlRed = getNumSet("textOlRed", 0, 255);
+    let textOlGreen = getNumSet("textOlGreen", 0, 255);
+    let textOlBlue = getNumSet("textOlBlue", 0, 255);
+    let textCompel = getSwitchSet("textCompel");
+    let padding = getNumSet("padding", 0, "n");
+    let bdWidth = getNumSet("bdWidth", 0, "n");
+    let bdTrans = getNumSet("bdTrans", 0, 100)/100;
+    let bdRadius = getNumSet("bdRadius", 0, "n");
+    let bdColor = getRadioSet("bdColor");
+    let bdRed = getNumSet("bdRed", 0, 255);
+    let bdGreen = getNumSet("bdGreen", 0, 255);
+    let bdBlue = getNumSet("bdBlue", 0, 255);
+    let noBdBgBlend = getSwitchSet("noBdBgBlend");
+    let bdCompel = getSwitchSet("bdCompel");
+    let shadowX = getNumSet("shadowX", "n", "n");
+    let shadowY = getNumSet("shadowY", "n", "n");
+    let shadowBlur = getNumSet("shadowBlur", 0, "n");
+    let shadowSpread = getNumSet("shadowSpread", "n", "n");
+    let shadowTrans = getNumSet("shadowTrans", 0, 100)/100;
+    let shadowRed = getNumSet("shadowRed", 0, 255);
+    let shadowGreen = getNumSet("shadowGreen", 0, 255);
+    let shadowBlue = getNumSet("shadowBlue", 0, 255);
+    let isWidthEnable = getSwitchSet("width");
+    let widthCustom = getNumSet("widthCustom", 200, "n");
+    let centerOfBottom = getSwitchSet("centerOfBottom");
+    let doNotHideWithoutLyrics = getSwitchSet("doNotHideWithoutLyrics");
+    let multiline3 = getSwitchSet("multiline3");
+    let weltLeftRight = getSwitchSet("weltLeftRight");
+    let noFadeLyrics = getSwitchSet("noFadeLyrics");
+    let mdThemeFloatBtBarBugFix = getSwitchSet("mdThemeFloatBtBarBugFix");
 
-    var cfgWillWrite = ({
+    let cfgWillWrite = ({
         blur,
         blurCompel,
         bgTrans,
@@ -581,6 +598,14 @@ async function saveCfg() { //保存设置
         bdBlue,
         noBdBgBlend,
         bdCompel,
+        shadowX,
+        shadowY,
+        shadowBlur,
+        shadowSpread,
+        shadowTrans,
+        shadowRed,
+        shadowGreen,
+        shadowBlue,
         isWidthEnable,
         widthCustom,
         centerOfBottom,
@@ -601,13 +626,17 @@ async function saveCfg() { //保存设置
     disableSaveCancel(true);
 };
 
-async function cancel() {
-    var readCfg = JSON.parse(localStorage.getItem("LyricBarBlurSettings"));
-    var d = document;
+async function cancel(cfg) {
+    let readCfg = cfg;
+    console.log(cfg);
+    if (cfg == undefined) {
+        readCfg = JSON.parse(localStorage.getItem("LyricBarBlurSettings"));
+    }
+    let d = document;
     d.querySelector("#blurSetBox").value = readCfg.blur;
     d.querySelector("#blurCompelSwitch").checked = readCfg.blurCompel;
     d.querySelector("#bgTransSetBox").value = readCfg.bgTrans*100;
-    var bgc = readCfg.bgColor;
+    let bgc = readCfg.bgColor;
     if (bgc == "default") {
         d.querySelector("#bgColorDefaultRadio").checked = true;
     }
@@ -621,7 +650,7 @@ async function cancel() {
     d.querySelector("#bgGreenSetBox").value = readCfg.bgGreen;
     d.querySelector("#bgBlueSetBox").value = readCfg.bgBlue;
     d.querySelector("#bgCompelSwitch").checked = readCfg.bgCompel;
-    var f = readCfg.fonts;
+    let f = readCfg.fonts;
     if (f == "default") {
         d.querySelector("#fontsDefaultRadio").checked = true;
     }
@@ -633,7 +662,7 @@ async function cancel() {
     }
     d.querySelector("#fontsSetBox").value = readCfg.customFonts;
     d.querySelector("#textTransSetBox").value = readCfg.textTrans*100;
-    var textc = readCfg.textColor;
+    let textc = readCfg.textColor;
     if (textc == "default") {
         d.querySelector("#textColorDefaultRadio").checked = true;
     }
@@ -647,7 +676,7 @@ async function cancel() {
     d.querySelector("#textGreenSetBox").value = readCfg.textGreen;
     d.querySelector("#textBlueSetBox").value = readCfg.textBlue;
     d.querySelector("#textOlSwitch").checked = readCfg.textOl;
-    var olw = readCfg.textOlWay;
+    let olw = readCfg.textOlWay;
     if (olw == "shadow") {
         d.querySelector("#textOlWayShadowRadio").checked = true;
     }
@@ -656,7 +685,7 @@ async function cancel() {
     }
     d.querySelector("#textOlWidthSetBox").value = readCfg.textOlWidth;
     d.querySelector("#textOlTransSetBox").value = readCfg.textOlTrans*100;
-    var olc = readCfg.textOlColor;
+    let olc = readCfg.textOlColor;
     if (olc == "custom") {
         d.querySelector("#textOlColorCustomRadio").checked = true;
     }
@@ -668,7 +697,7 @@ async function cancel() {
     d.querySelector("#bdWidthSetBox").value = readCfg.bdWidth;
     d.querySelector("#bdTransSetBox").value = readCfg.bdTrans*100;
     d.querySelector("#bdRadiusSetBox").value = readCfg.bdRadius;
-    var bdc = readCfg.bdColor;
+    let bdc = readCfg.bdColor;
     if (bdc == "default") {
         d.querySelector("#bdColorDefaultRadio").checked = true;
     }
@@ -683,6 +712,14 @@ async function cancel() {
     d.querySelector("#bdBlueSetBox").value = readCfg.bdBlue;
     d.querySelector("#noBdBgBlendSwitch").checked = readCfg.noBdBgBlend;
     d.querySelector("#bdCompelSwitch").checked = readCfg.bdCompel;
+    d.querySelector("#shadowXSetBox").value = readCfg.shadowX;
+    d.querySelector("#shadowYSetBox").value = readCfg.shadowY;
+    d.querySelector("#shadowBlurSetBox").value = readCfg.shadowBlur;
+    d.querySelector("#shadowSpreadSetBox").value = readCfg.shadowSpread;
+    d.querySelector("#shadowTransSetBox").value = readCfg.shadowTrans*100;
+    d.querySelector("#shadowRedSetBox").value = readCfg.shadowRed;
+    d.querySelector("#shadowGreenSetBox").value = readCfg.shadowGreen;
+    d.querySelector("#shadowBlueSetBox").value = readCfg.shadowBlue;
     d.querySelector("#widthSwitch").checked = readCfg.isWidthEnable;
     d.querySelector("#widthCustomSetBox").value = readCfg.widthCustom;
     d.querySelector("#centerOfBottomSwitch").checked = readCfg.centerOfBottom;
@@ -703,8 +740,8 @@ function resetCfg() { //重置设置
 };
 
 async function backToDefault() {
-    resetCfg();
-    cancel();
+    await cancel(cfgDefault);
+    disableSaveCancel(false);
 }
 
 plugin.onAllPluginsLoaded(async () => { //插件初始化
@@ -720,9 +757,9 @@ plugin.onAllPluginsLoaded(async () => { //插件初始化
 });
 
 plugin.onConfig( () => {
-    var readCfg = JSON.parse(localStorage.getItem("LyricBarBlurSettings"));
+    let readCfg = JSON.parse(localStorage.getItem("LyricBarBlurSettings"));
     if (!readCfg) { //如果读不到就使用初始设置
-        var readCfg = cfgDefault;
+        readCfg = cfgDefault;
     };
     //设置读取
     try {
@@ -747,8 +784,15 @@ plugin.onConfig( () => {
         var bdRed = readCfg.bdRed;
         var bdGreen = readCfg.bdGreen;
         var bdBlue = readCfg.bdBlue;
+        var shadowX = readCfg.shadowX;
+        var shadowY = readCfg.shadowY;
+        var shadowBlur = readCfg.shadowBlur;
+        var shadowSpread = readCfg.shadowSpread;
+        var shadowTrans = readCfg.shadowTrans*100;
+        var shadowRed = readCfg.shadowRed;
+        var shadowGreen = readCfg.shadowGreen;
+        var shadowBlue = readCfg.shadowBlue;
         var widthCustom = readCfg.widthCustom;
-
         if (readCfg.blurCompel) {
         var blurCompelSwitchCheck = "Checked";
         }
@@ -1203,7 +1247,7 @@ plugin.onConfig( () => {
                 width: auto;
             }
             #LyricBarBlurSettings .middle {
-                max-height: 1600px;
+                max-height: 2345px;
             }
         }
         @media (min-width: 1750px) {
@@ -1211,7 +1255,7 @@ plugin.onConfig( () => {
                 width: 1275px;
             }
             #LyricBarBlurSettings .middle {
-                max-height: 1100px;
+                max-height: 1520px;
             }
         }
     </style>
@@ -1248,10 +1292,10 @@ plugin.onConfig( () => {
         </div>
         <br />
         <div style="font-size: 14px; line-height: 16px;">
-            <p>注意: 模糊程度过高可能会导致背景闪烁。</p>
+            <p>注意: 模糊半径过高可能会导致背景闪烁。</p>
         </div>
         <div class="parting"></div>
-            <p>背景模糊程度</p>
+            <p>背景模糊半径</p>
             <br />
             <input class="button textBox" id="blurSetBox" type="number" step="1" placeholder="12" value="` + blur + `"/>
             <p>px</p>
@@ -1493,6 +1537,63 @@ plugin.onConfig( () => {
             <p>不混合背景色</p>
     </div>
     <div class="part">
+        <p class="partTitle">阴影</p>
+        <div class="parting"></div>
+            <div style="display: inline-block;">
+                <p>X轴偏移量(正右负左)</p>
+                <br />
+                <input class="button textBox" id="shadowXSetBox" type="number" step="1" placeholder="0" value="` + shadowX + `"/>
+                <p>px</p>
+            </div>
+            <div style="display: inline-block; margin-left: 24px;">
+                <p>Y轴偏移量(正下负上)</p>
+                <br />
+                <input class="button textBox" id="shadowYSetBox" type="number" step="1" placeholder="1" value="` + shadowY + `"/>
+                <p>px</p>
+            </div>
+            <div style="display: inline-block;">
+                <p>阴影模糊半径</p>
+                <br />
+                <input class="button textBox" id="shadowBlurSetBox" type="number" step="1" placeholder="8" value="` + shadowBlur + `"/>
+                <p>px</p>
+            </div>
+            <div style="display: inline-block; margin-left: 60px;">
+                <p>阴影扩散半径(负值内收)</p>
+                <br />
+                <input class="button textBox" id="shadowSpreadSetBox" type="number" step="1" placeholder="-4" value="` + shadowSpread + `"/>
+                <p>px</p>
+            </div>
+            <div style="display: inline-block;">
+                <p>阴影不透明度</p>
+                <br />
+                <input class="button textBox" id="shadowTransSetBox" type="number" step="1" placeholder="30" value="` + shadowTrans + `"/>
+                <p>%</p>
+            </div>
+            <br />
+            <p>阴影颜色</p>
+            <br /> <!---
+            <label class="radio">
+                <input type="radio" id="shadowColorNoneRadio" name="shadowColor" value="default" />
+                <span class="slider button"></span>
+            </label>
+            <p>不指定颜色(不推荐)</p>
+            <br /> --->
+            <div class="switchBinding">
+                <label class="radio">
+                    <input type="radio" id="shadowColorCustomRadio" name="shadowColor" value="custom" checked/>
+                    <span class="slider button"></span>
+                </label>
+                <p>自定义颜色</p>
+                <br />
+                <p style="color: #F00; text-shadow: 0 1px 10px #F00;">R</p>
+                <input class="button textBox" id="shadowRedSetBox" type="number" step="1" placeholder="0" value="` + shadowRed + `" />
+                <p style="color: #0F0; text-shadow: 0 1px 10px #0F0;">G</p>
+                <input class="button textBox" id="shadowGreenSetBox" type="number" step="1" placeholder="0" value="` + shadowGreen + `" />
+                <p style="color: #00F; text-shadow: 0 1px 10px #00F;">B</p>
+                <input class="button textBox" id="shadowBlueSetBox" type="number" step="1" placeholder="0" value="` + shadowBlue + `" />
+            </div>
+    </div>
+    <div class="part">
         <p class="partTitle">杂项</p>
         <div class="parting"></div>
             <div class="switchBinding">
@@ -1548,7 +1649,7 @@ plugin.onConfig( () => {
     </div></div>
     <div class="center">
         <div class="part centerInner" style="font-size: 14px; line-height: 18px;">
-            <p>Version 0.3.1</p>
+            <p>Version 0.3.2</p>
             <input class="link" style="float: right;" type="button" onclick="betterncm.ncm.openUrl('https://github.com/Lukoning/LyricBarBlur')" value="插件源代码(GitHub)" />
             <br />
             <p>by Lukoning</p>
@@ -1564,7 +1665,7 @@ plugin.onConfig( () => {
         crCfgPage.querySelector("#mainSwitch").checked = true;
     } else {
         crCfgPage.querySelector("#mainSwitch").checked = false;
-        var allInput = crCfgPage.querySelectorAll("input");
+        let allInput = crCfgPage.querySelectorAll("input");
         for (i = 0; i < allInput.length; i++) {
             allInput[i].disabled = true;
         }
@@ -1572,7 +1673,7 @@ plugin.onConfig( () => {
     }
 
     //创建监听器
-    var allSets = crCfgPage.querySelectorAll(".textBox, .switch, .radio");
+    let allSets = crCfgPage.querySelectorAll(".textBox, .switch, .radio");
     for (i = 1; i < allSets.length; i++) {
         allSets[i].addEventListener("change", () => {
             disableSaveCancel(false);
@@ -1580,11 +1681,13 @@ plugin.onConfig( () => {
     }
 
     crCfgPage.querySelector("#saveButton").addEventListener("click", saveCfg);
-    crCfgPage.querySelector("#cancelButton").addEventListener("click", cancel);
+    crCfgPage.querySelector("#cancelButton").addEventListener("click",  () => {
+        cancel();
+    });
     crCfgPage.querySelector("#resetButton").addEventListener("click", backToDefault);
     crCfgPage.querySelector("#mainSwitch").addEventListener("change", onOffAllSets);
 
-    var allInput = crCfgPage.querySelectorAll("input");
+    let allInput = crCfgPage.querySelectorAll("input");
     for (i = 0; i < allInput.length; i++) {
         allInput[i].addEventListener("click", () => {
             onOffAnySets();
