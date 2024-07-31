@@ -1,7 +1,7 @@
 const ヤマノススメ = "ヤマノススメ";
-const readCfg = JSON.parse(localStorage.getItem("LyricBarBlurSettings"));
-const crStyle = document.createElement("style");
-const cfgDefault = ({
+let readCfg = JSON.parse(localStorage.getItem("LyricBarBlurSettings"));
+let crStyle = document.createElement("style");
+let cfgDefault = ({
     blur: 12,
     blurCompel: false,
     bgTrans: 0.75,
@@ -67,6 +67,7 @@ async function resetStyles() { //应用新设置
 
     let lb = document.querySelector(".lyric-bar");
     let lbi = document.querySelector(".lyric-bar-inner");
+    let readCfg = JSON.parse(localStorage.getItem("LyricBarBlurSettings"));
 
     let blur = readCfg.blur;
     let bgTrans = readCfg.bgTrans;
@@ -566,7 +567,7 @@ async function saveCfg() { //保存设置
     });
     writeCfg(cfgWillWrite);
     if (s("width")) {
-        localStorage.setItem("lyric-bar-lyric-bar-width", widthCustom + "px");
+        localStorage.setItem("lyric-bar-lyric-bar-width", n("widthCustom", 200, "n") + "px");
     }
     console.log("LyricBarBlur Log: Settings saved");
     resetStyles();
@@ -691,7 +692,8 @@ async function backToDefault() {
 }
 
 let whatiii = 0;
-let abcabc = 0
+let abcabc = 0;
+let xhAiDi = -1;
 async function what() { //彩蛋嘿嘿
     let b = document.querySelector("#bugton")
     whatiii++
@@ -708,11 +710,11 @@ async function what() { //彩蛋嘿嘿
         b.value = "(怒)要给你点教训吗"
     }
     if (whatiii == 5) {
-        b.value = "不听是吧，你等着"
+        b.value = "不听是吧，你等着";
         setTimeout(() => {
-            document.querySelector("#LyricBarBlurSettings style").innerHTML = ""
-            whatiii = 5
-            abcabc = 123
+            document.querySelector("#LyricBarBlurSettings style").innerHTML = "";
+            whatiii = 5;
+            abcabc = 123;
             b.value = "怎么样？"
         }, 10000)
     }
@@ -734,32 +736,46 @@ async function what() { //彩蛋嘿嘿
         if (whatiii == 6) {
             b.value = "还戳呐？"
         }
-        if (whatiii == 7) {
-            b.value += "？油盐不进"
-        }
-        if (whatiii == 8) {
-            b.value = "你……"
-        }
-        if (whatiii == 9) {
-            b.value = "我要生气了"
-        }
-        if (whatiii == 10) {
-            b.value = "再戳我就要开大了！！！"
-        }
-        if (whatiii == 11) {
-            b.value = "最后警告。再戳就让你颠。"
-        }
-        if (whatiii == 12) {
-            b.value = "……10秒内，任务管理器准备好。别怪我没提醒你。"
-            localStorage.setItem(ヤマノススメ, true);
+        if (whatiii >= 7 && xhAiDi == -1) {
+            b.value = "再给你点惩罚（免罚请重载）"
             setTimeout(() => {
-                setInterval(() => {
-                    document.querySelector(".m-winctrl .icn.revert").click();
-                }, 111)
-                setInterval(() => {
-                    document.querySelector(".m-winctrl .icn.min").click();
-                }, 99)
+                location.href = "orpheus://orpheus/pub/app.html#/m2/mv/?id=22602294";
+                xhAiDi = setInterval(() => {
+                    location.href = "orpheus://orpheus/pub/app.html#/m2/mv/?id=22602294"
+                }, 30000);
+                whatiii = 7
             }, 10000)
+        }
+        if (xhAiDi != -1) {
+            if (whatiii == 8) {
+                b.value = "？油盐不进"
+            }
+            if (whatiii == 9) {
+                b.value = "你……"
+            }
+            if (whatiii == 10) {
+                b.value = "我要生气了"
+            }
+            if (whatiii == 11) {
+                b.value = "再戳我就要开大了！！！"
+            }
+            if (whatiii == 12) {
+                b.value = "最后警告。再戳就让你颠。"
+            }
+            if (whatiii == 13) {
+                b.value = "……10秒内，任务管理器准备好。别怪我没提醒你。"
+                localStorage.setItem(ヤマノススメ, true);
+                setTimeout(() => {
+                    setInterval(() => {
+                        location.href = "orpheus://orpheus/pub/app.html#/m2/mv/?id=22602294";
+                        document.querySelector(".m-winctrl .icn.revert").click();
+                        document.querySelector(".m-mvplayer video").volume = 1;
+                        document.querySelector(".m-mvplayer .volume a.z-silence").click();
+                        document.querySelector(".m-mvplayer > .bottom .play-pause.play").click();
+                        document.querySelector(".m-mvplayer div:not(.f-dn) > .replay").click();
+                    }, 200)
+                }, 10000)
+            }
         }
     }
 }
@@ -779,7 +795,7 @@ plugin.onAllPluginsLoaded(async () => { //插件初始化
                 <input type="button" value="ilibilib ->" onclick="window.open('https://www.bilibili.com/video/BV1xJ4m1M7RU')"/>
                 <input type="button" value="UOGUK ->" onclick="window.open('https://www.kugou.com/mvweb/html/mv_7jcwjca')"/>
             `;
-        }, 1000);
+        }, 5000);
     };
     await betterncm.utils.waitForElement(".lyric-bar-inner"); //等待LyricBar加载完毕，否则一开始Rnp字体不生效
     //初始化样式
@@ -1702,7 +1718,7 @@ plugin.onConfig(() => {
     </div></div>
     <div class="center">
         <div class="part centerInner" style="font-size: 14px; line-height: 18px;">
-            <p>Version 1.0.0</p>
+            <p>Version 1.0.2</p>
             <input class="link" style="float: right;" type="button" onclick="betterncm.ncm.openUrl('https://github.com/Lukoning/LyricBarBlur')" value="插件源代码(GitHub)" />
             <br />
             <p>by Lukoning</p>
