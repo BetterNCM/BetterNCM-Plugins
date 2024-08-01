@@ -1,0 +1,19 @@
+{
+    "manifest_version": 1,
+    "name": "RevisedSecondaryWindows", 
+    "slug": "RevisedSecondaryWindows", 
+    "type": "extension",
+    "version": "0.1.0",
+    "author": "Lukoning", 
+    "author_links": ["https://github.com/Lukoning"],
+    "description": "美化弹出式二级窗口和对话框(可搭配任意主题)",
+    "betterncm_version": ">=1.0.0",
+    "preview": "preview.png",
+    "injects": {
+        "Main": [
+            {
+                "file": "./main.js"
+            }
+        ]
+    }
+}
