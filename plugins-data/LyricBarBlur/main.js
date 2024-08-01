@@ -448,7 +448,7 @@ async function onOffAnySets() {
 }
 async function onOffAllSets() {
     let isChecked = document.querySelector("#mainSwitch").checked;
-    let allInput = document.querySelectorAll("input");
+    let allInput = document.querySelectorAll("#LyricBarBlurSettings input");
     for (i = 0; i < allInput.length; i++) {
         allInput[i].disabled = !isChecked;
     }
@@ -1718,7 +1718,7 @@ plugin.onConfig(() => {
     </div></div>
     <div class="center">
         <div class="part centerInner" style="font-size: 14px; line-height: 18px;">
-            <p>Version 1.0.2</p>
+            <p>Version 1.0.3</p>
             <input class="link" style="float: right;" type="button" onclick="betterncm.ncm.openUrl('https://github.com/Lukoning/LyricBarBlur')" value="插件源代码(GitHub)" />
             <br />
             <p>by Lukoning</p>
