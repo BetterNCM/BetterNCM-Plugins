@@ -77,11 +77,11 @@ async function refreshCss() {
         font-size: 17px;
         font-weight: 800;
     }
-    .u-icn-laycls svg, .u-arrlay .back svg { /*关闭/返回按钮svg*/
+    .u-icn-laycls svg, .u-arrlay .back svg, .m-chartlist .blacknote .cls svg { /*关闭/返回按钮svg*/
         fill: var(--rsw-text-color) !important;
         transition: .2s;
     }
-    .u-icn-laycls:hover svg, .u-arrlay .back:hover svg { /*关闭/返回按钮svg （鼠标移上）*/
+    .u-icn-laycls:hover svg, .u-arrlay .back:hover svg, .m-chartlist .blacknote .cls:hover svg { /*关闭/返回按钮svg （鼠标移上）*/
         fill: var(--rsw-accent-color) !important;
     }
     div.m-playlist .s-fc2, div.u-arrlay-msg .s-fc2 { /*高亮…链接？*/
@@ -401,7 +401,13 @@ async function refreshCss() {
         right: 16px;
         margin: 0;
         padding: 0;
-        animation: inChat-MsghdSet .3s 1;
+        animation: inChat-MsghdSet .3s .1s backwards 1;
+    }
+    body.material-you-theme div.u-arrlay .msghd .set { /*设置(MY)*/
+        top: 12px;
+        right: 12px;
+        width: 25px;
+        height: 25px;
     }
     div.u-arrlay-chat .m-chartlist { /*二级消息列表*/
         top: 49px;
@@ -420,8 +426,8 @@ async function refreshCss() {
         background: #0000;
     }
 
-        /*啥币网易云我去你的谁写的垃圾前端*/
-
+        /***该内容已被屏蔽***/
+        /*消息输入框文本超出BUG修复*/
     div.u-arrlay-msg textarea.edttxt {
         height: 57px !important;
     }
@@ -698,7 +704,7 @@ plugin.onConfig( () => {
     </style>
     <p>RevisedSecondaryWindows </p>
     <br />
-    <p>v0.1.0 by </p><input class="link" type="button" onclick="betterncm.ncm.openUrl('https://github.com/Lukoning')" value=" Lukoning " />
+    <p>v0.1.1 by </p><input class="link" type="button" onclick="betterncm.ncm.openUrl('https://github.com/Lukoning')" value=" Lukoning " />
     <br />
     <label class="switch">
         <input id="mainSwitch" type="checkbox" />
