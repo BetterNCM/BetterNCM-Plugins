@@ -8,7 +8,7 @@ window.addEventListener("storage", (s) => {
 });
 function refreshCss() {
     var rswCaches = JSON.parse(localStorage.getItem("RswColorCaches"));
-    var cssIn = `
+    var cssIn = `  /*某些class会在主题变化后变动*/
     :root { /*整体*/
         --rsw-accent-color: ` + rswCaches.accentColor + `;
         --rsw-text-color: ` + rswCaches.accentTextColor + `;
@@ -26,31 +26,28 @@ function refreshCss() {
         background: var(--rsw-bg-color);
         animation: inBody .5s 1;
     }
-    .eeeSoy, .bUIEtD { /*整体*/
+    #root > div { /*整体*/
         background: var(--rsw-bg-color);
     }
 
     ::-webkit-scrollbar { /*滚动条*/
         width: 3px !important;
     }
-    ::-webkit-scrollbar-thumb, .jvRHTA::-webkit-scrollbar-thumb { /*滚动条那条*/
+    ::-webkit-scrollbar-thumb, .select-type::-webkit-scrollbar-thumb { /*滚动条那条*/
         background: rgba(127, 127, 127, 0.4) !important;
     }
-    .bGRynX, .bdRgCN, .jrvDcK, .jsXnuR { /*文字颜色*/
+    .bGRynX, .bdRgCN, .name, h2, .select-input span { /*文字颜色*/
         color: var(--rsw-text-color) !important;
     }
-    .cshRjV, .dmpfrX, .iHbbmX, .gYTkUo, .bNDQnu, .jbbaVo, .lguzrg, .icxaqw { /*各种次要颜色…我服了加密class*/
+    #root > div > div > div:not(.bGRynX, .bdRgCN), span.title, h4, .item:not(.item-wrap *), .zone, .item-text, .select-item > span, .item-slider { /*各种次要颜色…*/
         color: #888 !important;
-    }
-    .hVeLEc { /*同上*/
-        background: #8888 !important;
     }
     .joUVp, .fPfSei { /*标题栏*/
         background: var(--rsw-trans-color);
         border-bottom: 1px solid var(--rsw-accent-color);
         box-shadow: inset 0 -5px 4px -5px var(--rsw-accent-color);
     }
-    .title { /*字面意思*/
+    div.title { /*“音效”*/
         display: none;
     }
     .sc-fzXfNS { /*导航栏*/
@@ -63,7 +60,7 @@ function refreshCss() {
             box-shadow: 0 0 4px 0 var(--rsw-accent-color);
         }
     }
-    .sc-fzXfNR { /*导航栏项*/
+    #root nav a { /*导航栏项*/
         color: var(--rsw-text-color);
         height: 44px;
         line-height: 36px;
@@ -73,12 +70,12 @@ function refreshCss() {
         border-top-right-radius: 8px;
         transition: .1s;
     }
-    .sc-fzXfNR:hover { /*导航栏项（鼠标移上）*/
+    #root nav a:hover { /*导航栏项（鼠标移上）*/
         color: var(--rsw-accent-color);
         line-height: 42px;
         background: var(--rsw-trans-color);
     }
-    .sc-fzXfNR.z-sel { /*导航栏选中项*/
+    #root nav a.z-sel { /*导航栏选中项*/
         height: 44px;
         line-height: 45px;
         color: var(--rsw-accent-color);
@@ -92,87 +89,85 @@ function refreshCss() {
         animation: navBarSelected .1s 1;
         transition: .1s;
     }
-    .sc-fzXfNR.z-sel:hover { /*导航栏选中项（鼠标移上）*/
+    #root nav a.z-sel:hover { /*导航栏选中项（鼠标移上）*/
         box-shadow:
             0 -5px 3px -4px var(--rsw-accent-color), /*上*/
             5px 0 3px -4px var(--rsw-accent-color), /*右*/
             -5px 0 3px -4px var(--rsw-accent-color); /*左*/
     }
-    .sc-fzXfNR.z-sel:active { /*导航栏选中项（鼠标按下）*/
+    #root nav a.z-sel:active { /*导航栏选中项（鼠标按下）*/
         box-shadow: #0000;
     }
-    .sc-fzXfNR.z-sel::before { /*导航栏选中项下划线*/
+    #root nav a.z-sel::before { /*导航栏选中项下划线*/
         display: none;
     }
-    .dlxBYs { /*开关栏*/
+    #root .dlxBYs { /*开关栏*/
         right: 50px;
     }
-    .dlxBYs .title { /*开关左侧小标题*/
+    span.title { /*开关左侧小标题*/
         cursor: default;
         overflow: unset;
         max-width: unset;
         margin-right: 5px;
     }
-    .sc-fzXfLO { /*开关*/
-    }
-    .sc-fzXfLO[aria-checked="true"] { /*开启的开关*/
+    div[type="button"][aria-checked="true"] { /*开启的开关*/
         filter: drop-shadow(0px 0px 2px var(--rsw-accent-color));
         background-color: var(--rsw-accent-color);
     }
-    .sc-fzXfLO::after { /*开关内部小球球*/
+    div[type="button"]::after { /*开关内部小球球*/
     }
-    .sc-fzXfLO[aria-checked="true"]::after { /*开关内部小球球（开启版）*/
+    div[type="button"][aria-checked="true"]::after { /*开关内部小球球（开启版）*/
         background-color: var(--rsw-bg-color);
     }
-    .dXSIVC { /*关闭按钮*/
+    #root > div > span { /*关闭按钮*/
         top: 16px;
         right: 16px;
     }
-    .ShUoP { /*关闭按钮svg*/
+    #root > div > span svg { /*关闭按钮svg*/
         fill: var(--rsw-text-color);
         transition: .2s;
     }
-    .dXSIVC:hover .ShUoP { /*关闭按钮svg （鼠标移上）*/
+    #root > div > span:hover svg { /*关闭按钮svg （鼠标移上）*/
         fill: var(--rsw-accent-color);
     }
-    .jrSfld { /*音效选块*/
+    #root .jrSfld { /*音效选块*/
         background: #0000;
         border-radius: 12px;
         box-shadow: 0 0 3px 0 var(--rsw-accent-color);
         transition: .1s;
     }
-    .jrSfld .name { /*音效选块->内部标题*/
+    #root .name { /*音效选块内部标题*/
         transition: .1s;
     }
-    .jrSfld:hover { /*音效选块（鼠标移上）*/
+    #root .jrSfld:hover { /*音效选块（鼠标移上）*/
         box-shadow: 0 0 2px 1px var(--rsw-accent-color);
     }
-    .jrSfld:active { /*音效选块（鼠标按下）*/
+    #root .jrSfld:active { /*音效选块（鼠标按下）*/
         border: 4px solid var(--rsw-accent-color);
         box-shadow: 0 0 10px 1px var(--rsw-accent-color);
         padding-top: 12px;
     }
-    .jrSfld.small:active { /*小号音效选块（鼠标按下）*/
+    #root .small:active { /*小号音效选块（鼠标按下）*/
         padding-top: 9px;
     }
-    .jrSfld:active .name { /*音效选块（鼠标按下）->内部标题*/
+    #root .jrSfld:active .name { /*音效选块（鼠标按下）->内部标题*/
         margin-bottom: 6px;
     }
-    .jrSfld.z-select { /*选中的音效块*/
+    #root .jrSfld.z-select { /*选中的音效块*/
         border-color: var(--rsw-accent-color);
         box-shadow: 0 0 5px 1px var(--rsw-accent-color);
     }
-    .jrSfld.z-select:hover { /*选中的音效块（鼠标移上）*/
+    #root .jrSfld.z-select:hover { /*选中的音效块（鼠标移上）*/
         box-shadow: 0 0 8px 1px var(--rsw-accent-color);
     }
-    .jrSfld.z-select .current { /*选中音效块的对勾（整个）*/
+    .z-select .current { /*选中音效块的对勾（整个）*/
         bottom: 28px;
     }
-    .jrSfld.z-select .current > svg { /*选中音效块的对勾（里面的svg）*/
+    .z-select .current > svg { /*选中音效块的对勾（里面的svg）*/
         fill: var(--rsw-accent-color) !important;
         display: none;
     }
-    .dfhGup, .select-input.sc-AykKC { /*按钮和下拉框*/
+    #root a:not(nav *), #root .select-input { /*按钮和下拉框*/
         color: var(--rsw-text-color);
         line-height: 30px;
         border-color: var(--rsw-accent-color);
@@ -181,36 +176,36 @@ function refreshCss() {
         transition: .1s;
         cursor: default;
     }
-    .dfhGup:hover, .select-input.sc-AykKC:hover { /*按钮和下拉框（鼠标移上）*/
+    #root div.select-input, #root div.select-type, .dDwpFP.dDwpFP.dDwpFP { /*统一宽度*/
+        width: 124px;
+    }
+    #root a:not(nav *):hover, #root div.select-input:hover { /*按钮和下拉框（鼠标移上）*/
         box-shadow: 0 0 6px 0 var(--rsw-accent-color);
         background: 0;
     }
-    .dfhGup:active, .select-input.sc-AykKC:active { /*按钮和下拉框（鼠标按下）*/
+    #root a:not(nav *):active, #root div.select-input:active { /*按钮和下拉框（鼠标按下）*/
         font-size: 11px;
         line-height: 23px;
         border-width: 4px;
         box-shadow: 0 0 8px 0 var(--rsw-accent-color);
     }
-    .select-input.sc-AykKC * { /*下拉框->所有子元素*/
+    #root div.select-input * { /*下拉框->所有子元素*/
         transition: .1s;
     }
-    .select-input.sc-AykKC:active span { /*下拉框（鼠标按下）->文字*/
+    #root div.select-input:active span { /*下拉框（鼠标按下）->文字*/
         font-size: 11px;
     }
-    .select-input.sc-AykKC svg.arr { /*下拉框->箭头*/
+    #root div.select-input svg.arr { /*下拉框->箭头*/
         fill: var(--rsw-text-color);
     }
-    .select-input.sc-AykKC:active svg.arr { /*下拉框（鼠标按下）->箭头*/
+    #root div.select-input:active svg.arr { /*下拉框（鼠标按下）->箭头*/
         width: 9px;
         margin-top: 8px;
     }
-    .dDwpFP.dDwpFP.dDwpFP { /*设备适配->下拉框*/
-        width: 124px;
-    }
-    .select-input .sc-AykKC.line { /*设备适配->下拉框细线*/
+    #root div.select-input .line { /*设备适配->下拉框细线*/
         display: none;
     }
-    .select-type.sc-AykKC { /*下拉菜单*/
+    #root div.select-type { /*下拉菜单*/
         top: 33px;
         display: block;
         border-color: var(--rsw-accent-color);
@@ -220,44 +215,49 @@ function refreshCss() {
         box-shadow: 0 0 3px 0 var(--rsw-accent-color);
         transition: .2s;
     }
-    .select-type.sc-AykKC:hover { /*下拉菜单（鼠标移上）*/
+    #root div.select-type:hover { /*下拉菜单（鼠标移上）*/
         box-shadow: 0 0 6px 0 var(--rsw-accent-color);
     }
-    .select-type.sc-AykKC.f-dn { /*下拉菜单（隐藏版）*/
+    #root div.select-type.f-dn { /*下拉菜单（隐藏版）*/
         top: 0;
         max-height: 0;
         opacity: 0;
     }
-    .select-type.top { /*下拉菜单（贴底版）*/
+    #root div.select-type.top { /*下拉菜单（贴底版）*/
         top: -125px;
     }
-    .select-type.top.f-dn { /*下拉菜单（贴底隐藏版）*/
+    #root div.select-type.top.f-dn { /*下拉菜单（贴底隐藏版）*/
         top: 30px;
         max-height: 0;
         opacity: 0;
     }
-    .eGEZql, .jYVDY { /*下拉选项*/
+    div.select-type div { /*下拉选项*/
         height: 30px;
         line-height: 30px;
         font-size: 13px;
         border-radius: 10px;
     }
-    .eGEZql:hover, .jYVDY:hover { /*下拉选项（鼠标移上）*/
+    div.select-type div:hover { /*下拉选项（鼠标移上）*/
+        background: var(--rsw-trans-color);
     }
-    .eGEZql span, .eGEZql.z-sel span, .eGEZql:hover span, .jYVDY span, .jYVDY.z-sel span, .jYVDY:hover span { /*下拉项文字*/
+    div.select-type div span, div.select-type div.z-sel span, div.select-type div:hover span{ /*下拉项文字*/
         color: var(--rsw-text-color);
         width: 100%;
     }
-    .hlactx.has { /*均衡器条条*/
+    .select-item .has, .item-slider .has { /*均衡器条条*/
         background: var(--rsw-accent-color);
     }
-    .hlactx.has.disabled { /*均衡器条条（禁用版）*/
+    .select-item .has.disabled, .item-slider .has.disabled { /*均衡器条条（禁用版）*/
         background: #888;
     }
-    .ctrl .sc-AykKC.val { /*条条的工具提示*/
+    .select-item > div, .item-slider > div { /*均衡器条背景*/
+        background: #8888 !important;
+    }
+    .has .ctrl .val { /*条条的工具提示*/
+        color: var(--rsw-bg-color);
         background: var(--rsw-accent-color);
     }
-    .ctrl .sc-AykKC.val::after { /*条条的工具提示之向下箭头*/
+    .has .ctrl .val::after { /*条条的工具提示之向下箭头*/
         border-color: var(--rsw-accent-color) #0000 #0000;
     }
     `;

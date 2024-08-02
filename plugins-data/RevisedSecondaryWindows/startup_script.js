@@ -11,17 +11,21 @@ async function rswLoad(i) {
     }
     if (document.querySelector("#root > .sc-AykKC")) {
         console.info("RswInfo: Audio effect");
-        fetch(BETTERNCM_FILES_PATH + "/plugins_dev/RevisedSecondaryWindows/audioEffect.js").then(v => v.text()).then(eval);
+        /* simple but rude */
+        fetch(BETTERNCM_FILES_PATH + "/plugins_dev/RevisedSecondaryWindows/audioEffect.js").then(v => v.text()).then(eval)
+        fetch(BETTERNCM_FILES_PATH + "/plugins_runtime/RevisedSecondaryWindows/audioEffect.js").then(v => v.text()).then(eval)
         return;
     }
     if (document.querySelector("#login_root")) {
         console.info("RswInfo: Login window");
         fetch(BETTERNCM_FILES_PATH + "/plugins_dev/RevisedSecondaryWindows/loginWindow.js").then(v => v.text()).then(eval);
+        fetch(BETTERNCM_FILES_PATH + "/plugins_runtime/RevisedSecondaryWindows/loginWindow.js").then(v => v.text()).then(eval);
         return;
     }
     if (document.querySelector(".zbar")) {
         console.info("RswInfo: Third-party login window");
         fetch(BETTERNCM_FILES_PATH + "/plugins_dev/RevisedSecondaryWindows/loginWindow3.js").then(v => v.text()).then(eval);
+        fetch(BETTERNCM_FILES_PATH + "/plugins_runtime/RevisedSecondaryWindows/loginWindow3.js").then(v => v.text()).then(eval);
         return;
     }
     console.error("RswError: Premature execution or this page is not an NCM page.");
