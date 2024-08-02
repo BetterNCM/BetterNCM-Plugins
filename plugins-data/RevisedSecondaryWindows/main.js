@@ -38,8 +38,17 @@ async function refreshCss() {
         --rsw-bg-color-trans: var(--rsw-bg-color);
     }
     body.rsw-relive > * { /*整体(ReLive)*/
-        --rsw-bg-color-trans: var(--layer-background);;
+        --rsw-bg-color-trans: var(--layer-background);
         --rsw-window-blur: blur(var(--layer-blur));
+    }
+    html[style*=MoTheme] > body > * { /*整体(MoTheme)*/
+        --rsw-bg-color: var(--MoTheme-popWindow_backgroundColor);
+        --rsw-bg-color-trans: var(--rsw-bg-color);
+        --rsw-window-blur: saturate(var(--MoTheme-popWindow_backgroundSaturate)) blur(var(--MoTheme-popWindow_backgroundBlur));
+        --rsw-window-bd: solid rgba(255, 255, 255, 0.2);
+    }
+    html[style*=MoTheme] > body.refined-now-playing.mq-playing > * { /*整体(MoTheme+RNP)*/
+        --rsw-window-blur: saturate(var(--MoTheme-popWindow_backgroundSaturate)) blur(var(--MoTheme-popWindow_backgroundBlur));
     }
 
     @keyframes inMask {
@@ -50,7 +59,7 @@ async function refreshCss() {
 
     div.m-mask, div.m-card + div[class^=auto-], div.m-layer + div[class^=auto-] { /*弹弹背景遮罩（参考了MY的写法）*/
         z-index: 9999 !important;
-        backdrop-filter: blur(8px) brightness(.9);
+        backdrop-filter: blur(2px) brightness(.9);
         animation: inMask .4s cubic-bezier(.68, .68, 0, 1) 1;
     }
     div.m-card ::-webkit-scrollbar, div.m-layer ::-webkit-scrollbar, div.m-playlist ::-webkit-scrollbar, div.m-schlist ::-webkit-scrollbar, div.u-arrlay-msg ::-webkit-scrollbar {
@@ -102,7 +111,7 @@ async function refreshCss() {
     div.m-card-sharecard li, div.m-layer-sharecard li, div.m-playlist li { /*各种li*/
         transition: .1s
     }
-    div.m-layer, div.m-card, div.m-playlist:not(body.material-you-theme *), div.m-schlist, div.m-userlist, div.m-skswitch, div.u-arrlay-msg {
+    div.m-layer, div.m-card, div.m-playlist:not(body.material-you-theme *, html[style*=MoTheme] *), div.m-schlist, div.m-userlist, div.m-skswitch, div.u-arrlay-msg {
     /*大家好，我们是弹窗卡列大家族*/
         color: var(--rsw-text-color) !important;
         background: var(--rsw-bg-color-trans) padding-box;
@@ -110,6 +119,11 @@ async function refreshCss() {
         border: 1px var(--rsw-window-bd);
         box-shadow: 0 6px 24px 0 var(--rsw-window-shadow-color);
         border-radius: 8px;
+        animation: inLayer .3s .1s backwards 1;
+    }
+    html[style*=MoTheme] div.m-layer, html[style*=MoTheme] div.m-card, html[style*=MoTheme] div.m-playlist {
+    /*MoTheme适配*/
+        box-shadow: 0 6px 24px 0 var(--rsw-window-shadow-color);
         animation: inLayer .3s .1s backwards 1;
     }
     div.m-playlist:not(body.material-you-theme *), div.m-schlist, div.m-userlist, div.m-skswitch, div.u-arrlay-msg { /*侧边弹出家族*/
@@ -267,6 +281,11 @@ async function refreshCss() {
     body.material-you-theme.refined-now-playing.mq-playing .m-playlist .listhd { /*弹卡正播列标题(MY+RNP)*/
         border-radius: 16px 16px 0 0;
     }
+    body.rsw-relive div.m-playlist.z-show { /*弹正播列(ReLive)*/
+        bottom: 0;
+        border-bottom-right-radius: 0;
+        border-bottom-left-radius: 0;
+    }
     div.m-playlist .listhd h2 { /*弹正播列标题文字*/
         line-height: 8px;
     }
@@ -285,7 +304,7 @@ async function refreshCss() {
     @keyframes inTopMenus {
         0% {
             top: -100%;
-            bottom: 150%;
+            bottom: 180%;
         }
         0%, 20% {
             box-shadow: none;
@@ -294,7 +313,7 @@ async function refreshCss() {
     @keyframes outTopMenus {
         100% {
             top: -100%;
-            bottom: 150%;
+            bottom: 180%;
         }
         100%, 80% {
             box-shadow: none;
@@ -309,7 +328,7 @@ async function refreshCss() {
         }
     }
 
-    div.m-schlist.f-dn, div.u-arrlay.u-arrlay-msg.f-dn { /*各种隐藏*/
+    div.m-schlist.f-dn, div.u-arrlay.u-arrlay-msg.f-dn:not(html[style*=MoTheme] *) { /*各种隐藏*/
         display: block !important;
         animation: outTopMenus .4s forwards cubic-bezier(1, 0, .68, .34) 1;
     }
@@ -339,7 +358,7 @@ async function refreshCss() {
 
     div.m-userlist { /*头像菜单*/
         top: 57px;
-        animation: inShitMenus .4s .2s backwards cubic-bezier(.34, .68, 0, 1) 1;
+        animation: inShitMenus .4s .1s backwards cubic-bezier(.34, .68, 0, 1) 1;
     }
 
     div.m-tool .skin .m-skswitch { /*皮肤*/
@@ -349,6 +368,22 @@ async function refreshCss() {
         animation: inShitMenus .4s cubic-bezier(.34, .68, 0, 1) 1;
     }
 
+    @keyframes inMsg-MoTheme {
+        0% {
+            transform: translate(0, -160%);
+        }
+        0%, 20% {
+            box-shadow: none;
+        }
+    }
+    @keyframes outMsg-MoTheme {
+        100% {
+            transform: translate(0, -160%);
+        }
+        100%, 80% {
+            box-shadow: none;
+        }
+    }
     @keyframes inChat-Msghd {
         0% {
             padding-left: 20px;
@@ -370,6 +405,13 @@ async function refreshCss() {
         bottom: 15%;
         padding: 0;
         animation: inTopMenus .4s cubic-bezier(.34, .68, 0, 1) 1;
+    }
+    html[style*=MoTheme] div.u-arrlay.u-arrlay-msg { /*消息(MoTheme)*/
+        animation: inMsg-MoTheme .4s cubic-bezier(.34, .68, 0, 1) 1;
+    }
+    html[style*=MoTheme] div.u-arrlay.u-arrlay-msg.f-dn { /*消息(隐藏)(MoTheme)*/
+        display: block !important;
+        animation: outMsg-MoTheme .4s forwards cubic-bezier(1, 0, .68, .34) 1;
     }
     div.u-arrlay-msg .sfrmhd, div.u-arrlay .msghd { /*消息的标题*/
         height: 20px;
@@ -404,10 +446,14 @@ async function refreshCss() {
         animation: inChat-MsghdSet .3s .1s backwards 1;
     }
     body.material-you-theme div.u-arrlay .msghd .set { /*设置(MY)*/
-        top: 12px;
-        right: 12px;
-        width: 25px;
-        height: 25px;
+        top: 6px;
+        right: 6px;
+        width: 36px;
+        height: 36px;
+    }
+    body.material-you-theme div.u-arrlay .msghd .set svg { /*设置内svg(MY)*/
+        width: 24px;
+        height: 24px;
     }
     div.u-arrlay-chat .m-chartlist { /*二级消息列表*/
         top: 49px;
@@ -437,12 +483,7 @@ async function refreshCss() {
     `;
     if(!JSON.parse(localStorage.getItem("isRswEnable"))) {
         console.log("RswLog: Disabled");
-        cssIn = `
-        div.m-schlist.f-dn { /*恢复默认*/
-            top: 66px;
-            bottom: 98px;
-        }
-        `;
+        cssIn = ``;
     }
     try {
         document.querySelector("#RswStyles").innerHTML = cssIn;
@@ -455,17 +496,19 @@ async function refreshCss() {
 }
 function loop() {
     let loopId = setInterval(() => {
-        let bodyStyle = getComputedStyle(document.body);
-        let accentColor = bodyStyle.getPropertyValue("--themeC1");
-        let accentTextColor = bodyStyle.getPropertyValue("--md-accent-color-secondary");
-        if (accentTextColor == "") {
-            accentTextColor = bodyStyle.getPropertyValue("--ncm-text");
+        function bodyStyle(s) {
+            return getComputedStyle(document.body).getPropertyValue(s);
         }
-        let bgColor = bodyStyle.getPropertyValue("--md-accent-color-bg-rgb");
+        let accentColor = bodyStyle("--themeC1");
+        let accentTextColor = bodyStyle("--md-accent-color-secondary");
+        if (accentTextColor == "") {
+            accentTextColor = bodyStyle("--ncm-text");
+        }
+        let bgColor = bodyStyle("--md-accent-color-bg-rgb");
         if (bgColor == "") {
-            bgColor = bodyStyle.getPropertyValue("--ncm-bg-rgb");
+            bgColor = bodyStyle("--ncm-bg-rgb");
             if (!document.querySelector("body.ncm-light-theme")) {
-                bgColor = bodyStyle.getPropertyValue("--ncm-fg-rgb");
+                bgColor = bodyStyle("--ncm-fg-rgb");
             }
         }
         let bgColorTrans = "rgba(" + bgColor + ", .7)";
@@ -704,7 +747,7 @@ plugin.onConfig( () => {
     </style>
     <p>RevisedSecondaryWindows </p>
     <br />
-    <p>v0.1.1 by </p><input class="link" type="button" onclick="betterncm.ncm.openUrl('https://github.com/Lukoning')" value=" Lukoning " />
+    <p>v0.1.2 by </p><input class="link" type="button" onclick="betterncm.ncm.openUrl('https://github.com/Lukoning')" value=" Lukoning " />
     <br />
     <label class="switch">
         <input id="mainSwitch" type="checkbox" />
