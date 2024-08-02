@@ -3,7 +3,7 @@
     "name": "RevisedSecondaryWindows", 
     "slug": "RevisedSecondaryWindows", 
     "type": "extension",
-    "version": "0.1.1",
+    "version": "0.1.2",
     "author": "Lukoning", 
     "author_links": ["https://github.com/Lukoning"],
     "description": "美化弹出式二级窗口和对话框(可搭配任意主题)",
