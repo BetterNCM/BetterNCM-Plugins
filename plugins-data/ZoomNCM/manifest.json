@@ -3,7 +3,7 @@
     "name": "ZoomNCM", 
     "slug": "ZoomNCM", 
     "type": "extension",
-    "version": "0.1.0",
+    "version": "0.1.1",
     "author": "Lukoning", 
     "author_links": ["https://github.com/Lukoning"],
     "description": "随意调整网易云的整体大小",

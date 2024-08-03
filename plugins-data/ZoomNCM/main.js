@@ -123,16 +123,21 @@ plugin.onConfig(() => {
         border: 0 solid;
     }
     </style>
-    <p>zoomNCM</p>
+    <p>ZoomNCM</p>
     <br />
-    <p>v0.1.0 by </p><input class="link" type="button" onclick="betterncm.ncm.openUrl('https://github.com/Lukoning')" value=" Lukoning " />
+    <p>v0.1.1 by </p><input class="link" type="button" onclick="betterncm.ncm.openUrl('https://github.com/Lukoning')" value=" Lukoning " />
     <br />
     <div style="line-height:45px;">
         <p>网易云缩放</p>
         <input class="button textBox" id="zoomSetBox" type="number" step="1" placeholder="100" value="` + readCfg.zoom*100 + `"/>
         <p>%（支持小数点）</p>
     </div>
-    <p style="color:yellow;text-shadow:0 0 4px red">警告：实时应用，请不要设置过大或过小的值</p>
+    <div style="color:yellow;text-shadow:0 0 4px red">
+        <p>警告：实时应用，请不要设置过大或过小的值</p>
+    </div>
+    <input class="link" type="button" onclick="betterncm.ncm.openUrl('https://github.com/Lukoning/ZoomNCM/wiki/%E5%85%B3%E4%BA%8E%E7%BC%A9%E6%94%BE%E6%95%B4%E5%A4%AA%E5%A4%A7%E6%88%96%E8%80%85%E5%A4%AA%E5%B0%8F%E5%90%8E%E7%9A%84%E8%A1%A5%E6%95%91%E6%8E%AA%E6%96%BD')" value=" 补救措施-> " />
+    <br /><br />
+    <p>本插件的缩放实现方式与StyleSnippet相同；网易云本身并没有对此做支持，可能出现各种奇奇怪怪的bug</p>
     `;
     crCfgPage.querySelector("#zoomSetBox").addEventListener("change", saveCfg);
     return crCfgPage;
