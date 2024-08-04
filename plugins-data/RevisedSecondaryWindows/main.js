@@ -1,9 +1,16 @@
 let crStyle = document.createElement("style");
+function q(n) {
+    return document.querySelector(n);
+}
+function qAll(n) {
+    return document.querySelectorAll(n);
+}
+
 async function refreshCss() {
     let rswCaches = JSON.parse(localStorage.getItem("RswColorCaches"));
     try {
-        let isReLive = /relive-theme/.test(document.querySelector("#StyleSnippetStyles").outerHTML);
-        if (isReLive) {
+        /*是否ReLive主题*/
+        if (/relive-theme/.test(q("#StyleSnippetStyles").outerHTML)) {
             document.body.classList.add("rsw-relive");
         }
     } catch {}
@@ -264,27 +271,28 @@ async function refreshCss() {
             box-shadow: none;
         }
     }
+    div.m-playlist.z-show { /*弹正播列*/
+        animation: inPlaylist .4s .1s backwards cubic-bezier(.34, .68, 0, 1) 1 !important;
+        transition: .5s cubic-bezier(.34, .68, 0, 1);
+    }
     div.m-playlist.z-show:not(body.material-you-theme *) { /*弹正播列(非MY)*/
-        /*width: 422px; 真是…*/
         top: max(10%, 75px);
         right: calc(6px + var(--extra-pos-margin, 0px));
         bottom: calc(var(--bottombar-height, 72px) + var(--bottombar-elevation, 0px) + 6px);
-        animation: inPlaylist .4s .1s backwards cubic-bezier(.34, .68, 0, 1) 1;
     }
     body.material-you-theme div.m-playlist.z-show { /*弹正播列(MY)*/
         border: 1px var(--rsw-window-bd);
-        animation: inPlaylist .4s .1s backwards cubic-bezier(.34, .68, 0, 1) 1;
+    }
+    body.rsw-relive div.m-playlist.z-show { /*弹正播列(ReLive)*/
+        bottom: 0;
+        border-bottom-right-radius: 0;
+        border-bottom-left-radius: 0;
     }
     body.material-you-theme .m-playlist .listhd { /*弹正播列标题(MY)*/
         border-radius: 16px 0 0 0;
     }
     body.material-you-theme.refined-now-playing.mq-playing .m-playlist .listhd { /*弹卡正播列标题(MY+RNP)*/
         border-radius: 16px 16px 0 0;
-    }
-    body.rsw-relive div.m-playlist.z-show { /*弹正播列(ReLive)*/
-        bottom: 0;
-        border-bottom-right-radius: 0;
-        border-bottom-left-radius: 0;
     }
     div.m-playlist .listhd h2 { /*弹正播列标题文字*/
         line-height: 8px;
@@ -297,8 +305,19 @@ async function refreshCss() {
     div.m-playlist .listsub .f-fl { /*弹正播列歌曲总数/心动模式*/
         transform: translateY(4px);
     }
-    div.m-playlist .listbd { /*弹正播列的列 为对齐标题而生*/
+    div.m-playlist .listbd { /*弹正播列的列*/
         top: 54px;
+        border-radius: 0 0 8px 8px;
+        overflow-y: overlay;
+    }
+    body.material-you-theme .m-playlist .listbd, body.rsw-relive .m-playlist .listbd { /*弹正播列的列(MY/ReLive)*/
+        border-radius: 0;
+    }
+    body.material-you-theme.floating-bottombar .m-playlist .listbd { /*弹正播列的列(MY浮动底栏)*/
+        border-radius: 0 0 12px 12px;
+    }
+    body.material-you-theme.refined-now-playing.mq-playing:not(.ignore-now-playing) .m-playlist .listbd { /*弹正播列的列(MY+RNP)*/
+        border-radius: 0 0 16px 16px;
     }
 
     @keyframes inTopMenus {
@@ -321,7 +340,7 @@ async function refreshCss() {
     }
     @keyframes inShitMenus {
         0% {
-            top: -1000px;
+            top: -500px;
         }
         0%, 20% {
             box-shadow: none;
@@ -355,10 +374,21 @@ async function refreshCss() {
     div.m-schlist .hotlst li:nth-child(1) > a:before, .m-schlist .hotlst li:nth-child(2) > a:before, .m-schlist .hotlst li:nth-child(3) > a:before { /*热搜的123*/
         color: var(--rsw-accent-color);
     }
+    body.refined-now-playing.mq-playing .g-hd .m-sch { /*RNP下搜索列动画bug修复*/
+        display: block;
+        pointer-events: none;
+        width: 0;
+        margin: 0;
+        opacity: 0;
+    }
 
     div.m-userlist { /*头像菜单*/
         top: 57px;
         animation: inShitMenus .4s .1s backwards cubic-bezier(.34, .68, 0, 1) 1;
+    }
+    div.m-userlist .exit { /*退出登录按钮优化*/
+        border: 0;
+        padding-bottom: 4px;
     }
 
     div.m-tool .skin .m-skswitch { /*皮肤*/
@@ -486,7 +516,7 @@ async function refreshCss() {
         cssIn = ``;
     }
     try {
-        document.querySelector("#RswStyles").innerHTML = cssIn;
+        q("#RswStyles").innerHTML = cssIn;
     } catch {
         crStyle.setAttribute("id", "RswStyles");
         crStyle.innerHTML = cssIn;
@@ -495,20 +525,23 @@ async function refreshCss() {
     console.log("RswLog: Styles refreshed");
 }
 function loop() {
-    let loopId = setInterval(() => {
-        function bodyStyle(s) {
+    function cb() {
+        if(!JSON.parse(localStorage.getItem("isRswEnable"))) {
+            return;
+        }
+        function s(s) {
             return getComputedStyle(document.body).getPropertyValue(s);
         }
-        let accentColor = bodyStyle("--themeC1");
-        let accentTextColor = bodyStyle("--md-accent-color-secondary");
+        let accentColor = s("--themeC1");
+        let accentTextColor = s("--md-accent-color-secondary");
         if (accentTextColor == "") {
-            accentTextColor = bodyStyle("--ncm-text");
+            accentTextColor = s("--ncm-text");
         }
-        let bgColor = bodyStyle("--md-accent-color-bg-rgb");
+        let bgColor = s("--md-accent-color-bg-rgb");
         if (bgColor == "") {
-            bgColor = bodyStyle("--ncm-bg-rgb");
-            if (!document.querySelector("body.ncm-light-theme")) {
-                bgColor = bodyStyle("--ncm-fg-rgb");
+            bgColor = s("--ncm-bg-rgb");
+            if (!q("body.ncm-light-theme")) {
+                bgColor = s("--ncm-fg-rgb");
             }
         }
         let bgColorTrans = "rgba(" + bgColor + ", .7)";
@@ -525,25 +558,48 @@ function loop() {
             localStorage.setItem("RswColorCaches", rswColors);
             refreshCss();
         }
-    }, 1500);
-    return loopId
+    }
+
+    new MutationObserver(() => {
+        cb();
+    }).observe(q("html"), {
+        attributeFilter: ["style", "class"],
+        characterData: false,
+    });
+
+    new MutationObserver(() => {
+        cb();
+    }).observe(q("body"), {
+        attributeFilter: ["class"],
+        characterData: false,
+    });
+
+    new MutationObserver((list) => {
+        list.forEach((item) => {
+            if (item.target == "[object HTMLStyleElement]") {
+                cb();
+            }
+        })
+    }).observe(q("html"), {
+        attributes: false,
+        childList: true,
+        subtree: true,
+    });
 }
 
 let readCfg = JSON.parse(localStorage.getItem("RswSettings"));
 
 async function onOffAllSets() {
-    let isChecked = document.querySelector("#mainSwitch").checked;
-    let allInput = document.querySelectorAll("#RswSettings input");
+    let isChecked = q("#mainSwitch").checked;
+    let allInput = qAll("#RswSettings input");
     for (i = 0; i < allInput.length; i++) {
         allInput[i].disabled = !isChecked;
     }
-    document.querySelector("#mainSwitch").disabled = false;
+    q("#mainSwitch").disabled = false;
     localStorage.setItem("isRswEnable", isChecked);
     console.log(localStorage.getItem("isRswEnable"));
     if (isChecked == true) {
-        localStorage.setItem("RswLoopId", loop());
-    } else {
-        clearInterval(localStorage.getItem("RswLoopId"));
+        loop();
     }
     refreshCss();
 }
@@ -552,7 +608,7 @@ plugin.onLoad(async () => { //插件初始化
     if (!localStorage.getItem("isRswEnable")) { //初始化设置
         localStorage.setItem("isRswEnable", true);
     };
-    localStorage.setItem("RswLoopId", loop());
+    loop();
     refreshCss();
 });
 
@@ -562,192 +618,192 @@ plugin.onConfig( () => {
     crCfgPage.setAttribute("id", "RswSettings");
     crCfgPage.innerHTML = `
     <style>
-        #RswSettings {
-            --rsws-fg: var(--themeC1);
-            --rsws-bg: rgba(var(--md-accent-color-bg-rgb, var(--ncm-fg-rgb)), .3);
-            --rsws-bg-wot: rgba(var(--md-accent-color-bg-rgb, var(--ncm-fg-rgb)), 1);
-            color: var(--md-accent-color-secondary, var(--ncm-text));
-            line-height: 20px;
-            font-size: 16px;
-        }
-        body.ncm-light-theme #RswSettings {
-            --rsws-bg: rgba(var(--md-accent-color-bg-rgb, var(--ncm-bg-rgb)), .3);
-            --rsws-bg-wot: rgba(var(--md-accent-color-bg-rgb, var(--ncm-bg-rgb)), 1);
-        }
+    #RswSettings {
+        --rsws-fg: var(--themeC1);
+        --rsws-bg: rgba(var(--md-accent-color-bg-rgb, var(--ncm-fg-rgb)), .3);
+        --rsws-bg-wot: rgba(var(--md-accent-color-bg-rgb, var(--ncm-fg-rgb)), 1);
+        color: var(--md-accent-color-secondary, var(--ncm-text));
+        line-height: 20px;
+        font-size: 16px;
+    }
+    body.ncm-light-theme #RswSettings {
+        --rsws-bg: rgba(var(--md-accent-color-bg-rgb, var(--ncm-bg-rgb)), .3);
+        --rsws-bg-wot: rgba(var(--md-accent-color-bg-rgb, var(--ncm-bg-rgb)), 1);
+    }
+    #RswSettings p {
+        display: inline;
+    }
+    #RswSettings .switch, #RswSettings .switch + p {
+        line-height: 45px;
+    }
 
-        #RswSettings p {
-            display: inline;
-        }
-        #RswSettings .switch, #RswSettings .switch + p {
-            line-height: 45px;
-        }
-        #RswSettings .button {
-            color: var(--md-accent-color-secondary, var(--ncm-text)) !important;
-            font-size: 16px;
-            width: 120px;
-            height: 40px;
-            line-height: 0;
-            outline: 0;
-            box-shadow: 0 0 3px var(--rsws-fg);
-            border: 1px solid var(--rsws-fg);
-            border-radius: 10px;
-            background: var(--rsws-bg);
-            backdrop-filter: blur(12px);
-            transition: .1s;
-        }
-        #RswSettings .button:hover {
-            box-shadow: 0 0 6px var(--rsws-fg);
-        }
-        #RswSettings .button:active {
-            font-size: 14px;
-            border-width: 4px;
-            box-shadow: 0 0 8px var(--rsws-fg);
-        }
-        #RswSettings .switch {
-            position: relative;
-            margin: 0 50px 0 0;
-            display: inline-block;
-        }
-        #RswSettings .radio {
-            position: relative;
-            margin: 0 25px 0 0;
-            display: inline-block;
-        }
-        #RswSettings .switch input, #RswSettings .radio input{ 
-            opacity: 0;
-            width: 0;
-            height: 0;
-        }
-        #RswSettings .slider {
-            position: absolute;
-            width: 50px;
-            height: 25px;
-            margin: 11px 0;
-            border-radius: 8px;
-            transition: .2s, box-shadow .1s;
-        }
-        #RswSettings .slider:active {
-            border-width: 3px;
-            transition: .1s;
-        }
-        #RswSettings .radio .slider {
-            width: 25px;
-        }
-        #RswSettings .radio .slider:active {
-            border-width: 4px;
-            transition: .1s;
-        }
-        #RswSettings input:checked + .slider {
-            border: 1px solid var(--rsws-bg);
-            background: var(--rsws-fg);
-        }
-        #RswSettings input:checked + .slider:active {
-            border-width: 3px;
-        }
-        #RswSettings .radio input:checked + .slider {
-            border-color: var(--rsws-fg);
-            background: var(--rsws-bg);
-        }
-        #RswSettings input:disabled + .slider {
-            border: 1px solid #888;
-            box-shadow: 0 0 3px #888;
-        }
-        #RswSettings input:disabled + .slider:hover {
-            box-shadow: 0 0 6px #888; 
-        }
-        #RswSettings input:disabled + .slider:active {
-            border-width: 1px;
-            box-shadow: 0 0 6px #888;
-        }
-        #RswSettings input:disabled:checked + .slider {
-            border: 1px solid #909090;
-            background: #888;
-        }
-        #RswSettings .radio input:disabled:checked + .slider {
-            border-color: #888;
-            background: var(--rsws-bg);
-        }
-        #RswSettings .slider::before {
-            position: absolute;
-            content: "";
-            height: 15px;
-            width: 15px;
-            left: 4px;
-            bottom: 4px;
-            border-radius: 4px;
-            background: var(--rsws-fg);
-            transition: .2s;
-        }
-        #RswSettings .slider:active::before {
-            height: 11px;
-            width: 11px;
-            border-radius: 3px;
-            transition: .1s;
-        }
-        #RswSettings .radio .slider::before {
-            opacity: 0;
-            height: 3px;
-            width: 3px;
-            left: 10px;
-            bottom: 10px;
-        }
-        #RswSettings .radio .slider:active::before {
-            opacity: 0;
-            height: 27px;
-            width: 27px;
-            left: -5px;
-            bottom: -5px;
-            border-radius: 5px;
-            transition: .2s;
-        }
-        #RswSettings input:checked + .slider::before {
-            background: var(--rsws-bg-wot);
-            transform: translateX(25px);
-        }
-        #RswSettings .radio input:checked + .slider::before {
-            opacity: 1;
-            height: 15px;
-            width: 15px;
-            left: 4px;
-            bottom: 4px;
-            background: var(--rsws-fg);
-            transform: translateX(0px);
-        }
-        #RswSettings .radio input:checked + .slider:active::before {
-            height: 11px;
-            width: 11px;
-            left: 4px;
-            bottom: 4px;
-        }
-        #RswSettings input:disabled + .slider::before {
-            background: #888;
-        }
-        #RswSettings input:disabled + .slider:active::before {
-            height: 15px;
-            width: 15px;
-            border-radius: 4px;
-        }
-        #RswSettings input:disabled:checked + .slider::before {
-            background: var(--rsws-bg-wot);
-        }
-        #RswSettings .radio input:disabled:checked + .slider::before {
-            background: #888;
-        }
-        #RswSettings .radio input:disabled:checked + .slider:active::before {
-            height: 15px;
-            width: 15px;
-        }
-        #RswSettings .link {
-            text-decoration: underline;
-            cursor: pointer;
-            color: var(--rsws-fg) !important;
-            background: rgba(0, 0, 0, 0);
-            border: 0 solid;
-        }
+    #RswSettings .button {
+        color: var(--md-accent-color-secondary, var(--ncm-text)) !important;
+        font-size: 16px;
+        width: 120px;
+        height: 40px;
+        line-height: 0;
+        outline: 0;
+        box-shadow: 0 0 3px var(--rsws-fg);
+        border: 1px solid var(--rsws-fg);
+        border-radius: 10px;
+        background: var(--rsws-bg);
+        backdrop-filter: blur(12px);
+        transition: .1s;
+    }
+    #RswSettings .button:hover {
+        box-shadow: 0 0 6px var(--rsws-fg);
+    }
+    #RswSettings .button:active {
+        font-size: 14px;
+        border-width: 4px;
+        box-shadow: 0 0 8px var(--rsws-fg);
+    }
+    #RswSettings .switch {
+        position: relative;
+        margin: 0 50px 0 0;
+        display: inline-block;
+    }
+    #RswSettings .radio {
+        position: relative;
+        margin: 0 25px 0 0;
+        display: inline-block;
+    }
+    #RswSettings .switch input, #RswSettings .radio input{ 
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
+    #RswSettings .slider {
+        position: absolute;
+        width: 50px;
+        height: 25px;
+        margin: 11px 0;
+        border-radius: 8px;
+        transition: .2s, box-shadow .1s;
+    }
+    #RswSettings .slider:active {
+        border-width: 3px;
+        transition: .1s;
+    }
+    #RswSettings .radio .slider {
+        width: 25px;
+    }
+    #RswSettings .radio .slider:active {
+        border-width: 4px;
+        transition: .1s;
+    }
+    #RswSettings input:checked + .slider {
+        border: 1px solid var(--rsws-bg);
+        background: var(--rsws-fg);
+    }
+    #RswSettings input:checked + .slider:active {
+        border-width: 3px;
+    }
+    #RswSettings .radio input:checked + .slider {
+        border-color: var(--rsws-fg);
+        background: var(--rsws-bg);
+    }
+    #RswSettings input:disabled + .slider {
+        border: 1px solid #888;
+        box-shadow: 0 0 3px #888;
+    }
+    #RswSettings input:disabled + .slider:hover {
+        box-shadow: 0 0 6px #888; 
+    }
+    #RswSettings input:disabled + .slider:active {
+        border-width: 1px;
+        box-shadow: 0 0 6px #888;
+    }
+    #RswSettings input:disabled:checked + .slider {
+        border: 1px solid #909090;
+        background: #888;
+    }
+    #RswSettings .radio input:disabled:checked + .slider {
+        border-color: #888;
+        background: var(--rsws-bg);
+    }
+    #RswSettings .slider::before {
+        position: absolute;
+        content: "";
+        height: 15px;
+        width: 15px;
+        left: 4px;
+        bottom: 4px;
+        border-radius: 4px;
+        background: var(--rsws-fg);
+        transition: .2s;
+    }
+    #RswSettings .slider:active::before {
+        height: 11px;
+        width: 11px;
+        border-radius: 3px;
+        transition: .1s;
+    }
+    #RswSettings .radio .slider::before {
+        opacity: 0;
+        height: 3px;
+        width: 3px;
+        left: 10px;
+        bottom: 10px;
+    }
+    #RswSettings .radio .slider:active::before {
+        opacity: 0;
+        height: 27px;
+        width: 27px;
+        left: -5px;
+        bottom: -5px;
+        border-radius: 5px;
+        transition: .2s;
+    }
+    #RswSettings input:checked + .slider::before {
+        background: var(--rsws-bg-wot);
+        transform: translateX(25px);
+    }
+    #RswSettings .radio input:checked + .slider::before {
+        opacity: 1;
+        height: 15px;
+        width: 15px;
+        left: 4px;
+        bottom: 4px;
+        background: var(--rsws-fg);
+        transform: translateX(0px);
+    }
+    #RswSettings .radio input:checked + .slider:active::before {
+        height: 11px;
+        width: 11px;
+        left: 4px;
+        bottom: 4px;
+    }
+    #RswSettings input:disabled + .slider::before {
+        background: #888;
+    }
+    #RswSettings input:disabled + .slider:active::before {
+        height: 15px;
+        width: 15px;
+        border-radius: 4px;
+    }
+    #RswSettings input:disabled:checked + .slider::before {
+        background: var(--rsws-bg-wot);
+    }
+    #RswSettings .radio input:disabled:checked + .slider::before {
+        background: #888;
+    }
+    #RswSettings .radio input:disabled:checked + .slider:active::before {
+        height: 15px;
+        width: 15px;
+    }
+    #RswSettings .link {
+        text-decoration: underline;
+        cursor: pointer;
+        color: var(--rsws-fg) !important;
+        background: rgba(0, 0, 0, 0);
+        border: 0 solid;
+    }
     </style>
-    <p>RevisedSecondaryWindows </p>
+    <p>RevisedSecondaryWindows</p>
     <br />
-    <p>v0.1.2 by </p><input class="link" type="button" onclick="betterncm.ncm.openUrl('https://github.com/Lukoning')" value=" Lukoning " />
+    <p>v0.1.3 by </p><input class="link" type="button" onclick="betterncm.ncm.openUrl('https://github.com/Lukoning')" value=" Lukoning " />
     <br />
     <label class="switch">
         <input id="mainSwitch" type="checkbox" />
