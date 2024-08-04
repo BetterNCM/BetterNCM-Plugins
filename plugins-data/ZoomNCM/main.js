@@ -125,7 +125,7 @@ plugin.onConfig(() => {
     </style>
     <p>ZoomNCM</p>
     <br />
-    <p>v0.1.1 by </p><input class="link" type="button" onclick="betterncm.ncm.openUrl('https://github.com/Lukoning')" value=" Lukoning " />
+    <p>v0.1.2 by </p><input class="link" type="button" onclick="betterncm.ncm.openUrl('https://github.com/Lukoning')" value=" Lukoning " />
     <br />
     <div style="line-height:45px;">
         <p>网易云缩放</p>
@@ -137,7 +137,25 @@ plugin.onConfig(() => {
     </div>
     <input class="link" type="button" onclick="betterncm.ncm.openUrl('https://github.com/Lukoning/ZoomNCM/wiki/%E5%85%B3%E4%BA%8E%E7%BC%A9%E6%94%BE%E6%95%B4%E5%A4%AA%E5%A4%A7%E6%88%96%E8%80%85%E5%A4%AA%E5%B0%8F%E5%90%8E%E7%9A%84%E8%A1%A5%E6%95%91%E6%8E%AA%E6%96%BD')" value=" 补救措施-> " />
     <br /><br />
-    <p>本插件的缩放实现方式与StyleSnippet相同；网易云本身并没有对此做支持，可能出现各种奇奇怪怪的bug</p>
+    <p>本插件的缩放实现方式与StyleSnippet相同；</p>
+    <div style="color:yellow;text-shadow:0 0 4px red">
+        <p>网易云对此支持不佳，可能出现各种各样奇奇怪怪的bug</p>
+    </div>
+    <p>已知bug：</p>
+    <br />
+    <p>- (2.x)右键菜单没法子跟随缩放</p>
+    <br />
+    <p>- 缩放小于100%时AMLL(类苹果歌词)播放界面错位</p>
+    <br />
+    <p>- 缩放较大时AMLL关闭按钮可能难以点击</p>
+    <br />
+    <p>- RefinedNowPlaying播放界面歌词错位</p>
+    <br />
+    <p>- 窗口较小时，顶栏超出(3.x)，或者顶栏按钮挤在一起(2.x)</p>
+    <br />
+    <p>- (2.x)一起听面板错位</p>
+    <br />
+    <p>- 音效界面等并未跟随缩放</p>
     `;
     crCfgPage.querySelector("#zoomSetBox").addEventListener("change", saveCfg);
     return crCfgPage;
