@@ -10,11 +10,13 @@ function refreshCss() {
     var rswCaches = JSON.parse(localStorage.getItem("RswColorCaches"));
     var cssIn = `  /*某些class会在主题变化后变动*/
     :root { /*整体*/
-        --rsw-accent-color: ` + rswCaches.accentColor + `;
-        --rsw-text-color: ` + rswCaches.accentTextColor + `;
-        --rsw-bg-color: ` + rswCaches.bgColor + `;
-        --rsw-bg-color-trans: ` + rswCaches.bgColorTrans + `;
+        --rsw-accent-color: ${rswCaches.accentColor};
+        --rsw-text-color: ${rswCaches.accentTextColor};
+        --rsw-bg-color: ${rswCaches.bgColor};
+        --rsw-bg-color-trans: ${rswCaches.bgColorTrans};
         --rsw-trans-color: rgba(127, 127, 127, 0.1);
+        --rsw-timing-function-in: cubic-bezier(.34, .68, 0, 1);
+        --rsw-timing-function-out: cubic-bezier(1, 0, .68, .34);
         --themeC1: var(--rsw-accent-color);
     }
     @keyframes inBody { /*别想多*/
@@ -46,6 +48,7 @@ function refreshCss() {
         background: var(--rsw-trans-color);
         border-bottom: 1px solid var(--rsw-accent-color);
         box-shadow: inset 0 -5px 4px -5px var(--rsw-accent-color);
+        backdrop-filter: blur(12px);
     }
     div.title { /*“音效”*/
         display: none;
@@ -55,9 +58,12 @@ function refreshCss() {
         top: 10px;
     }
     @keyframes navBarSelected {
-        0% {
+        0%, 33.3% {
             height: 1px;
             box-shadow: 0 0 4px 0 var(--rsw-accent-color);
+        }
+        33.3% {
+            height: 44px;
         }
     }
     #root nav a { /*导航栏项*/
@@ -79,32 +85,30 @@ function refreshCss() {
         height: 44px;
         line-height: 45px;
         color: var(--rsw-accent-color);
-        background: var(--rsw-bg-color);
         border: 1px solid var(--rsw-accent-color);
-        border-bottom: 0;
         box-shadow:
-            0 -4px 3px -4px var(--rsw-accent-color), /*上*/
-            4px 0 3px -4px var(--rsw-accent-color), /*右*/
-            -4px 0 3px -4px var(--rsw-accent-color); /*左*/
-        animation: navBarSelected .1s 1;
+            0 0 4px 0 var(--rsw-accent-color), /*其他*/
+            inset 0 -6px 5px -5px var(--rsw-accent-color); /*下*/
+        animation: navBarSelected .3s 1;
         transition: .1s;
     }
     #root nav a.z-sel:hover { /*导航栏选中项（鼠标移上）*/
         box-shadow:
-            0 -5px 3px -4px var(--rsw-accent-color), /*上*/
-            5px 0 3px -4px var(--rsw-accent-color), /*右*/
-            -5px 0 3px -4px var(--rsw-accent-color); /*左*/
+            0 0 6px 0 var(--rsw-accent-color), /*其他*/
+            inset 0 -8px 4px -5px var(--rsw-accent-color); /*下*/
+        transition: .1s;
     }
     #root nav a.z-sel:active { /*导航栏选中项（鼠标按下）*/
-        box-shadow: #0000;
+        box-shadow: inset 0 -8px 6px -5px var(--rsw-accent-color); /*下*/
+        transition: .1s;
     }
-    #root nav a.z-sel::before { /*导航栏选中项下划线*/
+    #root nav a.z-sel::before { /*抓条下划线，缩水变小看不见*/
         display: none;
     }
     #root .dlxBYs { /*开关栏*/
         right: 50px;
     }
-    span.title { /*开关左侧小标题*/
+    #root span.title { /*开关左侧小标题*/
         cursor: default;
         overflow: unset;
         max-width: unset;
@@ -117,7 +121,7 @@ function refreshCss() {
     div[type="button"]::after { /*开关内部小球球*/
     }
     div[type="button"][aria-checked="true"]::after { /*开关内部小球球（开启版）*/
-        background-color: var(--rsw-bg-color);
+        background: ${rswCaches.bgColor}; /*没法用CSS变量…*/
     }
     #root > div > span { /*关闭按钮*/
         top: 16px;
@@ -129,6 +133,12 @@ function refreshCss() {
     }
     #root > div > span:hover svg { /*关闭按钮svg （鼠标移上）*/
         fill: var(--rsw-accent-color);
+    }
+    #root > div > div:last-child { /*音效页*/
+        height: 440px;
+        top: -54px;
+        padding-top: 69px;
+        z-index: -1;
     }
     #root .jrSfld { /*音效选块*/
         background: #0000;
@@ -210,24 +220,25 @@ function refreshCss() {
         display: block;
         border-color: var(--rsw-accent-color);
         border-radius: 10px;
-        background: var(--rsw-bg-color-trans);
+        background: #0000;
         backdrop-filter: blur(8px);
         box-shadow: 0 0 3px 0 var(--rsw-accent-color);
-        transition: .2s;
+        transition: .3s var(--rsw-timing-function-in);
     }
     #root div.select-type:hover { /*下拉菜单（鼠标移上）*/
         box-shadow: 0 0 6px 0 var(--rsw-accent-color);
     }
     #root div.select-type.f-dn { /*下拉菜单（隐藏版）*/
-        top: 0;
+        top: 30px;
         max-height: 0;
         opacity: 0;
+        transition: .2s var(--rsw-timing-function-out);
     }
     #root div.select-type.top { /*下拉菜单（贴底版）*/
         top: -125px;
     }
     #root div.select-type.top.f-dn { /*下拉菜单（贴底隐藏版）*/
-        top: 30px;
+        top: 0;
         max-height: 0;
         opacity: 0;
     }
@@ -254,10 +265,15 @@ function refreshCss() {
         background: #8888 !important;
     }
     .has .ctrl .val { /*条条的工具提示*/
-        color: var(--rsw-bg-color);
-        background: var(--rsw-accent-color);
+        color: var(--rsw-text-color);
+        border: 1px solid var(--rsw-accent-color);
+        border-radius: 8px;
+        background: #0000;
+        backdrop-filter: blur(4px);
+        box-shadow: 0 0 3px 0 var(--rsw-accent-color);
     }
     .has .ctrl .val::after { /*条条的工具提示之向下箭头*/
+        top: 24px;
         border-color: var(--rsw-accent-color) #0000 #0000;
     }
     `;
