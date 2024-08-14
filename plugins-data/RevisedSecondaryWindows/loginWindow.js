@@ -58,7 +58,7 @@ function refreshCss() {
     .n-login-scan .main .qr { /*QR码本码（几维码?）*/
         box-shadow: 0 0 0 1px var(--rsw-trans-color);
         border-radius: 4px;
-        animation: QRCodeFlyIn .2s 1;
+        animation: QRCodeFlyIn .3s cubic-bezier(.34, .68, 0, 1) 1;
     }
     .n-login-scan .main .tip { /*QR码过期提示*/
         background: #0003;
@@ -66,7 +66,14 @@ function refreshCss() {
     }
     .n-login-scan .main .phone { /*hover QR码后出现的手机*/
         top: 4px;
-        clip-path: inset(30px 0 20px round 8px);
+        clip-path: inset(30px 0 80px 3px round 8px);
+    }
+    .n-login-scan .main.z-hover .txt { /*hover后的用什么扫描提示*/
+        top: 194px;
+        width: unset;
+        right: 0;
+        left: 0;
+        line-height: unset;
     }
     .n-login .iner .scan .icn { /*左上角QR码图标*/
         clip-path: polygon(0 0, 97% 0, 0 97%); /*斜向裁切（并非100%是为了去白线）*/
@@ -171,7 +178,7 @@ function refreshCss() {
         border: 1px solid var(--rsw-accent-color);
         border-radius: 10px;
         box-shadow: 0 0 3px 0 var(--rsw-accent-color);
-        background: var(--rsw-bg-color);
+        background: #0000;
         transition: .1s;
         cursor: default;
     }
@@ -183,7 +190,7 @@ function refreshCss() {
     .n-login .btn-dark:hover, .n-login-scan .main .tip a:hover { /*高亮按钮+mini（鼠标移上）*/
         border-color: var(--rsw-accent-color);
         box-shadow: 0 0 6px 0 var(--rsw-accent-color);
-        background: var(--rsw-bg-color);
+        background: #0000;
     }
     .n-login-scan .main .tip a:hover { /*mini高亮按钮（鼠标移上）*/
         background: var(--rsw-bg-color-trans);
@@ -202,7 +209,7 @@ function refreshCss() {
         color: #888;
         box-shadow: 0 0 3px #888;
         border: 1px solid #888;
-        background: var(--rsw-bg-color);
+        background: #0000;
     }
     .n-login .btn.z-dis:hover { /*DISABLED按钮（鼠标移上）*/
         box-shadow: 0 0 6px #888;
