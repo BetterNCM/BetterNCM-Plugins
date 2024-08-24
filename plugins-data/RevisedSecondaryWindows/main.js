@@ -30,7 +30,7 @@ function replaceSvg(s, use, n){
 async function refreshCss() {
     let rswCaches = JSON.parse(localStorage.getItem("RswColorCaches"));
     let cssInA = `
-        body { /*整体*/
+    body { /*整体*/
         perspective: 1000px; /*3D动画必要*/
         --rsw-accent-color: ${rswCaches.accentColor};
         --rsw-text-color: ${rswCaches.accentTextColor};
@@ -542,7 +542,8 @@ async function refreshCss() {
         }
     }
     div.m-playlist.z-show { /*弹正播列*/
-        animation: RSW-inPlaylist .4s .1s backwards var(--rsw-timing-function-in) 1 !important;
+        will-change: top, bottom;
+        animation: RSW-inPlaylist .4s .2s backwards var(--rsw-timing-function-in) 1 !important;
         transition: .5s var(--rsw-timing-function-in); /*MY悬浮底栏贴边动画*/
     }
     div.m-playlist.z-show:not(body.material-you-theme *) { /*弹正播列(非MY)*/
@@ -1032,6 +1033,9 @@ async function refreshCss() {
         box-shadow: 0 3px 24px -6px var(--rsw-window-shadow-color);
         animation: RSW-inTip .4s var(--rsw-timing-function-in) 1;
     }
+    div.u-result:not(body.material-you-theme *) { /*提示框（让它跑到会员之上）*/
+        z-index: 10000001;
+    }
     #music-163-com div.m-switch { /*下载列表（行吧跟自己对抗）*/
         padding: 0 4px;
         animation: RSW-inTopTip .4s var(--rsw-timing-function-in) 1;
@@ -1043,14 +1047,14 @@ async function refreshCss() {
         fill: green;
     } /* 上面这段代码并没有效果 */
     div.u-result .wrap .inner span,
-    div.m-queuenotify, div.toast { /*提示框文字（全局）*/
+    div.m-queuenotify:not(body.material-you-theme *), div.toast { /*提示框文字（全局）*/
         animation: RSW-transGradient .15s 1;
     }
     div.u-result .wrap .inner span:not(.errTxt, body.material-you-theme *),
     div.m-queuenotify:not(body.material-you-theme *) { /*提示框文字（一般）*/
         color: var(--rsw-text-color);
     }
-    div.u-result.z-hide { /*提示框+背景遮罩（即将消失）*/
+    div.u-result.z-hide:not(body.material-you-theme *) { /*提示框+背景遮罩（即将消失）*/
         animation: none;
     }
     div.u-result.z-hide .wrap .inner:not(body.material-you-theme *),
@@ -1433,7 +1437,7 @@ plugin.onConfig( () => {
     </style>
     <p>RevisedSecondaryWindows</p>
     <br />
-    <p>v0.4.0 by </p><input class="link" type="button" onclick="betterncm.ncm.openUrl('https://github.com/Lukoning')" value=" Lukoning " />
+    <p>v0.4.1 by </p><input class="link" type="button" onclick="betterncm.ncm.openUrl('https://github.com/Lukoning')" value=" Lukoning " />
     <br />
     <label class="switch">
         <input id="mainSwitch" type="checkbox" />
