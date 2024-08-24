@@ -45,7 +45,7 @@ function refreshCss() {
         color: #888 !important;
     }
     .joUVp, .fPfSei { /*标题栏*/
-        background: var(--rsw-trans-color);
+        background: #0000;
         border-bottom: 1px solid var(--rsw-accent-color);
         box-shadow: inset 0 -5px 4px -5px var(--rsw-accent-color);
         backdrop-filter: blur(12px);
@@ -93,13 +93,16 @@ function refreshCss() {
         transition: .1s;
     }
     #root nav a.z-sel:hover { /*导航栏选中项（鼠标移上）*/
+        background: #0000;
         box-shadow:
             0 0 6px 0 var(--rsw-accent-color), /*其他*/
             inset 0 -8px 4px -5px var(--rsw-accent-color); /*下*/
         transition: .1s;
     }
     #root nav a.z-sel:active { /*导航栏选中项（鼠标按下）*/
-        box-shadow: inset 0 -8px 6px -5px var(--rsw-accent-color); /*下*/
+        box-shadow:
+            0 0 0 0 var(--rsw-accent-color), /*其他*/
+            inset 0 -8px 6px -5px var(--rsw-accent-color); /*下*/
         transition: .1s;
     }
     #root nav a.z-sel::before { /*抓条下划线，缩水变小看不见*/
@@ -124,10 +127,13 @@ function refreshCss() {
         background: ${rswCaches.bgColor}; /*没法用CSS变量…*/
     }
     #root > div > span { /*关闭按钮*/
-        top: 16px;
-        right: 16px;
+        top: 15px;
+        right: 15px;
     }
     #root > div > span svg { /*关闭按钮svg*/
+        width: 23px;
+        max-height: 23px;
+        min-height: 23px; /*az*/
         fill: var(--rsw-text-color);
         transition: .2s;
     }
@@ -135,9 +141,10 @@ function refreshCss() {
         fill: var(--rsw-accent-color);
     }
     #root > div > div:last-child { /*音效页*/
-        height: 440px;
+        height: 437px;
         top: -54px;
-        padding-top: 69px;
+        margin-top: 3px;
+        padding-top: 66px;
         z-index: -1;
     }
     #root .jrSfld { /*音效选块*/
@@ -282,6 +289,8 @@ function refreshCss() {
         var cssIn = ``;
     } else {
         betterncm.app.setRoundedCorner(true);
+        //替换关闭按钮svg
+        document.querySelector("#root > div > span svg").innerHTML = `<use xlink:href="orpheus://orpheus/style/res/svg/topbar.sp.svg#close"></use>`;
     }
     try {
         document.querySelector("#RswStyles").innerHTML = cssIn;

@@ -1,29 +1,36 @@
-let crStyle = document.createElement("style");
+function cE(n) {
+    return document.createElement(n);
+}
 function q(n) {
     return document.querySelector(n);
 }
 function qAll(n) {
     return document.querySelectorAll(n);
 }
+let isEnabled = JSON.parse(localStorage.getItem("isRswEnable"));
+
+function replaceSvg(s, use, n){
+    let li = {
+        close: `<use xlink:href="orpheus://orpheus/style/res/svg/icon.sp.svg#btn_close"></use>`,
+        back: `<use xlink:href="orpheus://orpheus/style/res/svg/topbar.sp.svg#back"></use>`,
+    };
+    if (li[use]) {
+        use = li[use];
+    };
+    try {
+        q(`${s} svg`).innerHTML = use;
+        q(s).classList.add("rsw-replace-success");
+        console.log(`RswLog: Replace the ${n} SVG successfully`);
+    } catch(e) {
+        console.error(`RswError: Fail to replace the ${n} SVG. More info:
+        ${e}`);
+    };
+}
 
 async function refreshCss() {
     let rswCaches = JSON.parse(localStorage.getItem("RswColorCaches"));
-    let cssIn = `
-    @keyframes transGradient {
-        0% {
-            opacity: 0;
-        }
-    }
-    @keyframes navBarSelected {
-        0%, 33.3% {
-            height: 1px;
-            box-shadow: 0 0 4px 0 var(--rsw-accent-color);
-        }
-        33.3% {
-            height: 30px;
-        }
-    }
-    body { /*整体*/
+    let cssInA = `
+        body { /*整体*/
         perspective: 1000px; /*3D动画必要*/
         --rsw-accent-color: ${rswCaches.accentColor};
         --rsw-text-color: ${rswCaches.accentTextColor};
@@ -91,43 +98,60 @@ async function refreshCss() {
     html[style*=MoTheme] > body.refined-now-playing.mq-playing > * { /*整体(MoTheme+RNP)*/
         --rsw-window-blur: saturate(var(--MoTheme-popWindow_backgroundSaturate)) blur(var(--MoTheme-popWindow_backgroundBlur));
     }
-
-    @keyframes inLayer {
+    `
+    let cssIn = `
+    @keyframes RSW-transGradient {
+        0% {
+            opacity: 0;
+        }
+    }
+    @keyframes RSW-navBarSelected {
+        0%, 33.3% {
+            height: 1px;
+            box-shadow: 0 0 4px 0 var(--rsw-accent-color);
+        }
+        33.3% {
+            height: 30px;
+        }
+    }
+    @keyframes RSW-inLayer {
         0% {
             opacity: 0;
             transform: rotateX(-35deg) scale(.8);
         }
     }
-    @keyframes outLayer { /*无用*/
-        100% {
+    @keyframes RSW-outLayer {
+        75% {
             opacity: 0;
-            transform: rotateX(30deg) rotateY(10deg) scale(.8);
+        }
+        100% {
+            transform: rotateX(20deg) rotateY(5deg) scale(.8);
         }
     }
-
-    @keyframes inMask {
+    @keyframes RSW-inMask {
         0% {
             background: #0000;
             backdrop-filter: none;
         }
     }
-    @keyframes outMask {
+    @keyframes RSW-outMask {
         100% {
             background: #0000;
             backdrop-filter: none;
         }
     }
-    div.m-layer, div.m-card, div.m-playlist, div.m-schlist, div.m-userlist, div.m-skswitch, div.u-arrlay-msg { /*大家好，我们是弹窗卡列大家族*/
+    div.m-layer, div.m-card, div.m-playlist,div.m-schlist, div.m-userlist,
+    div.m-skswitch, div.u-arrlay-msg, div.u-atsuggest, div.next-modal > div[role="dialog"] { /*大家好，我们是弹窗卡列大家族*/
         color: var(--rsw-text-color) !important;
-        animation: inLayer .4s var(--rsw-timing-function-in) 1;
+        animation: RSW-inLayer .4s var(--rsw-timing-function-in) 1;
     }
-    #music-163-com div.m-card:not(body.material-you-theme *),
+    #music-163-com div.m-card:not(.m-emts, .m-card-noarrow, .m-layer, body.material-you-theme *),
     #music-163-com div.m-playlist:not(body.material-you-theme *),
     #music-163-com div.m-schlist:not(body.material-you-theme *),
     #music-163-com div.m-userlist:not(body.material-you-theme *),
     #music-163-com div.m-skswitch:not(body.material-you-theme *),
     #music-163-com div.u-arrlay-msg:not(body.material-you-theme *) {
-    /*大家族（非MY） * 似乎缺了一位？*/
+    /*大家族 * 似乎缺了几位？*/
         border: 1px solid #0000 !important;
         border-radius: var(--rsw-window-bdr);
         background: none !important;
@@ -141,31 +165,27 @@ async function refreshCss() {
     div.m-schlist:not(body.material-you-theme *)::after,
     div.m-userlist:not(body.material-you-theme *)::after,
     div.m-skswitch:not(body.material-you-theme *)::after,
-    div.u-arrlay-msg:not(body.material-you-theme *)::after {
+    div.u-arrlay-msg:not(body.material-you-theme *)::after,
+    div.u-atsuggest::after, div.m-emts::after, div.next-modal > div[role="dialog"]::after {
     /*家族的背景实现*/
         position: absolute;
         content: "";
-        top: -1px;
-        right: -1px;
-        bottom: -1px;
-        left: -1px;
+        inset: -1px;
         border: 1px var(--rsw-window-bd);
         border-radius: var(--rsw-window-bdr);
         background: var(--rsw-bg-color-trans) var(--rsw-bg-clip);
         backdrop-filter: var(--rsw-window-blur);
-        z-index: -1;
+        z-index: -100; /*啊?*/
     }
     div.m-playlist:not(body.material-you-theme *), div.m-schlist, div.m-userlist, div.m-skswitch, div.u-arrlay-msg { /*侧边弹出家族*/
         box-shadow: 0 1px 12px 0 var(--rsw-window-shadow-color);
     }
-    div.m-mask, div.m-card + div[class^=auto-], div.m-layer + div[class^=auto-], div.m-timelineslide .mask { /*弹弹背景遮罩（参考了MY的写法）*/
+    div.m-mask, div.m-card + div[class^=auto-], div.m-layer + div[class^=auto-],
+    div.m-timelineslide .mask, div.next-modal > div[tabindex="-1"]:not(*:only-child) { /*弹弹背景遮罩（参考了MY的写法）*/
         z-index: 9999 !important;
         background: #0003;
         backdrop-filter: var(--rsw-mask-blur);
-        animation: inMask .3s 1;
-    }
-    div.m-timelineslide .mask { /*看图器遮罩*/
-        z-index: -1 !important;
+        animation: RSW-inMask .3s 1;
     }
     div.m-card ::-webkit-scrollbar, div.m-layer ::-webkit-scrollbar, div.m-playlist ::-webkit-scrollbar,
     div.m-schlist ::-webkit-scrollbar, div.u-arrlay-msg ::-webkit-scrollbar {
@@ -177,7 +197,7 @@ async function refreshCss() {
     /*弹弹滚动条背景*/
         background: 0 !important;
     }
-    div.m-card .zbar, div.m-layer .zbar, div.m-playlist .listhd, div.u-arrlay-msg .sfrmhd, div.u-arrlay .msghd {
+    div.m-card .zbar, div.m-layer .zbar, div.next-modal .gBGEOh, div.m-playlist .listhd, div.u-arrlay-msg .sfrmhd, div.u-arrlay .msghd {
     /*弹弹标题栏*/
         /*background: var(--rsw-accent-color);*/
         background: var(--rsw-title-bg);
@@ -187,14 +207,14 @@ async function refreshCss() {
         box-shadow: inset 0 -5px 4px -5px var(--rsw-accent-color);
         z-index: 3;
     }
-    div.m-layer .zbar, div.m-card .zbar, div.u-arrlay-msg .sfrmhd, div.u-arrlay .msghd {
+    div.m-layer .zbar, div.m-card .zbar, div.next-modal .gBGEOh, div.u-arrlay-msg .sfrmhd, div.u-arrlay .msghd {
     /*弹窗标题栏+消息标题栏*/
         cursor: default;
         line-height: 19px;
         padding: 14px 40px 14px 20px;
         margin-bottom: 10px;
     }
-    div.m-card .zbar .zttl, div.m-layer .zbar .zttl, div.m-layer.no-title .zbar::before,
+    div.m-card .zbar .zttl, div.m-layer .zbar .zttl, div.m-layer.no-title .zbar::before, div.next-modal .gBGEOh,
     div.u-arrlay-msg .sfrmhd h3, div.u-arrlay .msghd > .f-thide > span:nth-child(1) {
     /*弹弹标题文字*/
         overflow: hidden;
@@ -203,13 +223,13 @@ async function refreshCss() {
         font-size: 17px;
         font-weight: 800;
     }
-    .u-icn-laycls svg, .u-arrlay .back svg, .m-chartlist .blacknote .cls svg,
+    .u-icn-laycls svg, .iAWWYr svg, .u-arrlay .back svg, .m-chartlist .blacknote .cls svg,
     .m-timelineslide .cls svg, .m-timelineslide .pictool:hover svg {
     /*关闭/返回按钮等svg*/
         fill: var(--rsw-text-color) !important;
         transition: .2s var(--rsw-timing-function-in);
     }
-    .u-icn-laycls:hover svg, .u-arrlay .back:hover svg, .m-chartlist .blacknote .cls:hover svg,
+    .u-icn-laycls:hover svg, .iAWWYr:hover svg, .u-arrlay .back:hover svg, .m-chartlist .blacknote .cls:hover svg,
     .m-timelineslide .cls:hover svg, .m-timelineslide .pictool:hover svg {
     /*关闭/返回按钮等svg （鼠标移上）*/
         fill: var(--rsw-accent-color) !important;
@@ -229,7 +249,7 @@ async function refreshCss() {
     div.u-arrlay-chat .cmtform, div.m-card-sharecard li:last-child, div.m-layer-sharecard li:last-child { /*各种贴底东西*/
         border-radius: 0 0 var(--rsw-window-bdr) var(--rsw-window-bdr);
     }
-    div.m-layer .s-fc2, div.m-card .s-fc2, div.m-playlist .s-fc2, div.u-arrlay-msg .s-fc2 { /*高亮…链接？*/
+    div.m-layer .s-fc2, div.m-card .s-fc2, div.m-playlist .s-fc2, div.u-arrlay .s-fc2 { /*高亮…链接？*/
         color: var(--rsw-accent-color) !important;
         font-weight: 400;
     }
@@ -240,75 +260,63 @@ async function refreshCss() {
     div.m-playlist .listbd, div.m-schlist .wrap:nth-of-type(2), div.m-addto .list { /*各种滚动列表*/
         overflow-y: overlay; /*让滚动条不占空间*/
     }
-    div.m-schlist.f-dn, div.u-arrlay.u-arrlay-msg.f-dn:not(html[style*=MoTheme] *) { /*各种隐藏*/
+    div.m-schlist.f-dn, div.u-arrlay.u-arrlay-msg.f-dn:not(html[style*=MoTheme] *) { /*顶部菜单隐藏*/
         display: block !important;
-        animation: outTopMenus .4s forwards var(--rsw-timing-function-out) 1;
+        animation: RSW-outTopMenus .4s forwards var(--rsw-timing-function-out) 1;
+    }
+    div.m-queuenotify::before, /*什么遗老箭头*/
+    div.m-player .toast::before, /*这个倒不是遗老*/
+    div.u-arrlay::before /*啥弹窗的箭头？*/{
+        display: none;
     }
 
     /*这背景效果有动画bug，防它闪现给人不适感*/
-
-    /*第一版方案
-    div.m-layer:not(body.material-you-theme *) { /*叛变者
-        border: 1px var(--rsw-window-bd);
-        border-radius: var(--rsw-window-bdr);
-        background: var(--rsw-bg-color-trans) var(--rsw-bg-clip);
-        backdrop-filter: var(--rsw-window-blur);
-        box-shadow: 0 6px 24px 0 var(--rsw-window-shadow-color);
-    }*/
-    /*第二版方案：
-    @keyframes inLayer-bg {
-        0% {
-            backdrop-filter: none;
-        }
-    }
-    div.m-layer:not(body.material-you-theme *)::after { /*弹窗的背景实现
-        animation: inLayer-bg .5s .4s 1;
-    }
-    body.refined-now-playing.mq-playing div.m-layer:not(body.material-you-theme *)::after { /*RNP下
-        animation: none; /*……给你闪吧
-    }
-    */
     /*第三版方案*/ /*效果完美！*/
-    @keyframes inLayer-bg {
+    @keyframes RSW-inLayer-bg {
         0% {
             backdrop-filter: var(--rsw-window-blur);
         }
     }
-    @keyframes inLayer-bgPseudoE {
+    @keyframes RSW-inLayer-bgPseudoE {
         0% {
             backdrop-filter: none;
         }
     }
     /*我去你的*/
-    #music-163-com div.m-layer:not(body.material-you-theme *) {
+    #music-163-com div.m-layer:not(body.material-you-theme *), #music-163-com div.m-card-noarrow,
+    div.next-modal > div[role="dialog"], div.u-atsuggest, div.m-emts { /*后两个是At建议和表情*/
         border: 1px solid #0000 !important;
         border-radius: var(--rsw-window-bdr);
         background: none !important;
         backdrop-filter: none;
         box-shadow: 0 6px 24px 0 var(--rsw-window-shadow-color);
         overflow: visible; /*让伪元素可以超出*/
-        animation: inLayer .4s var(--rsw-timing-function-in) 1, inLayer-bg 0s .6s backwards 1;
+        animation:
+            RSW-inLayer .4s var(--rsw-timing-function-in) 1,
+            RSW-inLayer-bg 0s .6s backwards 1;
     }
-    div.m-layer:not(body.material-you-theme *)::after {
-        animation: inLayer-bgPseudoE 0s .6s backwards 1;
+    div.m-layer:not(body.material-you-theme *)::after, div.m-card-noarrow::after,
+    div.next-modal > div[role="dialog"]::after, div.u-atsuggest::after, div.m-emts::after {
+        animation: RSW-inLayer-bgPseudoE 0s .6s backwards 1;
     }
 
-    div.m-layer .zbar { /*弹窗标题栏*/
+    div.m-layer .zbar, div.m-card-noarrow .zbar { /*弹窗标题栏*/
         backdrop-filter: none;
     }
     div.m-layer.no-title .zbar { /*没标题的弹窗标题栏*/
         height: 20px;
     }
-    div.m-layer .zbar .zttl { /*弹窗标题文字*/
+    div.m-layer .zbar .zttl{ /*弹窗标题文字*/
         text-align: left;
         padding: 0;
     }
     div.m-layer.no-title .zbar::before { /*没标题的硬加标题*/
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
+        inset: 0;
         content: "提示";
+    }
+    div.u-icn-laycls { /*弹窗关闭按钮*/
+        top: 14px;
+        right: 14px;
     }
     div.m-layer .zcnt, div.m-layer .lyct { /*弹窗内部*/
         background: 0;
@@ -323,6 +331,7 @@ async function refreshCss() {
     div.m-layer .u-cklist input[type="checkbox"]:checked + span svg { /*弹窗内多选框svg*/
         fill: var(--rsw-bg-color);
     }
+
     div.m-layer.m-layer-trial .zbar { /*弹会员标题栏*/
         padding: 19px 20px;
         margin: 0;
@@ -339,6 +348,7 @@ async function refreshCss() {
         border: 3px solid #0000;
         backdrop-filter: blur(4px);
     }
+
     div.m-layer.m-listen-record .zbar { /*一起听本次记录 标题栏*/
         height: 10px;
         background: #0000;
@@ -363,9 +373,67 @@ async function refreshCss() {
         display: none;
     }
 
-    div.m-card-sharecard, div.m-layer-sharecard,
-    div.m-card-sharecard .m-card-sharecard, div.m-layer-sharecard .m-layer-sharecard { /*弹卡(分享)+弹窗(分享)*/ /*我勒个套娃*/
+    div.m-layer-comment .zbar { /*MV评论弹窗标题栏*/
+        margin-bottom: 10px;
+    }
+
+    div.next-modal > div[role="dialog"] { /*模态弹窗（歌词配色方案/VIP开通）*/
+        overflow: visible !important; /*让伪元素可以超出*/
+        transition:
+            transform .4s var(--rsw-timing-function-in),
+            opacity .3s var(--rsw-timing-function-in);
+    }
+    div.next-modal > div[role="dialog"][aria-hidden="true"] { /*模态弹窗（开始消失）*/
+        opacity: 0;
+        transform: rotateX(24deg) rotateY(6deg) scale(.85);
+    }
+    div.next-modal > div[tabindex="-1"][aria-hidden="true"] { /*模态背景遮罩（开始消失）*/
+        display: block !important;
+        animation: RSW-outMask .3s forwards 1;
+    }
+    div.next-modal .gBGEOh { /*模态标题栏（+文字）*/
+        backdrop-filter: none;
+        text-align: left;
+    }
+    div.next-modal .iAWWYr {/*模态关闭按钮*/
+        top: 14px;
+        right: 16px;
+    }
+    div.next-modal .btn-wrapper.btn-wrapper > a { /*配色确认按钮*/
+        box-sizing: border-box;
+        cursor: default;
+        color: var(--rsw-text-color);
+        font-size: 16px;
+        width: 70px;
+        height: 35px;
+        line-height: 0;
+        outline: 0;
+        box-shadow: 0 0 3px var(--rsw-accent-color);
+        border: 1px solid var(--rsw-accent-color);
+        border-radius: 10px;
+        background: #0000;
+        transition: .1s;
+    }
+    div.next-modal .btn-wrapper.btn-wrapper > a:hover { /*同上*/
+        box-shadow: 0 0 6px var(--rsw-accent-color);
+    }
+    div.next-modal .btn-wrapper.btn-wrapper > a:active { /*同上*/
+        font-size: 14px;
+        border-width: 4px;
+        box-shadow: 0 0 8px var(--rsw-accent-color);
+    }
+    div.next-modal-vipcashier iframe.ifrm-cashier { /*会员开通页iframe*/
+        border-radius: var(--rsw-window-bdr);
+        animation: RSW-transGradient .2s 1s backwards 1;
+    }
+
+    div.m-card-sharecard:not(body.material-you-theme *),
+    div.m-layer-sharecard:not(body.material-you-theme *),
+    div.m-card-sharecard .m-card-sharecard:not(body.material-you-theme *),
+    div.m-layer-sharecard .m-layer-sharecard:not(body.material-you-theme *) { /*弹卡(分享)+弹窗(分享)*/ /*我勒个套娃*/
         background: #0000 !important;
+    }
+    div.m-card-sharecard, div.m-layer-sharecard { /*Title height fix*/
         padding: 0;
     }
     div.m-card-sharecard li:hover, div.m-layer-sharecard li:hover { /*分享选项（鼠标移上）*/
@@ -384,7 +452,7 @@ async function refreshCss() {
         background-color: #0000;
     }
 
-    @keyframes inListenWith {
+    @keyframes RSW-inListenWith {
         0% {
             margin-top: 1000px;
         }
@@ -398,8 +466,15 @@ async function refreshCss() {
         margin-top: -20px;
         margin-left: -50px;
         animation:
-            transGradient 0s .1s backwards 1, /*不影响JS定位*/
-            inListenWith .4s .1s var(--rsw-timing-function-in) 1;
+            RSW-transGradient 0s .1s backwards 1, /*不影响JS定位*/
+            RSW-inListenWith .4s .1s var(--rsw-timing-function-in) 1;
+    }
+    body.material-you-theme:not(.ignore-now-playing) .m-card.m-card-invite,
+    body.material-you-theme.ignore-now-playing:not(.mq-playing) .m-card.m-card-invite {
+    /*MY下*/
+        animation:
+            RSW-transGradient 0s .1s backwards 1, /*同上*/
+            dialog .3s .1s cubic-bezier(0.4, 0, 0, 1);
     }
     body.rsw-relive .m-card-invite { /*一起听（ReLive）*/
         margin-left: 0;
@@ -415,7 +490,7 @@ async function refreshCss() {
         max-height: 321px;
     }
     div.m-card-invite .friend-list .itm .btn-invite, div.m-card-invite .friend-list .itm .info-invite { /*上次一起听/邀请按钮*/
-        animation: transGradient .2s 1;
+        animation: RSW-transGradient .2s 1;
     }
     div.m-card-invite .footer { /*一起听底栏嵌进标题*/
         transform: translate(84px, -345px) scale(.9);
@@ -429,8 +504,35 @@ async function refreshCss() {
     div.m-card-invite .footer .btn .txt { /*一起听底栏文字*/
         display: none;
     }
+    
+    div.m-emts.m-card { /*弹卡（Emoji）*/
+        width: 302px;
+    }
+    div.m-emts > div { /*内div*/
+        background: #0000;
+    }
+    div.m-emts .emtitm { /*Emoji*/
+        transition: .1s;
+    }
+    div.m-emts .emtitm:hover { /*hover的Emoji*/
+        border-color: var(--rsw-accent-color);
+        border-radius: 50%;
+        background: #0000;
+        box-shadow: 0 0 6px 0 var(--rsw-accent-color);
+    }
+    div.m-emts .emtitm:active { /*active的Emoji*/
+        box-shadow: 0 0 0 0 var(--rsw-accent-color);
+    }
+    div.m-emts .emtitm img { /*Emoji本尊（细节解决）*/
+        width: 21.5px;
+        height: 21.5px;
+    }
+    div.m-mask.m-mask-emts { /*Emoji卡片遮罩*/
+        opacity: 0;
+        animation: none !important;
+    }
 
-    @keyframes inPlaylist {
+    @keyframes RSW-inPlaylist {
         0% {
             top: 100%;
             bottom: -50%;
@@ -440,7 +542,7 @@ async function refreshCss() {
         }
     }
     div.m-playlist.z-show { /*弹正播列*/
-        animation: inPlaylist .4s .1s backwards var(--rsw-timing-function-in) 1 !important;
+        animation: RSW-inPlaylist .4s .1s backwards var(--rsw-timing-function-in) 1 !important;
         transition: .5s var(--rsw-timing-function-in); /*MY悬浮底栏贴边动画*/
     }
     div.m-playlist.z-show:not(body.material-you-theme *) { /*弹正播列(非MY)*/
@@ -453,6 +555,10 @@ async function refreshCss() {
     }
     body.rsw-relive div.m-playlist.z-show { /*弹正播列(ReLive)*/
         bottom: 0;
+        border-bottom-right-radius: 0;
+        border-bottom-left-radius: 0;
+    }
+    body.rsw-relive div.m-playlist.z-show::after { /*弹正播列背景(ReLive)*/
         border-bottom-right-radius: 0;
         border-bottom-left-radius: 0;
     }
@@ -499,7 +605,7 @@ async function refreshCss() {
         border-bottom-left-radius: 0;
     }
 
-    @keyframes inTopMenus {
+    @keyframes RSW-inTopMenus {
         0% {
             top: -100%;
             bottom: 180%;
@@ -508,7 +614,7 @@ async function refreshCss() {
             box-shadow: none;
         }
     }
-    @keyframes outTopMenus {
+    @keyframes RSW-outTopMenus {
         100% {
             top: -100%;
             bottom: 180%;
@@ -517,7 +623,7 @@ async function refreshCss() {
             box-shadow: none;
         }
     }
-    @keyframes inShitMenus {
+    @keyframes RSW-inShitMenus {
         0% {
             top: -500px;
         }
@@ -528,7 +634,7 @@ async function refreshCss() {
 
     div.m-schlist { /*搜索建议列表*/
         bottom: max(20%, calc(var(--bottombar-height, 72px) + var(--bottombar-elevation, 0px) + 15px));
-        animation: inTopMenus .4s var(--rsw-timing-function-in) 1;
+        animation: RSW-inTopMenus .4s var(--rsw-timing-function-in) 1;
         transition: width .5s var(--rsw-timing-function-in), height .3s var(--rsw-timing-function-in) !important;
     }
     div.m-schlist .side:nth-of-type(2) { /*不是…咋想的*/
@@ -558,7 +664,7 @@ async function refreshCss() {
 
     div.m-userlist { /*头像菜单*/
         top: 57px;
-        animation: inShitMenus .4s .1s backwards var(--rsw-timing-function-in) 1;
+        animation: RSW-inShitMenus .4s .1s backwards var(--rsw-timing-function-in) 1;
     }
     div.m-userlist .exit { /*退出登录按钮优化*/
         border: 0;
@@ -569,10 +675,10 @@ async function refreshCss() {
         top: 40px;
         width: 330px;
         height: 274px;
-        animation: inShitMenus .4s var(--rsw-timing-function-in) 1;
+        animation: RSW-inShitMenus .4s var(--rsw-timing-function-in) 1;
     }
 
-    @keyframes inMsg-MoTheme {
+    @keyframes RSW-inMsg-MoTheme {
         0% {
             transform: translate(0, -160%);
         }
@@ -580,7 +686,7 @@ async function refreshCss() {
             box-shadow: none;
         }
     }
-    @keyframes outMsg-MoTheme {
+    @keyframes RSW-outMsg-MoTheme {
         100% {
             transform: translate(0, -160%);
         }
@@ -588,39 +694,44 @@ async function refreshCss() {
             box-shadow: none;
         }
     }
-    @keyframes inMsg-Msghd {
+    @keyframes RSW-inMsg-Msghd {
         0% {
             height: 20px;
         }
     }
-    @keyframes inMsg-Title {
+    @keyframes RSW-inMsg-Title {
         0% {
             padding-left: 20px;
         }
     }
-    @keyframes inChat-Msghd {
+    @keyframes RSW-inSendForm-Msg {
+        0% {
+            transform: translate(140px, -80px) scale(0);
+        }
+    }
+    @keyframes RSW-inChat-Msghd {
         0% {
             height: 46px;
             padding-left: 20px;
         }
     }
-    @keyframes inChat-MsghdBack {
+    @keyframes RSW-inChat-MsghdBack {
         0% {
             left: -50px;
         }
     }
-    @keyframes inChat-MsghdSet {
+    @keyframes RSW-inChat-MsghdSet {
         0% {
             right: -50px;
         }
     }
-    @keyframes inChat-SendForm {
+    @keyframes RSW-inChat-SendForm {
         0% {
             height: 0;
             padding: 0;
         }
     }
-    @keyframes inChat-BlackNote {
+    @keyframes RSW-inChat-BlackNote {
         0% {
             transform: translateY(120px);
         }
@@ -632,14 +743,14 @@ async function refreshCss() {
         bottom: 15%;
         padding: 0;
         border: 0;
-        animation: inTopMenus .4s var(--rsw-timing-function-in) 1;
+        animation: RSW-inTopMenus .4s var(--rsw-timing-function-in) 1;
     }
     html[style*=MoTheme] div.u-arrlay.u-arrlay-msg { /*消息(MoTheme)*/
-        animation: inMsg-MoTheme .4s var(--rsw-timing-function-in) 1;
+        animation: RSW-inMsg-MoTheme .4s var(--rsw-timing-function-in) 1;
     }
     html[style*=MoTheme] div.u-arrlay.u-arrlay-msg.f-dn { /*消息(隐藏)(MoTheme)*/
         display: block !important;
-        animation: outMsg-MoTheme .4s forwards var(--rsw-timing-function-out) 1;
+        animation: RSW-outMsg-MoTheme .4s forwards var(--rsw-timing-function-out) 1;
     }
 
     div.u-arrlay-msg .sfrmhd, div.u-arrlay .msghd { /*消息的标题*/
@@ -650,24 +761,25 @@ async function refreshCss() {
     }
     div.u-arrlay-msg .sfrmhd { /*消息一级标题*/
         height: 46px;
-        animation: inMsg-Msghd .3s var(--rsw-timing-function-in) 1;
+        animation: RSW-inMsg-Msghd .3s var(--rsw-timing-function-in) 1;
     }
     div.u-arrlay-msg .sfrmhd h3 { /*消息一级标题文字*/
         margin: 0;
-        animation: inMsg-Title .2s var(--rsw-timing-function-in) 1;
+        animation: RSW-inMsg-Title .2s var(--rsw-timing-function-in) 1;
     }
     div.u-arrlay-msg .sfrmhd a { /*消息标题一键已读*/
         top: 17px;
-        animation: transGradient .2s 1;
+        animation: RSW-transGradient .2s 1;
         transition: .2s;
     }
 
     div.u-arrlay-msg .u-tabbtn { /*选项*/
         width: 344px;
+        margin: 0 auto !important; /*AMAZING*/
         border: none;
         background: none;
         transform: translateY(-40px);
-        animation: transGradient .3s 1;
+        animation: RSW-transGradient .3s 1;
     }
     div.u-arrlay-msg .u-tabbtn .btn { /*选项卡*/
         color: var(--rsw-text-color);
@@ -694,7 +806,7 @@ async function refreshCss() {
         box-shadow:
             0 0 4px 0 var(--rsw-accent-color), /*其他*/
             inset 0 -6px 5px -5px var(--rsw-accent-color); /*下*/
-        animation: navBarSelected .3s 1;
+        animation: RSW-navBarSelected .3s 1;
     }
     div.u-arrlay-msg .u-tabbtn .btn.z-sel:hover {
         box-shadow:
@@ -702,19 +814,34 @@ async function refreshCss() {
             inset 0 -8px 4px -5px var(--rsw-accent-color); /*下*/
     }
     div.u-arrlay-msg .u-tabbtn .btn.z-sel:active {
-        box-shadow: inset 0 -8px 6px -5px var(--rsw-accent-color); /*下*/
+        box-shadow:
+            0 0 0 0 var(--rsw-accent-color), /*其他*/
+            inset 0 -8px 6px -5px var(--rsw-accent-color); /*下*/
     }
 
     div.u-arrlay-msg .u-load { /*载入中…*/
         margin-top: 105px;
     }
-    div.u-arrlay-msg .m-msglist, .u-arrlay-msg .m-cmtlist,
+    div.u-arrlay-msg .u-load:not(body.material-you-theme *)::before { /*loading颜色fix…我是不是在哪说过*/
+        background: var(--rsw-text-color);
+        -webkit-mask-image: url(orpheus://orpheus/style/res/less/pub/img/loading.svg);
+    }
+    div.j-new-song-tip { /*Tip*/
+        z-index: 14;
+        position: relative;
+        transform: translateY(-44px);
+    }
+    div.u-arrlay-msg .m-msglist, div.u-arrlay-msg .m-cmtlist,
     div.u-arrlay-msg .m-atlist { /*一级消息列表*/
         top: 0;
         bottom: 0;
         margin-top: 3px;
         padding-top: 72px;
         border-radius: var(--rsw-window-bdr);
+    }
+    div.withNewSongTip .m-msglist, div.withNewSongTip .m-cmtlist,
+    div.withNewSongTip .m-atlist { /*带Tip的消息列表*/
+        padding-top: 102px;
     }
     body.material-you-theme .m-msglist, body.material-you-theme .m-cmtlist,
     body.material-you-theme .m-atlist { /*一级消息列表(MY)*/
@@ -723,21 +850,41 @@ async function refreshCss() {
         padding-top: 0;
     }
     div.m-msglist li, div.m-cmtlist li, div.m-atlist li { /*一级消息列表项*/
-        animation: transGradient .2s 1;
+        animation: RSW-transGradient .2s 1;
+    }
+    div.m-cmtlist .cmtform, div.m-atlist .cmtform { /*回复表单*/ /*又在给NCM修bug？*/
+        margin: 10px -20px 0;
+        padding: 10px 20px 0;
+        animation: RSW-inSendForm-Msg .3s var(--rsw-timing-function-in2) 1;
+    }
+    div.u-arrlay .u-msg { /*回复成功提示*/
+        color: var(--rsw-accent-color);
+        border-color: var(--rsw-accent-color);
+        border-radius: 8px;
+        background: #0000;
+        box-shadow: 0 0 4px 0 var(--rsw-accent-color);
     }
 
     div.u-arrlay .msghd { /*消息二级标题*/
         height: 20px;
         padding: 14px 0 14px 40px;
         text-align: left;
-        animation: inChat-Msghd .3s var(--rsw-timing-function-in) 1;
+        animation: RSW-inChat-Msghd .3s var(--rsw-timing-function-in) 1;
         z-index: 15;
     }
     div.u-arrlay .back { /*返回按钮*/
         top: 14px;
         left: 17px;
         padding: 0;
-        animation: inChat-MsghdBack .2s var(--rsw-timing-function-in) 1;
+        animation: RSW-inChat-MsghdBack .2s var(--rsw-timing-function-in) 1;
+    }
+    div.u-arrlay .back.rsw-replace-success { /*返回按钮（svg替换成功）*/
+        top: 13.5px;
+        left: 12px;
+    }
+    div.u-arrlay .back.rsw-replace-success svg { /*返回按钮svg（svg替换成功）*/
+        width: 20px;
+        max-height: 20px;
     }
     div.u-arrlay .msghd .set { /*设置(主要是小秘书)*/
         position: absolute;
@@ -745,7 +892,7 @@ async function refreshCss() {
         right: 16px;
         margin: 0;
         padding: 0;
-        animation: inChat-MsghdSet .3s var(--rsw-timing-function-in) 1;
+        animation: RSW-inChat-MsghdSet .3s var(--rsw-timing-function-in) 1;
     }
     body.material-you-theme div.u-arrlay .msghd .set { /*设置(MY)*/
         top: 6px;
@@ -762,7 +909,7 @@ async function refreshCss() {
         bottom: 0;
         margin: 3px 0;
         padding: 46px 0 109px;
-        animation: transGradient .2s 1;
+        animation: RSW-transGradient .2s 1;
     }
     body.material-you-theme div.u-arrlay-chat .m-chartlist { /*二级消息列表（MY）*/
         bottom: 112px;
@@ -771,7 +918,7 @@ async function refreshCss() {
         padding: 0;
     }
     div.m-chartlist li.m-dlist-msg { /*消息块*/
-        animation: transGradient .2s 1;
+        animation: RSW-transGradient .2s 1;
     }
     div.m-chartlist li.m-dlist-msg .charttxt, div.m-chartlist li.m-dlist-msg .chartpic { /*主要给自己发的消息去蓝*/
         background: #8881;
@@ -782,7 +929,7 @@ async function refreshCss() {
     .m-dlist .src-hvr:hover, .m-dlist .card:hover, .m-dlist .src:hover, .m-chartlist .me .src:hover { /*链接卡片（鼠标移上）*/
         background: #8883;
     }
-    div.u-arrlay-chat .cmtform { /*底部消息表单*/
+    div.u-arrlay-chat .cmtform:not(.m-cmtlist *, .m-atlist *) { /*底部消息表单*/ /*not选择器防止一个较难复现的bug*/
         bottom: 0;
         height: 97px;
         padding: 1px 15px 15px;
@@ -790,16 +937,29 @@ async function refreshCss() {
         background: var(--rsw-title-bg);
         backdrop-filter: var(--rsw-title-blur);
         animation:
-            transGradient 0s .2s backwards 1, /*不影响JS定位+防止加载未完毕闪现*/
-            inChat-SendForm .4s .2s var(--rsw-timing-function-in2) 1;
+            RSW-transGradient 0s .2s backwards 1, /*不影响JS定位+防止加载未完毕闪现*/
+            RSW-inChat-SendForm .4s .2s var(--rsw-timing-function-in2) 1;
         z-index: 15;
     }
     div.m-chartlist .blacknote { /*陌生人私信关闭提示*/
-        margin-top: -53px;
+        position: sticky;
+        bottom: 0;
+        margin-top: 0;
         background: var(--rsw-title-bg);
+        backdrop-filter: var(--rsw-title-blur);
         animation:
-            transGradient 0s .1s backwards 1, /*不影响JS定位*/
-            inChat-BlackNote .4s .1s var(--rsw-timing-function-in) 1;
+            RSW-transGradient 0s .1s backwards 1, /*不影响JS定位*/
+            RSW-inChat-BlackNote .4s .1s var(--rsw-timing-function-in) 1;
+        z-index: 15;
+    }
+    div.m-chartlist .blacknote .cls.rsw-replace-success { /*如成功替换svg*/
+        top: 5px;
+        right: 5px;
+        width: 15px;
+        height: 15px;
+    }
+    div.m-chartlist .outer.z-hasnote { /*带关闭提示的二级消息列表的inner*/
+        padding-bottom: 0;
     }
 
         /*消息输入框文本超出BUG修复*/
@@ -818,49 +978,163 @@ async function refreshCss() {
     div.m-timelineslide .cls, div.m-timelineslide .pictool, div.m-timelineslide .pictool:hover { /*看图器关闭/上下张*/
         opacity: 1;
     }
+    div.m-timelineslide .mask { /*看图器遮罩*/
+        z-index: -1 !important;
+    }
+
+    @keyframes RSW-inTip {
+        0% {
+            opacity: 0;
+            box-shadow: none;
+            transform: translateY(10px) scale(.8);
+        }
+    }
+    @keyframes RSW-inTip-Text {
+        0% {
+            opacity: 0;
+            max-width: 0;
+        }
+        100% {
+            max-width: 9999px;
+        }
+    }
+    @keyframes RSW-inTopTip {
+        0% {
+            opacity: 0;
+            box-shadow: none;
+            transform: translate(-50%, -40px) scale(.6);
+        }
+    }
+    @keyframes RSW-outTip {
+        100% {
+            opacity: 0;
+            box-shadow: none;
+            transform: translateY(7px) scale(.9);
+        }
+    }
+    @keyframes RSW-outTopTip {
+        0% {
+            opacity: 0;
+            box-shadow: none;
+            transform: translateY(-7px) scale(.9);
+        }
+    }
+    div.m-switch:not(body.material-you-theme *),
+    div.u-result .wrap .inner:not(body.material-you-theme *),
+    div.m-queuenotify:not(body.material-you-theme *),
+    div.m-player .toast { /*下载列表/提示框/底栏弹出框*/
+        opacity: 1; /*?*/
+        padding: 8px 12px;
+        border: 1px var(--rsw-window-bd) !important;
+        border-radius: var(--rsw-window-bdr);
+        background: var(--rsw-bg-color-trans) var(--rsw-bg-clip) !important;
+        backdrop-filter: var(--rsw-window-blur) !important;
+        box-shadow: 0 3px 24px -6px var(--rsw-window-shadow-color);
+        animation: RSW-inTip .4s var(--rsw-timing-function-in) 1;
+    }
+    #music-163-com div.m-switch { /*下载列表（行吧跟自己对抗）*/
+        padding: 0 4px;
+        animation: RSW-inTopTip .4s var(--rsw-timing-function-in) 1;
+    }
+    div.m-switch .cls.rsw-replace-success { /*替换后的下载列表关闭按钮*/
+        height: 17px;
+    }
+    div.m-switch svg use[xlink\:href*=transput_done] {
+        fill: green;
+    } /* 上面这段代码并没有效果 */
+    div.u-result .wrap .inner span,
+    div.m-queuenotify, div.toast { /*提示框文字（全局）*/
+        animation: RSW-transGradient .15s 1;
+    }
+    div.u-result .wrap .inner span:not(.errTxt, body.material-you-theme *),
+    div.m-queuenotify:not(body.material-you-theme *) { /*提示框文字（一般）*/
+        color: var(--rsw-text-color);
+    }
+    div.u-result.z-hide { /*提示框+背景遮罩（即将消失）*/
+        animation: none;
+    }
+    div.u-result.z-hide .wrap .inner:not(body.material-you-theme *),
+    div.m-queuenotify.f-dn:not(body.material-you-theme *),
+    div.m-player .toast.f-dn { /*提示框（消失/即将消失）*/
+        animation: RSW-outTip .3s forwards var(--rsw-timing-function-out) 1;
+    }
+    div.u-result .icon { /*图标*/
+        animation: RSW-transGradient .15s 1;
+    }
+    div.u-result .u-icn-loading { /*loading颜色fix*/
+        background: var(--rsw-text-color);
+        -webkit-mask-image: url(../style/res/common/toast/loading.svg);
+    }
+    body.material-you-theme .u-result .u-icn-loading { /*loading(MY)*/
+        background: var(--rsw-accent-color);
+        -webkit-mask-image: url("data:image/svg+xml,%0A%3Csvg width=%2724%27 height=%2724%27 stroke=%27%23000%27 viewBox=%270 0 24 24%27 xmlns=%27http://www.w3.org/2000/svg%27%3E%3Cstyle%3E.spinner_V8m1%7Btransform-origin:center;animation:spinner_zKoa 2s linear infinite%7D.spinner_V8m1 circle%7Bstroke-linecap:round;animation:spinner_YpZS 1.5s ease-in-out infinite%7D@keyframes spinner_zKoa%7B100%25%7Btransform:rotate%28360deg%29%7D%7D@keyframes spinner_YpZS%7B0%25%7Bstroke-dasharray:0 150;stroke-dashoffset:0%7D47.5%25%7Bstroke-dasharray:42 150;stroke-dashoffset:-16%7D95%25,100%25%7Bstroke-dasharray:42 150;stroke-dashoffset:-59%7D%7D%3C/style%3E%3Cg class=%27spinner_V8m1%27%3E%3Ccircle cx=%2712%27 cy=%2712%27 r=%279.5%27 fill=%27none%27 stroke-width=%273%27%3E%3C/circle%3E%3C/g%3E%3C/svg%3E");
+    }
+    div.u-result .u-icn-operatefail { /*err logo*/
+        width: 25px;
+        height: 25px;
+        background-size: 25px auto; /*视觉上居中*/
+        transform: translateX(-1px); /*同上*/
+    }
+    div.u-result .icon:not(:only-child):not(body.material-you-theme *) { /*带文字提示的图标*/
+        transform: translateX(-3px); /*同上上*/
+    }
+    div.u-result.u-result-play .inner:not(body.material-you-theme *) { /*播放模式提示inner*/
+        line-height: 28px; /*同上上上（高缩放可见明显效果）*/
+        width: 75px;
+        padding: 0;
+    }
+    body.rsw-relive div.u-result.u-result-play { /*播放模式提示（ReLive）*/
+        bottom: 75px;
+    }
+    div.m-queuenotify:not(body.material-you-theme *) { /*开始播放提示*/
+        color: var(--rsw-text-color);
+        width: auto;
+        height: auto;
+        line-height: 0;
+        padding: 16px; /*宽高通过padding控制*/
+        animation: RSW-inTip .4s .1s backwards var(--rsw-timing-function-in) 1;
+    }
+    div.m-player .toast.u-hires, div.m-player .toast.u-dolby { /*TOAST通知（Hi-Res和杜比）*/
+        top: -28px;
+    }
+    div.m-player .toast.u-mute { /*TOAST通知（音量提示）*/
+        padding: 10px 14px;
+    }
+    div.m-queuenotify.f-dn:not(body.material-you-theme *), div.m-player .toast.f-dn {
+    /*开始播放提示/TOAST通知（消失版）*/
+        pointer-events: none;
+        display: block !important;
+    }
     `;
-    if(!JSON.parse(localStorage.getItem("isRswEnable"))) {
+    if(!isEnabled) {
         console.log("RswLog: Disabled");
         cssIn = ``;
     }
     try {
-        q("#RswStyles").innerHTML = cssIn;
+        q("#RswStyles").innerHTML = cssInA + cssIn;
     } catch {
-        crStyle.setAttribute("id", "RswStyles");
-        crStyle.innerHTML = cssIn;
-        document.head.appendChild(crStyle);
+        let c = cE("style");
+        c.setAttribute("id", "RswStyles");
+        c.innerHTML = cssInA + cssIn;
+        document.head.appendChild(c);
     }
     console.log("RswLog: Styles refreshed");
 }
 function loop() {
     function cb() {
-        if(!JSON.parse(localStorage.getItem("isRswEnable"))) {
-            return;
-        }
         let dbcl = document.body.classList;
         let isReLive
-        function s(e, s) {
-            return getComputedStyle(q(e)).getPropertyValue(s);
+        function s(e, p) { /*style(element, property)*/
+            return getComputedStyle(q(e)).getPropertyValue(p);
         }
         let accentColor = s("body", "--themeC1");
         let accentTextColor = s("body", "color");
         let bgColor = s("body", "background-color");
         let bgColorTrans = bgColor.slice(0, bgColor.length - 1) + ", .7)";
-        /*if (/#/.test(bgColor)) {
-            if (bgColor.length == 4) { /*3位转6位
-                let n = "#";
-                for (i = 1; i < 4; i++) {
-                    n += bgColor.slice(i, i + 1).concat(bgColor.slice(i, i + 1));
-                }
-                bgColor = n;
-            }
-            bgColorTrans = bgColor + "B2";
-        }*/
-
         try { /*是否ReLive主题*/
             if (/relive-theme/.test(q("#StyleSnippetStyles").outerHTML)) {
                 isReLive = true;
-                bgColor = s("#portal_root", "background-image"); /*.match(/linear-gradient\((?:[^()]*|\([^)]*\))*\)/); /*匹配其中的linear-gradient*/
+                bgColor = s("#portal_root", "background-image");
                 bgColorTrans = s("body", "--layer-background");
             }
         } catch {}
@@ -871,7 +1145,7 @@ function loop() {
             bgColor,
             bgColorTrans,
         });
-        rswColors = JSON.stringify(rswColors)
+        rswColors = JSON.stringify(rswColors);
         let rswCaches = localStorage.getItem("RswColorCaches");
         if (rswCaches != rswColors) {
             if (isReLive) {
@@ -884,47 +1158,83 @@ function loop() {
         }
     }
 
-    new MutationObserver(() => {
-        cb();
-    }).observe(q("html"), {
-        attributeFilter: ["style", "class"],
-        characterData: false,
-    });
-
-    new MutationObserver(() => {
-        cb();
-    }).observe(q("body"), {
-        attributeFilter: ["class"],
-        characterData: false,
-    });
+    let A = qAll("html, body");
+    for(i = 0; i < A.length; i++){
+        new MutationObserver(() => {
+            cb();
+        }).observe(A[i], {
+            attributeFilter: ["style", "class"],
+            characterData: false,
+        });
+    };
 
     new MutationObserver((list) => {
         list.forEach((item) => {
-            if (item.target instanceof HTMLStyleElement) {
+            let e = item.target; /*e = element*/
+            if (e instanceof HTMLStyleElement) {
                 cb();
-            }
-        })
+            };
+            if (!isEnabled) {
+                return;
+            };
+            //下面我们来检查类名
+            let li = {
+                "m-card-invite": flyBackInv,
+                "m-emts": flyBackEmts,
+                "u-arrlay-chat": () => replaceSvg(".u-arrlay-chat .back", "back", "chat back"),
+                "m-chartlist": () => replaceSvg(".m-chartlist .blacknote .cls", "close", "blacknote close"),
+                "m-switch": () => replaceSvg(".m-switch .cls", "close", "download list close"),
+            };
+            for (c in li) {
+                if (e.classList.contains(c)) {
+                    li[c]();
+                }
+            };
+        });
     }).observe(q("html"), {
         attributes: false,
         childList: true,
         subtree: true,
     });
+
+    function flyBackInv() {
+        let e = q(".m-card-invite");
+        e.style.bottom = "";
+        e.style.right = ""; /*防一个特别奇怪的bug*/
+        let eR = e.getBoundingClientRect();
+        let ww = window.innerWidth;
+        let wh = window.innerHeight;
+        if (eR.bottom > wh) {
+            e.style.top = `${wh - eR.height - 53}px`;
+        };
+        if (eR.right > ww) {
+            e.style.left = `${ww - eR.width + 17}px`;
+        };
+    };
+    function flyBackEmts() {
+        let e = q(".m-emts");
+        e.style.bottom = "";
+        e.style.right = ""; /*防bug*/
+        let eR = e.getBoundingClientRect();
+        let ww = window.innerWidth;
+        let wh = window.innerHeight;
+        if (eR.bottom > wh) {
+            e.style.top = "unset";
+            e.style.bottom = "0";
+        };
+        if (eR.right > ww) {
+            e.style.left = "unset";
+            e.style.right = "0";
+        };
+    };
 }
 
 let readCfg = JSON.parse(localStorage.getItem("RswSettings"));
 
 async function onOffAllSets() {
-    let isChecked = q("#mainSwitch").checked;
-    let allInput = qAll("#RswSettings input");
-    for (i = 0; i < allInput.length; i++) {
-        allInput[i].disabled = !isChecked;
-    }
-    q("#mainSwitch").disabled = false;
-    localStorage.setItem("isRswEnable", isChecked);
-    console.log(localStorage.getItem("isRswEnable"));
-    if (isChecked == true) {
-        loop();
-    }
+    isEnabled = q("#mainSwitch").checked;
+    localStorage.setItem("isRswEnable", isEnabled);
+    console.log(`RswLog: isEnabled = ${isEnabled}`);
     refreshCss();
 }
 
@@ -943,10 +1253,10 @@ plugin.onConfig( () => {
     crCfgPage.innerHTML = `
     <style>
     #RswSettings {
-        --rsws-fg: var(--rsw-accent-color);
-        --rsws-bg: var(--rsw-bg-color-trans);
-        --rsws-bg-wot: var(--rsw-bg-color);
-        color: var(--md-accent-color-secondary, var(--ncm-text));
+        --rsws-fg: var(--rsw-accent-color, var(--themeC1));
+        --rsws-bg: var(--rsw-bg-color-trans, #8881);
+        --rsws-bg-wot: var(--rsw-bg-color, #888);
+        color: var(--rsw-text-color);
         line-height: 20px;
         font-size: 16px;
     }
@@ -1123,7 +1433,7 @@ plugin.onConfig( () => {
     </style>
     <p>RevisedSecondaryWindows</p>
     <br />
-    <p>v0.3.0 by </p><input class="link" type="button" onclick="betterncm.ncm.openUrl('https://github.com/Lukoning')" value=" Lukoning " />
+    <p>v0.4.0 by </p><input class="link" type="button" onclick="betterncm.ncm.openUrl('https://github.com/Lukoning')" value=" Lukoning " />
     <br />
     <label class="switch">
         <input id="mainSwitch" type="checkbox" />
@@ -1133,7 +1443,7 @@ plugin.onConfig( () => {
     <br />
     <p>目前实现：</p>
     <br />
-    <p>- 主界面 各种弹窗对话框优化+动画（除了部分提示框）</p>
+    <p>- 主界面 各种弹窗对话框优化+动画</p>
     <br />
     <p>- 音效界面 圆角 外观 控件动画</p>
     <br />
@@ -1141,15 +1451,17 @@ plugin.onConfig( () => {
     <br />
     <p>- 第三方登录/绑定界面 窗口圆角 标题栏</p>
     <br />
-    <p>- 开发ing……</p>
+    <p>- 开发ing…… 更多详见更新日志</p>
     <br />
     <p>* 部分窗口的圆角由操作系统提供</p>
     <br />
     <input class="link" type="button" onclick="betterncm.ncm.openUrl('https://github.com/Lukoning/RevisedSecondaryWindows')" value=" 源代码(GitHub) " />
     <br />
-    <input class="link" type="button" onclick="betterncm.ncm.openUrl('https://github.com/Lukoning/RevisedSecondaryWindows/issues')" value=" 问题反馈/功能建议(GitHub) " />
+    <input class="link" type="button" onclick="betterncm.ncm.openUrl('https://github.com/Lukoning/RevisedSecondaryWindows/releases')" value=" 更新日志(GitHub Releases) " />
+    <br />
+    <input class="link" type="button" onclick="betterncm.ncm.openUrl('https://github.com/Lukoning/RevisedSecondaryWindows/issues')" value=" 问题反馈/功能建议(GitHub issues) " />
     `;
-    if (JSON.parse(localStorage.getItem("isRswEnable"))) {
+    if (isEnabled) {
         crCfgPage.querySelector("#mainSwitch").checked = true;
     } else {
         crCfgPage.querySelector("#mainSwitch").checked = false;
