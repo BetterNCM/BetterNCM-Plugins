@@ -8,6 +8,8 @@ function qAll(n) {
     return document.querySelectorAll(n);
 }
 let isEnabled = JSON.parse(localStorage.getItem("isRswEnable"));
+let fBCsToID = null;
+let pSsToID = null;
 
 function replaceSvg(s, use, n){
     let li = {
@@ -31,7 +33,6 @@ async function refreshCss() {
     let rswCaches = JSON.parse(localStorage.getItem("RswColorCaches"));
     let cssInA = `
     body { /*整体*/
-        perspective: 1000px; /*3D动画必要*/
         --rsw-accent-color: ${rswCaches.accentColor};
         --rsw-text-color: ${rswCaches.accentTextColor};
         --rsw-bg-color: ${rswCaches.bgColor};
@@ -187,6 +188,11 @@ async function refreshCss() {
         backdrop-filter: var(--rsw-mask-blur);
         animation: RSW-inMask .3s 1;
     }
+    div.u-arrlay .s-fc1, div.m-schlist li a, div.m-userlist .sicn {
+    /*弹弹字字/部分图标*/
+        color: var(--rsw-text-color) !important;
+        fill: var(--rsw-text-color) !important;
+    }
     div.m-card ::-webkit-scrollbar, div.m-layer ::-webkit-scrollbar, div.m-playlist ::-webkit-scrollbar,
     div.m-schlist ::-webkit-scrollbar, div.u-arrlay-msg ::-webkit-scrollbar {
     /*弹弹滚动条*/
@@ -325,10 +331,16 @@ async function refreshCss() {
         fill: var(--rsw-accent-color);
         background: var(--rsw-trans-color);
     }
+    div.m-layer .u-cklist input[type=radio]:checked + span { /*弹窗内单选框*/
+        border-color: var(--rsw-accent-color);
+    }
+    div.m-layer .u-cklist input[type=radio]:checked + span i.circle { /*弹窗内单选框圆圆*/
+        background: var(--rsw-accent-color);
+    }
     div.m-layer .u-cklist input[type=checkbox]:checked + span { /*弹窗内多选框*/
         background: var(--rsw-accent-color);
     }
-    div.m-layer .u-cklist input[type="checkbox"]:checked + span svg { /*弹窗内多选框svg*/
+    div.m-layer .u-cklist input[type=checkbox]:checked + span svg { /*弹窗内多选框svg*/
         fill: var(--rsw-bg-color);
     }
 
@@ -604,6 +616,33 @@ async function refreshCss() {
     body.rsw-relive .m-playlist .listbd { /*弹正播列的列(ReLive)*/
         border-bottom-right-radius: 0;
         border-bottom-left-radius: 0;
+    }
+    div.m-playlist li { /*弹正播列的项*/
+        font-size: 13px;
+        height: 37px;
+    }
+    div.m-playlist li > *, div.m-playlist li .col { /*弹正播列的项的里面的各个直系元素*/
+        margin-top: 2px;
+    }
+    div.m-playlist li * { /*弹正播列的项的里面的各个元素*/
+        transition: .2s var(--rsw-timing-function-in);
+    }
+    div.m-playlist li::before { /*正在播放哪首的提示*/
+        margin-top: 11px;
+    }
+    div.m-playlist li .title { /*弹正播列的项的title*/
+        width: 190px;
+    }
+    /*以下…又又又在给网易云修bug…*/
+    div.m-playlist li:not(:hover, .z-play, .z-pause) .title { /*弹正播列的项的title（非hover非播放）*/
+        color: var(--rsw-text-color);
+    }
+    div.m-playlist li.z-play .title,
+    div.m-playlist li.z-pause .title { /*弹正播列的项的title(playing)*/
+        color: var(--rsw-accent-color);
+    }
+    #music-163-com div.m-playlist li .tit { /*弹正播列的项的title的字*/
+        color: inherit !important;
     }
 
     @keyframes RSW-inTopMenus {
@@ -1135,6 +1174,10 @@ function loop() {
         let accentTextColor = s("body", "color");
         let bgColor = s("body", "background-color");
         let bgColorTrans = bgColor.slice(0, bgColor.length - 1) + ", .7)";
+        /*是否MY主题*/
+        if (dbcl.contains("material-you-theme")) {
+            accentTextColor = s("body", "--md-accent-color-secondary");
+        }
         try { /*是否ReLive主题*/
             if (/relive-theme/.test(q("#StyleSnippetStyles").outerHTML)) {
                 isReLive = true;
@@ -1172,6 +1215,7 @@ function loop() {
         });
     };
 
+    let SWinSlct = ".m-layer, .m-card-noarrow, .next-modal, .u-atsuggest, .m-emts";
     new MutationObserver((list) => {
         list.forEach((item) => {
             let e = item.target; /*e = element*/
@@ -1181,17 +1225,19 @@ function loop() {
             if (!isEnabled) {
                 return;
             };
-            //下面我们来检查类名
+            //下面我们来检查…
             let li = {
-                "m-card-invite": flyBackInv,
-                "m-emts": flyBackEmts,
-                "u-arrlay-chat": () => replaceSvg(".u-arrlay-chat .back", "back", "chat back"),
-                "m-chartlist": () => replaceSvg(".m-chartlist .blacknote .cls", "close", "blacknote close"),
-                "m-switch": () => replaceSvg(".m-switch .cls", "close", "download list close"),
+                "body": ckBody,
+                [SWinSlct]: perspectiveSet,
+                ".m-card": flyBackCard,
+                ".m-emts": flyBackEmts,
+                ".u-arrlay-chat": () => replaceSvg(".u-arrlay-chat .back", "back", "chat back"),
+                ".m-chartlist": () => replaceSvg(".m-chartlist .blacknote .cls", "close", "blacknote close"),
+                ".m-switch": () => replaceSvg(".m-switch .cls", "close", "download list close"),
             };
             for (c in li) {
-                if (e.classList.contains(c)) {
-                    li[c]();
+                if (e.matches(c)) {
+                    li[c](e);
                 }
             };
         });
@@ -1201,8 +1247,7 @@ function loop() {
         subtree: true,
     });
 
-    function flyBackInv() {
-        let e = q(".m-card-invite");
+    function flyBackCard(e) {
         e.style.bottom = "";
         e.style.right = ""; /*防一个特别奇怪的bug*/
         let eR = e.getBoundingClientRect();
@@ -1214,9 +1259,14 @@ function loop() {
         if (eR.right > ww) {
             e.style.left = `${ww - eR.width + 17}px`;
         };
+        if (fBCsToID == null) {
+            fBCsToID = setTimeout(()=>{
+                flyBackCard(e);
+                fBCsToID = null;
+            }, 1500)
+        };
     };
-    function flyBackEmts() {
-        let e = q(".m-emts");
+    function flyBackEmts(e) {
         e.style.bottom = "";
         e.style.right = ""; /*防bug*/
         let eR = e.getBoundingClientRect();
@@ -1231,6 +1281,18 @@ function loop() {
             e.style.right = "0";
         };
     };
+    function perspectiveSet() {
+        document.body.style.perspective = "1000px";
+        try{clearTimeout(pSsToID)}catch{}
+        pSsToID = setTimeout(()=>{
+            document.body.style.perspective = "";
+        }, 2000)
+    };
+    function ckBody() {
+        if (q(SWinSlct) != null) {
+            perspectiveSet();
+        }
+    }
 }
 
 let readCfg = JSON.parse(localStorage.getItem("RswSettings"));
@@ -1437,7 +1499,7 @@ plugin.onConfig( () => {
     </style>
     <p>RevisedSecondaryWindows</p>
     <br />
-    <p>v0.4.1 by </p><input class="link" type="button" onclick="betterncm.ncm.openUrl('https://github.com/Lukoning')" value=" Lukoning " />
+    <p>v0.4.2 by </p><input class="link" type="button" onclick="betterncm.ncm.openUrl('https://github.com/Lukoning')" value=" Lukoning " />
     <br />
     <label class="switch">
         <input id="mainSwitch" type="checkbox" />
