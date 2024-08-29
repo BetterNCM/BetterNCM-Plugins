@@ -1,0 +1,20 @@
+{
+    "manifest_version": 1,
+    "name": "PiPWindow", 
+    "slug": "PiPWindow", 
+    "type": "extension",
+    "version": "0.0.3",
+    "author": "Lukoning", 
+    "author_links": ["https://github.com/Lukoning"],
+    "description": "一个纯JavaScript实现的歌曲信息小窗",
+    "betterncm_version": ">=1.0.0",
+    "preview": "preview.png",
+    "noDevReload":true,
+    "injects": {
+        "Main": [ 
+            {
+                "file": "./main.js"
+            }
+        ]
+    }
+}
