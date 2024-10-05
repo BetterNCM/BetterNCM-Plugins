@@ -4,7 +4,7 @@ let rvN, v, c, cover, cvUrlCache, accentC, textC, textCT13, textCT31, textCT56, 
 , pO = `<path d="${pdd}M20 15H14V19H20V15ZM6.70711 6.29289L8.95689 8.54289L11 6.5V12H5.5L7.54289 9.95689L5.29289 7.70711L6.70711 6.29289Z"></path>`
 , pC = `<path d="${pdd}"></path>`
 , readCfg = JSON.parse(localStorage.getItem("PiPWindowSettings"))
-, cfgDefault = ({whenClose: "none", whenBack: "back", autoHideMainWindow: false, customFonts: "\"Microsoft Yahei UI\", system-ui", showAlbum: true, moreRedraws: false, resolutionRatio: "auto"})
+, cfgDefault = ({whenClose: "none", whenBack: "back", autoHideMainWindow: false, customFonts: "\"Microsoft Yahei UI\", system-ui", showAlbum: true, moreRedraws: false, resolutionRatio: "auto", aspectRatio: "2:1"})
 readCfg = {...cfgDefault, ...readCfg} //缺失配置啥的处理一下
 window.PiPWShowRefrshing = (x=true)=>{if(x==true){showRefrshing=true;return true}else if(x==false){showRefrshing=false;return false}}
 function cE(n, d=document) {return d.createElement(n)}
@@ -59,9 +59,11 @@ HTMLCanvasElement.prototype.toPiP = function(){
                 v.addEventListener("pause", ()=>{ncmPause()})
                 //小窗打开/关闭逻辑
                 v.addEventListener("enterpictureinpicture", ()=>{ console.log("PiPW Log: PiP窗口已创建", v)
+                    let s = betterncm.ncm.getPlayingSong()
+                    if (!s) {s=({state:1})}
                     if (readCfg.autoHideMainWindow) {mwf.cef.R$call("winhelper.showWindow", "hide")}
                     tipMsg("已打开小窗"); q("#PiPW-Toggle svg").innerHTML=pC; q("#PiPW-Toggle").setAttribute("style", "fill: currentColor; opacity: 1");
-                    if (player.playState=="stop"&&!q(".m-player:not(#main-player):not(.f-dn)")) {v.pause()} DontPlay=false
+                    if (s.state==1) {v.pause()} DontPlay=false
                 });
                 v.addEventListener("leavepictureinpicture", ()=>{ DontPause=true; let p = v.paused
                     tipMsg("已关闭小窗"); q("#PiPW-Toggle svg").innerHTML=pO; q("#PiPW-Toggle").setAttribute("style", "");
@@ -281,17 +283,21 @@ async function loadPiP(isToPiP=true, from="unknow") {
         if (colorPick()=="reCv") {reloadCover();}
     
         /*创建canvas*/
-        if (!c) {
-            c = cE("canvas");
-            console.log("PiPW Log: canvas元素已创建", c);
-        }
-        if (c.height != r || c.width != r*2) {
-            c.height = r; c.width = r*2; reloadCover()
-        }
-        if (isToPiP && !PiPE) {
-            DontPlay=true; //解决打开小窗时自动播放的问题
-            c.toPiP();
-            reloadCover()
+        loadC()
+        function loadC() {
+            let [w, h] = readCfg.aspectRatio.split(":").map(Number), rw = Math.round(r*(w/h)) //因为width不能设为小数
+            if (!c) {
+                c = cE("canvas");
+                console.log("PiPW Log: canvas元素已创建", c);
+            }
+            if (c.width != rw || c.height != r) {
+                c.width = rw; c.height = r; reloadCover()
+            }
+            if (isToPiP && !PiPE) {
+                DontPlay=true; //解决打开小窗时自动播放的问题
+                c.toPiP();
+                reloadCover()
+            }
         }
     
         function reloadCover() {
@@ -406,14 +412,14 @@ async function loadPiP(isToPiP=true, from="unknow") {
         cC.fillStyle = accentC;
         cC.fillRect(pbMgL, pbMgT, (c.width-pbMgL)*tP, o5); /*进度条*/
     
-        if(showRefrshing){console.log(`PiPW Log: <canvas>重绘完成，当前分辨率${r}x${r*2}, 请求来自${from}`)}
+        if(showRefrshing){console.log(`PiPW Log: <canvas>重绘完成，当前分辨率${c.width}x${c.height}, 请求来自${from}`)}
     } catch (e) {
         console.error("PiPW Error: <canvas>绘制出错，详情：\n", e);tipMsg("&lt;canvas&gt;绘制出错，详见JavaScript控制台", "err")
     }
 }
 
 plugin.onAllPluginsLoaded(()=>{load()});
-function load() {A();B();C();D();E()
+function load() {A();B();C();D();E();F()
     if (readCfg.moreRedraws) {setInterval(()=>{loadPiP(false, "setInterval()")},100)}
     async function A() { //监听播放时长变动
         await betterncm.utils.waitForElement(".m-player time");
@@ -451,7 +457,25 @@ function load() {A();B();C();D();E()
             subtree: true,
         });
     }
-    async function D() { //向歌曲信息旁添加PiP开关
+    async function D() { //监听私人漫游暂停/开始播放变动
+        await betterncm.utils.waitForElement(".m-player-fm .btnp-play");
+        new MutationObserver(() => {
+            let PiPE = document.pictureInPictureElement, s = betterncm.ncm.getPlayingSong().state
+            if (PiPE&&PiPE.id=="PiPW-VideoE") {if (s==2) {PiPE.play()} else if (s==1) {PiPE.pause()}}
+        }).observe(q(".m-player-fm .btnp-play"), {attributeFilter: ["data-action"]})
+    }
+    async function E() { //监听颜色变动
+        let A = qAll("html, body");
+        for(i = 0; i < A.length; i++){
+            new MutationObserver(() => {
+                setTimeout(()=>{colorPick()}, 100)
+            }).observe(A[i], {
+                attributeFilter: ["style", "class"],
+                characterData: false,
+            });
+        };
+    }
+    async function F() { //向歌曲信息旁添加PiP开关
         await betterncm.utils.waitForElement(".m-pinfo h3");
         let b = cE("div");
         b.id = "PiPW-Toggle"; b.classList.add("icn", "f-cp");
@@ -467,17 +491,6 @@ function load() {A();B();C();D();E()
             childList: true,
             subtree: true,
         });
-    }
-    async function E() { //监听颜色变动
-        let A = qAll("html, body");
-        for(i = 0; i < A.length; i++){
-            new MutationObserver(() => {
-                setTimeout(()=>{colorPick()}, 100)
-            }).observe(A[i], {
-                attributeFilter: ["style", "class"],
-                characterData: false,
-            });
-        };
     }
 }
 
@@ -786,7 +799,7 @@ plugin.onConfig(()=>{
     }
 </style>
 <div class="part noAutoBr" style="margin-top: 0;">
-    <p class="partTitle">PiPWindow </p><p> 0.2.0</p>
+    <p class="partTitle">PiPWindow </p><p> 0.2.1</p>
     <br />
     <p>by </p>
     <input class="link" type="button" onclick="betterncm.ncm.openUrl('https://github.com/Lukoning')" value=" Lukoning " />
@@ -878,7 +891,38 @@ plugin.onConfig(()=>{
     </label>
     <p>缩短重绘间隔 (可能有性能损耗，重载生效)</p>
     <br />
-    <p>渲染分辨率 (宽高比2:1)</p>
+    <p>窗口宽高比</p>
+    <br />
+    <div class="item">
+        <label class="radio">
+            <input type="radio" name="aspectRatio" value="16:9" />
+            <span class="slider button"></span>
+        </label>
+        <p>16:9</p>
+    </div>
+    <div class="item">
+        <label class="radio">
+            <input type="radio" name="aspectRatio" value="2:1" />
+            <span class="slider button"></span>
+        </label>
+        <p>2:1</p>
+    </div>
+    <div class="item">
+        <label class="radio">
+            <input type="radio" name="aspectRatio" value="21:9" />
+            <span class="slider button"></span>
+        </label>
+        <p>21:9</p>
+    </div>
+    <div class="item">
+        <label class="radio">
+            <input type="radio" name="aspectRatio" value="3:1" />
+            <span class="slider button"></span>
+        </label>
+        <p>3:1</p>
+    </div>
+    <br />
+    <p>渲染分辨率</p>
     <br />
     <div class="item">
         <label class="radio">
@@ -927,7 +971,6 @@ plugin.onConfig(()=>{
     <p class="partTitle">关于此版本的一些说明</p><p> 烦死了烦死了</p>
     <br /><p>控制按钮在暂停时并不会显示，但是仍然可以空格播放和暂停</p>
     <br /><p>暂停时按下关闭按钮，其效果与返回按钮相同……根本没法区分这俩按钮啊啊啊啊！！</p>
-    <br /><p>私人漫游时在小窗外进行的暂停操作并不会被识别——播放操作也一样</p>
     <br />
     <br /><p>以及你有没有发现拖动/右边缘/下边缘调整大小后，下次打开小窗时并没有记住上次调整的大小……</p>
     <br /><p>可能有点抽象，但这会导致：选择自适应分辨率后，没法成功通过右/下边缘调整大小</p>
