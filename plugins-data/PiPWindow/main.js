@@ -4,7 +4,7 @@ let rvN, v, c, cover, cvUrlCache, accentC, textC, textCT13, textCT31, textCT56, 
 , pO = `<path d="${pdd}M20 15H14V19H20V15ZM6.70711 6.29289L8.95689 8.54289L11 6.5V12H5.5L7.54289 9.95689L5.29289 7.70711L6.70711 6.29289Z"></path>`
 , pC = `<path d="${pdd}"></path>`
 , readCfg = JSON.parse(localStorage.getItem("PiPWindowSettings"))
-, cfgDefault = ({whenClose: "none", whenBack: "back", autoHideMainWindow: false, customFonts: "\"Microsoft Yahei UI\", system-ui", showAlbum: true, moreRedraws: false, resolutionRatio: "auto", aspectRatio: "2:1"})
+, cfgDefault = ({whenClose: "none", whenBack: "back", whenCloseOrBack_paused: "close", autoHideMainWindow: false, customFonts: "\"Microsoft Yahei UI\", system-ui", showAlbum: true, moreRedraws: false, resolutionRatio: "auto", aspectRatio: "2:1"})
 readCfg = {...cfgDefault, ...readCfg} //缺失配置啥的处理一下
 window.PiPWShowRefrshing = (x=true)=>{if(x==true){showRefrshing=true;return true}else if(x==false){showRefrshing=false;return false}}
 function cE(n, d=document) {return d.createElement(n)}
@@ -54,18 +54,20 @@ HTMLCanvasElement.prototype.toPiP = function(){
                 navigator.mediaSession.setActionHandler("nexttrack", ()=>{q(`${pS} .btnc-nxt`).click()});
                 if (isVLsnAdded) {return} //防止重复加监听器
                 //小窗暂停/播放同步到主窗口
-                function ncmPause() {DontPlay=false; if (!DontPause) {try{ q(`${pS} .btnp-pause`).click() }catch{}}}
-                v.addEventListener("play", ()=>{DontPause=false; if (!DontPlay) {try{ q(`${pS} .btnp-play`).click() }catch{}}})
+                function ncmPlay() {if (!DontPlay) {try{ q(`${pS} .btnp-play`).click() }catch{}}DontPause=false}
+                function ncmPause() {if (!DontPause) {try{ q(`${pS} .btnp-pause`).click() }catch{}}DontPlay=false}
+                v.addEventListener("play", ()=>{ncmPlay()})
                 v.addEventListener("pause", ()=>{ncmPause()})
                 //小窗打开/关闭逻辑
-                v.addEventListener("enterpictureinpicture", ()=>{ console.log("PiPW Log: PiP窗口已创建", v)
+                v.addEventListener("enterpictureinpicture", (e)=>{ console.log("PiPW Log: PiP窗口已创建", v)
                     let s = betterncm.ncm.getPlayingSong()
                     if (!s) {s=({state:1})}
                     if (readCfg.autoHideMainWindow) {mwf.cef.R$call("winhelper.showWindow", "hide")}
                     tipMsg("已打开小窗"); q("#PiPW-Toggle svg").innerHTML=pC; q("#PiPW-Toggle").setAttribute("style", "fill: currentColor; opacity: 1");
                     if (s.state==1) {v.pause()} DontPlay=false
+                    if(debugMode){console.log(e)}
                 });
-                v.addEventListener("leavepictureinpicture", ()=>{ DontPause=true; let p = v.paused
+                v.addEventListener("leavepictureinpicture", (e)=>{ DontPause=true; let p = v.paused
                     tipMsg("已关闭小窗"); q("#PiPW-Toggle svg").innerHTML=pO; q("#PiPW-Toggle").setAttribute("style", "");
                     setTimeout(()=>{
                         if (v.paused!=p) { //状态不一致，判定为按下关闭按钮
@@ -75,11 +77,15 @@ HTMLCanvasElement.prototype.toPiP = function(){
                                 ncmPause(); if(debugMode){tipMsg("调试模式：触发退出云音乐");return}
                                 mwf.cef.R$call("winhelper.showWindow", "hide"); mwf.cef.R$exit()
                             }
-                        } else {
+                        } else if (!p) {
                             let b = readCfg.whenBack;
+                            if (b == "back") {mwf.cef.R$call("winhelper.showWindow", "show")}
+                        } else {
+                            let b = readCfg.whenCloseOrBack_paused;
                             if (b == "back") {mwf.cef.R$call("winhelper.showWindow", "show")}
                         }
                     }, 10)
+                    if(debugMode){console.log(e)}
                 });
                 //主窗口暂停/播放同步到小窗
                 let playStateCache = window.player.playState;
@@ -94,7 +100,8 @@ HTMLCanvasElement.prototype.toPiP = function(){
         })
     }
     v.id = "PiPW-VideoE";
-    v.srcObject = this.captureStream(); //刷新源
+    let cs = this.captureStream();
+    v.srcObject = cs; //刷新源
     v.controls = true; //调试用
     if(debugMode){try{q("#PiPWSettings").appendChild(v)}catch{}}
     v.play() //否则黑窗
@@ -123,7 +130,7 @@ function colorPick() { //取色
     if (/rgba/.test(bgC)) {bgCT00 = bgC.replace(/,([^,)]*)\)/, "")}
     else {bgCT00 = bgC.replace(/rgb\(/, "rgba(").replace(/\)/, "")}
     bgC = `${bgCT00})`; bgCTSetting = `${bgCT00}, .3)`;
-    if (q("body.material-you-theme")) {bgCTSetting = `${accentC.replace(/\)/, "")}, .1)`;}
+    if (q("body.material-you-theme:not(.ncm-light-theme)")) {bgCTSetting = `${accentC.replace(/\)/, "")}, .1)`;}
     if (bgC != bgCCache) {bgCCache=bgC;return"reCv"}
     try {q("#PiPWSettingsStyle0").innerHTML=`
 #PiPWSettings {
@@ -131,8 +138,6 @@ function colorPick() { //取色
     --pipws-bg: ${bgCTSetting};
     --pipws-bg-wot: ${bgC};
     color: ${textC};
-    line-height: 24px;
-    font-size: 16px;
 }`} catch {}
 }
 
@@ -546,11 +551,14 @@ plugin.onConfig(()=>{
         --pipws-bg: ${bgCTSetting};
         --pipws-bg-wot: ${bgC};
         color: ${textC};
-        line-height: 24px;
-        font-size: 16px;
     }
 </style>
 <style>
+    #PiPWSettings {
+        padding-top: 10px;
+        line-height: 24px;
+        font-size: 16px;
+    }
     #PiPWSettings .noAutoBr p {
         display: inline;
     }
@@ -799,7 +807,7 @@ plugin.onConfig(()=>{
     }
 </style>
 <div class="part noAutoBr" style="margin-top: 0;">
-    <p class="partTitle">PiPWindow </p><p> 0.2.1</p>
+    <p class="partTitle">PiPWindow </p><p> 0.2.2</p>
     <br />
     <p>by </p>
     <input class="link" type="button" onclick="betterncm.ncm.openUrl('https://github.com/Lukoning')" value=" Lukoning " />
@@ -867,11 +875,28 @@ plugin.onConfig(()=>{
         <p>关闭并返回主窗口</p>
     </div>
     <br />
+    <p>暂停时 关闭/返回按钮行为</p>
+    <br />
+    <div class="item">
+        <label class="radio">
+            <input type="radio" name="whenCloseOrBack_paused" value="close" />
+            <span class="slider button"></span>
+        </label>
+        <p>仅关闭小窗</p>
+    </div>
+    <div class="item">
+        <label class="radio">
+            <input type="radio" name="whenCloseOrBack_paused" value="back" />
+            <span class="slider button"></span>
+        </label>
+        <p>关闭并返回主窗口</p>
+    </div>
+    <br />
     <label class="switch">
         <input id="autoHideMainWindowSwitch" type="checkbox" />
         <span class="slider button"></span>
     </label>
-    <p>打开小窗时隐藏主窗口 (mini模式行为)</p>
+    <p>打开小窗时隐藏主窗口 (类似mini模式)</p>
     <br />
     <p>自定义字体</p>
     <br />
@@ -940,6 +965,28 @@ plugin.onConfig(()=>{
     </div>
     <div class="item">
         <label class="radio">
+            <input type="radio" name="resolutionRatio" value="960" />
+            <span class="slider button"></span>
+        </label>
+        <p>960p</p>
+    </div>
+    <div class="item">
+        <label class="radio">
+            <input type="radio" name="resolutionRatio" value="720" />
+            <span class="slider button"></span>
+        </label>
+        <p>720p</p>
+    </div>
+    <br />
+    <div class="item">
+        <label class="radio">
+            <input type="radio" name="resolutionRatio" value="560" />
+            <span class="slider button"></span>
+        </label>
+        <p>560p</p>
+    </div>
+    <div class="item">
+        <label class="radio">
             <input type="radio" name="resolutionRatio" value="480" />
             <span class="slider button"></span>
         </label>
@@ -968,11 +1015,13 @@ plugin.onConfig(()=>{
     </div>
 </div>
 <div class="part noAutoBr">
-    <p class="partTitle">关于此版本的一些说明</p><p> 烦死了烦死了</p>
-    <br /><p>控制按钮在暂停时并不会显示，但是仍然可以空格播放和暂停</p>
-    <br /><p>暂停时按下关闭按钮，其效果与返回按钮相同……根本没法区分这俩按钮啊啊啊啊！！</p>
+    <p class="partTitle">关于此版本的一些说明</p>
+    <br /><p>由于实在没有办法在暂停时区分关闭和返回按钮……因此做了一个折中方案</p>
+    <br /><p>控制按钮在暂停时并不会显示，但是仍然可以空格播放和暂停（到底为什么会自动消失啊??）</p>
+    <br /><p>某些情况下选择自适应分辨率，小窗可能会出现色差</p>
+    <br /><p>某些情况下小窗右侧可能会渲染出一个绿条</p>
     <br />
-    <br /><p>以及你有没有发现拖动/右边缘/下边缘调整大小后，下次打开小窗时并没有记住上次调整的大小……</p>
+    <br /><p>以及你有没有发现拖动右边缘/下边缘调整大小后，下次打开小窗时并没有记住上次调整的大小……</p>
     <br /><p>可能有点抽象，但这会导致：选择自适应分辨率后，没法成功通过右/下边缘调整大小</p>
     <br /><p>原因未知。</p>
 </div>
@@ -1023,9 +1072,9 @@ plugin.onConfig(()=>{
         <input id="debugModeSwitch" type="checkbox" />
         <span class="slider button"></span>
     </label>
-    <p>调试模式 重载复位</p>
+    <p>BUG多多怎么办？调试模式且力你一臂之力！（重载复位）</p>
     <br />
-    <p style="user-select: text">可在控制台使用 PiPWShowRefrshing() 来跟踪&lt;canvas&gt;重绘情况 [可传布尔值]</p>
+    <p style="user-select: text">也可在控制台使用 PiPWShowRefrshing() 来手动开关&lt;canvas&gt;重绘情况跟踪</p>
 </div>
 <br /><br />
     `;
@@ -1062,7 +1111,7 @@ plugin.onConfig(()=>{
     q("#customFontsSetBox", cP).addEventListener("keydown", (e)=>{if(e.key=="Enter"){saveCfg("customFonts")}}); //回车应用
     q("#applyButton-font", cP).addEventListener("click", ()=>{saveCfg("customFonts")});
     q(`[name="resolutionRatio"][value="auto"]`, cP).addEventListener("click", ()=>{autoRatio=true;reRatio(thePiPWindow.height)});
-    q("#debugModeSwitch", cP).addEventListener("change", ()=>{debugMode=q("#debugModeSwitch").checked;if(debugMode){try{q("#PiPWSettings").appendChild(v)}catch{}}});
+    q("#debugModeSwitch", cP).addEventListener("change", ()=>{debugMode=q("#debugModeSwitch").checked;if(debugMode){try{q("#PiPWSettings").appendChild(v)}catch{};window.PiPWShowRefrshing()}});
     console.log(cP);
     return cP;
 });
