@@ -1,0 +1,20 @@
+{
+    "manifest_version": 1,
+    "name": "MHY NotRelease", 
+    "slug": "MHYNotRelease", 
+    "type": "extension",
+    "version": "1.0.0",
+    "author": "etherfun", 
+    "author_links": ["https://github.com/etherfun"],
+    "description": "把因为某个冈易高管的言行导致没有米哈游首发音乐还延迟一周给找回来<br/>在歌手页单独列出并提供播放功能",
+    "betterncm_version": ">=1.0.0",
+    "preview": "preview.png",
+    "ncm3-compatible": false,
+    "injects": {
+        "Main": [ 
+            {
+                "file": "main.js"
+            }
+        ]
+    }
+}
