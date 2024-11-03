@@ -4,7 +4,7 @@ let rvN, v, c, cover, cvUrlCache, accentC, textC, textCT13, textCT31, textCT56, 
 , pO = `<path d="${pdd}M20 15H14V19H20V15ZM6.70711 6.29289L8.95689 8.54289L11 6.5V12H5.5L7.54289 9.95689L5.29289 7.70711L6.70711 6.29289Z"></path>`
 , pC = `<path d="${pdd}"></path>`
 , readCfg = JSON.parse(localStorage.getItem("PiPWindowSettings"))
-, cfgDefault = ({whenClose: "none", whenBack: "back", whenCloseOrBack_paused: "close", autoHideMainWindow: false, customFonts: "\"Microsoft Yahei UI\", system-ui", showAlbum: true, moreRedraws: false, resolutionRatio: "auto", aspectRatio: "2:1"})
+, cfgDefault = ({whenClose: "none", whenBack: "back", whenCloseOrBack_paused: "close", autoHideMainWindow: false, showAlbum: true, originalLyricsBold: true, customFonts: "\"Segoe UI\", \"Microsoft Yahei UI\", system-ui", useJapaneseFonts: true, customJapaneseFonts: "\"Yu Gothic UI\", \"Meiryo UI\", \"Microsoft Yahei UI\", system-ui", resolutionRatio: "auto", aspectRatio: "2:1", moreRedraws: false})
 readCfg = {...cfgDefault, ...readCfg} //缺失配置啥的处理一下
 window.PiPWShowRefrshing = (x=true)=>{if(x==true){showRefrshing=true;return true}else if(x==false){showRefrshing=false;return false}}
 function cE(n, d=document) {return d.createElement(n)}
@@ -315,7 +315,19 @@ async function loadPiP(isToPiP=true, from="unknow") {
         }
     
         /*字体*/
-        let f = readCfg.customFonts;
+        let bold="", f = readCfg.customFonts, fM = f, fT = f; //这里f后期也许单独做一个界面字体
+        if (readCfg.originalLyricsBold) {bold="bold"}
+
+        /*日文判断*/
+        if (readCfg.useJapaneseFonts) {
+            let isJ = false, lyKeys = Object.keys(lyrics);
+            for (let i = 0; i < lyKeys.length; i++) {
+                if (/[ぁ-ヿ]/g.test(lyrics[lyKeys[i]])) {
+                    isJ = true;break
+                }
+            }
+            if (isJ) {fM = readCfg.customJapaneseFonts}
+        }
     
         let cC = c.getContext("2d",{alpha:false}), o1 = r/480, o2 = r/240, o3 = r/160, o5 = r/96, o7 = r/68.5714, o10 = r/48, o12 = r/40, o15 = r/32, o20 = r/24, o21p5 = r/22.3256,o25 = r/19.2, o30 = r/16, o30p5 = r/15.7377, o35 = r/13.7143, o40 = r/12, o45 = r/10.6667, o55 = r/8.7272, o60 = r/8, o105 = r/4.57143, o150 = r/3.2
         let ldTxt = "加载中…";
@@ -328,41 +340,41 @@ async function loadPiP(isToPiP=true, from="unknow") {
     
         let lrcFS = o55, lrcMgT = o45, lrcMgL = o15
         let lrcTop = cvSize+lrcMgT;
-        cC.fillStyle = textC; cC.font = `bold ${lrcFS}px ${f}`;
+        cC.fillStyle = textC; cC.font = `${bold} ${lrcFS}px ${fM}`;
         cC.fillText(lyrics["M0"], lrcMgL, lrcTop+lrcFS); /*主歌词*/
     
         if (lyrics["T0"]!="") {
-            cC.fillStyle = textCT56; cC.font = `${lrcFS-o5}px ${f}`;
+            cC.fillStyle = textCT56; cC.font = `${lrcFS-o5}px ${fT}`;
             cC.fillText(lyrics["T0"], lrcMgL, lrcTop+lrcFS*2+o10); /*翻译歌词*/
-            cC.fillStyle = textCT56; cC.font = `bold ${lrcFS-o10}px ${f}`;
+            cC.fillStyle = textCT56; cC.font = `${bold} ${lrcFS-o10}px ${fM}`;
             cC.fillText(lyrics["M1"], lrcMgL, lrcTop+lrcFS*3+o30); /*下1句主歌词*/
-            cC.fillStyle = textCT31; cC.font = `${lrcFS-o15}px ${f}`;
+            cC.fillStyle = textCT31; cC.font = `${lrcFS-o15}px ${fT}`;
             cC.fillText(lyrics["T1"], lrcMgL, lrcTop+lrcFS*4+o30); /*下1句翻译歌词*/
             if (lyrics["T1"]=="") {
-                cC.fillStyle = textCT56; cC.font = `bold ${lrcFS-o10}px ${f}`;
+                cC.fillStyle = textCT56; cC.font = `${bold} ${lrcFS-o10}px ${fM}`;
                 cC.fillText(lyrics["M2"], lrcMgL, lrcTop+lrcFS*4+o40); /*下2句主歌词*/
             }
         } else if (lyrics["T1"]!="") {
-            cC.fillStyle = textCT56; cC.font = `bold ${lrcFS-o10}px ${f}`;
+            cC.fillStyle = textCT56; cC.font = `${bold} ${lrcFS-o10}px ${fM}`;
             cC.fillText(lyrics["M1"], lrcMgL, lrcTop+lrcFS*2+o20); /*下1句主歌词*/
-            cC.fillStyle = textCT31; cC.font = `${lrcFS-o15}px ${f}`;
+            cC.fillStyle = textCT31; cC.font = `${lrcFS-o15}px ${fT}`;
             cC.fillText(lyrics["T1"], lrcMgL, lrcTop+lrcFS*3+o20); /*下1句翻译歌词*/
-            cC.fillStyle = textCT56; cC.font = `bold ${lrcFS-o10}px ${f}`;
+            cC.fillStyle = textCT56; cC.font = `${bold} ${lrcFS-o10}px ${fM}`;
             cC.fillText(lyrics["M2"], lrcMgL, lrcTop+lrcFS*4+o30); /*下2句主歌词*/
         } else {
-            cC.fillStyle = textCT56; cC.font = `bold ${lrcFS-o10}px ${f}`;
+            cC.fillStyle = textCT56; cC.font = `${bold} ${lrcFS-o10}px ${fM}`;
             cC.fillText(lyrics["M1"], lrcMgL, lrcTop+lrcFS*2+o10); /*下1句主歌词*/
             if (lyrics["T2"]!="") {
                 cC.fillText(lyrics["M2"], lrcMgL, lrcTop+lrcFS*3+o20); /*下2句主歌词*/
-                cC.fillStyle = textCT31; cC.font = `${lrcFS-o15}px ${f}`;
+                cC.fillStyle = textCT31; cC.font = `${lrcFS-o15}px ${fT}`;
                 cC.fillText(lyrics["T2"], lrcMgL, lrcTop+lrcFS*4+o20); /*下2句翻译歌词*/
-                cC.fillStyle = textCT56; cC.font = `bold ${lrcFS-o10}px ${f}`;
+                cC.fillStyle = textCT56; cC.font = `${bold} ${lrcFS-o10}px ${fM}`;
                 cC.fillText(lyrics["M3"], lrcMgL, lrcTop+lrcFS*5+o30); /*下3句主歌词*/
             } else {
                 cC.fillText(lyrics["M2"], lrcMgL, lrcTop+lrcFS*3+o10); /*下2句主歌词*/
                 if (lyrics["T3"]!="") {
                     cC.fillText(lyrics["M3"], lrcMgL, lrcTop+lrcFS*4+o20); /*下3句主歌词*/
-                    cC.fillStyle = textCT31; cC.font = `${lrcFS-o15}px ${f}`;
+                    cC.fillStyle = textCT31; cC.font = `${lrcFS-o15}px ${fT}`;
                     cC.fillText(lyrics["T3"], lrcMgL, lrcTop+lrcFS*5+o20); /*下3句翻译歌词*/
                 } else {
                     cC.fillText(lyrics["M3"], lrcMgL, lrcTop+lrcFS*4+o10); /*下3句主歌词*/
@@ -597,6 +609,12 @@ plugin.onConfig(()=>{
         font-weight: bold;
         line-height: 30px;
     }
+    #PiPWSettings .subTitle {
+        font-size: 18px;
+        font-weight: bold;
+        line-height: 32px;
+        box-shadow: inset 0 -6px 5px -7px var(--pipws-fg);
+    }
     #PiPWSettings .item {
         display: inline-block;
         margin-right: 5px;
@@ -807,18 +825,13 @@ plugin.onConfig(()=>{
     }
 </style>
 <div class="part noAutoBr" style="margin-top: 0;">
-    <p class="partTitle">PiPWindow </p><p> 0.2.2</p>
+    <p class="partTitle">PiPWindow </p><p> 0.2.3</p>
     <br />
     <p>by </p>
     <input class="link" type="button" onclick="betterncm.ncm.openUrl('https://github.com/Lukoning')" value=" Lukoning " />
     <p> 2024</p>
-    <br />
-    <p>Icon use: </p>
-    <input class="link" type="button" onclick="betterncm.ncm.openUrl('https://github.com/Remix-Design/remixicon')" value=" Remix Icon " />
     <div style="text-align: right; position: absolute; bottom: 10px; right: 20px;">
         <input class="link" type="button" onclick="betterncm.ncm.openUrl('https://github.com/Lukoning/PiPWindow')" value=" 源代码仓库(GitHub) " />
-        <br />
-        <input class="link" type="button" onclick="betterncm.ncm.openUrl('https://github.com/Lukoning/PiPWindow/releases')" value=" 更新日志(GitHub Releases) " />
         <br />
         <input class="link" type="button" onclick="betterncm.ncm.openUrl('https://github.com/Lukoning/PiPWindow/issues')" value=" 问题反馈/功能建议(GitHub issues) " />
     </div>
@@ -834,184 +847,213 @@ plugin.onConfig(()=>{
 <div class="part noAutoBr">
     <p class="partTitle">自定义设置</p>
     <br />
-    <p>关闭按钮行为</p>
-    <br />
-    <div class="item">
-        <label class="radio">
-            <input type="radio" name="whenClose" value="none" />
+    <div>
+        <p class="subTitle">行为</p>
+        <br />
+        <p>关闭按钮</p>
+        <br />
+        <div class="item">
+            <label class="radio">
+                <input type="radio" name="whenClose" value="none" />
+                <span class="slider button"></span>
+            </label>
+            <p>仅关闭小窗</p>
+        </div>
+        <div class="item">
+            <label class="radio">
+                <input type="radio" name="whenClose" value="pause" />
+                <span class="slider button"></span>
+            </label>
+            <p>关闭并暂停</p>
+        </div>
+        <div class="item">
+            <label class="radio">
+                <input type="radio" name="whenClose" value="shutdown" />
+                <span class="slider button"></span>
+            </label>
+            <p>关闭并退出云音乐</p>
+        </div>
+        <br />
+        <p>返回按钮</p>
+        <br />
+        <div class="item">
+            <label class="radio">
+                <input type="radio" name="whenBack" value="close" />
+                <span class="slider button"></span>
+            </label>
+            <p>仅关闭小窗</p>
+        </div>
+        <div class="item">
+            <label class="radio">
+                <input type="radio" name="whenBack" value="back" />
+                <span class="slider button"></span>
+            </label>
+            <p>关闭并返回主窗口</p>
+        </div>
+        <br />
+        <p>暂停时 关闭/返回按钮</p>
+        <br />
+        <div class="item">
+            <label class="radio">
+                <input type="radio" name="whenCloseOrBack_paused" value="close" />
+                <span class="slider button"></span>
+            </label>
+            <p>仅关闭小窗</p>
+        </div>
+        <div class="item">
+            <label class="radio">
+                <input type="radio" name="whenCloseOrBack_paused" value="back" />
+                <span class="slider button"></span>
+            </label>
+            <p>关闭并返回主窗口</p>
+        </div>
+        <br />
+        <label class="switch">
+            <input id="autoHideMainWindowSwitch" type="checkbox" />
             <span class="slider button"></span>
         </label>
-        <p>仅关闭小窗</p>
+        <p>打开小窗时隐藏主窗口 (类似mini模式)</p>
     </div>
-    <div class="item">
-        <label class="radio">
-            <input type="radio" name="whenClose" value="pause" />
+    <div>
+        <p class="subTitle">显示</p>
+        <br />
+                <label class="switch">
+            <input id="showAlbumSwitch" type="checkbox" />
             <span class="slider button"></span>
         </label>
-        <p>关闭并暂停</p>
+        <p>将显示的翻译/别名替换为专辑名</p>
+        <br />
+        <label class="switch">
+            <input id="originalLyricsBoldSwitch" type="checkbox" />
+            <span class="slider button"></span>
+        </label>
+        <p>歌词原文加粗</p>
+        <br />
+        <p>自定义字体</p>
+        <br />
+        <input class="button textBox" id="customFontsSetBox" type="search" placeholder='${cfgDefault.customFonts}'
+            value="${readCfg.customFonts.replaceAll("\"", "&quot;" )}" />
+        <br />
+        <input class="button" style="position: absolute; transform: translate(325px, -40px);" id="applyButton-font" type="button" value="应用" />
+        <label class="switch">
+            <input id="useJapaneseFontsSwitch" type="checkbox" />
+            <span class="slider button"></span>
+        </label>
+        <p>日文歌歌词使用日文字体</p>
+        <br />
+        <p>自定义日文字体</p>
+        <br />
+        <input class="button textBox" id="customJapaneseFontsSetBox" type="search" placeholder='${cfgDefault.customJapaneseFonts}'
+            value="${readCfg.customJapaneseFonts.replaceAll("\"", "&quot;" )}" />
+        <br />
+        <input class="button" style="position: absolute; transform: translate(325px, -40px);" id="applyButton-japaneseFont" type="button" value="应用" />
     </div>
-    <div class="item">
-        <label class="radio">
-            <input type="radio" name="whenClose" value="shutdown" />
+    <div>
+        <p class="subTitle">渲染 (高级)</p>
+        <br />
+        <p>窗口宽高比</p>
+        <br />
+        <div class="item">
+            <label class="radio">
+                <input type="radio" name="aspectRatio" value="16:9" />
+                <span class="slider button"></span>
+            </label>
+            <p>16:9</p>
+        </div>
+        <div class="item">
+            <label class="radio">
+                <input type="radio" name="aspectRatio" value="2:1" />
+                <span class="slider button"></span>
+            </label>
+            <p>2:1</p>
+        </div>
+        <div class="item">
+            <label class="radio">
+                <input type="radio" name="aspectRatio" value="21:9" />
+                <span class="slider button"></span>
+            </label>
+            <p>21:9</p>
+        </div>
+        <div class="item">
+            <label class="radio">
+                <input type="radio" name="aspectRatio" value="3:1" />
+                <span class="slider button"></span>
+            </label>
+            <p>3:1</p>
+        </div>
+        <br />
+        <p>渲染分辨率</p>
+        <br />
+        <div class="item">
+            <label class="radio">
+                <input type="radio" name="resolutionRatio" value="auto" />
+                <span class="slider button"></span>
+            </label>
+            <p>自适应</p>
+        </div>
+        <div class="item">
+            <label class="radio">
+                <input type="radio" name="resolutionRatio" value="1080" />
+                <span class="slider button"></span>
+            </label>
+            <p>1080p</p>
+        </div>
+        <div class="item">
+            <label class="radio">
+                <input type="radio" name="resolutionRatio" value="960" />
+                <span class="slider button"></span>
+            </label>
+            <p>960p</p>
+        </div>
+        <div class="item">
+            <label class="radio">
+                <input type="radio" name="resolutionRatio" value="720" />
+                <span class="slider button"></span>
+            </label>
+            <p>720p</p>
+        </div>
+        <br />
+        <div class="item">
+            <label class="radio">
+                <input type="radio" name="resolutionRatio" value="560" />
+                <span class="slider button"></span>
+            </label>
+            <p>560p</p>
+        </div>
+        <div class="item">
+            <label class="radio">
+                <input type="radio" name="resolutionRatio" value="480" />
+                <span class="slider button"></span>
+            </label>
+            <p>480p</p>
+        </div>
+        <div class="item">
+            <label class="radio">
+                <input type="radio" name="resolutionRatio" value="320" />
+                <span class="slider button"></span>
+            </label>
+            <p>320p</p>
+        </div>
+        <div class="item">
+            <label class="radio">
+                <input type="radio" name="resolutionRatio" value="240" />
+                <span class="slider button"></span>
+            </label>
+            <p>240p</p>
+        </div>
+        <div class="item">
+            <label class="radio">
+                <input type="radio" name="resolutionRatio" value="160" />
+                <span class="slider button"></span>
+            </label>
+            <p>160p</p>
+        </div>
+        <br />
+        <label class="switch">
+            <input id="moreRedrawsSwitch" type="checkbox" />
             <span class="slider button"></span>
         </label>
-        <p>关闭并退出云音乐</p>
-    </div>
-    <br />
-    <p>返回按钮行为</p>
-    <br />
-    <div class="item">
-        <label class="radio">
-            <input type="radio" name="whenBack" value="close" />
-            <span class="slider button"></span>
-        </label>
-        <p>仅关闭小窗</p>
-    </div>
-    <div class="item">
-        <label class="radio">
-            <input type="radio" name="whenBack" value="back" />
-            <span class="slider button"></span>
-        </label>
-        <p>关闭并返回主窗口</p>
-    </div>
-    <br />
-    <p>暂停时 关闭/返回按钮行为</p>
-    <br />
-    <div class="item">
-        <label class="radio">
-            <input type="radio" name="whenCloseOrBack_paused" value="close" />
-            <span class="slider button"></span>
-        </label>
-        <p>仅关闭小窗</p>
-    </div>
-    <div class="item">
-        <label class="radio">
-            <input type="radio" name="whenCloseOrBack_paused" value="back" />
-            <span class="slider button"></span>
-        </label>
-        <p>关闭并返回主窗口</p>
-    </div>
-    <br />
-    <label class="switch">
-        <input id="autoHideMainWindowSwitch" type="checkbox" />
-        <span class="slider button"></span>
-    </label>
-    <p>打开小窗时隐藏主窗口 (类似mini模式)</p>
-    <br />
-    <p>自定义字体</p>
-    <br />
-    <input class="button textBox" id="customFontsSetBox" type="search" placeholder='${cfgDefault.customFonts}'
-        value="${readCfg.customFonts.replaceAll("\"", "&quot;" )}" />
-    <br />
-    <input class="button" style="position: absolute; transform: translate(325px, -40px);" id="applyButton-font" type="button" value="应用" />
-    <label class="switch">
-        <input id="showAlbumSwitch" type="checkbox" />
-        <span class="slider button"></span>
-    </label>
-    <p>将显示的翻译/别名替换为专辑名</p>
-    <br />
-    <label class="switch">
-        <input id="moreRedrawsSwitch" type="checkbox" />
-        <span class="slider button"></span>
-    </label>
-    <p>缩短重绘间隔 (可能有性能损耗，重载生效)</p>
-    <br />
-    <p>窗口宽高比</p>
-    <br />
-    <div class="item">
-        <label class="radio">
-            <input type="radio" name="aspectRatio" value="16:9" />
-            <span class="slider button"></span>
-        </label>
-        <p>16:9</p>
-    </div>
-    <div class="item">
-        <label class="radio">
-            <input type="radio" name="aspectRatio" value="2:1" />
-            <span class="slider button"></span>
-        </label>
-        <p>2:1</p>
-    </div>
-    <div class="item">
-        <label class="radio">
-            <input type="radio" name="aspectRatio" value="21:9" />
-            <span class="slider button"></span>
-        </label>
-        <p>21:9</p>
-    </div>
-    <div class="item">
-        <label class="radio">
-            <input type="radio" name="aspectRatio" value="3:1" />
-            <span class="slider button"></span>
-        </label>
-        <p>3:1</p>
-    </div>
-    <br />
-    <p>渲染分辨率</p>
-    <br />
-    <div class="item">
-        <label class="radio">
-            <input type="radio" name="resolutionRatio" value="auto" />
-            <span class="slider button"></span>
-        </label>
-        <p>自适应</p>
-    </div>
-    <div class="item">
-        <label class="radio">
-            <input type="radio" name="resolutionRatio" value="1080" />
-            <span class="slider button"></span>
-        </label>
-        <p>1080p</p>
-    </div>
-    <div class="item">
-        <label class="radio">
-            <input type="radio" name="resolutionRatio" value="960" />
-            <span class="slider button"></span>
-        </label>
-        <p>960p</p>
-    </div>
-    <div class="item">
-        <label class="radio">
-            <input type="radio" name="resolutionRatio" value="720" />
-            <span class="slider button"></span>
-        </label>
-        <p>720p</p>
-    </div>
-    <br />
-    <div class="item">
-        <label class="radio">
-            <input type="radio" name="resolutionRatio" value="560" />
-            <span class="slider button"></span>
-        </label>
-        <p>560p</p>
-    </div>
-    <div class="item">
-        <label class="radio">
-            <input type="radio" name="resolutionRatio" value="480" />
-            <span class="slider button"></span>
-        </label>
-        <p>480p</p>
-    </div>
-    <div class="item">
-        <label class="radio">
-            <input type="radio" name="resolutionRatio" value="320" />
-            <span class="slider button"></span>
-        </label>
-        <p>320p</p>
-    </div>
-    <div class="item">
-        <label class="radio">
-            <input type="radio" name="resolutionRatio" value="240" />
-            <span class="slider button"></span>
-        </label>
-        <p>240p</p>
-    </div>
-    <div class="item">
-        <label class="radio">
-            <input type="radio" name="resolutionRatio" value="160" />
-            <span class="slider button"></span>
-        </label>
-        <p>160p</p>
+        <p>缩短重绘间隔 (可能有性能损耗，重载生效)</p>
     </div>
 </div>
 <div class="part noAutoBr">
@@ -1020,6 +1062,7 @@ plugin.onConfig(()=>{
     <br /><p>控制按钮在暂停时并不会显示，但是仍然可以空格播放和暂停（到底为什么会自动消失啊??）</p>
     <br /><p>某些情况下选择自适应分辨率，小窗可能会出现色差</p>
     <br /><p>某些情况下小窗右侧可能会渲染出一个绿条</p>
+    <br /><p>播放过MV后有概率无法通过小窗开始播放</p>
     <br />
     <br /><p>以及你有没有发现拖动右边缘/下边缘调整大小后，下次打开小窗时并没有记住上次调整的大小……</p>
     <br /><p>可能有点抽象，但这会导致：选择自适应分辨率后，没法成功通过右/下边缘调整大小</p>
@@ -1066,6 +1109,18 @@ plugin.onConfig(()=>{
     <p>？ 类苹果歌词和 RefinedNowPlaying 不是互相冲突的吗，为什么可以这样做</p>
     <p>->实践证明，因为两者实现方式有别，并不会造成实际冲突。安装了类苹果歌词后，可以在打开播放界面的同时，按住Shift键，来打开 RefinedNowPlaying 的播放界面；安装 ←→0123456789JL+-,.↑↓FO 插件后，也可以通过按 F 来打开。</p>
 </div>
+<div class="part noAutoBr">
+    <p class="partTitle">开放源代码许可</p>
+    <br />
+    <input class="link" type="button" onclick="betterncm.ncm.openUrl('https://github.com/Remix-Design/remixicon')" value=" Remix Icon " />
+    <p> licensed under the </p>
+    <input class="link" type="button" onclick="betterncm.ncm.openUrl('https://www.apache.org/licenses/LICENSE-2.0.txt')" value=" Apache License Version 2.0 " />
+    <p> | 使用了其中picture-in-picture-2-line和picture-in-picture-fill两个图标，并对其代码进行了拆分以节省空间。</p>
+    <br />
+    <input class="link" type="button" onclick="betterncm.ncm.openUrl('https://github.com/MuttonString/Furigana')" value=" Furigana " />
+    <p> without any licenses </p>
+    <p> | 修改并使用了其中的(很简单的)日文歌识别算法。</p>
+</div>
 <br /><br />
 <div id="PIPWDEBUGMODE" class="noAutoBr">
     <label class="switch">
@@ -1109,7 +1164,9 @@ plugin.onConfig(()=>{
     }
     q("#PiPW-ToggleLink", cP).addEventListener("click", ()=>{pipToggle()});
     q("#customFontsSetBox", cP).addEventListener("keydown", (e)=>{if(e.key=="Enter"){saveCfg("customFonts")}}); //回车应用
+    q("#customJapaneseFontsSetBox", cP).addEventListener("keydown", (e)=>{if(e.key=="Enter"){saveCfg("customJapaneseFonts")}}); //回车应用
     q("#applyButton-font", cP).addEventListener("click", ()=>{saveCfg("customFonts")});
+    q("#applyButton-japaneseFont", cP).addEventListener("click", ()=>{saveCfg("customJapaneseFonts")});
     q(`[name="resolutionRatio"][value="auto"]`, cP).addEventListener("click", ()=>{autoRatio=true;reRatio(thePiPWindow.height)});
     q("#debugModeSwitch", cP).addEventListener("change", ()=>{debugMode=q("#debugModeSwitch").checked;if(debugMode){try{q("#PiPWSettings").appendChild(v)}catch{};window.PiPWShowRefrshing()}});
     console.log(cP);
