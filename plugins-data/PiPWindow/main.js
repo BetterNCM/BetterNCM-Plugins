@@ -1,6 +1,6 @@
 /*This plugin is licensed under the GNU/GPL-3.0*/
-let rvN, v, c, cover, cvUrlCache, songIdCache, songDataCache, accentC, textC, textCT13, textCT31, textCT56, textCT65, textCT80, bgC, bgCTSetting, bgCCache, tMsT, lrcCache, pLrcM, pLrcT, showRefrshing, thePiPWindow
-, isVLsnAdded=false, DontPlay=false, DontPause=false, autoRatio, autoRatioValue=480, lastReRatio=0, nrLrc = false , lrcNowLoading = false, reRatioPending=false, debugMode=false
+let rvN, v, c, cover, cvUrlCache, songIdCache, songDataCache, tMsT, lrcCache, pLrc, pLrcKeys, showRefrshing, thePiPWindow
+, isVLsnAdded=false, DontPlay=false, DontPause=false, autoRatio, autoRatioValue=480, lastReRatio=0, playProgress=0, nrLrc = false , lrcNowLoading = false, reRatioPending=false, debugMode=false
 , t = "0:00／0:00", tC = 0, tT = 0, tP = 0, tR = 0 //显示用，Current，Total，PassedRate，Remaining
 , pdd = "M21 3C21.5523 3 22 3.44772 22 4V11H20V5H4V19H10V21H3C2.44772 21 2 20.5523 2 20V4C2 3.44772 2.44772 3 3 3H21ZM21 13C21.5523 13 22 13.4477 22 14V20C22 20.5523 21.5523 21 21 21H13C12.4477 21 12 20.5523 12 20V14C12 13.4477 12.4477 13 13 13H21Z"
 , pO = `<path d="${pdd}M20 15H14V19H20V15ZM6.70711 6.29289L8.95689 8.54289L11 6.5V12H5.5L7.54289 9.95689L5.29289 7.70711L6.70711 6.29289Z"></path>`
@@ -8,9 +8,10 @@ let rvN, v, c, cover, cvUrlCache, songIdCache, songDataCache, accentC, textC, te
 , readCfg = JSON.parse(localStorage.getItem("PiPWindowSettings"))
 , cfgDefault = ({
     whenClose: "none", whenBack: "back", whenCloseOrBack_paused: "close", autoHideMainWindow: false
-    , showAlbum: true, originalLyricsBold: true, showTranslation: true, /*showLatinization: false,*/ lyricsTaperOff: true, lyricsMask: false, timeInfo: "CurrentTotal", lyricsFrom: "RNP", showLyricsErrorTip: true
+    , showAlbum: true, originalLyricsBold: false, showTranslation: true, /*showLatinization: false,*/ lyricsTaperOff: true, lyricsMask: true, timeInfo: "CurrentTotal", lyricsFrom: "LibLyric", showLyricsErrorTip: true
     , customFonts: "\"Segoe UI\", \"Microsoft Yahei UI\", system-ui", useJapaneseFonts: true, customJapaneseFonts: "\"Yu Gothic UI\", \"Meiryo UI\", \"Microsoft Yahei UI\", system-ui"
     , smoothProgessBar: false, resolutionRatio: "auto", aspectRatio: "2:1", customLoadingTxt: "正在载入猫猫…"})
+, color = ({accent: "", text: "", textT13: "", textT31: "", textT56: "", textT80: "", bg: "", bgT00: "", bgTSetting: ""}), colorCache = ({text: "", bg: ""})
 readCfg = {...cfgDefault, ...readCfg} //缺失配置啥的处理一下
 window.PiPWShowRefrshing = (x=true)=>{if(x==true){showRefrshing=true;return true}else if(x==false){showRefrshing=false;return false}}
 function cE(n, d=document) {return d.createElement(n)}
@@ -125,28 +126,29 @@ function pipToggle() {
 }
 
 function colorPick() { //取色
-    let textCT00, bgCT00;
+    let textTO, bgTO;
     function s(e, p) {
         return getComputedStyle(q(e)).getPropertyValue(p);
     }
-    accentC = s("body", "--themeC1"), textC = s("body", "color");
-    if (q("body.material-you-theme")) {textC = s("body", "--md-accent-color-secondary")}
-    if (/rgba/.test(textC)) {textCT00 = textC.replace(/,([^,)]*)\)/, "")}
-    else {textCT00 = textC.replace(/rgb\(/, "rgba(").replace(/\)/, "")}
-    textC = `${textCT00})`, textCT80 = `${textCT00}, .8)`, textCT56 = `${textCT00}, .56)`, textCT31 = `${textCT00}, .31)`, textCT13 = `${textCT00}, .13)`;
-    bgC = s("body", "background-color");
-    if (/rgba/.test(bgC)) {bgCT00 = bgC.replace(/,([^,)]*)\)/, "")}
-    else {bgCT00 = bgC.replace(/rgb\(/, "rgba(").replace(/\)/, "")}
-    bgC = `${bgCT00})`, bgCTSetting = `${bgCT00}, .3)`;
-    if (q("body.material-you-theme:not(.ncm-light-theme)")) {bgCTSetting = `${accentC.replace(/\)/, "")}, .1)`;}
-    if (bgC != bgCCache) {bgCCache=bgC;return"reHd"}
-    try {q("#PiPWSettingsStyle0").innerHTML=`
+    color.accent = s("body", "--themeC1"), color.text = s("body", "color");
+    if (q("body.material-you-theme")) {color.text = s("body", "--md-accent-color-secondary")}
+    if (/rgba/.test(color.text)) {textTO = color.text.replace(/,([^,)]*)\)/, "")}
+    else {textTO = color.text.replace(/rgb\(/, "rgba(").replace(/\)/, "")}
+    color.text = `${textTO})`, color.textT80 = `${textTO}, .8)`, color.textT56 = `${textTO}, .56)`, color.textT31 = `${textTO}, .31)`, color.textT13 = `${textTO}, .13)`;
+    color.bg = s("body", "background-color");
+    if (/rgba/.test(color.bg)) {bgTO = color.bg.replace(/,([^,)]*)\)/, "")}
+    else {bgTO = color.bg.replace(/rgb\(/, "rgba(").replace(/\)/, "")}
+    color.bg = `${bgTO})`, color.bgT00 = `${bgTO}, 0)`, color.bgTSetting = `${bgTO}, .3)`;
+    if (q("body.material-you-theme:not(.ncm-light-theme)")) {color.bgTSetting = `${color.accent.replace(/\)/, "")}, .1)`;}
+    try {let s0 = q("#PiPWSettingsStyle0"), s = `
 #PiPWSettings {
-    --pipws-fg: ${accentC};
-    --pipws-bg: ${bgCTSetting};
-    --pipws-bg-wot: ${bgC};
-    color: ${textC};
-}`} catch {}
+    --pipws-fg: ${color.accent};
+    --pipws-bg: ${color.bgTSetting};
+    --pipws-bg-wot: ${color.bg};
+    color: ${color.text};
+}`
+        if (s0.innerHTML!=s) {s0.innerHTML=s}
+    } catch {}
 }
 
 async function loadPiP(isToPiP=true, from="unknow") {
@@ -296,26 +298,48 @@ async function loadPiP(isToPiP=true, from="unknow") {
                 }catch{}
             }
         }
-        async function getLrcLibLyric() { //无用，并不能对解析后的歌词做出什么反应
-            if (lrcNowLoading) {return}
+        async function getLrcLibLyric() {
+            if (lrcNowLoading) {lyrics["M0"] = ldTxt;return}
             try {
-                let l = loadedPlugins.liblyric
+                let ll = loadedPlugins.liblyric
                 if (nrLrc) {
                     lrcNowLoading = true
                     nrLrc = false
-                    lrcCache = await l.getLyricData(data.id)
-                    pLrcM = l.parseLyric(lrcCache.lrc.lyric)
-                    pLrcT = l.parseLyric(lrcCache.tlyric.lyric)
-                    console.log(lrcCache);console.log(pLrcM);console.log(pLrcT)
+                    lrcCache = await ll.getLyricData(data.id)
+                    pLrc = ll.parseLyric(lrcCache.lrc.lyric, lrcCache.tlyric?lrcCache.tlyric.lyric:"")
+                    pLrcKeys = Object.keys(pLrc)
+                    for (let i = 0; i < pLrcKeys.length; i++) {
+                        let o = pLrc[i].originalLyric
+                        pLrc[i].originalLyric = o.replace(/\s+/g, " ").trim();
+                        if (o == "") {pLrc[i].originalLyric = "· · ·", pLrc[i].translatedLyric = ""}
+                    }
+                    console.log(lrcCache);console.log(pLrc);
                     lrcNowLoading = false
                 }
-            } catch(e) {console.error(`PiPW Error: 获取歌词时出错，详情：\n${e}`);getLrcErr()}
+                let l = pLrcKeys.length
+                for (let i = 0; i < l; i++) {
+                    if (playProgress*1000 > pLrc[i].time||pLrc[0].time!=0&&i==0) {
+                        lyrics["M0"] = pLrc[i].originalLyric
+                        lyrics["M1"] = i+1<l?pLrc[i+1].originalLyric:""
+                        lyrics["M2"] = i+2<l?pLrc[i+2].originalLyric:""
+                        lyrics["M3"] = i+3<l?pLrc[i+3].originalLyric:""
+                        lyrics["M4"] = i+4<l?pLrc[i+4].originalLyric:""
+                        if (lrcCache.tlyric&&lrcCache.tlyric.lyric!="") {
+                            lyrics["T0"] = pLrc[i].translatedLyric
+                            lyrics["T1"] = i+1<l?pLrc[i+1].translatedLyric:""
+                            lyrics["T2"] = i+2<l?pLrc[i+2].translatedLyric:""
+                            lyrics["T3"] = i+3<l?pLrc[i+3].translatedLyric:""
+                            lyrics["T4"] = i+4<l?pLrc[i+4].translatedLyric:""
+                        }
+                    }
+                }
+            } catch(e) {lrcNowLoading = false;console.error(`PiPW Error: 获取歌词时出错，详情：\n${e}`);getLrcErr()}
         }
         if (!readCfg.showTranslation) {for (let i=0; i<5; i++) {lyrics[`T${i}`] = ""}}
-        if (lrcNowLoading) {lyrics["M0"] = ldTxt}
     
         /*取色环节*/
-        if (colorPick()=="reHd") {reloadHead();}
+        colorPick()
+        if (color.text!=colorCache.text||color.bg!=colorCache.bg) {reloadHead(); colorCache.text=color.text, colorCache.bg=color.bg}
     
         /*创建canvas*/
         loadC()
@@ -359,7 +383,7 @@ async function loadPiP(isToPiP=true, from="unknow") {
             if (isJ) {fM = readCfg.customJapaneseFonts}
         }
 
-        if (from=="Settings") {reloadHead()} //如果是改字体/显示的信息……
+        if (from=="Settings") {reloadHead()} //如果是改字体/显示的信息或者颜色有变……
 
         let cC = c.getContext("2d",{alpha:false})
         , o1 = r/480, o2 = r/240, o3 = r/160, o5 = r/96, o6 = r/80, o9 = r/53.3333, o10 = r/48, o12 = r/40, o15 = r/32, o20 = r/24, o21p5 = r/22.3256, o25 = r/19.2, o30 = r/16, o30p5 = r/15.7377, o35 = r/13.7143, o40 = r/12, o45 = r/10.6667, o55 = r/8.7272, o60 = r/8, o105 = r/4.57143, o150 = r/3.2, o480 = r
@@ -367,22 +391,22 @@ async function loadPiP(isToPiP=true, from="unknow") {
         cC.textAlign = "left";
 
         let xy = cvSize+o3;
-        cC.fillStyle = bgC;
+        cC.fillStyle = color.bg;
         cC.fillRect(0, xy, c.width, c.height); /*底背景*/
     
         let lrcFS = o55, lrcMgT = o45, lrcMgL = o15
         , lrcTop = cvSize+lrcMgT
         , lrc0 = lrcTop+lrcFS, lrc1 = lrcTop+lrcFS*2+o10, lrc2 = lrcTop+lrcFS*3+o12, lrc3 = lrcTop+lrcFS*4+o10, lrc4 = lrcTop+lrcFS*5+o2
         , lrcSSS = readCfg.lyricsTaperOff;
-        function lrcMNow() {cC.fillStyle = textC, cC.font = `${bold} ${lrcFS}px ${fM}`, lrcMgL = o15}
-        function lrcMNext1() {cC.fillStyle = textCT56, cC.font = `${bold} ${lrcFS-o10}px ${fM}`, lrcSSS?lrcMgL = o12:""}
-        function lrcMNext2() {cC.fillStyle = textCT56, cC.font = `${bold} ${lrcSSS?lrcFS-o15:lrcFS-o10}px ${fM}`, lrcSSS?lrcMgL = o9:""}
-        function lrcMNext3() {cC.fillStyle = textCT56, cC.font = `${bold} ${lrcSSS?lrcFS-o20:lrcFS-o10}px ${fM}`, lrcSSS?lrcMgL = o6:""}
-        function lrcMNext4() {cC.fillStyle = textCT56, cC.font = `${bold} ${lrcSSS?lrcFS-o25:lrcFS-o10}px ${fM}`, lrcSSS?lrcMgL = o3:""}
-        function lrcTNow() {cC.fillStyle = textCT56, cC.font = `${lrcFS-o5}px ${fT}`, lrcMgL = o15}
-        function lrcTNext1() {cC.fillStyle = textCT31, cC.font = `${lrcFS-o15}px ${fT}`, lrcSSS?lrcMgL = o12:""}
-        function lrcTNext2() {cC.fillStyle = textCT31, cC.font = `${lrcSSS?lrcFS-o20:lrcFS-o15}px ${fT}`, lrcSSS?lrcMgL = o9:""}
-        function lrcTNext3() {cC.fillStyle = textCT31, cC.font = `${lrcSSS?lrcFS-o25:lrcFS-o15}px ${fT}`, lrcSSS?lrcMgL = o6:""}
+        function lrcMNow() {cC.fillStyle = color.text, cC.font = `${bold} ${lrcFS}px ${fM}`, lrcMgL = o15}
+        function lrcMNext1() {cC.fillStyle = color.textT56, cC.font = `${bold} ${lrcFS-o10}px ${fM}`, lrcSSS?lrcMgL = o12:""}
+        function lrcMNext2() {cC.fillStyle = color.textT56, cC.font = `${bold} ${lrcSSS?lrcFS-o15:lrcFS-o10}px ${fM}`, lrcSSS?lrcMgL = o9:""}
+        function lrcMNext3() {cC.fillStyle = color.textT56, cC.font = `${bold} ${lrcSSS?lrcFS-o20:lrcFS-o10}px ${fM}`, lrcSSS?lrcMgL = o6:""}
+        function lrcMNext4() {cC.fillStyle = color.textT56, cC.font = `${bold} ${lrcSSS?lrcFS-o25:lrcFS-o10}px ${fM}`, lrcSSS?lrcMgL = o3:""}
+        function lrcTNow() {cC.fillStyle = color.textT56, cC.font = `${lrcFS-o5}px ${fT}`, lrcMgL = o15}
+        function lrcTNext1() {cC.fillStyle = color.textT31, cC.font = `${lrcFS-o15}px ${fT}`, lrcSSS?lrcMgL = o12:""}
+        function lrcTNext2() {cC.fillStyle = color.textT31, cC.font = `${lrcSSS?lrcFS-o20:lrcFS-o15}px ${fT}`, lrcSSS?lrcMgL = o9:""}
+        function lrcTNext3() {cC.fillStyle = color.textT31, cC.font = `${lrcSSS?lrcFS-o25:lrcFS-o15}px ${fT}`, lrcSSS?lrcMgL = o6:""}
         
         lrcMNow(); cC.fillText(lyrics["M0"], lrcMgL, lrc0); /*主歌词*/
     
@@ -427,16 +451,16 @@ async function loadPiP(isToPiP=true, from="unknow") {
         }
 
         if (readCfg.lyricsMask) {
-            let lrcMask = cC.createLinearGradient(0, lrcTop, 0, c.height+r);
-            lrcMask.addColorStop(0, "#0000");
-            lrcMask.addColorStop(1, bgC);
+            let lrcMask = cC.createLinearGradient(0, lrcTop, 0, c.height*1.3);
+            lrcMask.addColorStop(.1, color.bgT00); //不能用#0000或者#FFF0等，会影响渐变的渲染效果
+            lrcMask.addColorStop(1, color.bg);
             cC.fillStyle = lrcMask;
             cC.fillRect(0, lrcTop, c.width, c.height); /*歌词阴影遮罩*/
         }
     
         if (nrInfo) {
             drawBgAndInfo()
-            cC.fillStyle = textCT80; cC.font = `${o25}px ${f}`; cC.fillText(ldTxt, o5, o30); /*封面(加载)*/
+            cC.fillStyle = color.textT80; cC.font = `${o25}px ${f}`; cC.fillText(ldTxt, o5, o30); /*封面(加载)*/
             drawRC();
             cover.onload = ()=>{/*封面(完毕)*/
                 cC.clearRect(0, 0, cvSize, cvSize);
@@ -445,35 +469,35 @@ async function loadPiP(isToPiP=true, from="unknow") {
                 if(showRefrshing){console.log(`PiPW Log: 歌曲封面绘制完成`)}
             }
             function drawRC() {
-                cC.beginPath(); cC.strokeStyle = bgC; cC.lineWidth = o5; xy = cvSize+o2;
+                cC.beginPath(); cC.strokeStyle = color.bg; cC.lineWidth = o5; xy = cvSize+o2;
                 /*封面边框+圆角*/
                 cC.moveTo(xy, 0); cC.arcTo(xy, xy, 0, xy, o12); cC.lineTo(0, xy); cC.lineTo(xy, xy); cC.lineTo(xy, 0);
                 cC.stroke();
             }
             function drawBgAndInfo() {
-                cC.fillStyle = bgC; xy = cvSize;
+                cC.fillStyle = color.bg; xy = cvSize;
                 cC.fillRect(xy, 0, c.width, xy+o5); /*head背景*/
-                cC.beginPath(); cC.strokeStyle = bgC; cC.lineWidth = o5; xy = cvSize+o5;
+                cC.beginPath(); cC.strokeStyle = color.bg; cC.lineWidth = o5; xy = cvSize+o5;
                 cC.moveTo(0, xy); cC.lineTo(c.width, xy); /*底边框*/
                 cC.stroke();
-                cC.fillStyle = textC; cC.font = `${o55}px ${f}`;
+                cC.fillStyle = color.text; cC.font = `${o55}px ${f}`;
                 cC.fillText(snM, txtMgL, o60); /*主名*/
-                cC.fillStyle = textCT31; cC.font = `${o35}px ${f}`;
+                cC.fillStyle = color.textT31; cC.font = `${o35}px ${f}`;
                 cC.fillText(snA==null?"":snA, txtMgL, o105); /*副名*/
-                cC.fillStyle = textCT56;
+                cC.fillStyle = color.textT56;
                 cC.fillText(sa, txtMgL, snA==null?o105:o150); /*歌手*/
             }
         }
     
         cC.font = `${o30}px ${f}`;
-        cC.fillStyle = textCT56;
+        cC.fillStyle = color.textT56;
         let tW = cC.measureText(t).width
         cC.fillText(t, o15, cvSize+o35); /*时间*/
     
         let  pbMgT = cvSize+o21p5, pbMgL = tW+o30p5
-        cC.fillStyle = textCT13;
+        cC.fillStyle = color.textT13;
         cC.fillRect(pbMgL, pbMgT, c.width-pbMgL, o5); /*进度条背景*/
-        cC.fillStyle = accentC;
+        cC.fillStyle = color.accent;
         cC.fillRect(pbMgL, pbMgT, (c.width-pbMgL)*tP, o5); /*进度条*/
     
         if(showRefrshing){console.log(`PiPW Log: <canvas>重绘完成，当前分辨率${c.width}x${c.height}, 请求来自${from}`)}
@@ -484,8 +508,8 @@ async function loadPiP(isToPiP=true, from="unknow") {
 
 plugin.onAllPluginsLoaded(()=>{load()});
 function load() {B();C();E();F()
-    legacyNativeCmder.appendRegisterCall("PlayProgress", "audioplayer", (_, progress) => {
-        let pZ = Math.floor(progress); if(pZ>tC||progress<tC||readCfg.smoothProgessBar){tC = progress; loadPiP(false, "PlayProgress")}
+    legacyNativeCmder.appendRegisterCall("PlayProgress", "audioplayer", (_, p) => {
+        playProgress = p; let pZ = Math.floor(p); if(pZ>tC||p<tC||readCfg.smoothProgessBar){tC = p; loadPiP(false, "PlayProgress")}
     });
     async function B() { //监听自带词栏变动
         await betterncm.utils.waitForElement(".m-lyric");
@@ -586,10 +610,10 @@ plugin.onConfig(()=>{
     cP.innerHTML = `
 <style id="PiPWSettingsStyle0">
     #PiPWSettings {
-        --pipws-fg: ${accentC};
-        --pipws-bg: ${bgCTSetting};
-        --pipws-bg-wot: ${bgC};
-        color: ${textC};
+        --pipws-fg: ${color.accent};
+        --pipws-bg: ${color.bgTSetting};
+        --pipws-bg-wot: ${color.bg};
+        color: ${color.text};
     }
 </style>
 <style>
@@ -852,7 +876,7 @@ plugin.onConfig(()=>{
     }
 </style>
 <div class="part noAutoBr" style="margin-top: 0;">
-    <p class="partTitle">PiPWindow </p><p> 0.3.0</p>
+    <p class="partTitle">PiPWindow </p><p> 0.3.1</p>
     <br />
     <p>by </p>
     <input class="link" type="button" onclick="betterncm.ncm.openUrl('https://github.com/Lukoning')" value=" Lukoning " />
@@ -949,7 +973,7 @@ plugin.onConfig(()=>{
             <input id="showAlbumSwitch" type="checkbox" />
             <span class="slider button"></span>
         </label>
-        <p>将歌名翻译/别名替换为专辑名</p>
+        <p>显示专辑名 (而非翻译/别名)</p>
         <br />
         <label class="switch">
             <input id="originalLyricsBoldSwitch" type="checkbox" />
@@ -996,10 +1020,10 @@ plugin.onConfig(()=>{
         <br />
         <div class="item">
             <label class="radio">
-                <input type="radio" name="lyricsFrom" value="LibLyric" disabled/>
+                <input type="radio" name="lyricsFrom" value="LibLyric" ${loadedPlugins.liblyric?"":"disabled"}/>
                 <span class="slider button"></span>
             </label>
-            <p>LibLyric依赖库(正在开发)</p>
+            <p>LibLyric依赖库(测试)</p>
         </div>
         <div class="item">
             <label class="radio">
@@ -1011,7 +1035,7 @@ plugin.onConfig(()=>{
         <br />
         <div class="item">
             <label class="radio">
-                <input type="radio" name="lyricsFrom" value="RNP" />
+                <input type="radio" name="lyricsFrom" value="RNP" ${loadedPlugins.RefinedNowPlaying?"":"disabled"}/>
                 <span class="slider button"></span>
             </label>
             <p>LyricBar插件／RefinedNowPlaying插件</p>
