@@ -4,7 +4,7 @@
   "thy646742/ArtistAllSongs": 4,
   "mo-jinran/BGEnhanced-Extra": 2,
   "keiko233/beatsaver-plugin-netease": 2,
-  "BetterNCM/CppLyrics-Plugin": 11,
+  "BetterNCM/CppLyrics-Plugin": 12,
   "BetterNCM/CrashFix": 2,
   "BetterNCM/CrossfadeLFP": 8,
   "BetterNCM/DowngradeOK": 10,
@@ -38,7 +38,7 @@
   "BetterNCM/SimpleAudioVisualizer": 10,
   "BetterNCM/StyleSnippet": 7,
   "BetterNCM/StylesheetLoader": 0,
-  "mo-jinran/Taskbar-Lyrics": 103,
+  "mo-jinran/Taskbar-Lyrics": 104,
   "BetterNCM/ThemeSwitcher": 0,
   "mo-jinran/VisualRecord": 2,
   "samyycX/VocaloidInfo": 5,
@@ -51,8 +51,8 @@
   "BetterNCM/keyboard-seek": 4,
   "BetterNCM/list-scroll-fix": 6,
   "solstice23/lyric-bar-netease": 17,
-  "solstice23/material-you-theme-netease": 118,
+  "solstice23/material-you-theme-netease": 119,
   "BetterNCM/Plugin-Market": 0,
-  "solstice23/refined-now-playing-netease": 360,
+  "solstice23/refined-now-playing-netease": 361,
   "BetterNCM/TinyNCM": 8
 }
