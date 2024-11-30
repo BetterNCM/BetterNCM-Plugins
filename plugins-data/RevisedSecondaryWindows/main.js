@@ -11,7 +11,7 @@ let isEnabled = JSON.parse(localStorage.getItem("isRswEnable"));
 let fBCsToID = null;
 let pSsToID = null;
 
-function replaceSvg(s, use, n){
+function replaceSvg(s, use, n){ /*首先…这应该是-webkit-mask-image无效时用的*/
     let li = {
         close: `<use xlink:href="orpheus://orpheus/style/res/svg/icon.sp.svg#btn_close"></use>`,
         back: `<use xlink:href="orpheus://orpheus/style/res/svg/topbar.sp.svg#back"></use>`,
@@ -289,7 +289,7 @@ async function refreshCss() {
         }
     }
     /*我去你的*/
-    #music-163-com div.m-layer:not(body.material-you-theme *), #music-163-com div.m-card-noarrow,
+    #music-163-com div.m-layer:not(body.material-you-theme *), #music-163-com div.m-card-noarrow:not(body.material-you-theme *),
     div.next-modal > div[role="dialog"], div.u-atsuggest, div.m-emts { /*后两个是At建议和表情*/
         border: 1px solid #0000 !important;
         border-radius: var(--rsw-window-bdr);
@@ -578,8 +578,11 @@ async function refreshCss() {
     body.material-you-theme div.m-playlist .listhd { /*弹正播列标题（MY）*/
         background: #0000;
     }
-    body.material-you-theme .m-playlist .listhd, body.material-you-theme .m-playlist .listbd { /*标题 及 其列(MY)*/
+    body.material-you-theme .m-playlist .listhd{ /*标题(MY)*/
         border-radius: var(--rsw-window-bdr) 0 0 0;
+    }
+    body.material-you-theme .m-playlist .listbd { /*列(MY)*/
+        border-radius: 0;
     }
     body.material-you-theme.refined-now-playing.mq-playing .m-playlist .listhd { /*标题(MY+RNP)*/
         border-radius: var(--rsw-window-bdr) var(--rsw-window-bdr) 0 0;
@@ -1323,7 +1326,7 @@ plugin.onConfig( () => {
         --rsws-bg: var(--rsw-bg-color-trans, #8881);
         --rsws-bg-wot: var(--rsw-bg-color, #888);
         color: var(--rsw-text-color);
-        line-height: 20px;
+        line-height: 24px;
         font-size: 16px;
     }
     #RswSettings p {
@@ -1499,7 +1502,7 @@ plugin.onConfig( () => {
     </style>
     <p>RevisedSecondaryWindows</p>
     <br />
-    <p>v0.4.2 by </p><input class="link" type="button" onclick="betterncm.ncm.openUrl('https://github.com/Lukoning')" value=" Lukoning " />
+    <p>v0.4.3 by </p><input class="link" type="button" onclick="betterncm.ncm.openUrl('https://github.com/Lukoning')" value=" Lukoning " />
     <br />
     <label class="switch">
         <input id="mainSwitch" type="checkbox" />
@@ -1517,15 +1520,17 @@ plugin.onConfig( () => {
     <br />
     <p>- 第三方登录/绑定界面 窗口圆角 标题栏</p>
     <br />
-    <p>- 开发ing…… 更多详见更新日志</p>
+    <p>- 详见更新日志……</p>
     <br />
     <p>* 部分窗口的圆角由操作系统提供</p>
     <br />
-    <input class="link" type="button" onclick="betterncm.ncm.openUrl('https://github.com/Lukoning/RevisedSecondaryWindows')" value=" 源代码(GitHub) " />
+    <p>* 关闭开关后部分样式可能需要重载生效</p>
+    <br />
+    <input class="link" type="button" onclick="betterncm.ncm.openUrl('https://github.com/Lukoning/RevisedSecondaryWindows')" value=" 源代码仓库(GitHub) " />
     <br />
     <input class="link" type="button" onclick="betterncm.ncm.openUrl('https://github.com/Lukoning/RevisedSecondaryWindows/releases')" value=" 更新日志(GitHub Releases) " />
     <br />
-    <input class="link" type="button" onclick="betterncm.ncm.openUrl('https://github.com/Lukoning/RevisedSecondaryWindows/issues')" value=" 问题反馈/功能建议(GitHub issues) " />
+    <input class="link" type="button" onclick="betterncm.ncm.openUrl('https://github.com/Lukoning/RevisedSecondaryWindows/issues')" value=" 问题反馈/功能建议(GitHub Issues) " />
     `;
     if (isEnabled) {
         crCfgPage.querySelector("#mainSwitch").checked = true;
