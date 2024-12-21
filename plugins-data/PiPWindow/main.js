@@ -1,6 +1,6 @@
 /*This plugin is licensed under the GNU/GPL-3.0*/
 let rvN, v, c, cover, cvUrlCache, songIdCache, songDataCache, tMsT, lrcCache, pLrc, pLrcKeys, showRefrshing, thePiPWindow
-, isVLsnAdded=false, DontPlay=false, DontPause=false, autoRatio, autoRatioValue=480, lastReRatio=0, playProgress=0, nrLrc=false, lrcNowLoading=false, reRatioPending=false, isDynamicLyrics=false, debugMode=false
+, isVLsnAdded=false, DontPlay=false, DontPause=false, autoRatio, autoRatioValue=480, lastReRatio=0, playProgress=0, nrLrc=false, lrcNowLoading=false, reRatioPending=false, isDynamicLyrics=false, debugMode=false, lrcRnpLsnAdded=false
 , t = "0:00／0:00", tC = 0, tT = 0, tP = 0, tR = 0 //显示用，Current，Total，PassedRate，Remaining
 , pdd = "M21 3C21.5523 3 22 3.44772 22 4V11H20V5H4V19H10V21H3C2.44772 21 2 20.5523 2 20V4C2 3.44772 2.44772 3 3 3H21ZM21 13C21.5523 13 22 13.4477 22 14V20C22 20.5523 21.5523 21 21 21H13C12.4477 21 12 20.5523 12 20V14C12 13.4477 12.4477 13 13 13H21Z"
 , pO = `<path d="${pdd}M20 15H14V19H20V15ZM6.70711 6.29289L8.95689 8.54289L11 6.5V12H5.5L7.54289 9.95689L5.29289 7.70711L6.70711 6.29289Z"></path>`
@@ -14,6 +14,7 @@ let rvN, v, c, cover, cvUrlCache, songIdCache, songDataCache, tMsT, lrcCache, pL
     , smoothProgessBar: true, resolutionRatio: "auto", aspectRatio: "2:1", customLoadingTxt: "正在载入猫猫…"})
 , color = ({accent: "", text: "", textT13: "", textT31: "", textT42: "", textT56: "", bg: "", bgT00: "", bgTSetting: ""}), colorCache = ({text: "", bg: ""})
 readCfg = {...cfgDefault, ...readCfg} //缺失配置啥的处理一下
+let oldCfg = {...readCfg}
 window.PiPWShowRefrshing = (x=true)=>{if(x==true){showRefrshing=true;return true}else if(x==false){showRefrshing=false;return false}}
 function cE(n, d=document) {return d.createElement(n)}
 function q(n, d=document) {return d.querySelector(n)}
@@ -223,6 +224,7 @@ async function loadPiP(isToPiP=true, from="unknow") {
         }
     
         if (data.id != songIdCache) {reloadHead(); songIdCache = data.id; nrLrc=true}
+        if (from=="Settings" && oldCfg.lyricsFrom!=readCfg.lyricsFrom) {nrLrc=true}
     
         /*时间*/
         try {
@@ -251,10 +253,16 @@ async function loadPiP(isToPiP=true, from="unknow") {
             currentT: 0,
             currentD: 0,
         };
+        if (readCfg.lyricsFrom != "RNP") {
+            document.removeEventListener("lyrics-updated", rnpLrcUpdate);
+            lrcRnpLsnAdded = false
+        }
         switch (readCfg.lyricsFrom) {
             case "RNP":getLrcRnp();break
             case "OriginalLyricBar":getLrcOrg();break
             case "LibLyric":getLrcLibLyric();break
+            case "Native":getLrcNative();//break
+            case "Custom":getLrcCustom();//break
             default: getLrcErr()
         }
         function getLrcErr() {
@@ -268,34 +276,26 @@ async function loadPiP(isToPiP=true, from="unknow") {
             };
             pLrcKeys = Object.keys(pLrc)
         }
+        function rnpLrcUpdate(e) {
+            pLrc = JSON.parse(JSON.stringify(e.detail.lyrics))
+            pLrcKeys = Object.keys(pLrc)
+            for (let i = 0; i < pLrcKeys.length; i++) {
+                let o = pLrc[i].originalLyric
+                pLrc[i].originalLyric = o.replace(/\s+/g, " ").trim();
+                if (o == "") {pLrc[i].originalLyric = "· · ·", pLrc[i].translatedLyric = ""}
+            }
+            console.log("PiPW Log: GotLyrics", pLrc)
+        };
         function getLrcRnp() {
-            if (q(".m-pinfo [data-log-type='dj']")) {return}
-            let l = ".rnp-lyrics-line", o = `${l}-original`, k = `${l}-karaoke`, t = `${l}-translated`
-            if (q(".rnp-lyrics-line")) {
-                for (i = 0; i <= 4; i++) {
-                    try {
-                        try {
-                            lyrics[`M${i}`] = q(`${l}[offset='${i}'] ${o}`).textContent;
-                        } catch {
-                            lyrics[`M${i}`] = q(`${l}[offset='${i}'] ${k}`).textContent;
-                        }
-                        try {lyrics[`T${i}`] = q(`${l}[offset='${i}'] ${t}`).textContent}catch{}
-                    } catch {
-                        if (q(`${l}.rnp-interlude[offset='${i}']`)) {
-                            lyrics[`M${i}`] = "· · ·";
-                            lyrics[`T${i}`] = "";
-                        }
-                        if (i == 0 && !q(`${l}[offset='0']`) && q(`${l}[offset='-1']`)) {
-                            try {
-                                lyrics[`M${i}`] = q(`${l}[offset='-1'] ${o}`).textContent;
-                            } catch {
-                                lyrics[`M${i}`] = q(`${l}[offset='-1'] ${k}`).textContent;
-                            }
-                            try {lyrics[`T${i}`] = q(`${l}[offset='-1'] ${t}`).textContent}catch{}
-                        }
-                    }
+            if (!loadedPlugins.RefinedNowPlaying) {getLrcErr()}
+            try {
+                if (!lrcRnpLsnAdded) {
+                    document.addEventListener("lyrics-updated", rnpLrcUpdate);
+                    lrcRnpLsnAdded = true
+                    rnpLrcUpdate({detail:window.currentLyrics})
                 }
-            } else {getLrcErr()}
+                lrcUpdate();
+            } catch(e) {console.error(`PiPW Error: 获取歌词时出错，详情：\n${e}`);getLrcErr()}
         }
         function getLrcOrg() {
             try {
@@ -308,6 +308,7 @@ async function loadPiP(isToPiP=true, from="unknow") {
         }
         async function getLrcLibLyric() {
             if (lrcNowLoading) {lyrics["M0"] = ldTxt;return}
+            if (!loadedPlugins.liblyric) {getLrcErr()}
             try {
                 let ll = loadedPlugins.liblyric
                 if (nrLrc) {
@@ -332,6 +333,12 @@ async function loadPiP(isToPiP=true, from="unknow") {
                 lrcUpdate();
             } catch(e) {lrcNowLoading = false;console.error(`PiPW Error: 获取歌词时出错，详情：\n${e}`);getLrcErr()}
         }
+        function getLrcNative() {
+            //nocode
+        }
+        function getLrcCustom() {
+            //nocode
+        }
         function lrcUpdate() {
             let l = pLrcKeys.length
             for (let i = 0; i < l; i++) {
@@ -348,13 +355,11 @@ async function loadPiP(isToPiP=true, from="unknow") {
                     lyrics["M2"] = i+2<l?pLrc[i+2].originalLyric:""
                     lyrics["M3"] = i+3<l?pLrc[i+3].originalLyric:""
                     lyrics["M4"] = i+4<l?pLrc[i+4].originalLyric:""
-                    if (lrcCache.tlyric&&lrcCache.tlyric.lyric!="") {
-                        lyrics["T0"] = pLrc[i].translatedLyric
-                        lyrics["T1"] = i+1<l?pLrc[i+1].translatedLyric:""
-                        lyrics["T2"] = i+2<l?pLrc[i+2].translatedLyric:""
-                        lyrics["T3"] = i+3<l?pLrc[i+3].translatedLyric:""
-                        lyrics["T4"] = i+4<l?pLrc[i+4].translatedLyric:""
-                    }
+                    lyrics["T0"] = pLrc[i].translatedLyric?pLrc[i].translatedLyric:""
+                    lyrics["T1"] = i+1<l?pLrc[i+1].translatedLyric?pLrc[i+1].translatedLyric:"":""
+                    lyrics["T2"] = i+2<l?pLrc[i+2].translatedLyric?pLrc[i+2].translatedLyric:"":""
+                    lyrics["T3"] = i+3<l?pLrc[i+3].translatedLyric?pLrc[i+3].translatedLyric:"":""
+                    lyrics["T4"] = i+4<l?pLrc[i+4].translatedLyric?pLrc[i+4].translatedLyric:"":""
                 }
             }
         }
@@ -446,15 +451,16 @@ async function loadPiP(isToPiP=true, from="unknow") {
         isDynamicLyrics = false
         if (Array.isArray(lyrics["M0"])) {
             isDynamicLyrics = true
-            let lyricDO = ""/*lyricDynamicOrigin*/, l = lyrics["M0"].length, now = 0
+            let lyricDO = ""/*lyricDynamicOrigin*/, l = lyrics["M0"].length, now = 0, nowWidth = 0
             lyricDO = lyrics["M0"].map(item => item.word).join("");
+            lrcMNowUnplayed();
             for (let i=0; i<l; i++) {
                 let lrc = lyrics["M0"][i], Cnow = (playProgress-lrc.time)/lrc.duration
                 Cnow = lrc.time>playProgress ? 0 : Cnow>1?1:Cnow
-                now += Cnow
+                nowWidth += cC.measureText(lrc.word).width*Cnow
             }
-            now = now/l
-            lrcMNowUnplayed(); let w = cC.measureText(lyricDO).width
+            let w = cC.measureText(lyricDO).width
+            now = nowWidth/w
             updateMLrcMgL(w, now);
             cC.fillText(lyricDO, mLrcMgL, lrc0); /*主歌词(未播放)*/
             lrcMNow(); cC.save();
@@ -462,7 +468,7 @@ async function loadPiP(isToPiP=true, from="unknow") {
             cC.rect(0, 0, w*now+mLrcMgL, c.height); cC.clip();
             cC.fillText(lyricDO, mLrcMgL, lrc0); /*主歌词(已播放)*/
             cC.restore();
-        } else if (readCfg.lyricsFrom=="LibLyric") {
+        } else if (readCfg.lyricsFrom!="OriginalLyricBar") {
             lrcMNow();
             updateMLrcMgL(cC.measureText(lyrics["M0"]).width);
             cC.fillText(lyrics["M0"], mLrcMgL, lrc0); /*主歌词*/
@@ -472,7 +478,7 @@ async function loadPiP(isToPiP=true, from="unknow") {
     
         if (lyrics["T0"]!="") {
             lrcTNow();
-            if (readCfg.lyricsFrom=="LibLyric") {
+            if (readCfg.lyricsFrom!="OriginalLyricBar") {
                 mLrcMgL = lrcMgL
                 updateMLrcMgL(cC.measureText(lyrics["T0"]).width);
             }
@@ -636,6 +642,7 @@ async function writeCfg(Cfg) { //写配置
 };
 
 async function saveCfg(all="all") { //保存设置
+    oldCfg = {...readCfg}
     let a = Array.from(arguments);
     if (a[0] == "all") {a = Object.keys(cfgDefault)}
     for (let i = 0; i < a.length; i++) {
@@ -668,7 +675,7 @@ async function saveCfg(all="all") { //保存设置
             console.error(`PiPW Error: 无效的设置项: ${a[i]}`)
         }
     }
-    writeCfg(readCfg); loadPiP(false, "Settings"); tipMsg("设置已更新");console.log("PiPW Log: 设置已保存")
+    writeCfg(readCfg); loadPiP(false, "Settings"); tipMsg("设置已更新");console.log("PiPW Log: 设置已保存", oldCfg, readCfg)
 };
 
 plugin.onConfig(()=>{
@@ -947,7 +954,7 @@ plugin.onConfig(()=>{
     }
 </style>
 <div class="part noAutoBr" style="margin-top: 0;">
-    <p class="partTitle">PiPWindow </p><p> 0.4.0</p>
+    <p class="partTitle">PiPWindow </p><p> 0.4.1</p>
     <br />
     <p>by </p>
     <input class="link" type="button" onclick="betterncm.ncm.openUrl('https://github.com/Lukoning')" value=" Lukoning " />
@@ -1071,7 +1078,7 @@ plugin.onConfig(()=>{
             <input id="dynamicLyricsSwitch" type="checkbox" />
             <span class="slider button"></span>
         </label>
-        <p>逐字歌词* (需要词源LibLyric)</p>
+        <p>逐字歌词*</p>
         <br />
         <label class="switch">
             <input id="autoScrollSwitch" type="checkbox" />
@@ -1125,7 +1132,7 @@ plugin.onConfig(()=>{
                 <input type="radio" name="lyricsFrom" value="RNP" ${loadedPlugins.RefinedNowPlaying?"":"disabled"}/>
                 <span class="slider button"></span>
             </label>
-            <p>LyricBar插件／RefinedNowPlaying插件</p>
+            <p>RefinedNowPlaying插件</p>
         </div>
         <br />
         <label class="switch">
