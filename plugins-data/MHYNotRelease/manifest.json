@@ -3,7 +3,7 @@
     "name": "MHY NotRelease", 
     "slug": "MHYNotRelease", 
     "type": "extension",
-    "version": "1.3.2",
+    "version": "1.3.3",
     "author": "etherfun", 
     "author_links": ["https://github.com/etherfun"],
     "description": "让网易云也能首发米哈游音乐 在歌手页单独列出并提供播放功能",
