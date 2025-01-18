@@ -1,0 +1,7 @@
+{
+    "name": "LyricsIsland", // 插件名
+    "repo": "jiangyin14/LyricsIslandBNCM", // 插件的 Repo
+    "branch": "main", // 分支名
+    "subpath": "/", // 插件在 repo 中的子目录 （可选）
+    "author": "jiangyin14,沫烬染,Xwei1645" // 作者
+}
