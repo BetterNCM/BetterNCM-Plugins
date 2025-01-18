@@ -1,0 +1,34 @@
+{
+    "manifest_version": 1,
+    "name": "LyricsIsland",
+    "slug": "LyricsIsland",
+    "description": "让BetterNCM与ClassIsland通信，在主界面显示歌词。",
+    "preview": "preview.png",
+    "version": "1.0.0",
+    "author": "jiangyin14,沫烬染,Xwei1645",
+    "author_links": [
+        "https://github.com/jiangyin14",
+        "https://www.jiangyin14.top/"
+    ],
+    "type": "extension",
+    "loadAfter": [
+        "liblyric",
+        "RefinedNowPlaying"
+    ],
+    "requirements": [
+        "liblyric"
+    ],
+    "injects": {
+        "Main": [
+            {
+                "file": "base.js"
+            },
+            {
+                "file": "lyric.js"
+            },
+            {
+                "file": "func.js"
+            }
+        ]
+    }
+}
