@@ -4828,16 +4828,20 @@
     }
     ImageUrl;
     async backgroundElement() {
-      return /* @__PURE__ */ h(
+      return /* @__PURE__ */ h("div", { className: "BGE-coverImageBG" }, /* @__PURE__ */ h(
         "img",
         {
-          className: "BGE-coverImageBG",
-          src: ";"
+          className: "BGE-coverImageBG-a"
         }
-      );
+      ), /* @__PURE__ */ h(
+        "img",
+        {
+          className: "BGE-coverImageBG-b"
+        }
+      ));
     }
     async previewBackground() {
-      return () => /* @__PURE__ */ h("div", { className: "BGE-coverImageBG", style: { background: "transparent" } });
+      return () => /* @__PURE__ */ h("div", { className: "BGE-coverImageBGPreview", style: { background: "transparent" } });
     }
     static async askAndCreate() {
       lastUrl = "";
@@ -4860,13 +4864,32 @@
       const url = `${document.querySelector(".normal.j-cover, .cmd-image").src.split("?")[1]}`;
       if (lastUrl !== url) {
         lastUrl = url;
-        await preloadImage(url);
+        await preloadImage(url).catch(() => {
+        });
       }
       for (const img of document.querySelectorAll(".BGE-coverImageBG")) {
-        if (img.getAttribute("src"))
-          img.setAttribute("src", url);
-        if (img.style.background)
-          img.style.background = `url(${url}) 0% 0% / cover`;
+        const a = img.querySelector(".BGE-coverImageBG-a");
+        const b = img.querySelector(".BGE-coverImageBG-b");
+        if (a.src !== url) {
+          b.style.opacity = "0";
+          b.src = url;
+          await new Promise((r) => {
+            b.addEventListener("load", r);
+            b.addEventListener("error", r);
+          });
+          a.style.opacity = "0";
+          b.style.opacity = "1";
+          await new Promise((r) => setTimeout(r, 1100));
+          b.classList.add("BGE-coverImageBG-a");
+          b.classList.remove("BGE-coverImageBG-b");
+          a.classList.add("BGE-coverImageBG-b");
+          a.classList.remove("BGE-coverImageBG-a");
+          a.src = "";
+          b.parentElement.appendChild(a);
+        }
+      }
+      for (const img of document.querySelectorAll(".BGE-coverImageBGPreview")) {
+        img.style.background = `url(${url}) 0% 0% / cover`;
       }
     }
   }, 300);
@@ -5313,7 +5336,6 @@
 
   // src/index.tsx
   document.body.classList.add("BGEnhanced");
-  var prefabTransparencyStatus = localStorage["cc.microblock.prefab.transparency"] || true;
   var configElement = document.createElement("div");
   var BGDom = document.createElement("div");
   BGDom.classList.add("BGEnhanced-BackgoundDom");
@@ -5323,8 +5345,6 @@
     selfPlugin.backgroundList = [];
     ReactDOM.render(/* @__PURE__ */ h(Main, null), BGDom);
     document.body.appendChild(BGDom);
-    if (prefabTransparencyStatus == "true")
-      document.body.classList.toggle("use-prefab-transparency-style");
   });
   function BackgroundPreviewList({
     backgroundList,
@@ -5400,6 +5420,18 @@
       STORE_BGMODE,
       "cover-centered"
     );
+    const [prefabTransparencyStatus, setPrefabTransparencyStatus] = useLocalStorage(
+      "cc.microblock.prefab.transparency",
+      false,
+      (v) => v === "true"
+    );
+    React.useEffect(() => {
+      if (prefabTransparencyStatus) {
+        document.body.classList.add("prefab-transparency");
+      } else {
+        document.body.classList.remove("prefab-transparency");
+      }
+    }, [prefabTransparencyStatus]);
     const [backgroundList, setBackgroundList] = useLocalStorageBackgroundList(STORE_BGLIST);
     const [currentBackgroundId, setCurrentBackgroundId] = React.useState(backgroundList.find((bg) => bg.current)?.id ?? null);
     React.useEffect(() => {
@@ -5481,12 +5513,6 @@
         name
       );
     }
-    function usePrefabTransparencyStyle() {
-      prefabTransparencyStatus = prefabTransparencyStatus ? "false" : "true";
-      localStorage["cc.microblock.prefab.transparency"] = prefabTransparencyStatus;
-      if (prefabTransparencyStatus)
-        document.body.classList.toggle("use-prefab-transparency-style");
-    }
     return /* @__PURE__ */ h(f, null, /* @__PURE__ */ h(
       "div",
       {
@@ -5562,9 +5588,9 @@
             opacity: "0.9",
             marginBottom: "1em"
           },
-          onClick: () => usePrefabTransparencyStyle()
+          onClick: () => setPrefabTransparencyStatus(!prefabTransparencyStatus)
         },
-        /* @__PURE__ */ h("span", { className: "btn" }, "\u4F7F\u7528/\u79FB\u9664\u9884\u5236\u5168\u900F\u660E")
+        /* @__PURE__ */ h("span", { className: "btn" }, "[", prefabTransparencyStatus ? "\u221A" : "\xD7", "] \u9884\u5236\u5168\u900F\u660E")
       ), /* @__PURE__ */ h("div", { className: "backgrounds" }, /* @__PURE__ */ h(BackgroundPreviewList, { backgroundList, buttons: (background) => /* @__PURE__ */ h(f, null, /* @__PURE__ */ h("span", { className: "btn", onClick: async () => {
         await background.onConfig();
         setBackgroundList([...backgroundList]);

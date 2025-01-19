@@ -1,0 +1,14 @@
+{
+  "manifest_version": 1,
+  "name": "What's The Volume Percentage Now?",
+  "slug": "what-is-the-volume-percentage-now",
+  "version": "0.1.0",
+  "author": "student_2333",
+  "description": "鼠标悬浮在音量图标上会显示当前音量",
+  "betterncm_version": ">=1.0.0",
+  "preview": "preview.png",
+  "ncm3-compatible": false,
+  "injects": {
+    "Main": [{ "file": "./main.js" }]
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "manifest_version": 1,
+  "name": "6K Labs",
+  "slug": "6k-labs",
+  "version": "0.2.0",
+  "author": "student_2333",
+  "description": "精美的网易云播放状态直播挂件服务（基于 6K Labs）",
+  "betterncm_version": ">=1.0.0",
+  "preview": "preview.png",
+  "ncm3-compatible": false,
+  "injects": {
+    "Main": [{ "file": "./main.js" }]
+  }
+}
