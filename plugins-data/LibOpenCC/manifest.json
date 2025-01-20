@@ -1,0 +1,19 @@
+{
+    "manifest_version": 1,
+    "name": "LibOpenCC", 
+    "slug": "LibOpenCC", 
+    "type": "dependency",
+    "version": "0.1.0",
+    "author": "Lukoning", 
+    "author_links": ["https://github.com/Lukoning"],
+    "description": "（基于opencc-js）提供中文简体/繁体、日文新字体间的相互转换功能",
+    "betterncm_version": ">=1.0.0",
+    "noDevReload":true,
+    "injects": {
+        "Main": [
+            {
+                "file": "./main.js"
+            }
+        ]
+    }
+}
