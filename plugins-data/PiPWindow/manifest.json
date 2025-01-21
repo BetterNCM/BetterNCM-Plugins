@@ -3,14 +3,13 @@
     "name": "PiPWindow", 
     "slug": "PiPWindow", 
     "type": "extension",
-    "version": "0.4.1",
+    "version": "0.5.0",
     "author": "Lukoning", 
     "author_links": ["https://github.com/Lukoning"],
     "description": "一个纯JavaScript实现的歌曲信息小窗",
     "requirements": ["liblyric"],
-    "loadAfter": ["liblyric"],
     "betterncm_version": ">=1.0.0",
-    "preview": "preview.png",
+    "preview": "preview.webp",
     "noDevReload":true,
     "injects": {
         "Main": [ 
