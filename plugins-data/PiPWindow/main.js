@@ -1,22 +1,28 @@
-/*This plugin is licensed under the GNU/GPL-3.0*/
-let rvN, v, amllbgv/*Apple Music-like Lyrics Background Video*/, c, bgc/*Background Canvas*/, cpc/*ColorPick() Canvas*/, cover, cvUrlCache, songDataCache, tMsT, lrcCache, pLrc, pLrcKeys, showRefrshing, thePiPWindow
+/*This plugin is licensed under the GNU/GPL-3.0
+**Copyright (C) 2024-2025 Lukoning
+*/
+let rvN, v, amllbgv/*Apple Music-like Lyrics Background Video*/, b/*(toggle)button*/, cP/*configPage*/, c/*canvas*/, bgc/*Background Canvas*/, cpc/*ColorPick() Canvas*/, cover, OcvUrl, cvUrl, cvUrlCache, songDataCache, tMsT, lrcCache, pLrc, pLrcKeys, showRefreshing, thePiPWindow
 , DontPlay=false, DontPause=false, autoRatio, autoRatioValue=480, lastReRatio=0, songIdCache=0, playProgress=0, nrLrc=false, lrcNowLoading=false, reRatioPending=false, isDynamicLyrics=false, isJp=false,debugMode=false
 , isVLsnAdded=false, isLrcRnpLsnAdded=false
-, t = "0:00／0:00", tC = 0, tT = 0, tP = 0, tR = 0 //显示用，Current，Total，PassedRate，Remaining
+, t = "0:00 / 0:00", tC = 0, tT = 0, tP = 0, tR = 0 //显示用，Current，Total，PassedRate，Remaining
 , readCfg = JSON.parse(localStorage.getItem("PiPWindowSettings"))
 , color = ({accent: "", text: "", textT13: "", textT31: "", textT42: "", textT56: "", bg: "", bgT00: "", bgT50: ""}), colorS = ({accent: "", text: "", bg: "", bgT: ""}), colorCache = ({text: "", bg: ""})
+, song = ({name:"", nameAnother:"", artist:""})
 const pdd = "M21 3C21.5523 3 22 3.44772 22 4V11H20V5H4V19H10V21H3C2.44772 21 2 20.5523 2 20V4C2 3.44772 2.44772 3 3 3H21ZM21 13C21.5523 13 22 13.4477 22 14V20C22 20.5523 21.5523 21 21 21H13C12.4477 21 12 20.5523 12 20V14C12 13.4477 12.4477 13 13 13H21Z"
 , pO = `<path d="${pdd}M20 15H14V19H20V15ZM6.70711 6.29289L8.95689 8.54289L11 6.5V12H5.5L7.54289 9.95689L5.29289 7.70711L6.70711 6.29289Z"></path>`
 , pC = `<path d="${pdd}"></path>`
 , cfgDefault = ({
-    whenClose: "none", whenBack: "back", whenCloseOrBack_paused: "close", autoHideMainWindow: false
-    , allowNonsquareCover: false, showAlbum: true, timeInfo: "CurrentTotal"
+    whenClose: "none", whenBack: "back", whenCloseOrBack_paused: "close", autoHideMainWindow: false, showTaskbarButton: false
+    , showDiscWhenNoCover: false, allowNonsquareCover: false, showAlbum: true, timeInfo: "CurrentTotal"
     , dynamicLyrics: true, autoScroll: true, originalLyricsBold: false, showTranslation: true, /*showLatinization: false,*/ lyricsTaperOff: true, lyricsMask: false, lyricsHanzi2Kanji: true, lyricsOffset: 0, lyricsFrom: "LibLyric", lyricsCustomSources: "https://example.com/lyric?track=${track}&id=${trackId}&art=${artist}&arts=${artists}&album=${album}&albumId=${albumId}", showLyricsErrorTip: true
     , colorFrom: "albumCover", backgroundFrom: "albumCoverBlur", customFonts: "\"Segoe UI\", \"Microsoft Yahei UI\", system-ui", useJapaneseFonts: true, customJapaneseFonts: "\"Yu Gothic UI\", \"Meiryo UI\", \"Microsoft Yahei UI\", system-ui"
-    , smoothProgessBar: true, resolutionRatio: "auto", aspectRatio: "2:1", customLoadingTxt: "正在载入猫猫…"})
+    , smoothProgessBar: true, resolutionRatio: "auto", aspectRatio: "2:1", albumCoverSize: 160, useFullCover: false
+    , customLoadingTxt: "正在载入猫猫…"})
+, DcvUrl/*Default*/ = "orpheus://orpheus/style/res/common/discovery/calendar_bg.png"
+, discUrl = "orpheus://orpheus/style/res/default/default_play_disc.png"
 readCfg = {...cfgDefault, ...readCfg} //缺失配置啥的处理一下
 let oldCfg = {...readCfg}
-window.PiPWShowRefrshing = (x=true)=>{if(x==true){showRefrshing=true;return true}else if(x==false){showRefrshing=false;return false}}
+window.PiPWShowRefreshing = (x=true)=>{if(x==true){showRefreshing=true;return true}else if(x==false){showRefreshing=false;return false}}
 function cE(n, d=document) {return d.createElement(n)}
 function q(n, d=document) {return d.querySelector(n)}
 function qAll(n, d=document) {return d.querySelectorAll(n)}
@@ -30,8 +36,10 @@ function DEBUG() {try{
     amllbgv?q("#PiPWSettings").appendChild(amllbgv):"";
 }catch{}}
 
+function taskbarButton(isShow=true) {betterncm.app.exec(`PowerShell "${loadedPlugins.PiPWindow.pluginPath}/taskbarButton.ps1" -Action ${isShow?"Show":"Hide"}`)}
+
 async function tipMsg(m, t) {
-    let d, c1="u-result", c2="j-tips", c=`.${c1}.${c2}`, iiH=`<span class="u-tit f-ff2">${m}</span>`
+    let c1="u-result", c2="j-tips", c=`.${c1}.${c2}`, iiH=`<span class="u-tit f-ff2">${m}</span>`
     if (t=="err") {
         iiH=`<i class="icon u-icn u-icn-operatefail"></i><span class="u-tit f-ff2 errTxt">${m}</span>`
     }
@@ -40,7 +48,7 @@ async function tipMsg(m, t) {
         if (q(c+" .inner")) {q(c+" .inner").innerHTML=iiH} else {q(c).innerHTML=iH}
         try{clearTimeout(tMsT)}catch{}
     } else {
-        d = cE("div");
+        let d = cE("div");
         d.classList.add(c1, c2);
         d.innerHTML = iH;
         q("body").appendChild(d);
@@ -63,8 +71,11 @@ HTMLCanvasElement.prototype.toPiP = function(){
         v = cE("video");
         v.addEventListener("loadedmetadata", async()=>{
             try {
-                //请求小窗.then自适应分辨率用的
-                v.requestPictureInPicture().then(p=>{thePiPWindow=p;reRatio(p.height);p.addEventListener("resize", e=>{reRatio(e.target.height)})})
+                //请求小窗
+                v.requestPictureInPicture().then(p=>{
+                    thePiPWindow=p;reRatio(p.height);p.addEventListener("resize", e=>{reRatio(e.target.height)});//自适应分辨率
+                    taskbarButton(readCfg.showTaskbarButton);//任务栏按钮
+                })
                 let pS = ".m-player:not(.f-dn)"
                 //控制按钮设置
                 navigator.mediaSession.setActionHandler("play", ()=>{v.play();navigator.mediaSession.playbackState = "playing";});
@@ -81,28 +92,23 @@ HTMLCanvasElement.prototype.toPiP = function(){
                 v.addEventListener("enterpictureinpicture", e=>{ console.log("PiPW Log: PiP窗口已创建", v)
                     let s = betterncm.ncm.getPlayingSong()
                     if (!s) {s=({state:1})}
-                    if (readCfg.autoHideMainWindow) {mwf.cef.R$call("winhelper.showWindow", "hide")}
-                    tipMsg("已打开小窗"); q("#PiPW-Toggle svg").innerHTML=pC; q("#PiPW-Toggle").setAttribute("style", "fill: currentColor; opacity: 1"); q("#PiPW-Toggle").title = "关闭小窗";
+                    if (readCfg.autoHideMainWindow) {mwf.cef.R$exec("winhelper.showWindow", "minimize");mwf.cef.R$call("winhelper.showWindow", "hide")}
+                    tipMsg("已打开小窗"); q("svg", b).innerHTML=pC; b.setAttribute("style", "fill: currentColor; opacity: 1"); b.title = "关闭小窗";
                     if (s.state==1) {v.pause()} DontPlay=false
                     if(debugMode){console.log(e)}
                 });
                 v.addEventListener("leavepictureinpicture", e=>{ DontPause=true; let p = v.paused
-                    tipMsg("已关闭小窗"); q("#PiPW-Toggle svg").innerHTML=pO; q("#PiPW-Toggle").setAttribute("style", ""); q("#PiPW-Toggle").title = "打开小窗";
+                    tipMsg("已关闭小窗"); q("svg", b).innerHTML=pO; b.setAttribute("style", ""); b.title = "打开小窗";
                     setTimeout(()=>{
                         if (v.paused!=p) { //状态不一致，判定为按下关闭按钮
                             let c = readCfg.whenClose;
                             if (c == "pause") {DontPause=false;ncmPause()}
                             else if (c == "shutdown") {
-                                ncmPause(); if(debugMode){tipMsg("调试模式：触发退出云音乐");return}
+                                DontPause=false; ncmPause(); if(debugMode){tipMsg("调试模式：触发退出云音乐");return}
                                 mwf.cef.R$call("winhelper.showWindow", "hide"); mwf.cef.R$exit()
                             }
-                        } else if (!p) {
-                            let b = readCfg.whenBack;
-                            if (b == "back") {mwf.cef.R$call("winhelper.showWindow", "show")}
-                        } else {
-                            let b = readCfg.whenCloseOrBack_paused;
-                            if (b == "back") {mwf.cef.R$call("winhelper.showWindow", "show")}
-                        }
+                        } else if (!p&&readCfg.whenBack == "back") {mwf.cef.R$call("winhelper.showWindow", "show")}
+                        else if (readCfg.whenCloseOrBack_paused == "back") {mwf.cef.R$call("winhelper.showWindow", "show")}
                     }, 10)
                     if(debugMode){console.log(e)}
                 });
@@ -157,10 +163,17 @@ function colorPick(from=null) { //取色
         color.text = `${textTO})`, color.textT56 = `${textTO}, .56)`, color.textT42 = `${textTO}, .42)`, color.textT31 = `${textTO}, .31)`, color.textT13 = `${textTO}, .13)`;
         color.bg = `${bgTO})`, color.bgT00 = `${bgTO}, 0)`, color.bgT50 = `${bgTO}, .5)`;
     } else {
-        function brightness(factor) {
-            rN = Math.min(255, Math.max(0, rgb[0] * factor));
-            gN = Math.min(255, Math.max(0, rgb[1] * factor));
-            bN = Math.min(255, Math.max(0, rgb[2] * factor));
+        function brightness(rgb, factor) {
+            let rN = Math.min(255, Math.max(0, rgb[0] * factor))
+            , gN = Math.min(255, Math.max(0, rgb[1] * factor))
+            , bN = Math.min(255, Math.max(0, rgb[2] * factor));
+            return [Math.round(rN), Math.round(gN), Math.round(bN), 255];
+        }
+        function saturation(rgb, factor) {
+            let l = (.299*rgb[0]+.587*rgb[1]+.114*rgb[2])
+            , rN = Math.min(255, Math.max(0, l + (rgb[0] - l) * factor))
+            , gN = Math.min(255, Math.max(0, l + (rgb[1] - l) * factor))
+            , bN = Math.min(255, Math.max(0, l + (rgb[2] - l) * factor));
             return [Math.round(rN), Math.round(gN), Math.round(bN), 255];
         }
         if (!cpc) {cpc = cE("canvas"); cpc.width = 3; cpc.height = 3;}
@@ -168,18 +181,19 @@ function colorPick(from=null) { //取色
         from.height?cpcC.drawImage(from, 0, 0, cpc.width, cpc.height):""
         let rgb = cpcC.getImageData(1, 1, 2, 2).data
         , l = (.299*rgb[0]+.587*rgb[1]+.114*rgb[2])
-        , n = 1
-        l<8?n=50 : l<16?n=16 : l<32?n=12 : l<64?n=8 : l<128?n=2 : l>160?n=(-.5) : ""
-        let rgbN = brightness(l>160?1.1:.5)
+        , bf = 1, sf = 1.2
+        l<8?bf=50 : l<16?bf=16 : l<32?bf=12 : l<64?bf=8 : l<128?bf=2 : l>144?bf=(-.4) : ""
+        l>144?sf=6 : ""
+        let rgbN = brightness(rgb, l>160?1.1:l>144?1.4:.5)
         bgTO = `rgba(${rgbN[0]}, ${rgbN[1]}, ${rgbN[2]}`
         color.bg = `${bgTO})`, color.bgT00 = `${bgTO}, 0)`, color.bgT50 = `${bgTO}, .5)`;
-        rgbN = brightness(.7+n)
+        rgbN = brightness(saturation(rgb, sf), .7+bf)
+        if ((.299*rgbN[0]+.587*rgbN[1]+.114*rgbN[2])>245) {rgbN = brightness(saturation(rgb, 4), .7+bf)}
         color.accent = `rgb(${rgbN[0]}, ${rgbN[1]}, ${rgbN[2]})`
-        //rgbN = brightness(.7+n)
         textTO = `rgba(${rgbN[0]}, ${rgbN[1]}, ${rgbN[2]}`
         color.text = `${textTO})`, color.textT56 = `${textTO}, .56)`, color.textT42 = `${textTO}, .42)`, color.textT31 = `${textTO}, .31)`, color.textT13 = `${textTO}, .13)`;
     }
-    try {let s0 = q("#PiPWSettingsStyle0"), s = `
+    try {let s0 = q("#PiPWSettingsStyle0", cP), s = `
 #PiPWSettings {
     --pipws-fg: ${colorS.accent};
     --pipws-bg: ${colorS.bgT};
@@ -196,7 +210,7 @@ async function loadPiP(isToPiP=true, from="unknow") {
     if (PiPE && PiPE.id != "PiPW-VideoE") {tipMsg("PiP窗口被占用", "err"); if(!debugMode){return}}
     let startTime = Date.now();
     try {
-        let nrInfo = false //need refresh
+        let nrInfo=false/*need re-*/, nrHead=false, chigai=false /*曲目不同以往(?)*/
         , ldTxt = readCfg.customLoadingTxt;
         /*分辨率*/
         let r = readCfg.resolutionRatio
@@ -205,66 +219,69 @@ async function loadPiP(isToPiP=true, from="unknow") {
         let pS = betterncm.ncm.getPlayingSong(), data;
         if (pS) {data = pS.data}
     
-        let cvSizeX = r/3, cvSizeY = r/3, OcvUrl, cvUrl, snM, snA = null, saE, sa = "";
-        getInfo();
-        if (data.id != songIdCache) {reloadHead(); songIdCache = data.id; nrLrc=true}
-        if (from=="Settings" && (oldCfg.lyricsFrom!=readCfg.lyricsFrom||oldCfg.lyricsCustomSources!=readCfg.lyricsCustomSources)) {nrLrc=true}
-        function getInfo() {
-            /*封面*/
-            if (!cover) {
-                cover = new Image();
-            }
-            let thbn = `thumbnail=184y184`; //写死
-            if (readCfg.allowNonsquareCover) {cvSizeX = cover.width*(cvSizeY/cover.height);thbn=""}
+        let cvSizeX = r/3, cvSizeY = r/3
+        /*封面*/
+        if (!cover) {
+            cover = new Image();
+        }
+        let s = readCfg.albumCoverSize
+        , thbn = `thumbnail=${s}y${s}`;
+        readCfg.useFullCover?thbn="":""
+        if (readCfg.allowNonsquareCover) {cvSizeX = cover.width*(cvSizeY/cover.height);thbn=""}
+        try {
+            let u = data.album.picUrl
+            if (!u) {ya.ma.no.su.su.me;throw new Error()}
+            else {cvUrl = `orpheus://cache/?${u}?imageView&enlarge=1&type=webp${thbn==""?"":`&${thbn}`}`}
+        } catch {
             try {
                 let c = q("img.j-cover")
-                if (c) {OcvUrl = c.src; cvUrl = OcvUrl.replace(/thumbnail=([^&]+)/, thbn)}
-                if (!cvUrl) {cvUrl = "orpheus://orpheus/style/res/default/default_play_disc.png"}
-            } catch {
-                try {
-                    let u = data.album.picUrl
-                    if (!u) {cvUrl = "orpheus://orpheus/style/res/default/default_play_disc.png"}
-                    else {cvUrl = `orpheus://cache/?${u}?imageView&enlarge=1&type=webp${thbn==""?"":`&${thbn}`}`}
-                } catch {}
-            }
-            if (cvUrl != cvUrlCache) {reloadHead()}
-    
+                OcvUrl = c.src; cvUrl = OcvUrl.replace(/thumbnail=([^&]+)/, `type=webp${thbn==""?"":`&${thbn}`}`)
+                if (!cvUrl) {cvUrl = null}
+            } catch {cvUrl = null}
+        }
+        if (cvUrl != cvUrlCache||data.id != songIdCache) {nrHead=true}
+        if (data.id != songIdCache) {getInfo(); chigai=true; songIdCache = data.id; nrLrc=true}
+        if (from=="Settings" && (oldCfg.lyricsFrom!=readCfg.lyricsFrom||oldCfg.lyricsCustomSources!=readCfg.lyricsCustomSources)) {nrLrc=true}
+        function getInfo() {
             /*歌名*/
             try {
-                snM = data.name;
+                song.name = data.name;
                 if (readCfg.showAlbum) {
                     let n = data.album.name, t = data.album.transNames;
                     n = n?n:null, t = t?t[0]:null;
-                    if (n||t) {snA = `${n||""}${t?" ("+t+")":""}`}
+                    if (n||t) {song.nameAnother = `${n||""}${t?" ("+t+")":""}`}
+                    else {song.nameAnother = "未知专辑"}
                 } else {
                     let t = data.transNames, a = data.alias;
                     t = t?t[0]:null, a = a?a[0]:null;
-                    if (t||a) {snA = `${t||""}${t&&a?" ":""}${a||""}`}
+                    if (t||a) {song.nameAnother = `${t||""}${t&&a?" ":""}${a||""}`}
+                    else {song.nameAnother = ""}
                 }
             } catch {
                 let t = q(".m-pinfo .j-title")
-                snM = t?t.title:"没有曲目";
+                song.name = t?t.title:"没有曲目";
                 try {
-                    snA = q(".m-pinfo .j-title .s-fc4").textContent.slice(1).slice(0, -1);
+                    song.nameAnother = q(".m-pinfo .j-title .s-fc4").textContent.slice(1).slice(0, -1);
                 }catch{}
             }
     
             /*歌手*/
+            let sa="",saE
             try {
                 saE = data.artists;
-                for (i=0; i<saE.length; i++, sa=sa+"／") {
+                for (i=0; i<saE.length; i++, sa=sa+" / ") {
                     sa = sa + saE[i].name;
                 }
-                sa = sa.slice(0, -1); /*处理多余斜杠*/
-                if (!sa) {sa = "未知艺术家"}
+                sa = sa.slice(0, -3); /*处理多余斜杠*/
+                song.artist = sa==""?"未知艺术家":sa
             } catch {
                 saE = qAll(".m-pinfo .bar > .j-title span:first-child *")
                 if (saE&&saE.length!=0) {
-                    for (i=0; i<saE.length; i++, sa=sa+"／") {
+                    for (i=0; i<saE.length; i++, sa=sa+" / ") {
                         sa = sa + saE[i].textContent;
                     }
-                    sa = sa.slice(0, -1); /*处理多余斜杠*/
-                    if (sa == "未知") {sa = "未知艺术家"}
+                    sa = sa.slice(0, -3); /*处理多余斜杠*/
+                    song.artist = sa=="未知"?"未知艺术家":sa
                 }
             }
         }
@@ -277,8 +294,8 @@ async function loadPiP(isToPiP=true, from="unknow") {
             , tRM = tTM-tCM, tRS = tTS-tCS
             , tI = readCfg.timeInfo
             if (tRS<0) {tRM = tRM-1, tRS = tRS+60} tRD = `-${tRM}:${tRS<10?"0":""}${tRS}`
-            if (tI == "CurrentTotal") {t = `${tCD}／${tTD}`}
-            else if (tI == "CurrentRemaining") {t = `${tCD}／${tRD}`}
+            if (tI == "CurrentTotal") {t = `${tCD} / ${tTD}`}
+            else if (tI == "CurrentRemaining") {t = `${tCD} / ${tRD}`}
         }catch{}
     
         /*歌词*/
@@ -326,7 +343,7 @@ async function loadPiP(isToPiP=true, from="unknow") {
         function getLrcErr(e) {
             lrcNowLoading = false;
             console.error("PiPW Error: 获取歌词时出错，详情：", e);
-            Object.prototype.toString.call(e)==="[object Object]"?e.message===undefined?e=JSON.stringify(e):e=e.message:""
+            Object.prototype.toString.call(e)==="[object Object]"?e.message===void 0?e=JSON.stringify(e):e=e.message:""
             showLrcErr(e);
         }
         function rnpLrcUpdate(e) {
@@ -363,14 +380,15 @@ async function loadPiP(isToPiP=true, from="unknow") {
                     lrcNowLoading = true
                     nrLrc = false
                     lrcCache = await ll.getLyricData(data.id)
+                    console.log("PiPW Log: Lyrics", lrcCache);
                     pLrc = ll.parseLyric(
                         lrcCache.lrc.lyric
                         , lrcCache.tlyric? lrcCache.ytlrc ? lrcCache.ytlrc.lyric : lrcCache.tlyric.lyric :""
                         , /*lrcCache.romalrc? lrcCache.yromalrc ? lrcCache.yromalrc.lyric : lrcCache.romalrc.lyric :*/""
-                        , lrcCache.yrc? lrcCache.yrc.lyric :""
+                        , lrcCache.yrc? lrcCache.yrc.lyric? lrcCache.yrc.lyric :"":"" //为什么lrcCache.yrc.lyric可以是null...
                     )
                     handleLyrics()
-                    console.log("PiPW Log: Lyrics", lrcCache);console.log("PiPW Log: ParsedLyrics", pLrc);
+                    console.log("PiPW Log: ParsedLyrics", pLrc);
                     lrcNowLoading = false
                 }
                 lrcUpdate();
@@ -388,7 +406,7 @@ async function loadPiP(isToPiP=true, from="unknow") {
                         track: data.name,
                         trackId: data.id,
                         artist: data.artists[0].name,
-                        artists: sa,
+                        artists: song.artist,
                         album: data.album.name,
                         albumId: data.album.id,
                     };
@@ -419,22 +437,25 @@ async function loadPiP(isToPiP=true, from="unknow") {
                 if (isJp==true) {break}
             }
             for (let i = 0; i < pLrcKeys.length; i++) {
-                let o = pLrc[i].originalLyric, t = pLrc[i].translatedLyric
+                let o = pLrc[i].originalLyric, t = pLrc[i].translatedLyric, d = JSON.stringify(pLrc[i].dynamicLyric)
                 if (o==t) {pLrc[i].translatedLyric = ""} //优化歌词查看体验
                 o = pLrc[i].originalLyric.replace(/\s+/g, " ").trim()
-                if (o=="") {pLrc[i].originalLyric = "· · ·", pLrc[i].translatedLyric = ""}
+                if (o=="") {if (i+1==pLrcKeys.length) {delete pLrc[i];pLrcKeys = Object.keys(pLrc);continue} else {pLrc[i].originalLyric = "· · ·", pLrc[i].translatedLyric = ""}}
                 else if (isJp && readCfg.lyricsHanzi2Kanji) {
-                    let d = pLrc[i].dynamicLyric
                     pLrc[i].originalLyric = cn2jp(o)
-                    try{pLrc[i].dynamicLyric = JSON.parse(cn2jp(JSON.stringify(d)))}catch{}
+                    try{d = cn2jp(d)}catch{}
                 } else {pLrc[i].originalLyric = o}
+                try{
+                    d = d.replace(/\s+/g, " ").trim()
+                    pLrc[i].dynamicLyric = JSON.parse(d)
+                }catch{}
             }
         }
         function lrcUpdate() {
             let l = pLrcKeys.length, p = playProgress+offset
             for (let i = 0; i < l; i++) {
                 let d = pLrc[i].duration
-                if (p < pLrc[i].time+d || l-i==1) {
+                if (p < pLrc[i].time+d || i==l-1) {
                     if (pLrc[i].dynamicLyric&&readCfg.dynamicLyrics) {
                         lyrics.M[0] = pLrc[i].dynamicLyric
                         lyrics.currentT = pLrc[i].dynamicLyricTime
@@ -444,16 +465,16 @@ async function loadPiP(isToPiP=true, from="unknow") {
                     }
                     lyrics.currentD = d==0?data.duration-pLrc[i].time:d
                     for (let j = 1; j < 5; j++) {lyrics.M[j] = i+j<l?pLrc[i+j].originalLyric:""}
+                    if (!readCfg.showTranslation) {for (let i=0; i<5; i++) {lyrics[`T${i}`] = ""} break}
                     for (let j = 0; j < 5; j++) {lyrics.T[j] = i+j<l?pLrc[i+j].translatedLyric?pLrc[i+j].translatedLyric:"":""}
                     break
                 }
             }
         }
-        if (!readCfg.showTranslation) {for (let i=0; i<5; i++) {lyrics[`T${i}`] = ""}}
     
         /*取色环节*/
-        readCfg.colorFrom=="albumCover"? colorPick(cover?cover:null) : colorPick()
-        if (color.text!=colorCache.text||color.bg!=colorCache.bg) {reloadHead(); colorCache.text=color.text, colorCache.bg=color.bg}
+        chigai? readCfg.colorFrom=="albumCover"? colorPick(cover?cover:null) : colorPick() :""
+        if (color.text!=colorCache.text||color.bg!=colorCache.bg) {nrHead=true; colorCache.text=color.text, colorCache.bg=color.bg}
     
         /*创建canvas*/
         loadC()
@@ -468,30 +489,35 @@ async function loadPiP(isToPiP=true, from="unknow") {
                 console.log("PiPW Log: 背景canvas元素已创建", bgc);
             }
             if (c.width != rw || c.height != r) {
-                c.width = rw; c.height = r; reloadHead();
+                c.width = rw; c.height = r; nrHead=true;
                 bgc.width = rw; bgc.height = r;
             }
             if (isToPiP && !PiPE) {
                 DontPlay=true; //解决打开小窗时自动播放的问题
                 c.toPiP();
-                reloadHead()
+                nrHead=true
             }
-        }
-    
-        function reloadHead() {
-            cover.src = cvUrl;
-            cvUrlCache = cvUrl;
-            nrInfo = true;
         }
     
         /*字体*/
         let bold="", f = readCfg.customFonts, fM = f, fT = f; //这里f后期也许单独做一个界面字体
-        if (readCfg.originalLyricsBold) {bold="bold"}
+        readCfg.originalLyricsBold?bold="bold":""
 
         /*日文字体更换*/
-        if (readCfg.useJapaneseFonts && isJp) {fM = readCfg.customJapaneseFonts}
+        readCfg.useJapaneseFonts&&isJp ? fM=readCfg.customJapaneseFonts :""
 
-        if (from=="Settings") {reloadHead()} //如果是改字体/显示的信息或者颜色有变……
+        if (from=="Settings") {getInfo();nrHead=true} //如果是改字体/显示的信息或者颜色有变……
+
+        nrHead?reloadHead():""
+        function reloadHead() {
+            if (!cvUrl) {
+                cover.src = DcvUrl;
+                readCfg.showDiscWhenNoCover?"":cvSizeX = r/96
+            }
+            else {cover.src = cvUrl}
+            cvUrlCache = cvUrl;
+            nrInfo = true;
+        }
 
         let cC = c.getContext("2d",{alpha:false}), bgcC = bgc.getContext("2d",{alpha:false}) //alpha:false可有效解决内存溢出问题
         , o1 = r/480, o2 = r/240, o3 = r/160, o5 = r/96, o6 = r/80, o9 = r/53.3333, o10 = r/48, o12 = r/40, o15 = r/32, o20 = r/24, o21p5 = r/22.3256, o25 = r/19.2, o30 = r/16, o30p5 = r/15.7377, o35 = r/13.7143, o40 = r/12, o45 = r/10.6667, o55 = r/8.7272, o60 = r/8, o105 = r/4.57143, o150 = r/3.2, o480 = r
@@ -620,20 +646,30 @@ async function loadPiP(isToPiP=true, from="unknow") {
         function drawInfo() {
             cC.clearRect(cvSizeX, 0, c.width, cvSizeY+o5); /*清除*/
             cC.fillStyle = color.text; cC.font = `${o55}px ${f}`;
-            cC.fillText(snM, txtMgL, o60); /*主名*/
+            cC.fillText(song.name, txtMgL, o60); /*主名*/
             cC.fillStyle = color.textT31; cC.font = `${o35}px ${f}`;
-            cC.fillText(snA==null?"":snA, txtMgL, o105); /*副名*/
+            cC.fillText(song.nameAnother, txtMgL, o105); /*副名*/
             cC.fillStyle = color.textT56;
-            cC.fillText(sa, txtMgL, snA==null?o105:o150); /*歌手*/
+            cC.fillText(song.artist, txtMgL, song.nameAnother==""?o105:o150); /*歌手*/
         }
         if (nrInfo) {
             cC.fillStyle = color.text; cC.font = `${o25}px ${f}`; cC.fillText(ldTxt, o5, o30); /*封面(加载)*/
             cover.onload = ()=>{/*封面(完毕)*/
                 if (readCfg.allowNonsquareCover) {cvSizeX = cover.width*(cvSizeY/cover.height); txtMgL=cvSizeX+o10}
-                cC.clearRect(0, 0, cvSizeX, cvSizeY+o5);
-                cC.drawImage(cover, 0, 0, cvSizeX, cvSizeY);
-                drawInfo();drawRC();
-                if(showRefrshing){console.log(`PiPW Log: 歌曲封面绘制完成`)}
+                cC.clearRect(0, 0, cvSizeX, cvSizeY+o5);drawInfo();
+                if (!cvUrl&&readCfg.showDiscWhenNoCover) {
+                    let disc = new Image();
+                    disc.src = discUrl;
+                    disc.onload = () => {
+                        cC.drawImage(disc, 0, 0, cvSizeX, cvSizeY);drawRC();
+                        if(showRefreshing){console.log(`PiPW Log: 唱片绘制完成`)}
+                        disc = null //处理
+                    };
+                } else if (cvUrl) {
+                    cC.drawImage(cover, 0, 0, cvSizeX, cvSizeY);drawRC();
+                    if(showRefreshing){console.log(`PiPW Log: 歌曲封面绘制完成`)}
+                }
+                readCfg.colorFrom=="albumCover"? colorPick(cover?cover:null) : colorPick()
                 /*背景图*/
                 if (readCfg.backgroundFrom == "albumCoverBlur") {
                     bgcC.fillStyle = color.bg;
@@ -694,7 +730,7 @@ async function loadPiP(isToPiP=true, from="unknow") {
         cC.globalCompositeOperation = "source-over";
     
         let timeUsing = Date.now() - startTime;
-        if(showRefrshing){console.log(`PiPW Log: <canvas>重绘完成，重绘用时${timeUsing==0?"<1":timeUsing}ms，当前分辨率${c.width}x${c.height}, 请求来自${from}`)}
+        if(showRefreshing){console.log(`PiPW Log: <canvas>重绘完成，重绘用时${timeUsing==0?"<1":timeUsing}ms，当前分辨率${c.width}x${c.height}, 请求来自${from}`)}
     } catch (e) {
         console.error("PiPW Error: <canvas>绘制出错，详情：\n", e);tipMsg("&lt;canvas&gt;绘制出错，详见JavaScript控制台", "err")
     }
@@ -707,7 +743,7 @@ function load() {B();C();D();E();F()
         if (pZ>tC||p<tC||readCfg.smoothProgessBar) {tC = p; needLoadPiP = true}
         if (isDynamicLyrics || readCfg.autoScroll || (readCfg.backgroundFrom=="AMLL" && loadedPlugins["Apple-Musiclike-lyrics"])) {needLoadPiP = true}
         if (needLoadPiP) {loadPiP(false, "PlayProgress")}
-    });
+    }); //requestAnimationFrame或setInterval会在网易云最小化后被优化，导致1FPS的感人帧率
     async function B() { //监听自带词栏变动
         await betterncm.utils.waitForElement(".m-lyric");
         new MutationObserver(() => {
@@ -729,10 +765,12 @@ function load() {B();C();D();E();F()
             subtree: true,
         });
     }
-    async function D() { //监听颜色变动
+    async function D() { //监听设置按钮点击事件
         await betterncm.utils.waitForElement(`[data-plugin-slug="PiPWindow"]`);
         q(`[data-plugin-slug="PiPWindow"]`).addEventListener("click", ()=>{
-            readCfg.colorFrom=="albumCover"? colorPick(cover?cover:null) : colorPick()
+            setTimeout(()=>{
+                readCfg.colorFrom=="albumCover"? colorPick(cover?cover:null) : colorPick()
+            }, 200)
         })
     }
     async function E() { //监听颜色变动
@@ -748,7 +786,7 @@ function load() {B();C();D();E();F()
     }
     async function F() { //向歌曲信息旁添加PiP开关
         await betterncm.utils.waitForElement(".m-pinfo h3");
-        let b = cE("div");
+        if (!b) {b = cE("div")}
         b.id = "PiPW-Toggle"; b.title = "打开小窗"; b.classList.add("icn", "f-cp");
         b.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" style="width: 24px; height: 24px; transform: scale(.75);">${pO}</svg>`;
         b.addEventListener("click", ()=>{pipToggle()})
@@ -779,7 +817,7 @@ async function saveCfg(all="all") { //保存设置
             let key
             switch (typeof cfgDefault[`${a[i]}`]) {
                 case "number":
-                    let n = q(`#${a[i]}SetBox`)
+                    let n = q(`#${a[i]}SetBox`, cP)
                     if (n) {
                         let set = n.value*1;
                         if (set == "undefined" || set == "null" || set == "") {set = n.placeholder*1; n.value = set}
@@ -787,7 +825,7 @@ async function saveCfg(all="all") { //保存设置
                     }
                     break;
                 case "string":
-                    let str = q(`#${a[i]}SetBox`), radios = qAll(`[name=${a[i]}]`)
+                    let str = q(`#${a[i]}SetBox`, cP), radios = qAll(`[name=${a[i]}]`, cP)
                     if (str) { //这里if...else if...两边不!能!调换位置，下同
                         let set = str.value;
                         if (set == "undefined" || set == "null" || set == "") {set = str.placeholder; str.value = set}
@@ -801,7 +839,7 @@ async function saveCfg(all="all") { //保存设置
                     }
                     break;
                 case "boolean":
-                    let swc = q(`#${a[i]}Switch`), ckBox = q(`#${a[i]}CheckBox`)
+                    let swc = q(`#${a[i]}Switch`, cP), ckBox = q(`#${a[i]}CheckBox`, cP)
                     if (swc) {key = swc.checked} else if (ckBox) {key = ckBox.checked}
                     break;
                 default:
@@ -813,6 +851,7 @@ async function saveCfg(all="all") { //保存设置
         }
     }
     writeCfg(readCfg); loadPiP(false, "Settings"); tipMsg("设置已更新");console.log("PiPW Log: 设置已保存", oldCfg, readCfg)
+    oldCfg.showTaskbarButton==readCfg.showTaskbarButton?"":taskbarButton(readCfg.showTaskbarButton) //特殊处理
 };
 
 async function resetCfg() { //重置设置
@@ -824,7 +863,7 @@ async function resetCfg() { //重置设置
             let key = cfgDefault[`${a[i]}`]
             switch (typeof key) {
                 case "string":
-                    let str = q(`#${a[i]}SetBox`), radios = qAll(`[name=${a[i]}]`)
+                    let str = q(`#${a[i]}SetBox`, cP), radios = qAll(`[name=${a[i]}]`, cP)
                     if (str) {
                         str.value = key;
                     } else if (radios) {
@@ -836,10 +875,10 @@ async function resetCfg() { //重置设置
                     }
                     break;
                 case "number":
-                    q(`#${a[i]}SetBox`).value = key
+                    q(`#${a[i]}SetBox`, cP).value = key
                     break;
                 case "boolean":
-                    let swc = q(`#${a[i]}Switch`), ckBox = q(`#${a[i]}CheckBox`)
+                    let swc = q(`#${a[i]}Switch`, cP), ckBox = q(`#${a[i]}CheckBox`, cP)
                     if (swc) {swc.checked = key} else if (ckBox) {ckBox.checked = key}
                     break;
                 default:
@@ -859,7 +898,7 @@ plugin.onConfig(()=>{
 
 function getSettingsPage() {
     colorPick()
-    let cP = cE("div", document);
+    if (!cP) {cP = cE("div")}
     cP.setAttribute("id", "PiPWSettings");
     cP.innerHTML = `
 <style id="PiPWSettingsStyle0">
@@ -921,14 +960,20 @@ function getSettingsPage() {
         margin: 5px;
     }
     #PiPWSettings .subTitle {
+        width: fit-content;
+        padding: 2px;
+        margin: 6px 0 4px;
         font-size: 20px;
         font-weight: bold;
-        line-height: 34px;
-        box-shadow: inset 0 -6px 5px -5px var(--pipws-fg);
+        box-shadow: inset 0 -9px 3px -6px var(--pipws-fg);
     }
     #PiPWSettings .item {
         display: inline-block;
         margin-right: 5px;
+    }
+    #PiPWSettings .tipText {
+        line-height: 12px;
+        font-size: 12px;
     }
 
     #PiPWSettings .button {
@@ -1150,7 +1195,7 @@ function getSettingsPage() {
     <br />
     <p>by </p>
     <input class="link" type="button" onclick="betterncm.ncm.openUrl('https://github.com/Lukoning')" value=" Lukoning " />
-    <p> 2024</p>
+    <p> 2025</p>
     <div style="text-align: right; position: absolute; bottom: 10px; right: 20px;">
         <input class="link" type="button" onclick="betterncm.ncm.openUrl('https://github.com/Lukoning/PiPWindow')" value=" 源代码仓库(GitHub) " />
         <br />
@@ -1162,7 +1207,7 @@ function getSettingsPage() {
     <p>点击歌曲红心❤️旁按钮或<input id="PiPW-ToggleLink" class="link" type="button" value="这里" />打开/关闭◲小窗</p>
     <p>可拖动↔↕可调整大小</p>
     <p>🐀鼠标移上◲小窗显示控制按钮</p>
-    <p>也可以敲击 空格来控制▶️播放⏸️暂停</p>
+    <p>也可以单击小窗后敲击 空格来控制▶️播放⏸️暂停</p>
     <p>↗返回和x关闭的效果可在下方自定义</p>
 </div>
 <div class="part noAutoBr">
@@ -1171,8 +1216,7 @@ function getSettingsPage() {
     <input id="resetButton-All" class="link" type="button" value="恢复默认" />
     <br />
     <div class="subPart">
-        <p class="subTitle">行为</p>
-        <br />
+        <div class="subTitle"><p>行为</p></div>
         <p>关闭按钮</p>
         <br />
         <div class="item">
@@ -1236,15 +1280,26 @@ function getSettingsPage() {
             <span class="slider button"></span>
         </label>
         <p>打开小窗时隐藏主窗口 (类似mini模式)</p>
+        <br />
+        <label class="switch">
+            <input id="showTaskbarButtonSwitch" type="checkbox" />
+            <span class="slider button"></span>
+        </label>
+        <p>显示任务栏图标 (通过PowerShell, 显示/隐藏可能有延迟)</p>
     </div>
     <div class="subPart">
-        <p class="subTitle">信息</p>
+        <div class="subTitle"><p>信息</p></div>
+        <label class="switch">
+            <input id="showDiscWhenNoCoverSwitch" type="checkbox" />
+            <span class="slider button"></span>
+        </label>
+        <p>无封面时在封面位置显示唱片</p>
         <br />
         <label class="switch">
             <input id="allowNonsquareCoverSwitch" type="checkbox" />
             <span class="slider button"></span>
         </label>
-        <p>尝试适配非正方形封面 (加载时间更长)</p>
+        <p>尝试适配非正方形封面</p><p class="tipText"> !这会强制下载封面原图 <a title='如果要下载缩略图，就要指定确切分辨率，这样将无法获取原始图片的宽高比'>为什么?</a></p>
         <br />
         <label class="switch">
             <input id="showAlbumSwitch" type="checkbox" />
@@ -1270,8 +1325,7 @@ function getSettingsPage() {
         </div>
     </div>
     <div class="subPart">
-        <p class="subTitle">歌词</p>
-        <br />
+        <div class="subTitle"><p>歌词</p></div>
         <label class="switch">
             <input id="dynamicLyricsSwitch" type="checkbox" />
             <span class="slider button"></span>
@@ -1308,7 +1362,7 @@ function getSettingsPage() {
         </label>
         <p>歌词渐隐</p>
         <br />
-        <div style="font-size:12px;color:#F33;${loadedPlugins.LibOpenCC?"display:none":""}">v 缺失依赖: LibOpenCC 请前往插件市场下载</div>
+        <div class="tipText" style="color:#F33;${loadedPlugins.LibOpenCC?"display:none":""}"><p>v 缺失依赖: LibOpenCC 请前往插件市场下载 <a title='鼠标移至插件市场最底部的空白处，打开「开发者选项」，然后打开「显示"依赖库"分类」，回到顶部，选择「依赖库」'>找不到?</a></p></div>
         <label class="switch">
             <input id="lyricsHanzi2KanjiSwitch" type="checkbox" ${loadedPlugins.LibOpenCC?"":"disabled"}/>
             <span class="slider button"></span>
@@ -1363,9 +1417,8 @@ function getSettingsPage() {
         </label>
         <p>显示歌词源错误提示</p>
     </div>
-        <div class="subPart">
-        <p class="subTitle">外观</p>
-        <br />
+    <div class="subPart">
+        <div class="subTitle"><p>外观</p></div>
         <p>颜色来源</p>
         <br />
         <div class="item">
@@ -1428,8 +1481,7 @@ function getSettingsPage() {
         <input class="button" style="position: absolute; transform: translate(325px, -40px);" id="applyButton-customJapaneseFonts" type="button" value="应用" />
     </div>
     <div class="subPart">
-        <p class="subTitle">渲染 (高级)</p>
-        <br />
+        <div class="subTitle"><p>渲染 (高级)</p></div>
         <label class="switch">
             <input id="smoothProgessBarSwitch" type="checkbox" />
             <span class="slider button"></span>
@@ -1540,10 +1592,20 @@ function getSettingsPage() {
             </label>
             <p>160p</p>
         </div>
+        <br />
+        <p>封面分辨率 (建议不要频繁修改; 对本地文件无效)</p>
+        <br />
+        <input class="button textBox" id="albumCoverSizeSetBox" type="number" step="1" placeholder='${cfgDefault.albumCoverSize}'
+            value="${readCfg.albumCoverSize}" />
+        <p>p</p>
+        <label class="switch">
+            <input id="useFullCoverSwitch" type="checkbox" />
+            <span class="slider button"></span>
+        </label>
+        <p>原图</p>
     </div>
     <div class="subPart">
-        <p class="subTitle">杂项</p>
-        <br />
+        <div class="subTitle"><p>杂项</p></div>
         <p>加载时显示的文本</p>
         <br />
         <input class="button textBox" id="customLoadingTxtSetBox" type="search" placeholder='${cfgDefault.customLoadingTxt}'
@@ -1592,14 +1654,14 @@ function getSettingsPage() {
     </label>
     <p>BUG多多怎么办？调试模式且力你一臂之力！（重载复位）</p>
     <br />
-    <p style="user-select: text">也可在控制台使用 PiPWShowRefrshing() 来手动开关&lt;canvas&gt;重绘情况跟踪</p>
+    <p style="user-select: text">也可在控制台使用 PiPWShowRefreshing() 来手动开关&lt;canvas&gt;重绘情况跟踪</p>
 </div>
 <br /><br />
     `;
     let cfgDfKeys = Object.keys(cfgDefault)
     for (let i = 0; i < cfgDfKeys.length; i++) {
         let keyName = cfgDfKeys[i], key = readCfg[keyName]
-        if (key == undefined || key == null) {key = cfgDefault[keyName]}
+        if (key == void 0 || key == null) {key = cfgDefault[keyName]}
         switch (typeof key) {
             case "number":
                 let n = q(`#${keyName}SetBox`, cP)
@@ -1633,9 +1695,11 @@ function getSettingsPage() {
         }
     }
     q("#PiPW-ToggleLink", cP).addEventListener("click", ()=>{pipToggle()});
-    q(`#resetButton-All`, cP).addEventListener("click", ()=>{resetCfg()});
+    q("#resetButton-All", cP).addEventListener("click", ()=>{resetCfg()});
+    let sTBS = q("#showTaskbarButtonSwitch", cP)
+    sTBS.addEventListener("change", ()=>{sTBS.disabled=true;setTimeout(()=>{sTBS.disabled=false}, 3000)});
     q(`[name="resolutionRatio"][value="auto"]`, cP).addEventListener("click", ()=>{autoRatio=true;reRatio(thePiPWindow.height)});
-    q("#debugModeSwitch", cP).addEventListener("change", ()=>{debugMode=q("#debugModeSwitch").checked;if(debugMode){DEBUG();window.PiPWShowRefrshing()}});
+    q("#debugModeSwitch", cP).addEventListener("change", ()=>{debugMode=q("#debugModeSwitch").checked;if(debugMode){DEBUG();window.PiPWShowRefreshing()}});
     console.log(cP);
     return cP;
 };
