@@ -13,4 +13,4 @@
 
 
 # 致谢
-[Hydrogen Music](https://www.bilibili.com/video/BV1gG4y1c7f4) [(Github)](https://github.com/Kaidesuyo/Hydrogen-Music)
+[Hydrogen Music](https://www.bilibili.com/video/BV1gG4y1c7f4) [(Github)](https://github.com/White-i-LC/Hydrogen-Music-5.0)
