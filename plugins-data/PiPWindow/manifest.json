@@ -3,7 +3,7 @@
     "name": "PiPWindow", 
     "slug": "PiPWindow", 
     "type": "extension",
-    "version": "0.5.2",
+    "version": "0.5.4",
     "author": "Lukoning", 
     "author_links": ["https://github.com/Lukoning"],
     "description": "一个纯JavaScript实现的歌曲信息小窗",
