@@ -1,7 +1,8 @@
 /*This plugin is licensed under the GNU/GPL-3.0
 **Copyright (C) 2024-2025 Lukoning
 */
-let rvN, v, amllbgv/*Apple Music-like Lyrics Background Video*/, b/*(toggle)button*/, cP/*configPage*/, c/*canvas*/, bgc/*Background Canvas*/, cpc/*ColorPick() Canvas*/, cover, OcvUrl, cvUrl, cvUrlCache, songDataCache, tMsT, lrcCache, pLrc, pLrcKeys, showRefreshing, thePiPWindow
+let rvN, v, amllbgv/*Apple Music-like Lyrics Background Video*/, b/*(toggle)button*/, cP/*configPage*/, c/*canvas*/, bgc/*Background Canvas*/, cpc/*ColorPick() Canvas*/, cC/*...Context*/, bgcC, cpcC
+, cover, OcvUrl, cvUrl, cvUrlCache, OcvUrlCache, songDataCache, tMsT, lrcCache, pLrc, pLrcKeys, showRefreshing, thePiPWindow
 , DontPlay=false, DontPause=false, autoRatio, autoRatioValue=480, lastReRatio=0, songIdCache=0, playProgress=0, nrLrc=false, lrcNowLoading=false, reRatioPending=false, isDynamicLyrics=false, isJp=false,debugMode=false
 , isVLsnAdded=false, isLrcRnpLsnAdded=false
 , t = "0:00 / 0:00", tC = 0, tT = 0, tP = 0, tR = 0 //显示用，Current，Total，PassedRate，Remaining
@@ -13,9 +14,9 @@ const pdd = "M21 3C21.5523 3 22 3.44772 22 4V11H20V5H4V19H10V21H3C2.44772 21 2 2
 , pC = `<path d="${pdd}"></path>`
 , cfgDefault = ({
     whenClose: "none", whenBack: "back", whenCloseOrBack_paused: "close", autoHideMainWindow: false, showTaskbarButton: false
-    , showDiscWhenNoCover: false, allowNonsquareCover: false, showAlbum: true, timeInfo: "CurrentTotal"
-    , dynamicLyrics: true, autoScroll: true, originalLyricsBold: false, showTranslation: true, /*showLatinization: false,*/ lyricsTaperOff: true, lyricsMask: false, lyricsHanzi2Kanji: true, lyricsOffset: 0, lyricsFrom: "LibLyric", lyricsCustomSources: "https://example.com/lyric?track=${track}&id=${trackId}&art=${artist}&arts=${artists}&album=${album}&albumId=${albumId}", showLyricsErrorTip: true
-    , colorFrom: "albumCover", backgroundFrom: "albumCoverBlur", customFonts: "\"Segoe UI\", \"Microsoft Yahei UI\", system-ui", useJapaneseFonts: true, customJapaneseFonts: "\"Yu Gothic UI\", \"Meiryo UI\", \"Microsoft Yahei UI\", system-ui"
+    , useCloudDataForLocalFile: false, showDiscWhenNoCover: false, allowNonsquareCover: false, /*showIconBarBeforeInfo: true,*/ trackInfoShow: "album", timeInfo: "CurrentTotal"
+    , lyricLine2Show: "auto", dynamicLyrics: true, autoScroll: true, lyricsTaperOff: true, lyricsMask: false, lyricsHanzi2Kanji: true, lyricsOffset: 0, lyricsFrom: "LibLyric", lyricsCustomSources: "https://example.com/lyric?track=${track}&id=${trackId}&art=${artist}&arts=${artists}&album=${album}&albumId=${albumId}", showLyricsErrorTip: true
+    , colorFrom: "albumCover", colorCustom_accent: "#FFFFFF", colorCustom_text: "#FFFFFF", colorCustom_bg: "#424242", backgroundFrom: "albumCoverBlur", generalFontWeight: 400, originalLyricsFontWeight: 700, translatedLyricsFontWeight: 400, customFonts: "\"Segoe UI\", \"Microsoft Yahei UI\", system-ui", useJapaneseFonts: true, customJapaneseFonts: "\"Yu Gothic UI\", \"Meiryo UI\", \"Microsoft Yahei UI\", system-ui"
     , smoothProgessBar: true, resolutionRatio: "auto", aspectRatio: "2:1", albumCoverSize: 160, useFullCover: false
     , customLoadingTxt: "正在载入猫猫…"})
 , DcvUrl/*Default*/ = "orpheus://orpheus/style/res/common/discovery/calendar_bg.png"
@@ -36,7 +37,7 @@ function DEBUG() {try{
     amllbgv?q("#PiPWSettings").appendChild(amllbgv):"";
 }catch{}}
 
-function taskbarButton(isShow=true) {betterncm.app.exec(`PowerShell "${loadedPlugins.PiPWindow.pluginPath}/taskbarButton.ps1" -Action ${isShow?"Show":"Hide"}`)}
+async function taskbarButton(isShow=true) {betterncm.app.exec(`PowerShell -command "Set-ExecutionPolicy -Scope Process UnRestricted; ${loadedPlugins.PiPWindow.pluginPath}/taskbarButton.ps1 -Action ${isShow?"Show":"Hide"}"`)}
 
 async function tipMsg(m, t) {
     let c1="u-result", c2="j-tips", c=`.${c1}.${c2}`, iiH=`<span class="u-tit f-ff2">${m}</span>`
@@ -131,6 +132,7 @@ HTMLCanvasElement.prototype.toPiP = function(){
     v.srcObject = cs; //刷新源
     v.controls = true; //调试用
     if(debugMode){DEBUG()}
+    DontPlay=true; //解决打开小窗时自动播放的问题
     v.play() //否则黑窗
 }
 
@@ -158,41 +160,53 @@ function colorPick(from=null) { //取色
     else {bgTO = colorS.bg.replace(/rgb\(/, "rgba(").replace(/\)/, "")}
     colorS.bg = `${bgTO})`, colorS.bgT = `${bgTO}, .3)`;
     if (q("body.material-you-theme:not(.ncm-light-theme)")) {colorS.bgT = `${colorS.accent.replace(/\)/, "")}, .1)`;}
-    if (from==null) {
-        color.accent = colorS.accent;
-        color.text = `${textTO})`, color.textT56 = `${textTO}, .56)`, color.textT42 = `${textTO}, .42)`, color.textT31 = `${textTO}, .31)`, color.textT13 = `${textTO}, .13)`;
-        color.bg = `${bgTO})`, color.bgT00 = `${bgTO}, 0)`, color.bgT50 = `${bgTO}, .5)`;
+    if (readCfg.colorFrom=="custom") { //这里的数据是HEX格式
+        color.accent = readCfg.colorCustom_accent;
+        textTO = readCfg.colorCustom_text;
+        color.text = textTO, color.textT56 = `${textTO}8F`, color.textT42 = `${textTO}6B`, color.textT31 = `${textTO}4F`, color.textT13 = `${textTO}21`;
+        bgTO = readCfg.colorCustom_bg;
+        color.bg = bgTO, color.bgT00 = `${bgTO}00`, color.bgT50 = `${bgTO}7F`;
     } else {
-        function brightness(rgb, factor) {
-            let rN = Math.min(255, Math.max(0, rgb[0] * factor))
-            , gN = Math.min(255, Math.max(0, rgb[1] * factor))
-            , bN = Math.min(255, Math.max(0, rgb[2] * factor));
-            return [Math.round(rN), Math.round(gN), Math.round(bN), 255];
+        if (from==null) {
+            color.accent = colorS.accent;
+        } else if (from instanceof HTMLElement) {
+            function brightness(rgb, factor) {
+                let rN = Math.min(255, Math.max(0, rgb[0] * factor))
+                , gN = Math.min(255, Math.max(0, rgb[1] * factor))
+                , bN = Math.min(255, Math.max(0, rgb[2] * factor));
+                return [Math.round(rN), Math.round(gN), Math.round(bN), 255];
+            }
+            function saturation(rgb, factor) {
+                let l = (.299*rgb[0]+.587*rgb[1]+.114*rgb[2])
+                , rN = Math.min(255, Math.max(0, l + (rgb[0] - l) * factor))
+                , gN = Math.min(255, Math.max(0, l + (rgb[1] - l) * factor))
+                , bN = Math.min(255, Math.max(0, l + (rgb[2] - l) * factor));
+                return [Math.round(rN), Math.round(gN), Math.round(bN), 255];
+            }
+            if (!cpc||!cpcC) {cpc = cE("canvas"); cpc.width = 3; cpc.height = 3; cpcC = cpc.getContext("2d",{alpha:false})}
+            from.height?cpcC.drawImage(from, 0, 0, cpc.width, cpc.height):""
+            let rgb = cpcC.getImageData(1, 1, 2, 2).data
+            , l = (.299*rgb[0]+.587*rgb[1]+.114*rgb[2])
+            , bf = 1, sf = 1.2
+            l<8?bf=50 : l<16?bf=16 : l<32?bf=12 : l<64?bf=8 : l<128?bf=2 : l>144?bf=(-.4) : ""
+            l>144?sf=6 : ""
+            let rgbN = brightness(rgb, l>160?1.1:l>144?1.4:.5)
+            bgTO = `rgba(${rgbN[0]}, ${rgbN[1]}, ${rgbN[2]}`
+            if (readCfg.backgroundFrom == "AMLL"&&loadedPlugins["Apple-Musiclike-lyrics"]) { //AMLL背景下的颜色...优化?
+                rgbN = brightness(saturation(rgb, sf+.3), 4+bf)
+                if ((.299*rgbN[0]+.587*rgbN[1]+.114*rgbN[2])>245) {rgbN = brightness(saturation(rgb, 4), 2+bf)}
+            } else {
+                rgbN = brightness(saturation(rgb, sf), .7+bf)
+                if ((.299*rgbN[0]+.587*rgbN[1]+.114*rgbN[2])>245) {rgbN = brightness(saturation(rgb, 4), .7+bf)}
+            }
+            if (rgbN[0]>235&&rgbN[1]<235&&rgbN[2]<235) {rgbN = [235, rgbN[1]<50?50:rgbN[1], rgbN[2]<30?30:rgbN[2]]} //太红看不清
+            color.accent = `rgb(${rgbN[0]}, ${rgbN[1]}, ${rgbN[2]})`
+            textTO = `rgba(${rgbN[0]}, ${rgbN[1]}, ${rgbN[2]}`
         }
-        function saturation(rgb, factor) {
-            let l = (.299*rgb[0]+.587*rgb[1]+.114*rgb[2])
-            , rN = Math.min(255, Math.max(0, l + (rgb[0] - l) * factor))
-            , gN = Math.min(255, Math.max(0, l + (rgb[1] - l) * factor))
-            , bN = Math.min(255, Math.max(0, l + (rgb[2] - l) * factor));
-            return [Math.round(rN), Math.round(gN), Math.round(bN), 255];
-        }
-        if (!cpc) {cpc = cE("canvas"); cpc.width = 3; cpc.height = 3;}
-        let cpcC = cpc.getContext("2d",{alpha:false})
-        from.height?cpcC.drawImage(from, 0, 0, cpc.width, cpc.height):""
-        let rgb = cpcC.getImageData(1, 1, 2, 2).data
-        , l = (.299*rgb[0]+.587*rgb[1]+.114*rgb[2])
-        , bf = 1, sf = 1.2
-        l<8?bf=50 : l<16?bf=16 : l<32?bf=12 : l<64?bf=8 : l<128?bf=2 : l>144?bf=(-.4) : ""
-        l>144?sf=6 : ""
-        let rgbN = brightness(rgb, l>160?1.1:l>144?1.4:.5)
-        bgTO = `rgba(${rgbN[0]}, ${rgbN[1]}, ${rgbN[2]}`
-        color.bg = `${bgTO})`, color.bgT00 = `${bgTO}, 0)`, color.bgT50 = `${bgTO}, .5)`;
-        rgbN = brightness(saturation(rgb, sf), .7+bf)
-        if ((.299*rgbN[0]+.587*rgbN[1]+.114*rgbN[2])>245) {rgbN = brightness(saturation(rgb, 4), .7+bf)}
-        color.accent = `rgb(${rgbN[0]}, ${rgbN[1]}, ${rgbN[2]})`
-        textTO = `rgba(${rgbN[0]}, ${rgbN[1]}, ${rgbN[2]}`
         color.text = `${textTO})`, color.textT56 = `${textTO}, .56)`, color.textT42 = `${textTO}, .42)`, color.textT31 = `${textTO}, .31)`, color.textT13 = `${textTO}, .13)`;
+        color.bg = `${bgTO})`, color.bgT00 = `${bgTO}, 0)`, color.bgT50 = `${bgTO}, .5)`;
     }
+    
     try {let s0 = q("#PiPWSettingsStyle0", cP), s = `
 #PiPWSettings {
     --pipws-fg: ${colorS.accent};
@@ -217,7 +231,15 @@ async function loadPiP(isToPiP=true, from="unknow") {
         if (r=="auto") {autoRatio=true; r=autoRatioValue} else {autoRatio=false; r=r*1}
 
         let pS = betterncm.ncm.getPlayingSong(), data;
-        if (pS) {data = pS.data}
+        if (pS) {
+            data = pS.data;
+            if (data.track && readCfg.useCloudDataForLocalFile) { //track为本地歌曲对应云端数据, 是否使用这个数据会影响歌词请求、信息展示等
+                data = data.track
+            }
+        }
+    
+        if (data.id != songIdCache) {getInfo(); chigai=true; songIdCache = data.id; nrLrc=true; nrHead=true}
+        if (from=="Settings" && (oldCfg.lyricsFrom!=readCfg.lyricsFrom||oldCfg.lyricsCustomSources!=readCfg.lyricsCustomSources)) {nrLrc=true}
     
         let cvSizeX = r/3, cvSizeY = r/3
         /*封面*/
@@ -229,33 +251,39 @@ async function loadPiP(isToPiP=true, from="unknow") {
         readCfg.useFullCover?thbn="":""
         if (readCfg.allowNonsquareCover) {cvSizeX = cover.width*(cvSizeY/cover.height);thbn=""}
         try {
+            OcvUrl = q("img.j-cover").src;
+            if (OcvUrl != OcvUrlCache) {nrHead=true; OcvUrlCache=OcvUrl} //不对头…刷新！(解决断网有时获取封面为空问题)
+        }catch{}
+        try {
             let u = data.album.picUrl
             if (!u) {ya.ma.no.su.su.me;throw new Error()}
             else {cvUrl = `orpheus://cache/?${u}?imageView&enlarge=1&type=webp${thbn==""?"":`&${thbn}`}`}
-        } catch {
-            try {
-                let c = q("img.j-cover")
-                OcvUrl = c.src; cvUrl = OcvUrl.replace(/thumbnail=([^&]+)/, `type=webp${thbn==""?"":`&${thbn}`}`)
-                if (!cvUrl) {cvUrl = null}
-            } catch {cvUrl = null}
-        }
-        if (cvUrl != cvUrlCache||data.id != songIdCache) {nrHead=true}
-        if (data.id != songIdCache) {getInfo(); chigai=true; songIdCache = data.id; nrLrc=true}
-        if (from=="Settings" && (oldCfg.lyricsFrom!=readCfg.lyricsFrom||oldCfg.lyricsCustomSources!=readCfg.lyricsCustomSources)) {nrLrc=true}
+        } catch {try {
+            cvUrl = OcvUrl.replace(/thumbnail=([^&]+)/, `type=webp${thbn==""?"":`&${thbn}`}`)
+            if (!cvUrl) {cvUrl = null}
+        } catch {cvUrl = null}}
+        if (cvUrl != cvUrlCache) {nrHead=true}
         function getInfo() {
             /*歌名*/
             try {
                 song.name = data.name;
-                if (readCfg.showAlbum) {
-                    let n = data.album.name, t = data.album.transNames;
-                    n = n?n:null, t = t?t[0]:null;
-                    if (n||t) {song.nameAnother = `${n||""}${t?" ("+t+")":""}`}
-                    else {song.nameAnother = "未知专辑"}
-                } else {
+                switch (readCfg.trackInfoShow) {
+                    case "auto": trans(); if(song.nameAnother==""){album()} break
+                    case "album": album(); break
+                    case "translation": trans(); break
+                    default: album()
+                }
+                function trans() {
                     let t = data.transNames, a = data.alias;
                     t = t?t[0]:null, a = a?a[0]:null;
                     if (t||a) {song.nameAnother = `${t||""}${t&&a?" ":""}${a||""}`}
                     else {song.nameAnother = ""}
+                }
+                function album() {
+                    let n = data.album.name, t = data.album.transNames;
+                    n = n?n:null, t = t?t[0]:null;
+                    if (n||t) {song.nameAnother = `${n||""}${t?" ("+t+")":""}`}
+                    else {song.nameAnother = "未知专辑"}
                 }
             } catch {
                 let t = q(".m-pinfo .j-title")
@@ -379,12 +407,12 @@ async function loadPiP(isToPiP=true, from="unknow") {
                 if (nrLrc) {
                     lrcNowLoading = true
                     nrLrc = false
-                    lrcCache = await ll.getLyricData(data.id)
+                    lrcCache = await ll.getLyricData(data.track?data.track.id:data.id)
                     console.log("PiPW Log: Lyrics", lrcCache);
                     pLrc = ll.parseLyric(
                         lrcCache.lrc.lyric
                         , lrcCache.tlyric? lrcCache.ytlrc ? lrcCache.ytlrc.lyric : lrcCache.tlyric.lyric :""
-                        , /*lrcCache.romalrc? lrcCache.yromalrc ? lrcCache.yromalrc.lyric : lrcCache.romalrc.lyric :*/""
+                        , lrcCache.romalrc? lrcCache.yromalrc ? lrcCache.yromalrc.lyric : lrcCache.romalrc.lyric :""
                         , lrcCache.yrc? lrcCache.yrc.lyric? lrcCache.yrc.lyric :"":"" //为什么lrcCache.yrc.lyric可以是null...
                     )
                     handleLyrics()
@@ -404,7 +432,7 @@ async function loadPiP(isToPiP=true, from="unknow") {
                     nrLrc = false
                     let songDetails = {
                         track: data.name,
-                        trackId: data.id,
+                        trackId: data.track?data.track.id:data.id,
                         artist: data.artists[0].name,
                         artists: song.artist,
                         album: data.album.name,
@@ -431,32 +459,35 @@ async function loadPiP(isToPiP=true, from="unknow") {
             } catch(e) {getLrcErr(e)}
         }
         function handleLyrics() {
-            pLrcKeys = Object.keys(pLrc)
-            for (let i = 0; i < pLrcKeys.length; i++) {
-                isJp = /[ぁ-ヿ]/g.test(pLrc[i].originalLyric)
-                if (isJp==true) {break}
-            }
-            for (let i = 0; i < pLrcKeys.length; i++) {
-                let o = pLrc[i].originalLyric, t = pLrc[i].translatedLyric, d = JSON.stringify(pLrc[i].dynamicLyric)
-                if (o==t) {pLrc[i].translatedLyric = ""} //优化歌词查看体验
-                o = pLrc[i].originalLyric.replace(/\s+/g, " ").trim()
-                if (o=="") {if (i+1==pLrcKeys.length) {delete pLrc[i];pLrcKeys = Object.keys(pLrc);continue} else {pLrc[i].originalLyric = "· · ·", pLrc[i].translatedLyric = ""}}
-                else if (isJp && readCfg.lyricsHanzi2Kanji) {
-                    pLrc[i].originalLyric = cn2jp(o)
-                    try{d = cn2jp(d)}catch{}
-                } else {pLrc[i].originalLyric = o}
-                try{
-                    d = d.replace(/\s+/g, " ").trim()
-                    pLrc[i].dynamicLyric = JSON.parse(d)
-                }catch{}
+            if (pLrc.length==0) {isJp=false} else {
+                pLrcKeys = Object.keys(pLrc)
+                for (let i = 0; i < pLrcKeys.length; i++) {
+                    isJp = /[ぁ-ヿ]/g.test(pLrc[i].originalLyric)
+                    if (isJp==true) {break}
+                }
+                for (let i = 0; i < pLrcKeys.length; i++) {
+                    let o = pLrc[i].originalLyric, t = pLrc[i].translatedLyric, d = JSON.stringify(pLrc[i].dynamicLyric)
+                    if (o==t) {pLrc[i].translatedLyric = ""} //优化歌词展示体验
+                    o = pLrc[i].originalLyric.replace(/\s+/g, " ").trim()
+                    if (o=="") {if (i+1==pLrcKeys.length) {delete pLrc[i];pLrcKeys = Object.keys(pLrc);continue} else {pLrc[i].originalLyric = "· · ·", pLrc[i].translatedLyric = ""}}
+                    else if (isJp && readCfg.lyricsHanzi2Kanji) {
+                        pLrc[i].originalLyric = cn2jp(o)
+                        try{d = cn2jp(d)}catch{}
+                    } else {pLrc[i].originalLyric = o}
+                    try{
+                        d = d.replace(/\s+/g, " ").trim()
+                        pLrc[i].dynamicLyric = JSON.parse(d)
+                    }catch{}
+                }
             }
         }
-        function lrcUpdate() {
+        function lrcUpdate() { //更新歌词数据
+            if (pLrc.length==0) {return}
             let l = pLrcKeys.length, p = playProgress+offset
             for (let i = 0; i < l; i++) {
                 let d = pLrc[i].duration
                 if (p < pLrc[i].time+d || i==l-1) {
-                    if (pLrc[i].dynamicLyric&&readCfg.dynamicLyrics) {
+                    if (pLrc[i].dynamicLyric&&readCfg.dynamicLyrics) { //第1行主歌词
                         lyrics.M[0] = pLrc[i].dynamicLyric
                         lyrics.currentT = pLrc[i].dynamicLyricTime
                     } else {
@@ -464,10 +495,22 @@ async function loadPiP(isToPiP=true, from="unknow") {
                         lyrics.currentT = pLrc[i].time
                     }
                     lyrics.currentD = d==0?data.duration-pLrc[i].time:d
-                    for (let j = 1; j < 5; j++) {lyrics.M[j] = i+j<l?pLrc[i+j].originalLyric:""}
-                    if (!readCfg.showTranslation) {for (let i=0; i<5; i++) {lyrics[`T${i}`] = ""} break}
-                    for (let j = 0; j < 5; j++) {lyrics.T[j] = i+j<l?pLrc[i+j].translatedLyric?pLrc[i+j].translatedLyric:"":""}
+                    for (let j = 1; j < 5; j++) {lyrics.M[j] = i+j<l?pLrc[i+j].originalLyric:""} //2~5行主歌词
+                    //1~5行翻译/拉丁化歌词
+                    switch (readCfg.lyricLine2Show) {
+                        case "none": for (let i=0; i<5; i++) {lyrics[`T${i}`] = ""} break
+                        case "auto": trans();latin(false);break
+                        case "translation": trans();break
+                        case "latinization": latin();break
+                        default: trans();latin(false)
+                    }
                     break
+                    function trans() {
+                        for (let j = 0; j < 5; j++) {lyrics.T[j] = i+j<l?pLrc[i+j].translatedLyric?pLrc[i+j].translatedLyric:"":""}
+                    }
+                    function latin(b=true) {
+                        for (let j = 0; j < 5; j++) {if(lyrics.T[j]==""||b){lyrics.T[j] = i+j<l?pLrc[i+j].romanLyric?pLrc[i+j].romanLyric:"":""}}
+                    }
                 }
             }
         }
@@ -480,28 +523,25 @@ async function loadPiP(isToPiP=true, from="unknow") {
         loadC()
         function loadC() {
             let [w, h] = readCfg.aspectRatio.split(":").map(Number), rw = Math.round(r*(w/h)) //因为width不能设为小数
-            if (!c) {
-                c = cE("canvas");
-                console.log("PiPW Log: canvas元素已创建", c);
+            if (!c||!cC) {
+                c = cE("canvas"); cC = c.getContext("2d",{alpha:false}); //alpha:false可有效解决内存溢出问题
+                console.log("PiPW Log: canvas元素已创建", c, cC);
             }
-            if (!bgc) {
-                bgc = cE("canvas");
-                console.log("PiPW Log: 背景canvas元素已创建", bgc);
+            if (!bgc||!bgcC) {
+                bgc = cE("canvas"); bgcC = bgc.getContext("2d",{alpha:false});
+                console.log("PiPW Log: 背景canvas元素已创建", bgc, bgcC);
             }
             if (c.width != rw || c.height != r) {
                 c.width = rw; c.height = r; nrHead=true;
                 bgc.width = rw; bgc.height = r;
             }
-            if (isToPiP && !PiPE) {
-                DontPlay=true; //解决打开小窗时自动播放的问题
-                c.toPiP();
-                nrHead=true
-            }
         }
     
         /*字体*/
-        let bold="", f = readCfg.customFonts, fM = f, fT = f; //这里f后期也许单独做一个界面字体
-        readCfg.originalLyricsBold?bold="bold":""
+        let f = readCfg.customFonts, fM = f, fT = f //这里f后期也许单独做一个界面字体
+        , gFW = readCfg.generalFontWeight
+        , oLFW = readCfg.originalLyricsFontWeight
+        , tLFW = readCfg.translatedLyricsFontWeight
 
         /*日文字体更换*/
         readCfg.useJapaneseFonts&&isJp ? fM=readCfg.customJapaneseFonts :""
@@ -519,8 +559,7 @@ async function loadPiP(isToPiP=true, from="unknow") {
             nrInfo = true;
         }
 
-        let cC = c.getContext("2d",{alpha:false}), bgcC = bgc.getContext("2d",{alpha:false}) //alpha:false可有效解决内存溢出问题
-        , o1 = r/480, o2 = r/240, o3 = r/160, o5 = r/96, o6 = r/80, o9 = r/53.3333, o10 = r/48, o12 = r/40, o15 = r/32, o20 = r/24, o21p5 = r/22.3256, o25 = r/19.2, o30 = r/16, o30p5 = r/15.7377, o35 = r/13.7143, o40 = r/12, o45 = r/10.6667, o55 = r/8.7272, o60 = r/8, o105 = r/4.57143, o150 = r/3.2, o480 = r
+        let o1 = r/480, o2 = r/240, o3 = r/160, o5 = r/96, o6 = r/80, o9 = r/53.3333, o10 = r/48, o12 = r/40, o15 = r/32, o20 = r/24, o21p5 = r/22.3256, o25 = r/19.2, o30 = r/16, o30p5 = r/15.7377, o35 = r/13.7143, o40 = r/12, o45 = r/10.6667, o55 = r/8.7272, o60 = r/8, o105 = r/4.57143, o150 = r/3.2, o480 = r
         , txtMgL = cvSizeX + o10
         , x = 0, y = 0;
         cC.textAlign = "left";
@@ -532,16 +571,25 @@ async function loadPiP(isToPiP=true, from="unknow") {
         , lrcTop = cvSizeY+lrcMgT
         , lrcSSS = readCfg.lyricsTaperOff;
         let lrcLine = {0: lrcTop+lrcFS, 1: lrcTop+lrcFS*2+o10, 2: lrcTop+lrcFS*3+o12, 3: lrcTop+lrcFS*4+o10, 4: lrcTop+lrcFS*5+o2}
-        function lrcMNow() {cC.fillStyle = color.text, cC.font = `${bold} ${lrcFS}px ${fM}`, lrcMgL = o15}
-        function lrcMNowUnplayed() {cC.fillStyle = color.textT42, cC.font = `${bold} ${lrcFS}px ${fM}`, lrcMgL = o15}
-        function lrcMNext1() {cC.fillStyle = color.textT56, cC.font = `${bold} ${lrcFS-o10}px ${fM}`, lrcSSS?lrcMgL = o12:""}
-        function lrcMNext2() {cC.fillStyle = color.textT56, cC.font = `${bold} ${lrcSSS?lrcFS-o15:lrcFS-o10}px ${fM}`, lrcSSS?lrcMgL = o9:""}
-        function lrcMNext3() {cC.fillStyle = color.textT56, cC.font = `${bold} ${lrcSSS?lrcFS-o20:lrcFS-o10}px ${fM}`, lrcSSS?lrcMgL = o6:""}
-        function lrcMNext4() {cC.fillStyle = color.textT56, cC.font = `${bold} ${lrcSSS?lrcFS-o25:lrcFS-o10}px ${fM}`, lrcSSS?lrcMgL = o3:""}
-        function lrcTNow() {cC.fillStyle = color.textT56, cC.font = `${lrcFS-o5}px ${fT}`, lrcMgL = o15}
-        function lrcTNext1() {cC.fillStyle = color.textT31, cC.font = `${lrcFS-o15}px ${fT}`, lrcSSS?lrcMgL = o12:""}
-        function lrcTNext2() {cC.fillStyle = color.textT31, cC.font = `${lrcSSS?lrcFS-o20:lrcFS-o15}px ${fT}`, lrcSSS?lrcMgL = o9:""}
-        function lrcTNext3() {cC.fillStyle = color.textT31, cC.font = `${lrcSSS?lrcFS-o25:lrcFS-o15}px ${fT}`, lrcSSS?lrcMgL = o6:""}
+        function lyricStyle(line=0, isT=false, isU/*Unplayed*/=false) {
+            if (!isT) {
+                switch (line) {
+                    case 0: if (!isU) {cC.fillStyle = color.text, cC.font = `${oLFW} ${lrcFS}px ${fM}`, lrcMgL = o15}
+                            else {cC.fillStyle = color.textT42, cC.font = `${oLFW} ${lrcFS}px ${fM}`, lrcMgL = o15} return;
+                    case 1: cC.fillStyle = color.textT56, cC.font = `${oLFW} ${lrcFS-o10}px ${fM}`, lrcSSS?lrcMgL = o12:""; return;
+                    case 2: cC.fillStyle = color.textT56, cC.font = `${oLFW} ${lrcSSS?lrcFS-o15:lrcFS-o10}px ${fM}`, lrcSSS?lrcMgL = o9:""; return;
+                    case 3: cC.fillStyle = color.textT56, cC.font = `${oLFW} ${lrcSSS?lrcFS-o20:lrcFS-o10}px ${fM}`, lrcSSS?lrcMgL = o6:""; return;
+                    case 4: default: cC.fillStyle = color.textT56, cC.font = `${oLFW} ${lrcSSS?lrcFS-o25:lrcFS-o10}px ${fM}`, lrcSSS?lrcMgL = o3:""; return;
+                }
+            } else {
+                switch (line) {
+                    case 0: cC.fillStyle = color.textT56, cC.font = `${tLFW} ${lrcFS-o5}px ${fT}`, lrcMgL = o15; return;
+                    case 1: cC.fillStyle = color.textT31, cC.font = `${tLFW} ${lrcFS-o15}px ${fT}`, lrcSSS?lrcMgL = o12:""; return;
+                    case 2: cC.fillStyle = color.textT31, cC.font = `${tLFW} ${lrcSSS?lrcFS-o20:lrcFS-o15}px ${fT}`, lrcSSS?lrcMgL = o9:""; return;
+                    case 3: default: cC.fillStyle = color.textT31, cC.font = `${tLFW} ${lrcSSS?lrcFS-o25:lrcFS-o15}px ${fT}`, lrcSSS?lrcMgL = o6:""; return;
+                }
+            }
+        }
         function updateMLrcMgL(w, now) {
             if (!readCfg.autoScroll) {return}
             if (!now) {
@@ -549,8 +597,8 @@ async function loadPiP(isToPiP=true, from="unknow") {
                 now = lyrics.currentT>playProgress+offset ? 0 : now>1?1:now
             }
             let l = w*now
-            if (w>c.width-lrcMgL&&l+o105>c.width-lrcMgL) {
-                mLrcMgL = 0-(l+lrcMgL-c.width)+lrcMgL-o105
+            if (w>c.width-lrcMgL&&l+o150>c.width-lrcMgL) {
+                mLrcMgL = 0-(l+lrcMgL-c.width)+lrcMgL-o150
             }
         }
         
@@ -559,7 +607,7 @@ async function loadPiP(isToPiP=true, from="unknow") {
             isDynamicLyrics = true
             let lyricDO = ""/*lyricDynamicOrigin*/, l = lyrics.M[0].length, now = 0, nowWidth = 0
             lyricDO = lyrics.M[0].map(item => item.word).join("");
-            lrcMNowUnplayed();
+            lyricStyle(0, false, true);
             for (let i=0; i<l; i++) {
                 let lrc = lyrics.M[0][i], Cnow = (playProgress+offset-lrc.time)/lrc.duration
                 Cnow = lrc.time>playProgress+offset ? 0 : Cnow>1?1:Cnow
@@ -569,59 +617,63 @@ async function loadPiP(isToPiP=true, from="unknow") {
             now = nowWidth/w
             updateMLrcMgL(w, now);
             cC.fillText(lyricDO, mLrcMgL, lrcLine[0]); /*主歌词(未播放)*/
-            lrcMNow(); cC.save();
+            lyricStyle(); cC.save();
             cC.beginPath();
             cC.rect(0, 0, w*now+mLrcMgL, c.height); cC.clip();
             cC.fillText(lyricDO, mLrcMgL, lrcLine[0]); /*主歌词(已播放)*/
             cC.restore();
         } else if (readCfg.lyricsFrom!="OriginalLyricBar") {
-            lrcMNow();
+            lyricStyle();
             updateMLrcMgL(cC.measureText(lyrics.M[0]).width);
             cC.fillText(lyrics.M[0], mLrcMgL, lrcLine[0]); /*主歌词*/
         } else {
-            lrcMNow(); cC.fillText(lyrics.M[0], lrcMgL, lrcLine[0]); /*主歌词*/
+            lyricStyle(); cC.fillText(lyrics.M[0], lrcMgL, lrcLine[0]); /*主歌词*/
         }
     
+        /*function drawLyrics(isT, realLine, showLine) {
+            lyricStyle(realLine, isT); cC.fillText(isT?lyrics.T[realLine]:lyrics.M[realLine], lrcMgL, lrcLine[showLine]-isT?o10:0);
+        }*/
+    
         if (lyrics.T[0]!="") {
-            lrcTNow();
+            lyricStyle(0, true);
             if (readCfg.lyricsFrom!="OriginalLyricBar") {
                 mLrcMgL = lrcMgL
                 updateMLrcMgL(cC.measureText(lyrics.T[0]).width);
             }
-            cC.fillText(lyrics.T[0], mLrcMgL, lrcLine[1]-o10); /*翻译歌词*/
-            lrcMNext1(); cC.fillText(lyrics.M[1], lrcMgL, lrcLine[2]); /*下1句主歌词*/
+            cC.fillText(lyrics.T[0], mLrcMgL, lrcLine[1]-o10); /*歌词翻译*/
+            lyricStyle(1); cC.fillText(lyrics.M[1], lrcMgL, lrcLine[2]); /*下1句主歌词*/
             if (lyrics.T[1]!="") {
-                lrcTNext1(); cC.fillText(lyrics.T[1], lrcMgL, lrcLine[3]-o10); /*下1句翻译歌词*/
-                lrcMNext2(); cC.fillText(lyrics.M[2], lrcMgL, lrcLine[4]); /*下2句主歌词*/
+                lyricStyle(1, true); cC.fillText(lyrics.T[1], lrcMgL, lrcLine[3]-o10); /*下1句歌词翻译*/
+                lyricStyle(2); cC.fillText(lyrics.M[2], lrcMgL, lrcLine[4]); /*下2句主歌词*/
             } else {
-                lrcMNext2(); cC.fillText(lyrics.M[2], lrcMgL, lrcLine[3]); /*下2句主歌词*/
+                lyricStyle(2); cC.fillText(lyrics.M[2], lrcMgL, lrcLine[3]); /*下2句主歌词*/
                 if (lyrics.T[2]!="") {
-                    lrcTNext2(); cC.fillText(lyrics.T[2], lrcMgL, lrcLine[4]-o10); /*下2句翻译歌词*/
+                    lyricStyle(2, true); cC.fillText(lyrics.T[2], lrcMgL, lrcLine[4]-o10); /*下2句歌词翻译*/
                 } else {
-                    lrcMNext3(); cC.fillText(lyrics.M[3], lrcMgL, lrcLine[4]); /*下3句主歌词*/
+                    lyricStyle(3); cC.fillText(lyrics.M[3], lrcMgL, lrcLine[4]); /*下3句主歌词*/
                 }
             }
         } else {
-            lrcMNext1(); cC.fillText(lyrics.M[1], lrcMgL, lrcLine[1]); /*下1句主歌词*/
+            lyricStyle(1); cC.fillText(lyrics.M[1], lrcMgL, lrcLine[1]); /*下1句主歌词*/
             if (lyrics.T[1]!="") {
-                lrcTNext1(); cC.fillText(lyrics.T[1], lrcMgL, lrcLine[2]-o10); /*下1句翻译歌词*/
-                lrcMNext2(); cC.fillText(lyrics.M[2], lrcMgL, lrcLine[3]); /*下2句主歌词*/
+                lyricStyle(1, true); cC.fillText(lyrics.T[1], lrcMgL, lrcLine[2]-o10); /*下1句歌词翻译*/
+                lyricStyle(2); cC.fillText(lyrics.M[2], lrcMgL, lrcLine[3]); /*下2句主歌词*/
                 if (lyrics.T[2]!="") {
-                    lrcTNext2(); cC.fillText(lyrics.T[2], lrcMgL, lrcLine[4]-o10); /*下2句翻译歌词*/
+                    lyricStyle(2, true); cC.fillText(lyrics.T[2], lrcMgL, lrcLine[4]-o10); /*下2句歌词翻译*/
                 } else {
-                    lrcMNext3(); cC.fillText(lyrics.M[3], lrcMgL, lrcLine[4]); /*下3句主歌词*/
+                    lyricStyle(3); cC.fillText(lyrics.M[3], lrcMgL, lrcLine[4]); /*下3句主歌词*/
                 }
             } else {
-                lrcMNext2(); cC.fillText(lyrics.M[2], lrcMgL, lrcLine[2]); /*下2句主歌词*/
+                lyricStyle(2); cC.fillText(lyrics.M[2], lrcMgL, lrcLine[2]); /*下2句主歌词*/
                 if (lyrics.T[2]!="") {
-                    lrcTNext2(); cC.fillText(lyrics.T[2], lrcMgL, lrcLine[3]-o10); /*下2句翻译歌词*/
-                    lrcMNext3(); cC.fillText(lyrics.M[3], lrcMgL, lrcLine[4]); /*下3句主歌词*/
+                    lyricStyle(2, true); cC.fillText(lyrics.T[2], lrcMgL, lrcLine[3]-o10); /*下2句歌词翻译*/
+                    lyricStyle(3); cC.fillText(lyrics.M[3], lrcMgL, lrcLine[4]); /*下3句主歌词*/
                 } else {
-                    lrcMNext3(); cC.fillText(lyrics.M[3], lrcMgL, lrcLine[3]); /*下3句主歌词*/
+                    lyricStyle(3); cC.fillText(lyrics.M[3], lrcMgL, lrcLine[3]); /*下3句主歌词*/
                     if (lyrics.T[3]!="") {
-                        lrcTNext3(); cC.fillText(lyrics.T[3], lrcMgL, lrcLine[4]-o10); /*下3句翻译歌词*/
+                        lyricStyle(3, true); cC.fillText(lyrics.T[3], lrcMgL, lrcLine[4]-o10); /*下3句歌词翻译*/
                     } else {
-                        lrcMNext4(); cC.fillText(lyrics.M[4], lrcMgL, lrcLine[4]); /*下4句主歌词*/
+                        lyricStyle(4); cC.fillText(lyrics.M[4], lrcMgL, lrcLine[4]); /*下4句主歌词*/
                     }
                 }
             }
@@ -635,58 +687,7 @@ async function loadPiP(isToPiP=true, from="unknow") {
             cC.fillRect(0, lrcTop, c.width, c.height); /*歌词阴影遮罩*/
         }
     
-        function drawRC() {
-            cC.globalCompositeOperation = "destination-out";
-            cC.beginPath(); cC.strokeStyle = "#000"; cC.lineWidth = o5; x = cvSizeX+o2; y = cvSizeY+o2;
-            /*封面圆角*/
-            cC.moveTo(x, 0); cC.arcTo(x, y, 0, y, o12); cC.lineTo(0, y); cC.lineTo(x, y); cC.lineTo(x, 0);
-            cC.stroke();
-            cC.globalCompositeOperation = "source-over";
-        }
-        function drawInfo() {
-            cC.clearRect(cvSizeX, 0, c.width, cvSizeY+o5); /*清除*/
-            cC.fillStyle = color.text; cC.font = `${o55}px ${f}`;
-            cC.fillText(song.name, txtMgL, o60); /*主名*/
-            cC.fillStyle = color.textT31; cC.font = `${o35}px ${f}`;
-            cC.fillText(song.nameAnother, txtMgL, o105); /*副名*/
-            cC.fillStyle = color.textT56;
-            cC.fillText(song.artist, txtMgL, song.nameAnother==""?o105:o150); /*歌手*/
-        }
-        if (nrInfo) {
-            cC.fillStyle = color.text; cC.font = `${o25}px ${f}`; cC.fillText(ldTxt, o5, o30); /*封面(加载)*/
-            cover.onload = ()=>{/*封面(完毕)*/
-                if (readCfg.allowNonsquareCover) {cvSizeX = cover.width*(cvSizeY/cover.height); txtMgL=cvSizeX+o10}
-                cC.clearRect(0, 0, cvSizeX, cvSizeY+o5);drawInfo();
-                if (!cvUrl&&readCfg.showDiscWhenNoCover) {
-                    let disc = new Image();
-                    disc.src = discUrl;
-                    disc.onload = () => {
-                        cC.drawImage(disc, 0, 0, cvSizeX, cvSizeY);drawRC();
-                        if(showRefreshing){console.log(`PiPW Log: 唱片绘制完成`)}
-                        disc = null //处理
-                    };
-                } else if (cvUrl) {
-                    cC.drawImage(cover, 0, 0, cvSizeX, cvSizeY);drawRC();
-                    if(showRefreshing){console.log(`PiPW Log: 歌曲封面绘制完成`)}
-                }
-                readCfg.colorFrom=="albumCover"? colorPick(cover?cover:null) : colorPick()
-                /*背景图*/
-                if (readCfg.backgroundFrom == "albumCoverBlur") {
-                    bgcC.fillStyle = color.bg;
-                    bgcC.fillRect(0, 0, bgc.width, bgc.height);
-                    bgcC.filter = `blur(${o60}px)`;
-                    bgcC.drawImage(cover, 0, 0, bgc.width, bgc.height);
-                    bgcC.filter = "none";
-                    bgcC.fillStyle = color.bgT50;
-                    bgcC.fillRect(0, 0, bgc.width, bgc.height);
-                }
-            }
-            cover.onerror = ()=>{/*封面(失败)*/
-                cover.src = OcvUrl
-            }
-        }
-    
-        cC.font = `${o30}px ${f}`;
+        cC.font = `${gFW} ${o30}px ${f}`;
         cC.fillStyle = color.textT56;
         let tW = cC.measureText(t).width
         cC.fillText(t, o15, cvSizeY+o35); /*时间*/
@@ -696,7 +697,7 @@ async function loadPiP(isToPiP=true, from="unknow") {
         cC.fillRect(pbMgL, pbMgT, c.width-pbMgL, o5); /*进度条背景*/
         cC.fillStyle = color.accent;
         cC.fillRect(pbMgL, pbMgT, (c.width-pbMgL)*tP, o5); /*进度条*/
-
+    
         /*背景*/
         if (readCfg.backgroundFrom == "AMLL"&&loadedPlugins["Apple-Musiclike-lyrics"]) {
             let amllbgc = q(".amll-background-render-wrapper canvas")
@@ -705,8 +706,8 @@ async function loadPiP(isToPiP=true, from="unknow") {
                     amllbgv = cE("video")
                     amllbgv.srcObject = amllbgc.captureStream()
                     amllbgv.controls = true; //调试用
-                    amllbgv.play()
                 }
+                amllbgv.play()
                 bgcC.drawImage(amllbgv, 0, 0, bgc.width, bgc.height);
             } else {
                 let amllbgE = q("#amll-view > :first-child:not(.lyric-player-horizonal)"), amllbg
@@ -729,6 +730,71 @@ async function loadPiP(isToPiP=true, from="unknow") {
         cC.drawImage(bgc, 0, 0, c.width, c.height);
         cC.globalCompositeOperation = "source-over";
     
+        function drawRC() {
+            cC.globalCompositeOperation = "destination-out";
+            cC.beginPath(); cC.strokeStyle = "#000"; cC.lineWidth = o5; x = cvSizeX+o2; y = cvSizeY+o2;
+            /*封面圆角*/
+            cC.moveTo(x, 0); cC.arcTo(x, y, 0, y, o12); cC.lineTo(0, y); cC.lineTo(x, y); cC.lineTo(x, 0);
+            cC.stroke();
+            cC.globalCompositeOperation = "destination-over";
+            cC.drawImage(bgc, 0, 0, x+o3, y+o3, 0, 0, x+o3, y+o3);
+            cC.globalCompositeOperation = "source-over";
+        }
+        function drawInfo() {
+            /*if (readCfg.showIconBarBeforeInfo) {...}*/
+            cC.drawImage(bgc, cvSizeX, 0, c.width, cvSizeY+o5, cvSizeX, 0, c.width, cvSizeY+o5); /*清除*/
+            cC.fillStyle = color.text; cC.font = `${gFW} ${o55}px ${f}`;
+            cC.fillText(song.name, txtMgL, o60); /*主名*/
+            cC.fillStyle = color.textT31; cC.font = `${gFW} ${o35}px ${f}`;
+            cC.fillText(song.nameAnother, txtMgL, o105); /*副名*/
+            cC.fillStyle = color.textT56;
+            cC.fillText(song.artist, txtMgL, song.nameAnother==""?o105:o150); /*歌手*/
+        }
+        if (nrInfo) {
+            cC.fillStyle = color.text; cC.font = `${gFW} ${o25}px ${f}`; cC.fillText(ldTxt, o5, o30); /*封面(加载)*/
+            cover.onload = ()=>{/*封面(完毕)*/
+                let isCoverEmpty = (!cvUrl||cover.src==DcvUrl)
+                isCoverEmpty?cvSizeX=o5:void(0)
+                if (!isCoverEmpty&&readCfg.allowNonsquareCover) {cvSizeX = cover.width*(cvSizeY/cover.height)}
+                txtMgL=cvSizeX+o10
+                readCfg.colorFrom=="albumCover"? colorPick(cover?cover:null) : colorPick()
+                /*背景图*/
+                if (readCfg.backgroundFrom == "albumCoverBlur") {
+                    bgcC.fillStyle = color.bg;
+                    bgcC.fillRect(0, 0, bgc.width, bgc.height);
+                    bgcC.filter = `blur(${o60}px)`;
+                    bgcC.drawImage(cover, 0, 0, bgc.width, bgc.height);
+                    bgcC.filter = "none";
+                    bgcC.fillStyle = color.bgT50;
+                    bgcC.fillRect(0, 0, bgc.width, bgc.height);
+                }
+                cC.fillStyle = color.bg;
+                cC.drawImage(bgc, 0, 0, cvSizeX, cvSizeY+o5, 0, 0, cvSizeX, cvSizeY+o5);
+                drawInfo();
+                if (!isCoverEmpty) {
+                    cC.drawImage(cover, 0, 0, cvSizeX, cvSizeY);drawRC();
+                    if(showRefreshing){console.log(`PiPW Log: 歌曲封面绘制完成`)}
+                } else if (readCfg.showDiscWhenNoCover) {
+                    let disc = new Image();
+                    disc.src = discUrl;
+                    disc.onload = () => {
+                        cC.drawImage(disc, 0, 0, cvSizeX, cvSizeY);drawRC();
+                        if(showRefreshing){console.log(`PiPW Log: 唱片绘制完成`)}
+                        disc = null //处理
+                    };
+                }
+                loadPiP() //解决首次打开黑窗问题(及其他小问题)的关键
+            }
+            cover.onerror = ()=>{/*封面(失败)*/
+                cover.src = OcvUrl?OcvUrl:DcvUrl
+                loadPiP()
+            }
+        }
+    
+        if (isToPiP && !PiPE) {
+            c.toPiP();
+            nrHead=true;
+        }
         let timeUsing = Date.now() - startTime;
         if(showRefreshing){console.log(`PiPW Log: <canvas>重绘完成，重绘用时${timeUsing==0?"<1":timeUsing}ms，当前分辨率${c.width}x${c.height}, 请求来自${from}`)}
     } catch (e) {
@@ -814,28 +880,35 @@ async function saveCfg(all="all") { //保存设置
     if (a[0] == "all") {a = Object.keys(cfgDefault)}
     for (let i = 0; i < a.length; i++) {
         if (a[i] in cfgDefault) {
-            let key
-            switch (typeof cfgDefault[`${a[i]}`]) {
+            let key, dfSet = cfgDefault[`${a[i]}`]
+            switch (typeof dfSet) {
                 case "number":
                     let n = q(`#${a[i]}SetBox`, cP)
                     if (n) {
                         let set = n.value*1;
-                        if (set == "undefined" || set == "null" || set == "") {set = n.placeholder*1; n.value = set}
+                        if (typeof set != "number" || set == "") {set = dfSet; n.value = set}
+                        else {
+                            if (n.validity.rangeOverflow) {
+                                set = n.max; n.value = n.max
+                            } else if (n.validity.rangeUnderflow) {
+                                set = n.min; n.value = n.min
+                            }
+                        }
                         key = set;
                     }
                     break;
                 case "string":
                     let str = q(`#${a[i]}SetBox`, cP), radios = qAll(`[name=${a[i]}]`, cP)
-                    if (str) { //这里if...else if...两边不!能!调换位置，下同
-                        let set = str.value;
-                        if (set == "undefined" || set == "null" || set == "") {set = str.placeholder; str.value = set}
-                        key = set;
-                    } else if (radios) {
+                    if (radios.length!=0) {
                         for (let i = 0; i < radios.length; i++) {
                             if (radios[i].checked) {
                                 key = radios[i].value;
                             }
                         }
+                    } else if (str) {
+                        let set = str.value;
+                        if (set == "undefined" || set == "null" || set == "") {set = dfSet; str.value = set}
+                        key = set;
                     }
                     break;
                 case "boolean":
@@ -864,14 +937,14 @@ async function resetCfg() { //重置设置
             switch (typeof key) {
                 case "string":
                     let str = q(`#${a[i]}SetBox`, cP), radios = qAll(`[name=${a[i]}]`, cP)
-                    if (str) {
-                        str.value = key;
-                    } else if (radios) {
+                    if (radios.length!=0) {
                         for (let i = 0; i < radios.length; i++) {
                             if (radios[i].value == key) {
                                 radios[i].checked = true
                             }
                         }
+                    } else if (str) {
+                        str.value = key;
                     }
                     break;
                 case "number":
@@ -968,7 +1041,7 @@ function getSettingsPage() {
         box-shadow: inset 0 -9px 3px -6px var(--pipws-fg);
     }
     #PiPWSettings .item {
-        display: inline-block;
+        display: inline-table;
         margin-right: 5px;
     }
     #PiPWSettings .tipText {
@@ -981,14 +1054,20 @@ function getSettingsPage() {
         font-size: 16px;
         width: 90px;
         height: 40px;
-        line-height: 0;
-        outline: 0;
         box-shadow: 0 0 3px var(--pipws-fg);
         border: 1px solid var(--pipws-fg);
         border-radius: 10px;
         background: var(--pipws-bg);
         backdrop-filter: blur(12px);
         transition: .1s;
+    }
+    #PiPWSettings input.button {
+        line-height: 0;
+        outline: 0;
+    }
+    #PiPWSettings div.button {
+        line-height: 38px;
+        text-align: center;
     }
     #PiPWSettings .button:hover {
         box-shadow: 0 0 6px var(--pipws-fg);
@@ -998,8 +1077,32 @@ function getSettingsPage() {
         border-width: 4px;
         box-shadow: 0 0 8px var(--pipws-fg);
     }
+    #PiPWSettings div.button:active {
+        line-height: 32px;
+        text-align: center;
+    }
     #PiPWSettings .part .button {
         backdrop-filter: none;
+    }
+    #PiPWSettings div.button.dynamicColor {
+        box-shadow: 0 0 4px var(--current-color);
+        border: 1px solid var(--current-color);
+        background: var(--current-color);
+        backdrop-filter: none;
+    }
+    #PiPWSettings div.button.dynamicColor:hover {
+        box-shadow: 0 0 8px var(--current-color);
+    }
+    #PiPWSettings div.button.dynamicColor:active {
+        line-height: 38px;
+        font-size: 13px;
+        border-width: 2px;
+        box-shadow: 0 0 12px 1px var(--current-color);
+    }
+    #PiPWSettings div.button.dynamicColor p {
+        filter: invert(80%);
+        color: var(--current-color);
+        text-shadow: 0 0 1px var(--current-color);
     }
 
     #PiPWSettings .button + p {
@@ -1026,6 +1129,12 @@ function getSettingsPage() {
         height: 160px;
         line-height: inherit;
     }
+    #PiPWSettings [type=color] {
+        width: 0;
+        height: 0;
+        position: absolute;
+        opacity: 0;
+    }
 
     #PiPWSettings .switch {
         position: relative;
@@ -1036,6 +1145,9 @@ function getSettingsPage() {
         position: relative;
         margin: 0 25px 0 0;
         display: inline-block;
+    }
+    #PiPWSettings .item .radio {
+        margin-right: 30px;
     }
     #PiPWSettings .switch input, #PiPWSettings .radio input{ 
         opacity: 0;
@@ -1290,6 +1402,12 @@ function getSettingsPage() {
     <div class="subPart">
         <div class="subTitle"><p>信息</p></div>
         <label class="switch">
+            <input id="useCloudDataForLocalFileSwitch" type="checkbox" />
+            <span class="slider button"></span>
+        </label>
+        <p>对本地文件使用云端歌曲信息 (而非文件内写入的信息)</p>
+        <br />
+        <label class="switch">
             <input id="showDiscWhenNoCoverSwitch" type="checkbox" />
             <span class="slider button"></span>
         </label>
@@ -1301,11 +1419,29 @@ function getSettingsPage() {
         </label>
         <p>尝试适配非正方形封面</p><p class="tipText"> !这会强制下载封面原图 <a title='如果要下载缩略图，就要指定确切分辨率，这样将无法获取原始图片的宽高比'>为什么?</a></p>
         <br />
-        <label class="switch">
-            <input id="showAlbumSwitch" type="checkbox" />
-            <span class="slider button"></span>
-        </label>
-        <p>第二行显示专辑名 (而非翻译/别名)</p>
+        <p>歌曲信息第二行显示</p>
+        <br />
+        <div class="item">
+            <label class="radio">
+                <input type="radio" name="trackInfoShow" value="auto" />
+                <span class="slider button"></span>
+            </label>
+            <p>自动 <a title='翻译优先，无翻译再显示所属专辑'>?</a></p>
+        </div>
+        <div class="item">
+            <label class="radio">
+                <input type="radio" name="trackInfoShow" value="album" />
+                <span class="slider button"></span>
+            </label>
+            <p>所属专辑</p>
+        </div>
+        <div class="item">
+            <label class="radio">
+                <input type="radio" name="trackInfoShow" value="translation" />
+                <span class="slider button"></span>
+            </label>
+            <p>曲名翻译</p>
+        </div>
         <br />
         <p>时间信息</p>
         <br />
@@ -1326,6 +1462,37 @@ function getSettingsPage() {
     </div>
     <div class="subPart">
         <div class="subTitle"><p>歌词</p></div>
+        <p>歌词第二行显示</p>
+        <br />
+        <div class="item">
+            <label class="radio">
+                <input type="radio" name="lyricLine2Show" value="none" />
+                <span class="slider button"></span>
+            </label>
+            <p>不要显示</p>
+        </div>
+        <div class="item">
+            <label class="radio">
+                <input type="radio" name="lyricLine2Show" value="auto" />
+                <span class="slider button"></span>
+            </label>
+            <p>自动 <a title='翻译优先，无翻译再显示拉丁化歌词，类似桌面歌词的做法'>?</a></p>
+        </div>
+        <div class="item">
+            <label class="radio">
+                <input type="radio" name="lyricLine2Show" value="translation" />
+                <span class="slider button"></span>
+            </label>
+            <p>歌词翻译</p>
+        </div>
+        <div class="item">
+            <label class="radio">
+                <input type="radio" name="lyricLine2Show" value="latinization" />
+                <span class="slider button"></span>
+            </label>
+            <p>拉丁化歌词 <a title='粤语拼音/闽南拼音/日语罗马字等'>?</a></p>
+        </div>
+        <br />
         <label class="switch">
             <input id="dynamicLyricsSwitch" type="checkbox" />
             <span class="slider button"></span>
@@ -1337,18 +1504,6 @@ function getSettingsPage() {
             <span class="slider button"></span>
         </label>
         <p>单行歌词超出滚动*</p>
-        <br />
-        <label class="switch">
-            <input id="originalLyricsBoldSwitch" type="checkbox" />
-            <span class="slider button"></span>
-        </label>
-        <p>原文加粗</p>
-        <br />
-        <label class="switch">
-            <input id="showTranslationSwitch" type="checkbox" />
-            <span class="slider button"></span>
-        </label>
-        <p>显示翻译</p>
         <br />
         <label class="switch">
             <input id="lyricsTaperOffSwitch" type="checkbox" />
@@ -1435,7 +1590,41 @@ function getSettingsPage() {
             </label>
             <p>专辑封面</p>
         </div>
+        <div class="item">
+            <label class="radio">
+                <input type="radio" name="colorFrom" value="custom" />
+                <span class="slider button"></span>
+            </label>
+            <p>自定义</p>
+        </div>
         <br />
+        <p>自定义颜色</p>
+        <div style="height: 42px">
+            <div class="item">
+                <label style="--current-color: ${readCfg.colorCustom_text}">
+                    <div class="button dynamicColor">
+                        <p>文字</p>
+                    </div>
+                    <input id="colorCustom_textSetBox" type="color" value="${readCfg.colorCustom_text}">
+                </label>
+            </div>
+            <div class="item">
+                <label style="--current-color: ${readCfg.colorCustom_bg}">
+                    <div class="button dynamicColor">
+                        <p>背景</p>
+                    </div>
+                    <input id="colorCustom_bgSetBox" type="color" value="${readCfg.colorCustom_bg}">
+                </label>
+            </div>
+            <div class="item">
+                <label style="--current-color: ${readCfg.colorCustom_accent}">
+                    <div class="button dynamicColor">
+                        <p>进度条</p>
+                    </div>
+                    <input id="colorCustom_accentSetBox" type="color" value="${readCfg.colorCustom_accent}">
+                </label>
+            </div>
+        </div>
         <p>背景来源</p>
         <br />
         <div class="item">
@@ -1459,6 +1648,25 @@ function getSettingsPage() {
                 <span class="slider button"></span>
             </label>
             <p>(测试版) 类苹果歌词插件背景*</p>
+        </div>
+        <br />
+        <div class="item">
+            <p>全局字重 <a title='范围为1~1000，400相当于常规或中等，700相当于加粗，具体显示效果取决于字体'>?</a></p>
+            <br />
+            <input class="button textBox" id="generalFontWeightSetBox" type="number" step="100" min="0" max="1000" placeholder='${cfgDefault.generalFontWeight}'
+            value="${readCfg.generalFontWeight}" />
+        </div>
+        <div class="item">
+            <p>歌词(原文)字重</p>
+            <br />
+            <input class="button textBox" id="originalLyricsFontWeightSetBox" type="number" step="100" min="0" max="1000" placeholder='${cfgDefault.originalLyricsFontWeight}'
+            value="${readCfg.originalLyricsFontWeight}" />
+        </div>
+        <div class="item">
+            <p>歌词第二行字重</p>
+            <br />
+            <input class="button textBox" id="translatedLyricsFontWeightSetBox" type="number" step="100" min="0" max="1000" placeholder='${cfgDefault.translatedLyricsFontWeight}'
+            value="${readCfg.translatedLyricsFontWeight}" />
         </div>
         <br />
         <p>全局字体</p>
@@ -1593,7 +1801,7 @@ function getSettingsPage() {
             <p>160p</p>
         </div>
         <br />
-        <p>封面分辨率 (建议不要频繁修改; 对本地文件无效)</p>
+        <p>封面分辨率 (建议不要频繁修改; 对本地缓存或文件无效)</p>
         <br />
         <input class="button textBox" id="albumCoverSizeSetBox" type="number" step="1" placeholder='${cfgDefault.albumCoverSize}'
             value="${readCfg.albumCoverSize}" />
@@ -1614,20 +1822,20 @@ function getSettingsPage() {
         <input class="button" style="position: absolute; transform: translate(325px, -40px);" id="applyButton-customLoadingTxt" type="button" value="应用" />
     </div>
 </div>
-<div class="part noAutoBr">
+<div class="part">
     <p class="partTitle">关于BUG…</p>
-    <br /><p>实在没有办法在暂停时区分关闭和返回按钮……因此做了一个折中方案</p>
-    <br /><p>控制按钮在暂停时并不会显示，但是仍然可以空格播放和暂停（到底为什么会自动消失啊??）</p>
-    <br /><p>某些情况下选择自适应分辨率，小窗可能会出现色差</p>
-    <br /><p>某些情况下小窗右侧可能会渲染出一个绿条</p>
-    <br /><p>播放过MV后有概率无法通过小窗开始播放</p>
+    <p>实在没有办法在暂停时区分关闭和返回按钮……因此做了一个折中方案</p>
+    <p>控制按钮在暂停时并不会显示，但是仍然可以空格播放和暂停（到底为什么会自动消失啊??）</p>
+    <p>某些情况下选择自适应分辨率，小窗可能会出现色差</p>
+    <p>某些情况下小窗右侧可能会渲染出一个绿条</p>
+    <p>播放过MV后有概率无法通过小窗开始播放</p>
     <br />
-    <br /><p>以及你有没有发现拖动右边缘/下边缘调整大小后，下次打开小窗时并没有记住上次调整的大小……</p>
-    <br /><p>可能有点抽象，但这会导致：选择自适应分辨率后，没法成功通过右/下边缘调整大小</p>
-    <br /><p>原因未知。</p>
+    <p>以及你有没有发现拖动右边缘/下边缘调整大小后，下次打开小窗时并没有记住上次调整的大小……</p>
+    <p>可能有点抽象，但这会导致：选择自适应分辨率后，没法成功通过右/下边缘调整大小</p>
+    <p>原因未知。</p>
     <br />
-    <br /><p>有反馈说有窗口比例错误（出现黑边）及调整大小时"瞬移"到其他位置的情况出现</p>
-    <br /><p>这些情况至少在作者日常使用时没有出现，不知道原因，所以也无法修复</p>
+    <p>有反馈说有窗口比例错误（出现黑边）及调整大小时"瞬移"到其他位置的情况出现</p>
+    <p>这些情况比较难排查，作者已放弃挣扎</p>
 </div>
 <div class="part noAutoBr">
     <p class="partTitle">开放源代码许可</p>
@@ -1665,7 +1873,10 @@ function getSettingsPage() {
         switch (typeof key) {
             case "number":
                 let n = q(`#${keyName}SetBox`, cP)
-                if (n) {n.addEventListener("change", ()=>{saveCfg(keyName)});}
+                if (n) {
+                    n.addEventListener("change", ()=>{saveCfg(keyName)});
+                    n.addEventListener("keydown", e=>{if(e.key=="Enter"){saveCfg(keyName)}});
+                }
                 break;
             case "string":
                 let str = q(`#${keyName}SetBox`, cP), radios = qAll(`[name=${keyName}]`, cP)
@@ -1675,7 +1886,12 @@ function getSettingsPage() {
                         radios[i].addEventListener("change", ()=>{saveCfg(keyName)})
                     }
                 } else if (str) {
-                    if (str.tagName != "TEXTAREA") {str.addEventListener("keydown", e=>{if(e.key=="Enter"){saveCfg(keyName)}});} //回车应用
+                    if (str.type == "color") {
+                    str.addEventListener("change", e=>{
+                        saveCfg(keyName)
+                        e.target.parentElement.style.setProperty("--current-color", e.target.value);
+                    });}
+                    else if (str.tagName != "TEXTAREA") {str.addEventListener("keydown", e=>{if(e.key=="Enter"){saveCfg(keyName)}});} //回车应用
                     try{q(`#applyButton-${keyName}`, cP).addEventListener("click", ()=>{saveCfg(keyName)});}catch{}
                 }
                 break;
