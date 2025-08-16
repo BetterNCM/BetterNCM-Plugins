@@ -37,7 +37,7 @@ jobs:
           node update-star-count
         id: node
         env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         working-directory: scripts/update-star-count
       - name: 'Commit'
         run: |

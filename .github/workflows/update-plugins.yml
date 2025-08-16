@@ -39,5 +39,5 @@ jobs:
         run: node update-plugins
         id: node
         env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         working-directory: scripts/update-plugins
