@@ -1,0 +1,22 @@
+{
+    "manifest_version": 1,
+    "name": "Search on beatsaver",
+    "slug": "search-on-beatsaver",
+    "fork_of": "search-on-osu",
+    "author": "洛初",
+    "author_links": [
+        "https://github.com/gongfuture"
+    ],
+    "description": "在 beatsaver 中搜索当前播放的曲目",
+    "preview": "preview.png",
+    "version": "0.1.0",
+    "requirements": [],
+    "betterncm_version": ">=1.0.0",
+    "injects": {
+        "Main": [
+            {
+                "file": "main.js"
+            }
+        ]
+    }
+}
