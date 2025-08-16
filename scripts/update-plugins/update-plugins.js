@@ -80,10 +80,18 @@ const updatePlugin = async (plugin) => {
 	console.log(`  - 🔄 Upgrading...`);
 	// create new branch
 	execSync(`git checkout master`);
+	execSync(`git pull origin master`);
 	if (!pullRequestExists) {
 		execSync(`git checkout -b update-${plugin.slug}-${plugin.latestVersion}`);
 	} else {
-		execSync(`git checkout update-${plugin.slug}-${plugin.latestVersion}`);
+		try {
+			execSync(`git branch -D update-${plugin.slug}-${plugin.latestVersion}`);
+		} catch (e) {
+			execSync(`git checkout master`);
+			execSync(`git branch -D update-${plugin.slug}-${plugin.latestVersion}`);
+		}
+		// 重新创建分支
+		execSync(`git checkout -b update-${plugin.slug}-${plugin.latestVersion}`);
 	}
 
 	// if exists, delete
@@ -221,7 +229,7 @@ const updatePlugin = async (plugin) => {
 	execSync(`git add --all`);
 	execSync(`git commit -m "Update ${plugin.slug} to ${plugin.latestVersion}"`);
 	// push
-	execSync(`git push origin update-${plugin.slug}-${plugin.latestVersion}`);
+	execSync(`git push --force origin update-${plugin.slug}-${plugin.latestVersion}`);
 	// create pull request
 	if (pullRequestExists) {
 		console.log(`🔼 The branch for PR has been updated`);
