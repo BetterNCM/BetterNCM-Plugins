@@ -1,20 +1,23 @@
-function isWindowMaximized() {
+let isWindowMaximized = undefined;
+
+function whenMaximizedChange(isMaximized) {
+    betterncm.app.setRoundedCorner(!isMaximized);
+    isWindowMaximized = isMaximized;
+}
+
+function checkMaximizedChange() {
     const maximized =
         window.outerWidth === window.screen.availWidth &&
         window.outerHeight === window.screen.availHeight;
     const fullScreen =
         window.outerWidth === window.screen.width &&
         window.outerHeight === window.screen.height;
-
-    return maximized || fullScreen;
+    const isMaximized = maximized || fullScreen;
+    if (isMaximized !== isWindowMaximized) {
+        whenMaximizedChange(isMaximized);
+    }
 }
 
-function checkWindowMaximized() {
-    const isMaximized = isWindowMaximized();
+window.addEventListener('resize', checkMaximizedChange);
 
-    betterncm.app.setRoundedCorner(!isMaximized);
-}
-
-window.addEventListener('resize', checkWindowMaximized);
-
-checkWindowMaximized();
+checkMaximizedChange();
