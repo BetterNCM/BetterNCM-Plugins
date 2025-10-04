@@ -1,0 +1,17 @@
+{
+	"manifest_version": 1,
+	"name": "InfLink-rs",
+	"fork_of": "InfLink",
+	"version": "3.1.0",
+	"author": "apoint123",
+	"ncm3-compatible": true,
+	"description": "SMTC 支持，使用 Rust 实现",
+	"injects": {
+		"Main": [
+			{
+				"file": "index.js"
+			}
+		]
+	},
+	"native_plugin": "smtc_handler.dll"
+}
