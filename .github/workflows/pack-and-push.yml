@@ -54,7 +54,7 @@ jobs:
           cp -rf ./plugins/tmp/* ./release/
       - name: Commit and push files
         run: |
-          git config --local user.email "betterncm-bot@proton.me"
+          git config --local user.email "ltforward1@proton.me"
           git config --local user.name "BetterNCM-Bot"
           git add .
           git commit -m "Update"
