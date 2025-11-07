@@ -2,7 +2,7 @@
 	"manifest_version": 1,
 	"name": "InfLink-rs",
 	"fork_of": "InfLink",
-	"version": "3.2.2",
+	"version": "3.2.3",
 	"author": "apoint123",
 	"ncm3-compatible": true,
 	"description": "SMTC 支持，使用 Rust 实现",
@@ -19,10 +19,10 @@
 		">=3.1.21": {
 			"orpheus://orpheus/pub/hybrid/vendors~app~subApp.chunk": [
 				{
-					"type": "replace",
+					"type": "regex",
 					"id": "inflink-disable-native-smtc",
-					"from": "setSMTCEnable(t){return u(this,void 0,void 0,(function*(){const n=(...t)=>u(this,void 0,void 0,(function*(){return yield(t=>u(this,void 0,void 0,(function*(){return yield Gn.call(\"player.setSMTCEnable\",t),!0})))(...t)}));return yield n(t)}))}",
-					"to": "setSMTCEnable(t){/* This method has been patched by InfLink-rs */ return Promise.resolve()}"
+					"from": "(setSMTCEnable\\s*\\([^)]*\\)\\s*\\{)",
+					"to": "$1 /* This method has been patched by InfLink-rs to disable native SMTC. */ return Promise.resolve();"
 				}
 			]
 		}
