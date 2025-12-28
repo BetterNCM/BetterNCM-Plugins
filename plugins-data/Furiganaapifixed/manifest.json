@@ -1,0 +1,16 @@
+{
+    "manifest_version": 1,
+    "name": "Furigana-api-fixed(JanpaneseFonts)",
+    "version": "1.1.0",
+    "author": "Hxjjxg",
+    "description": "替换日文歌字体为日文字体，日语汉字振假名(api-fixed)",
+    "betterncm_version": ">=1.0.0",
+    "ncm3-compatible": true,
+    "injects": {
+        "Main": [
+            {
+                "file": "main.js"
+            }
+        ]
+    }
+}
