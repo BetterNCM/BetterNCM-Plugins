@@ -385,22 +385,29 @@ function pronounce(lyricElem) {
     posted = true;
     date = Math.round(Date.now() / 3600000);
     console.log('Furigana: Trying to fetch...');
-    fetch('https://jpxg.netlify.app/.netlify/functions/index', {
+    const requestBody = JSON.stringify({
+        str: str,
+        mode: 'furigana',
+        to: 'hiragana',
+        romajiSystem: 'hepburn'
+    });
+    const requestOptions = {
         method: 'POST',
         headers: { 'Content-Type': 'application/json;charset=UTF-8' },
-        body: JSON.stringify({
-            str: str,
-            mode: 'furigana',
-            to: 'hiragana',
-            romajiSystem: 'hepburn'
-        })
-    }).then(resp => {
+        body: requestBody
+    };
+    const primaryUrl = 'https://jpxg.netlify.app/.netlify/functions/index';
+    const backupUrl = 'https://api.0721for.me/.netlify/functions/index';
+    
+    const doFetch = (url) => fetch(url, requestOptions).then(resp => {
         console.log('Furigana: Response received.');
         if (resp.ok) return resp.json();
-        else {
-            error(`响应出错，错误代码：${resp.status}`);
-            posted = false;
-        }
+        else throw new Error(`响应出错，错误代码：${resp.status}`);
+    });
+    
+    doFetch(primaryUrl).catch(err => {
+        console.warn('Primary API failed, trying backup...', err);
+        return doFetch(backupUrl);
     }).then(result => {
         if (!result) return;
         result = process(result, isAcc);
@@ -543,22 +550,29 @@ function pronouncePlus(lyricElem) {
     posted = true;
     date = Math.round(Date.now() / 3600000);
     console.log('Furigana: Trying to fetch...');
-    fetch('https://jpxg.netlify.app/.netlify/functions/index', {
+    const requestBody = JSON.stringify({
+        str: str,
+        mode: 'furigana',
+        to: 'hiragana',
+        romajiSystem: 'hepburn'
+    });
+    const requestOptions = {
         method: 'POST',
         headers: { 'Content-Type': 'application/json;charset=UTF-8' },
-        body: JSON.stringify({
-            str: str,
-            mode: 'furigana',
-            to: 'hiragana',
-            romajiSystem: 'hepburn'
-        })
-    }).then(resp => {
+        body: requestBody
+    };
+    const primaryUrl = 'https://jpxg.netlify.app/.netlify/functions/index';
+    const backupUrl = 'https://api.0721for.me/.netlify/functions/index';
+    
+    const doFetch = (url) => fetch(url, requestOptions).then(resp => {
         console.log('Furigana: Response received.');
         if (resp.ok) return resp.json();
-        else {
-            error(`响应出错，错误代码：${resp.status}`);
-            posted = false;
-        }
+        else throw new Error(`响应出错，错误代码：${resp.status}`);
+    });
+    
+    doFetch(primaryUrl).catch(err => {
+        console.warn('Primary API failed, trying backup...', err);
+        return doFetch(backupUrl);
     }).then(result => {
         if (!result) return;
         result = process(result, isAcc);
