@@ -1,7 +1,7 @@
 {
-    "name": "SimpleCSS", // 插件名
-    "repo": "lclty/SimpleCSS", // 插件的 Repo
-    "branch": "main", // 分支名
-    "subpath": "/", // 插件在 repo 中的子目录 （可选）
-    "author": "lclty" // 作者
+    "name": "SimpleCSS",
+    "repo": "lclty/SimpleCSS",
+    "branch": "main",
+    "subpath": "/",
+    "author": "lclty"
 }
