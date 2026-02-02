@@ -1,0 +1,20 @@
+{
+    "manifest_version": 1,
+    "name": "SimpleCSS",
+    "slug": "simple-custom-css",
+    "version": "1.0.0",
+    "betterncm_version": ">=1.0.0",
+    "author": "lclty",
+    "author_link": "https://lclty.cn",
+    "description": "一个轻量级的自定义 CSS 注入插件，支持实时预览与自动保存。",
+    "preview": "css.jpg",
+    "type": "extension",
+    "requirements": [],
+    "injects": {
+        "Main": [
+            {
+                "file": "main.js"
+            }
+        ]
+    }
+}
