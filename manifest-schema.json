@@ -1,0 +1,164 @@
+{
+	"$schema": "https://json-schema.org/draft/2020-12/schema",
+	"$id": "https://raw.githubusercontent.com/BetterNCM/BetterNCM-Plugins/refs/heads/master/manifest-schema.json",
+	"title": "BetterNCM Plugin Manifest",
+	"description": "BetterNCM 插件的元数据配置文件",
+	"type": "object",
+	"properties": {
+		"$schema": {
+			"type": "string",
+			"format": "uri-reference",
+			"description": "JSON Schema 的 URL 或本地路径"
+		},
+		"manifest_version": {
+			"type": "integer",
+			"const": 1,
+			"description": "manifest 版本，必为 1"
+		},
+		"name": {
+			"type": "string",
+			"description": "插件名"
+		},
+		"slug": {
+			"type": "string",
+			"pattern": "^[a-zA-Z0-9_-]+$",
+			"description": "插件唯一识别名（仅支持英文、数字、横杠与下划线）。留空则根据插件名自动生成，若插件名含中文则必填"
+		},
+		"version": {
+			"type": "string",
+			"description": "插件版本，推荐使用语义化版本（https://semver.org/）"
+		},
+		"betterncm_version": {
+			"type": "string",
+			"description": "依赖的 BetterNCM 版本，支持 SemVer 范围（如 >=1.0.0）"
+		},
+		"author": {
+			"type": "string",
+			"description": "插件作者"
+		},
+		"author_link": {
+			"type": "string",
+			"format": "uri",
+			"description": "作者链接"
+		},
+		"description": {
+			"type": "string",
+			"description": "插件描述"
+		},
+		"preview": {
+			"type": "string",
+			"description": "插件预览图"
+		},
+		"type": {
+			"type": "string",
+			"enum": ["extension", "theme", "dependency"],
+			"default": "extension",
+			"description": "插件类型"
+		},
+		"require_restart": {
+			"type": "boolean",
+			"description": "是否要求重启网易云音乐客户端以加载插件，不填则通过是否存在 native_plugin 判断"
+		},
+		"requirements": {
+			"type": "array",
+			"items": {
+				"type": "string"
+			},
+			"description": "依赖的其他插件的 Slug 列表",
+			"uniqueItems": true
+		},
+		"noDevReload": {
+			"type": "boolean",
+			"description": "是否禁用自带的开发重载功能，适用于那些需要自制热重载的插件开发者们，默认不禁用"
+		},
+		"loadBefore": {
+			"type": "array",
+			"items": {
+				"type": "string"
+			},
+			"description": "在指定的插件之前加载",
+			"uniqueItems": true
+		},
+		"loadAfter": {
+			"type": "array",
+			"items": {
+				"type": "string"
+			},
+			"description": "在指定的插件之后加载",
+			"uniqueItems": true
+		},
+		"force-install": {
+			"type": "boolean",
+			"description": "强制安装（需要在审核中告知理由）"
+		},
+		"force-update": {
+			"type": "string",
+			"description": "强制更新范围，如 < 0.1.0 表示强制低于此版本的插件更新"
+		},
+		"force-uninstall": {
+			"type": "boolean",
+			"description": "强制卸载（适用于插件崩了的情况）"
+		},
+		"ncm3-compatible": {
+			"type": "boolean",
+			"description": "是否兼容网易云 3.0.0+ 版本"
+		},
+		"injects": {
+			"type": "object",
+			"description": "在指定页面或路径下需要注入的脚本文件",
+			"additionalProperties": {
+				"type": "array",
+				"description": "在该页面或路径下需要注入的脚本列表",
+				"items": {
+					"type": "object",
+					"properties": {
+						"file": {
+							"type": "string",
+							"description": "脚本文件的相对路径，必须以 .js 或 .mjs 结尾",
+							"pattern": "^.+\\.(m?js)$"
+						}
+					},
+					"required": ["file"]
+				}
+			}
+		},
+		"hijacks": {
+			"type": "object",
+			"description": "网易云请求修改",
+			"patternProperties": {
+				"^.*$": {
+					"type": "object",
+					"description": "版本，支持Range",
+					"patternProperties": {
+						"^.*$": {
+							"type": "object",
+							"description": "需要匹配拦截的 URL（开头部分匹配即可）",
+							"properties": {
+								"type": {
+									"type": "string",
+									"enum": ["replace", "regex"],
+									"description": "替换类型，目前支持 replace 和 regex"
+								},
+								"from": {
+									"type": "string",
+									"description": "被替换的搜索项"
+								},
+								"to": {
+									"type": "string",
+									"description": "替换后的内容"
+								}
+							},
+							"required": ["type", "from", "to"]
+						}
+					}
+				}
+			}
+		},
+		"native_plugin": {
+			"type": "string",
+			"description": "需要注入的 native dll，接口参考文档及已有 native 插件"
+		}
+	},
+	"required": ["manifest_version", "name", "version", "author"],
+	"additionalProperties": false
+}
