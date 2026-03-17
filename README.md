@@ -20,7 +20,7 @@
 
 3. 提交 PR
 4. 脚本会定时抓取插件 Manifest 中的版本号，并自动提交更新及审核。你还可以在 QQ 群中发送 `update` 以手动触发抓取脚本。
-5. 
+5.
 ![image](https://user-images.githubusercontent.com/66859419/226158790-c6d3a57e-9ea3-4337-9a91-373838e83cc0.png)
 
 
@@ -35,6 +35,7 @@
 
 ```js
 {
+    "$schema": "https://raw.githubusercontent.com/BetterNCM/BetterNCM-Plugins/refs/heads/master/manifest-schema.json",
     "manifest_version": 1, // manifest 版本，必为 1
     "name": "ExamplePlugin", // 插件名
     "slug": "example-plugin", // 插件唯一识别名（英文、数字、横杠与下划线） (留空则根据插件名自动生成)（如果插件名有中文请填写该字段）
@@ -45,16 +46,25 @@
     "description": "Description of the plugin", // 插件描述
     "preview": "preview.png", // 插件预览图
     "type": "extension", // 插件类型（可选）：extension (默认) | theme | dependency"
+    "require_restart": false, // 是否要求重启网易云音乐客户端以加载插件，不填则通过是否存在 native_plugin 判断（可选）
     "requirements": ["example-dependency"], // 依赖的插件 Slug（可选）
+    "noDevReload": false, // 是否禁用自带的开发重载功能，适用于那些需要自制热重载的插件开发者们，默认不禁用
+    "loadBefore": ["example-plugin1", "example-plugin2"], // 在指定的插件之前加载（可选）
+    "loadAfter": ["example-plugin3", "example-plugin4"], // 在指定的插件之后加载（可选）
     "force-install": false, // 强制安装（需要在审核中告知理由）
     "force-update": "< 0.1.0", // 强制更新（如此处强制更新版本号 < 0.1.0 的版本到最新）
     "force-uninstall": false, // 强制卸载（适用于插件崩了的情况）
     "ncm3-compatible": true, // 是否兼容网易云 3.0.0+ 版本
 
-    "injects": { // 普通注入
-        "Main": [  // 网易云主页面
+    "injects": { // 在指定页面或路径下需要注入的脚本文件
+        "Main": [  // 在该页面或路径下需要注入的脚本列表，Main 是 /pub/app.html 的别名
             {
-                "file": "main.js"  // 需注入的文件
+                "file": "main.js"  // 脚本文件的相对路径，必须以 .js 或 .mjs 结尾
+            }
+        ],
+        "/some/other/path.html": [
+            {
+                "file": "specific_page_script.js"
             }
         ]
     },
