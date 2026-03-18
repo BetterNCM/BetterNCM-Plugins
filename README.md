@@ -39,6 +39,7 @@
     "manifest_version": 1, // manifest 版本，必为 1
     "name": "ExamplePlugin", // 插件名
     "slug": "example-plugin", // 插件唯一识别名（英文、数字、横杠与下划线） (留空则根据插件名自动生成)（如果插件名有中文请填写该字段）
+    "fork_of": "example-plugin-origin", // 若为其他插件的变体/Fork，此用于标记源插件的 slug
     "version": "0.1.0", // 插件版本，推荐使用语义化版本（https://semver.org/）
     "betterncm_version": ">=1.0.0", // 依赖的 BetterNCM 版本
     "author": "Author", // 插件作者
@@ -54,6 +55,8 @@
     "force-install": false, // 强制安装（需要在审核中告知理由）
     "force-update": "< 0.1.0", // 强制更新（如此处强制更新版本号 < 0.1.0 的版本到最新）
     "force-uninstall": false, // 强制卸载（适用于插件崩了的情况）
+    "startup_script": "startup_script.js", // 插件启动时执行的脚本文件路径（可选，默认加载 startup_script.js）
+    "ncm-version-req": "> 2.10.2", // 兼容的网易云音乐客户端版本范围要求（可选，默认 "> 2.10.2"）
     "ncm3-compatible": true, // 是否兼容网易云 3.0.0+ 版本
 
     "injects": { // 在指定页面或路径下需要注入的脚本文件
@@ -73,10 +76,25 @@
             "orpheus://orpheus/pub/core.e5842f1.js": { // URL，开头部分匹配即可
             //(如 orpheus://orpheus/pub/core.e5842f1.js?abcdefg 将被匹配到)
 
-                "type":"replace", // 类型，目前支持 replace 和 regex
-                "from":"var o;if(((this.U()||C).from||C).id==t)", // 搜索项
-                "to":";expose(a);var o;if(((this.U()||C).from||C).id==t)" // 替换为
-            }
+                "type":"replace", // 类型，支持 replace, regex, append, prepend
+                "from":"var o;if(((this.U()||C).from||C).id==t)", // replace 和 regex 必填：搜索项/正则表达式
+                "to":";expose(a);var o;if(((this.U()||C).from||C).id==t)" // replace 和 regex 必填：替换后的内容
+            },
+            "orpheus://another/target/file.js": [ // 也可以是数组
+                {
+                    "type": "regex",
+                    "from": "function\\s*a\\(\\)\\{.*\\}",
+                    "to": "function a(){ return true; }"
+                },
+                {
+                    "type": "append",
+                    "code": "console.log(\"这段代码会被追加到文件末尾\");" // append 和 prepend 必填：需要注入的代码
+                },
+                {
+                    "type": "prepend",
+                    "code": "console.log(\"这段代码会被插入到文件头部\");"
+                }
+            ]
         }
     },
     "native_plugin": "native.dll", // 需要注入的 native dll （可选）（接口参考文档及已有 native 插件）

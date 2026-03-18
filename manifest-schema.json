@@ -19,6 +19,10 @@
 			"type": "string",
 			"description": "插件名"
 		},
+		"fork_of": {
+			"type": "string",
+			"description": "若为其他插件的变体/Fork，此用于标记源插件的 slug"
+		},
 		"slug": {
 			"type": "string",
 			"pattern": "^[a-zA-Z0-9_-]+$",
@@ -103,6 +107,14 @@
 			"type": "boolean",
 			"description": "是否兼容网易云 3.0.0+ 版本"
 		},
+		"startup_script": {
+			"type": "string",
+			"description": "启动脚本文件路径，此处的脚本将在网易云的窗口及浏览器页面初始化时被调用"
+		},
+		"ncm-version-req": {
+			"type": "string",
+			"description": "兼容的网易云音乐具体版本范围"
+		},
 		"injects": {
 			"type": "object",
 			"description": "在指定页面或路径下需要注入的脚本文件",
@@ -131,24 +143,18 @@
 					"description": "版本，支持Range",
 					"patternProperties": {
 						"^.*$": {
-							"type": "object",
 							"description": "需要匹配拦截的 URL（开头部分匹配即可）",
-							"properties": {
-								"type": {
-									"type": "string",
-									"enum": ["replace", "regex"],
-									"description": "替换类型，目前支持 replace 和 regex"
+							"oneOf": [
+								{
+									"$ref": "#/definitions/hijackAction"
 								},
-								"from": {
-									"type": "string",
-									"description": "被替换的搜索项"
-								},
-								"to": {
-									"type": "string",
-									"description": "替换后的内容"
+								{
+									"type": "array",
+									"items": {
+										"$ref": "#/definitions/hijackAction"
+									}
 								}
-							},
-							"required": ["type", "from", "to"]
+							]
 						}
 					}
 				}
@@ -157,6 +163,43 @@
 		"native_plugin": {
 			"type": "string",
 			"description": "需要注入的 native dll，接口参考文档及已有 native 插件"
+		}
+	},
+	"definitions": {
+		"hijackAction": {
+			"type": "object",
+			"properties": {
+				"id": {
+					"type": "string",
+					"description": "可选的劫持动作 ID"
+				},
+				"type": {
+					"type": "string",
+					"enum": ["replace", "regex", "append", "prepend"],
+					"description": "劫持动作的类型，目前支持 replace(精确替换)、regex(正则匹配替换)、append(在目标后追加代码)、prepend(在目标前插入代码)"
+				}
+			},
+			"required": ["type"],
+			"anyOf": [
+				{
+					"properties": {
+						"type": { "enum": ["replace", "regex"] },
+						"from": {
+							"type": "string",
+							"description": "被替换的搜索项或正则表达式"
+						},
+						"to": { "type": "string", "description": "替换后的内容" }
+					},
+					"required": ["from", "to"]
+				},
+				{
+					"properties": {
+						"type": { "enum": ["append", "prepend"] },
+						"code": { "type": "string", "description": "需要追加或前置的代码" }
+					},
+					"required": ["code"]
+				}
+			]
 		}
 	},
 	"required": ["manifest_version", "name", "version", "author"],
