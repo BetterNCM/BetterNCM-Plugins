@@ -1,0 +1,22 @@
+{
+	"manifest_version": 1,
+	"name": "AMLL WS Connector",
+	"slug": "amll-ws-connector",
+	"version": "0.1.0",
+	"betterncm_version": ">=1.0.0",
+	"author": "AMLL Dev",
+	"author_link": "https://github.com/amll-dev",
+	"description": "适用于 AMLL Player WS 协议的 Betterncm 插件实现",
+	"preview": "preview.png",
+	"type": "extension",
+	"loadAfter": ["InfLinkrs"],
+	"requirements": ["InfLinkrs"],
+	"ncm3-compatible": true,
+	"injects": {
+		"Main": [
+			{
+				"file": "index.js"
+			}
+		]
+	}
+}
