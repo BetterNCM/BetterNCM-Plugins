@@ -1,8 +1,9 @@
 {
+	"$schema": "https://raw.githubusercontent.com/BetterNCM/BetterNCM-Plugins/refs/heads/master/manifest-schema.json",
 	"manifest_version": 1,
 	"name": "AMLL WS Connector",
 	"slug": "amll-ws-connector",
-	"version": "0.1.0",
+	"version": "0.1.1",
 	"betterncm_version": ">=1.0.0",
 	"author": "AMLL Dev",
 	"author_link": "https://github.com/amll-dev",
