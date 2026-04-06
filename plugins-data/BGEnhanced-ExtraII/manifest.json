@@ -1,0 +1,27 @@
+{
+    "manifest_version": 1,
+    "name": "BGEnhanced-ExtraII", 
+    "slug": "BGEnhanced-ExtraII",
+    "version": "0.0.1",
+    "author": "华", 
+    "description": "BGEnhanced-Extra多一个功能",
+    "betterncm_version": ">=0.2.5",
+    "author_links": [
+        "https://github.com/efghsgt/"
+    ],
+    "loadAfter": [
+        "BGEnhanced"
+    ],
+    "requirements": [
+        "BGEnhanced"
+    ],
+    "type": "extension",
+    "preview": "preview.png",
+    "injects": {
+        "Main": [ 
+            {
+                "file": "index.js"
+            }
+        ]
+    }
+}
