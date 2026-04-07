@@ -22,6 +22,9 @@
   
 1、歌单透明  
 
+
+2、修复了按键触发时没跟随指针  
+
   
 ## 注:与来源有一定冲突请不要同时使用  
 
@@ -32,7 +35,7 @@
 ## 效果图  
 
   
-![preview](preview.gif)  
+![preview](preview.webp)  
   
   ## 配置图
 ![preview](https://github.com/efghsgt/BGEnhanced-ExtraII/blob/main/preview.png)
