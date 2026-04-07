@@ -2,9 +2,9 @@
     "manifest_version": 1,
     "name": "BGEnhanced-ExtraII", 
     "slug": "BGEnhanced-ExtraII",
-    "version": "0.0.1",
+    "version": "0.0.2",
     "author": "华", 
-    "description": "BGEnhanced-Extra多一个功能",
+    "description": "BGEnhanced-Extra多一个计时功能",
     "betterncm_version": ">=0.2.5",
     "author_links": [
         "https://github.com/efghsgt/"
@@ -16,7 +16,7 @@
         "BGEnhanced"
     ],
     "type": "extension",
-    "preview": "preview.png",
+    "preview": "preview.webp",
     "injects": {
         "Main": [ 
             {

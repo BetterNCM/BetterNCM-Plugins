@@ -102,7 +102,8 @@ function injectCSSStyles() {
     }`;
     document.head.appendChild(element);
 }
-
+let pointX = null;
+let pointY = null;
 
 plugin.onLoad(async () => {
     checkPluginExistence();
@@ -112,8 +113,7 @@ plugin.onLoad(async () => {
     let animationFrameRequest = null;
     let animationFrameRequested = false;
     //确定鼠标位置
-    let pointX = null;
-    let pointY = null;
+
 
     // 指针移动
     document.addEventListener("pointermove", event => {
@@ -188,7 +188,7 @@ plugin.onLoad(async () => {
     // 有操作时
     idleEvents.forEach(eventName => {if(eventName != "pointermove")
         document.addEventListener(eventName, () =>{
-        if (!animationFrameRequested) {
+        if (!animationFrameRequested && pluginConfig.get("pointerIdle")["enabled"]) {
             animationFrameRequested = true;
             animationFrameRequest = requestAnimationFrame(() => {
             // 读取配置
@@ -387,6 +387,8 @@ function initConfigView(configView) {
             config["filterSaturate"] = filterSaturate.value;
             pluginConfig.set("pointermove", config);
             if(!followPointerSwitch.checked){
+                pointX = null;
+                pointY = null;
                 // 读取配置
                 const transitionDelay = pluginConfig.get("pointermove")["transitionDelay"];
                 const transformScale = pluginConfig.get("pointermove")["transformScale"];
@@ -414,6 +416,8 @@ function initConfigView(configView) {
             filterSaturate.value = defaultConfig["pointermove"]["filterSaturate"];
             pluginConfig.set("pointermove", undefined);
             if(!followPointerSwitch.checked){
+                pointX = null;
+                pointY = null;
                 // 读取配置
                 const transitionDelay = pluginConfig.get("pointermove")["transitionDelay"];
                 const transformScale = pluginConfig.get("pointermove")["transformScale"];
