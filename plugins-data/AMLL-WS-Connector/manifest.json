@@ -3,7 +3,7 @@
 	"manifest_version": 1,
 	"name": "AMLL WS Connector",
 	"slug": "amll-ws-connector",
-	"version": "0.1.2",
+	"version": "0.1.4",
 	"betterncm_version": ">=1.0.0",
 	"author": "AMLL Dev",
 	"author_link": "https://github.com/amll-dev",
