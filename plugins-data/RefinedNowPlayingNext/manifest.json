@@ -5,7 +5,7 @@
   "author_links": [ "https://github.com/SUlTlUS" ],
   "description": "重新设计的正在播放页面和歌词适配全新网易云音乐",
   "preview": "preview.webp",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "type": "extension",
   "requirements": [],
   "loadAfter": [ "MaterialYouTheme", "LibFrontendPlay", "SimpleAudioVisualizer" ],
