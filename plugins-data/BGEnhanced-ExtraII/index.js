@@ -134,8 +134,11 @@ plugin.onLoad(async () => {
             // 跟随指针
             const followPointerSwitch = pluginConfig.get("pointermove")["followPointerSwitch"];
             if (followPointerSwitch) {
-                let translateX = window.innerWidth / 2 - event.clientX;
-                let translateY = window.innerHeight / 2 - event.clientY;
+                const clampedX = Math.max(0, Math.min(window.innerWidth, pointX));
+                const clampedY = Math.max(0, Math.min(window.innerHeight, pointY));
+
+                let translateX = window.innerWidth / 2 - clampedX;
+                let translateY = window.innerHeight / 2 - clampedY;
                 translateX = translateX - translateX / (transformScale / 100);
                 translateY = translateY - translateY / (transformScale / 100);
                 backgroundDom.style.setProperty("--translateX", `${translateX}px`);
@@ -203,8 +206,11 @@ plugin.onLoad(async () => {
             // 跟随指针
             const followPointerSwitch = pluginConfig.get("pointermove")["followPointerSwitch"];
             if (followPointerSwitch&& pointX != null && pointY != null) {
-                let translateX = window.innerWidth / 2 - pointX;
-                let translateY = window.innerHeight / 2 - pointY;
+                const clampedX = Math.max(0, Math.min(window.innerWidth, pointX));
+                const clampedY = Math.max(0, Math.min(window.innerHeight, pointY));
+
+                let translateX = window.innerWidth / 2 - clampedX;
+                let translateY = window.innerHeight / 2 - clampedY;
                 translateX = translateX - translateX / (transformScale / 100);
                 translateY = translateY - translateY / (transformScale / 100);
                 backgroundDom.style.setProperty("--translateX", `${translateX}px`);
