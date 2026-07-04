@@ -12,6 +12,11 @@ const LYRIC_SELECTOR = [
 ]; // 网易云音乐歌词页面的歌词的CSS选择器
 let cache = null; // 每句歌词原文与注音后歌词的缓存
 let errorDOM = null; // 错误弹窗
+let errorCount = 0; // 错误计数，最多10个
+let errorCooldown = false; // 错误冷却状态，防止短时间内连续弹窗
+const MAX_ERRORS = 10; // 最大错误数
+const ERROR_COOLDOWN_MS = 15000; // 错误冷却时间（毫秒）
+const ERROR_DISPLAY_MS = 8000; // 错误弹窗显示时间（毫秒）
 let posted = false; // 是否处在发送请求后，接收响应前的状态
 const head = document.querySelector('head');
 const HANZI = '爱为异伟汇违维遗纬员阴饮韵亩运云咏卫园烟远铅冈亿忆华货涡过祸个课贺饿开阶块溃谐贝盖该较阁确获吓额辖贯唤换间闲汉惯监缓还馆环简韩舰顽颜愿纪轨记规几挥贵弃毁辉机骑义仪拟议级纠宫给穷许鱼渔协况胁强桥矫镜竞响惊业极仅紧锦谨银训军计启倾庆鲸剧决结杰洁见轩坚绢宪贤谦键茧悬现减库夸顾后语误护红贡绞项沟构纲兴钢讲购刚狱驹顷垦恳诈锁灾细债载际财栅错册杀产伞斩暂师纸视词试诗资饲挚赐时饵识轴执质车谢肿种树终习众丑袭缩术纯顺润书绪诸绍讼胜伤详赏偿场锭饰织职针绅进诊审亲阵寻肾须帅锤势圣诚请责积绩设节羡铣迁选荐鲜渐组诉础仓扫创丧层赠则侧测贼孙损逊贷队态题诺浊达夺谁绽诞锻谈坛耻筑冲驻贮长帐张钓顶鸟胀贴肠调惩沉陈赁镇坠鹤贞订侦缔适敌彻电涂赌东冻岛讨栋汤统头誊腾动铜导顿贪钝谜锅软难认热纳农浓马骂败辈买赔剥缚罚阀贩饭烦颁范盘飞费罢备笔评标贫宾频负妇肤赋谱风复纷喷坟愤奋闻并闭币饼别编补访报饱缝纺贸谋颊扑脉务无梦雾铭鸣灭绵网门纹问约跃输邮涌犹游诱忧优预扬叶阳窑养拥罗络滥蓝栏里离陆侣虏虑凉领疗粮伦轮临类铃丽连练吕赂笼论话贿醫悅歐毆奧橫溫畫會學嶽幹卻腳舊虛禦峽挾狹區徑莖攜獻嚮黃號國參蠶慘殘辭濕寫壽敘將稱條狀觸囑寢盡隨樞數據聲靜稅竊淺踐潛雙壯爭裝屬墮體滯脫擔膽斷癡蟲晝點鬥燈當黨盜獨屆內麥蠻貓寶沒萬與譽踴來亂禮勵戀爐樓灣';
@@ -247,6 +252,14 @@ plugin.onLoad(() => {
  * @param {string} message 错误信息
  */
 function error(message) {
+    // 超过最大错误数，不再弹窗
+    if (errorCount >= MAX_ERRORS) return;
+    // 冷却中，不再弹窗
+    if (errorCooldown) return;
+
+    errorCount++;
+    errorCooldown = true;
+
     if (!errorDOM) errorDOM = document.createElement('div');
     errorDOM.innerHTML = `<h5 style="font-weight: bold;">Furigana</h5>${message}`;
     errorDOM.style = 'font-size: 16px; position: absolute; left: 20%; top: 16px; background-color: #7007; border-radius: 16px; backdrop-filter: blur(8px); z-index: 999; padding: 16px; line-height: 20px;';
@@ -259,7 +272,20 @@ function error(message) {
     closeDOM.onclick = retry;
     errorDOM.appendChild(closeDOM);
     document.querySelector('body').appendChild(errorDOM);
-    setTimeout(retry, 5000);
+
+    // 显示时间到后移除弹窗，再过一段时间解除冷却
+    setTimeout(() => {
+        retry();
+        setTimeout(() => {
+            errorCooldown = false;
+        }, ERROR_COOLDOWN_MS - ERROR_DISPLAY_MS);
+    }, ERROR_DISPLAY_MS);
+
+    // 切换歌曲时重置错误计数（超过30秒无错误视为切换歌曲）
+    clearTimeout(error._resetTimer);
+    error._resetTimer = setTimeout(() => {
+        errorCount = 0;
+    }, 30000);
 }
 
 /**
