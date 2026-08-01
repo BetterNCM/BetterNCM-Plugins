@@ -18,5 +18,8 @@
     "node-fetch": "^3.3.0",
     "octokit": "^2.0.10",
     "octokit-plugin-create-pull-request": "^4.0.0"
+  },
+  "overrides": {
+    "adm-zip": "0.6.0"
   }
 }
