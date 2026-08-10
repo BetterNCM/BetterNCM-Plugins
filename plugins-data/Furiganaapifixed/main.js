@@ -423,16 +423,20 @@ function pronounce(lyricElem) {
         body: requestBody
     };
     const primaryUrl = 'https://jpxg.netlify.app/.netlify/functions/index';
+    const middleUrl = 'https://api.meaningless.best/.netlify/functions/index';
     const backupUrl = 'https://api.0721for.me/.netlify/functions/index';
-    
+
     const doFetch = (url) => fetch(url, requestOptions).then(resp => {
         console.log('Furigana: Response received.');
         if (resp.ok) return resp.json();
         else throw new Error(`响应出错，错误代码：${resp.status}`);
     });
-    
+
     doFetch(primaryUrl).catch(err => {
-        console.warn('Primary API failed, trying backup...', err);
+        console.warn('Primary API failed, trying middle API...', err);
+        return doFetch(middleUrl);
+    }).catch(err => {
+        console.warn('Middle API failed, trying backup API...', err);
         return doFetch(backupUrl);
     }).then(result => {
         if (!result) return;
@@ -588,16 +592,20 @@ function pronouncePlus(lyricElem) {
         body: requestBody
     };
     const primaryUrl = 'https://jpxg.netlify.app/.netlify/functions/index';
+    const middleUrl = 'https://api.meaningless.best/.netlify/functions/index';
     const backupUrl = 'https://api.0721for.me/.netlify/functions/index';
-    
+
     const doFetch = (url) => fetch(url, requestOptions).then(resp => {
         console.log('Furigana: Response received.');
         if (resp.ok) return resp.json();
         else throw new Error(`响应出错，错误代码：${resp.status}`);
     });
-    
+
     doFetch(primaryUrl).catch(err => {
-        console.warn('Primary API failed, trying backup...', err);
+        console.warn('Primary API failed, trying middle API...', err);
+        return doFetch(middleUrl);
+    }).catch(err => {
+        console.warn('Middle API failed, trying backup API...', err);
         return doFetch(backupUrl);
     }).then(result => {
         if (!result) return;
