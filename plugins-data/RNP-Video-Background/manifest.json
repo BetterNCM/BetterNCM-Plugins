@@ -1,0 +1,29 @@
+{
+  "$schema": "https://raw.githubusercontent.com/BetterNCM/BetterNCM-Plugins/refs/heads/master/manifest-schema.json",
+  "manifest_version": 1,
+  "name": "RNP Video Background",
+  "slug": "rnp-video-background",
+  "version": "0.1.2",
+  "betterncm_version": ">=1.0.0",
+  "author": "wmgqdavid",
+  "author_link": "https://github.com/wmgqdavid",
+  "description": "为 RefinedNowPlaying Next 提供可持久化的本地 MP4/WebM 视频背景，并精简播放页控制区。",
+  "preview": "preview.svg",
+  "type": "extension",
+  "require_restart": false,
+  "requirements": [
+    "RefinedNowPlayingNext"
+  ],
+  "loadAfter": [
+    "RefinedNowPlayingNext"
+  ],
+  "ncm-version-req": "> 3.1.11",
+  "ncm3-compatible": true,
+  "injects": {
+    "Main": [
+      {
+        "file": "main.js"
+      }
+    ]
+  }
+}
