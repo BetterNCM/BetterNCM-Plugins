@@ -1,0 +1,11 @@
+RNP Video Background uses an optional, separately downloaded FFmpeg component.
+
+FFmpeg version: 6.1.1 (Windows x64 static build)
+Binary distributor: https://github.com/eugeneware/ffmpeg-static/releases/tag/b6.1.1
+Mirror: https://cdn.npmmirror.com/binaries/ffmpeg-static/b6.1.1/
+License: GPL-3.0-or-later (see the distributor's win32-x64.LICENSE asset)
+FFmpeg source and license information: https://ffmpeg.org/
+
+The plugin verifies both compressed and extracted binary SHA-256 values before use.
+The component is stored under %LOCALAPPDATA%\RNPVideoBackground\ffmpeg-6.1.1 and is not bundled in the BetterNCM plugin package.
+
