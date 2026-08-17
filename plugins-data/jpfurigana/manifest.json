@@ -1,0 +1,22 @@
+{
+	"$schema": "https://raw.githubusercontent.com/BetterNCM/BetterNCM-Plugins/refs/heads/master/manifest-schema.json",
+	"manifest_version": 1,
+	"name": "日语歌词振假名",
+	"slug": "jp-furigana",
+	"version": "0.1.0",
+	"author": "leleawa",
+	"author_link": "https://github.com/Leleawa/jp-furigana",
+	"description": "在日语歌词的汉字上方标注振假名 (平假名 / 片假名). 读音优先取网易云的官方音译, 没有音译时用内置的 kuromoji + IPADIC 词典",
+	"preview": "preview.jpg",
+	"type": "extension",
+	"betterncm_version": ">=1.3.0",
+	"ncm3-compatible": true,
+	"requirements": [],
+	"injects": {
+		"Main": [
+			{ "file": "kuromoji.js" },
+			{ "file": "furigana.js" },
+			{ "file": "main.js" }
+		]
+	}
+}
