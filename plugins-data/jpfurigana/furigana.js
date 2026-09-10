@@ -311,6 +311,24 @@
 	}
 
 	/**
+	 * 四つ仮名还原。罗马字里 ジ/ヂ 都写 ji、ズ/ヅ 都写 zu，音译转回假名只能得到
+	 * ジ/ズ，词典读音却是分得清的（続ける→ツヅケル、散り散り→チリヂリ）。
+	 * 两串等长时按位把词典的 ヂ/ヅ 补回去，其余位置仍以音译为准。
+	 * 长度不等说明读音真被改过，位置对不上，整段听音译。
+	 */
+	function restoreYotsugana(dictRt, officialRt) {
+		const dict = toKatakana(dictRt);
+		if (dict.length !== officialRt.length) return officialRt;
+		let out = '';
+		for (let i = 0; i < officialRt.length; i++) {
+			const o = officialRt[i];
+			const d = dict[i];
+			out += (o === 'ジ' && d === 'ヂ') || (o === 'ズ' && d === 'ヅ') ? d : o;
+		}
+		return out;
+	}
+
+	/**
 	 * 已知整行真实读音（来自官方音译）时，把它分配到词典给出的结构上：
 	 * **词典负责断词，音译负责读音**。
 	 *
@@ -380,7 +398,7 @@
 			const readings = distributeReading(items, m[i + 1]);
 			if (!readings) return; // 分不开，这一段保留词典读音
 			items.forEach((it, k) => {
-				it.rt = readings[k];
+				it.rt = restoreYotsugana(it.rt, readings[k]);
 			});
 			usedOfficial = true;
 		});
