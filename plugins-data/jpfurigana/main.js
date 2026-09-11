@@ -178,6 +178,7 @@
 	}
 
 	let cacheDirty = false;
+	let cacheWriteFailed = false;
 	function flushCache() {
 		if (!cacheDirty) return;
 		cacheDirty = false;
@@ -190,8 +191,12 @@
 				for (const [k, v] of entries) cache.set(k, v);
 			}
 			localStorage.setItem(CACHE_KEY, JSON.stringify(Object.fromEntries(entries)));
+			cacheWriteFailed = false;
 		} catch (e) {
-			console.warn(LOG, '写入缓存失败', e);
+			if (!cacheWriteFailed) {
+				cacheWriteFailed = true;
+				console.warn(LOG, '写入缓存失败', e);
+			}
 		}
 	}
 	setInterval(flushCache, 10000);
@@ -905,6 +910,7 @@
 	// ------------------------------------------------------------------ 主循环
 
 	let lastLines = [];
+	let lastLogSig = null; // 结果没变就别每次调度都刷一条 pass 日志
 
 	function invalidateAll() {
 		for (const line of lastLines) line.__fgDirty = true;
@@ -955,8 +961,14 @@
 					} else if (had) {
 						changed++; // 之前有注音、现在没了，行高同样会变
 					}
+					line.__fgErrMsg = null;
 				} catch (e) {
-					console.warn(LOG, '处理歌词行失败', e, line);
+					// 同一行反复抛同样的错就只报一次，不然逐字歌词场景下会一直刷
+					const msg = String((e && e.message) || e);
+					if (line.__fgErrMsg !== msg) {
+						line.__fgErrMsg = msg;
+						console.warn(LOG, '处理歌词行失败', e, line);
+					}
 					line.__fgText = plainText(line);
 					line.__fgHosts = [];
 				}
@@ -976,7 +988,11 @@
 			if (state.observer) state.observer.takeRecords();
 			state.applying = false;
 			state.lastPassMs = Math.round(performance.now() - t0);
-			log(`pass ${state.lastPassMs}ms lines=${state.lineCount} annotated=${state.annotated} by=${state.matchedBy}`);
+			const sig = `${state.lineCount}|${state.annotated}|${state.matchedBy}`;
+			if (sig !== lastLogSig) {
+				lastLogSig = sig;
+				log(`pass ${state.lastPassMs}ms lines=${state.lineCount} annotated=${state.annotated} by=${state.matchedBy}`);
+			}
 		}
 	}
 
