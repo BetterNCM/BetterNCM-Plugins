@@ -22,6 +22,9 @@
 	const RE_NOT_KANJI_HEAD = new RegExp('^[^' + KANJI + ']+');
 	// 平假名 + 片假名 + 长音符
 	const RE_HAS_KANA = /[ぁ-ゖァ-ヺ]/;
+	// 词典读不出、音译里却有读音的字符
+	const RE_HAS_KANA_OR_LONG = /[ぁ-ゖァ-ヺーｰ]/;
+	const RE_UNREADABLE = new RegExp('[A-Za-z0-9Ａ-Ｚａ-ｚ０-９' + KANJI + ']');
 
 	function toHiragana(s) {
 		return s.replace(/[ァ-ヶ]/g, (c) =>
@@ -132,11 +135,21 @@
 	 * 宁可不用也不要给出错的读音。
 	 */
 	function romajiToKana(input) {
-		let s = String(input)
-			.toLowerCase()
-			.replace(/[\s　]+/g, '')
-			// n' 这类音节分隔符，以及音译里可能带的标点
-			.replace(/['’‘`,.!?;:"“”()[\]{}、。，！？…「」『』]/g, '');
+		// 网易云的音译按拍用空格隔开，要逐拍转换：先拼起来的话 "ne n yo"（年よ）
+		// 变成 "nenyo"，会被贪婪匹配成 ne + nyo → ねにょ
+		let out = '';
+		// 拍内的 n' 同样是边界："re n'a i"（恋愛）里的 n'a 是 ん + あ
+		for (const syl of String(input).toLowerCase().split(/[\s　]+|(?<=n)['’]/)) {
+			const kana = sylToKana(syl);
+			if (kana == null) return null;
+			out += kana;
+		}
+		return out || null;
+	}
+
+	function sylToKana(syl) {
+		// 音译里可能带的标点
+		const s = syl.replace(/['’‘`,.!?;:"“”()[\]{}、。，！？…「」『』]/g, '');
 		let out = '';
 		let i = 0;
 		while (i < s.length) {
@@ -154,7 +167,11 @@
 
 			const c = s[i];
 			// 促音：tte → って（n 不算，"nna" 是 ん + な）
-			if (c === s[i + 1] && /[a-z]/.test(c) && c !== 'n' && !'aiueo'.includes(c)) {
+			// tcha → っちゃ（ch 开头的拍，促音写成 t）
+			if (
+				(c === s[i + 1] && /[a-z]/.test(c) && c !== 'n' && !'aiueo'.includes(c)) ||
+				(c === 't' && s[i + 1] === 'c')
+			) {
 				out += 'っ';
 				i++;
 				continue;
@@ -166,7 +183,7 @@
 			}
 			return null; // 夹了英文单词之类，交给词典
 		}
-		return out || null;
+		return out;
 	}
 
 	// ---------------------------------------------------- LRC（官方音译接口）
@@ -268,12 +285,67 @@
 		const kana = toKatakana(text).replace(/[^ァ-ヺーｰ]/g, '');
 		if (!kana) return '';
 		return escapeRe(kana)
+			// 外来语的ディ/ティ，音译写 di/ti，转回来是ヂ/チ
+			.replace(/([デテ])ィ/g, (_, c) => (c === 'デ' ? '(?:ディ|ヂ)' : '(?:ティ|チ)'))
+			// 小写假名音译里常写成大写的（くせぇ → se e，ぎゅっ → gi yu）
+			.replace(/[ァィゥェォャュョ]/g, (c) => `[${c}${String.fromCharCode(c.charCodeAt(0) + 1)}]`)
+			// 促音音译里有时会漏掉
+			.replace(/ッ/g, 'ッ?')
 			.replace(/ハ/g, '[ハワ]')
 			.replace(/ヘ/g, '[ヘエ]')
 			.replace(/ヲ/g, '[ヲオ]')
 			.replace(/ヂ/g, '[ヂジ]')
 			.replace(/ヅ/g, '[ヅズ]')
 			.replace(/ー/g, '[ーｰアイウエオ]');
+	}
+
+	/**
+	 * 把整行读音切给「锚点 / 空档」序列。锚点必须命中（长度不一定固定），空档至少一个字符。
+	 * 能切的方式不止一种时（昨日の → キノウノ，第一个 ノ 也能当锚点），
+	 * 选各空档长度与词典读音长度偏差之和最小的；并列时取靠前空档更短的，
+	 * 和原先懒惰匹配的倾向一致。切不开返回 null。
+	 */
+	function splitReading(parts, reading) {
+		const n = reading.length;
+		// best[i][p]：从 parts[i] 起、读音从 p 起匹配到结尾的最小代价
+		const best = [];
+		const pick = [];
+		for (let i = parts.length; i >= 0; i--) {
+			best[i] = new Array(n + 1).fill(Infinity);
+			pick[i] = new Array(n + 1).fill(-1);
+			for (let p = 0; p <= n; p++) {
+				if (i === parts.length) {
+					if (p === n) best[i][p] = 0;
+					continue;
+				}
+				const part = parts[i];
+				if (part.re) {
+					part.re.lastIndex = p;
+					const m = part.re.exec(reading);
+					if (m) {
+						best[i][p] = best[i + 1][p + m[0].length];
+						pick[i][p] = m[0].length;
+					}
+					continue;
+				}
+				for (let len = 1; p + len <= n; len++) {
+					const c = Math.abs(len - part.want) + best[i + 1][p + len];
+					if (c < best[i][p]) {
+						best[i][p] = c;
+						pick[i][p] = len;
+					}
+				}
+			}
+		}
+		if (best[0][0] === Infinity) return null;
+
+		const out = [];
+		for (let i = 0, p = 0; i < parts.length; i++) {
+			const len = pick[i][p];
+			if (!parts[i].re) out.push(reading.substr(p, len));
+			p += len;
+		}
+		return out;
 	}
 
 	/**
@@ -311,21 +383,40 @@
 	}
 
 	/**
-	 * 四つ仮名还原。罗马字里 ジ/ヂ 都写 ji、ズ/ヅ 都写 zu，音译转回假名只能得到
+	 * 四つ仮名 / 小写假名还原。罗马字里 ジ/ヂ 都写 ji、ズ/ヅ 都写 zu，音译转回假名只能得到
 	 * ジ/ズ，词典读音却是分得清的（続ける→ツヅケル、散り散り→チリヂリ）。
 	 * 两串等长时按位把词典的 ヂ/ヅ 补回去，其余位置仍以音译为准。
 	 * 长度不等说明读音真被改过，位置对不上，整段听音译。
 	 */
-	function restoreYotsugana(dictRt, officialRt) {
+	function restoreFromDict(dictRt, officialRt) {
 		const dict = toKatakana(dictRt);
 		if (dict.length !== officialRt.length) return officialRt;
 		let out = '';
 		for (let i = 0; i < officialRt.length; i++) {
 			const o = officialRt[i];
 			const d = dict[i];
-			out += (o === 'ジ' && d === 'ヂ') || (o === 'ズ' && d === 'ヅ') ? d : o;
+			out += (o === 'ジ' && d === 'ヂ') || (o === 'ズ' && d === 'ヅ') || SMALL_KANA[d] === o ? d : o;
 		}
 		return out;
+	}
+
+	// 音译常把拗音拆成两拍写（逆転 → gi ya ku te n），转回来是大写的 ヤ
+	const SMALL_KANA = { ャ: 'ヤ', ュ: 'ユ', ョ: 'ヨ', ァ: 'ア', ィ: 'イ', ゥ: 'ウ', ェ: 'エ', ォ: 'オ' };
+
+	// 网易云机器音译的已知错误：「今日は」被当成问候语转成 ko n ni chi ha
+	const OFFICIAL_REJECT = { 今日: 'コンニチ' };
+
+	/**
+	 * 分到手的音译读音能不能用。歌手重复演唱时音译会多出一截，
+	 * 比如「僕」拿到 ボクボク、「謳」拿到 アイヲウタ（前面的「愛を」唱了两遍），
+	 * 这种首尾就是词典读音、长度却翻倍的，当作串了词，留词典读音。
+	 */
+	function plausibleOfficial(text, dict, official) {
+		if (OFFICIAL_REJECT[text] === official) return false;
+		if (official === dict) return true;
+		const repeated =
+			official.length >= dict.length * 2 && (official.startsWith(dict) || official.endsWith(dict));
+		return !repeated;
 	}
 
 	/**
@@ -350,57 +441,67 @@
 
 		// 用「非空锚点」把 segs 切成若干待填的空档。纯标点/空格锚点是空的，
 		// 并进相邻空档一起处理，而不是像行级对齐那样直接放弃。
+		// 词典读不出的汉字（简体字「背负」的负）、英文、数字在音译里也占读音，
+		// 长度没法估，挨着它们的空档都分不准，标成 bad 留给词典
 		const groups = [];
 		let gap = null;
+		let nextBad = false;
+		const openGap = () => gap || (gap = { items: [], bad: nextBad });
 		for (const seg of segs) {
 			if (seg.rt) {
-				(gap || (gap = { items: [] })).items.push(seg);
+				openGap().items.push(seg);
+				nextBad = false;
 				continue;
 			}
+			const unreadable = RE_UNREADABLE.test(seg.text);
 			const anchor = looseAnchorPattern(seg.text);
 			if (!anchor) {
+				if (unreadable) openGap().bad = true;
 				if (gap) gap.items.push(seg);
 				continue;
 			}
+			// 「间にやっほー」这种读不出的字和假名连在一起：在假名前面的读音会落进前一个空档，
+			// 在后面的落进后一个
+			const kanaAt = seg.text.search(RE_HAS_KANA_OR_LONG);
+			const kanaEnd = seg.text.length - [...seg.text].reverse().join('').search(RE_HAS_KANA_OR_LONG);
+			if (unreadable && RE_UNREADABLE.test(seg.text.slice(0, kanaAt))) openGap().bad = true;
 			if (gap) {
 				groups.push(gap);
 				gap = null;
 			}
 			groups.push({ anchor });
+			nextBad = unreadable && RE_UNREADABLE.test(seg.text.slice(kanaEnd));
 		}
 		if (gap) groups.push(gap);
+		else if (nextBad) groups.push({ items: [], bad: true });
 
-		let pattern = '^';
+		const parts = [];
 		const gaps = [];
 		for (const g of groups) {
 			if (g.anchor != null) {
-				pattern += g.anchor;
+				parts.push({ re: new RegExp(g.anchor, 'y') });
 				continue;
 			}
-			if (!g.items.some((it) => it.rt)) continue; // 只有标点，不占读音
-			pattern += '(.+?)';
+			if (!g.bad && !g.items.some((it) => it.rt)) continue; // 只有标点，不占读音
+			parts.push({ want: g.items.reduce((n, it) => n + (it.rt ? toKatakana(it.rt).length : 0), 0) || 1 });
 			gaps.push(g);
 		}
-		pattern += '$';
 		if (!gaps.length) return null;
 
-		let m;
-		try {
-			m = new RegExp(pattern).exec(toKatakana(reading));
-		} catch (e) {
-			return null;
-		}
-		if (!m) return null;
+		const captures = splitReading(parts, toKatakana(reading));
+		if (!captures) return null;
 
 		let usedOfficial = false;
 		gaps.forEach((g, i) => {
+			if (g.bad) return;
 			const items = g.items.filter((it) => it.rt);
-			const readings = distributeReading(items, m[i + 1]);
+			const readings = distributeReading(items, captures[i]);
 			if (!readings) return; // 分不开，这一段保留词典读音
 			items.forEach((it, k) => {
-				it.rt = restoreYotsugana(it.rt, readings[k]);
+				if (!plausibleOfficial(it.text, toKatakana(it.rt), readings[k])) return;
+				it.rt = restoreFromDict(it.rt, readings[k]);
+				usedOfficial = true;
 			});
-			usedOfficial = true;
 		});
 		if (!usedOfficial) return null; // 一段都没用上，结果等同词典
 
@@ -592,6 +693,11 @@
 				continue;
 			}
 			reading = toKatakana(reading);
+			// 「磊々」这类生僻字会被切成 磊 / 々，々 单独成词时读音就是它自己
+			if (!RE_HAS_KANA.test(reading)) {
+				push(surface);
+				continue;
+			}
 
 			const runs = splitRuns(surface);
 			const aligned = alignReading(surface, reading);
