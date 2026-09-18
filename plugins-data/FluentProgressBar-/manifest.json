@@ -1,0 +1,32 @@
+{
+    "manifest_version": 1,
+    "name": "FluentProgressBar (优化版)",
+    "slug": "FluentProgressBar-Optimized",
+    "version": "1.0.4",
+    "author": "MicroBlock & Solstice23, Indor",
+    "author_links": [
+        "https://github.com/In-dor/FluentProgessBar"
+    ],
+    "description": "让你的进度条更顺滑！(优化版)",
+    "preview": "preview.png",
+    "type": "extension",
+    "fork_of": "FluentProgressBar",
+    "betterncm_version": ">=1.0.0",
+    "ncm3-compatible": true,
+    "injects": {
+        "Main": [
+            {
+                "file": "plugin.js"
+            }
+        ]
+    },
+    "hijacks": {
+        ">= 2.10.4 <= 2.10.6": {
+            "orpheus://orpheus/pub/core.d3fe8dd.js": {
+                "type": "replace",
+                "from": "var t=(100*this.qit).toFixed(1),i=parseInt(t),t=i+.25*Math.ceil((t-i)/.25);",
+                "to": "var t=(100*this.qit).toFixed(3);"
+            }
+        }
+    }
+}
