@@ -62,11 +62,11 @@ const getPluginLatestVersion = async (plugin) => {
 const updatePlugin = async (plugin) => {
 	// search if the pull request already exists
 	let searchResult = await octokit.rest.search.issuesAndPullRequests({
-		q: `repo:${repoOwner}/${repoName} is:pr is:open "${plugin.name} ${plugin.latestVersion}"`,
+		q: `repo:${repoOwner}/${repoName} is:pr is:open in:title "${plugin.name} ${plugin.latestVersion}"`,
 	});
 	const pullRequestExists = searchResult.data.total_count > 0;
 	searchResult = await octokit.rest.search.issuesAndPullRequests({
-		q: `repo:${repoOwner}/${repoName} is:pr is:closed "${plugin.name} ${plugin.latestVersion}"`,
+		q: `repo:${repoOwner}/${repoName} is:pr is:closed is:unmerged in:title "${plugin.name} ${plugin.latestVersion}"`,
 	});
 	const versionRejected = searchResult.data.total_count > 0;
 	if (pullRequestExists) {
@@ -74,7 +74,7 @@ const updatePlugin = async (plugin) => {
 		console.log(`Pushing new commit to update pull request...`);
 	}
 	if (versionRejected) {
-		console.log(`🚫 Pull request already exists for ${plugin.slug} ${plugin.latestVersion} and has been closed`);
+		console.log(`🚫 Pull request already exists for ${plugin.slug} ${plugin.latestVersion} and has been closed without merging`);
 		return;
 	}
 	console.log(`  - 🔄 Upgrading...`);
