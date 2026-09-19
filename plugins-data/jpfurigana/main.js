@@ -13,11 +13,11 @@
 
 	const LOG = '[jp-furigana]';
 	// 改了实现就换一下，方便确认插件到底有没有被重新加载（JPFurigana.build）
-	const BUILD = 'karaoke-14';
+	const BUILD = 'karaoke-15';
 	const REPO_URL = 'https://github.com/Leleawa/jp-furigana';
 	const CONFIG_KEY = 'jp-furigana.config';
 	// 注音算法改了就换 key，让旧缓存自然失效
-	const CACHE_KEY = 'jp-furigana.cache.v2';
+	const CACHE_KEY = 'jp-furigana.cache.v3';
 	const CACHE_LIMIT = 4000;
 
 	const DEFAULTS = {
@@ -657,7 +657,15 @@
 		const wrap = document.createElement('span');
 		wrap.className = cls || 'fg-line';
 		for (const seg of segments) {
-			if (seg.rt) {
+			if (seg.hidden) {
+				// 作词者自带注音的括号「漢字（かな）」：注音已经标在汉字上了，括号藏起来。
+				// 文字还在 DOM 里，plainText 读出来仍是原文
+				const hide = document.createElement('span');
+				hide.className = 'fg-hide';
+				hide.style.display = 'none';
+				hide.textContent = seg.text;
+				wrap.appendChild(hide);
+			} else if (seg.rt) {
 				// 每个注音单独套一层 inline-block：整行改写时 .fg-line 是 display:inline，
 				// 上下边距对它不起作用，没法把行盒多出来的高度收回去（见 calibrate）
 				const holder = document.createElement('span');
@@ -768,7 +776,9 @@
 			if (!text) continue;
 			// 注音只在完整包含、或至少包含词首的那一段上保留
 			const keepRt = seg.rt && a === start;
-			out.push(keepRt ? { text, rt: seg.rt } : { text });
+			if (keepRt) out.push({ text, rt: seg.rt });
+			else if (seg.hidden) out.push({ text, hidden: true });
+			else out.push({ text });
 		}
 		return out;
 	}
