@@ -3,7 +3,7 @@
 	"manifest_version": 1,
 	"name": "日语歌词振假名",
 	"slug": "jp-furigana",
-	"version": "1.0.0",
+	"version": "1.0.2",
 	"author": "leleawa",
 	"author_link": "https://github.com/Leleawa/jp-furigana",
 	"description": "在日语歌词的汉字上方标注振假名 (平假名 / 片假名)",
