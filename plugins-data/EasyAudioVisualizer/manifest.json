@@ -1,0 +1,19 @@
+{
+    "manifest_version": 1,
+    "name": "EasyAudioVisualizer",
+    "slug": "easy-audio-visualizer",
+    "version": "0.3.3",
+    "betterncm_version": ">=1.0.0",
+    "author": "CHNHenry",
+    "author_link": "https://github.com/CHNHenry",
+    "description": "在播放页进度条上方显示经科学信号处理（A计权/时间计权/高斯滤波/多分辨率分体FFT）的音频频谱可视化，全部参数可在设置页调整。",
+    "type": "extension",
+    "ncm3-compatible": true,
+    "injects": {
+        "Main": [
+            {
+                "file": "./main.js"
+            }
+        ]
+    }
+}
