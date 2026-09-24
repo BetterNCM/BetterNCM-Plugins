@@ -25,6 +25,11 @@
         const output = parts.slice(0, vip + 1).concat('unlock', parts.slice(vip + 1)).join('\\');
         return { source, target: output };
     }
+    // The folder a user-requested search covers: VipSongsDownload under the client's download directory.
+    function scanRoot(downloadRoot) {
+        const base = normalize(downloadRoot);
+        return base ? base + '\\VipSongsDownload' : '';
+    }
     function findSdk(win) {
         // NetEase 3.x uses webpack 4. Capture only the module cache; do not run client modules.
         const chunks = win.webpackJsonp;
@@ -52,5 +57,5 @@
         sdk.Bridge.appendRegisterCall('addid3done', 'storage', callback);
         return () => sdk.Bridge.removeRegisterCall('addid3done', 'storage', callback);
     }
-    return { findSdk, attach, resolveJob, normalize };
+    return { findSdk, attach, resolveJob, normalize, scanRoot };
 });
