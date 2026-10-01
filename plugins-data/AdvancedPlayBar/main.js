@@ -44,6 +44,9 @@
             unplayedMode: 'native', // 'native' (保持原版) | 'custom' (自定义)
             unplayedRgb: { r: 45, g: 45, b: 56 },
 
+            // 专辑封面：圆角方形静态封面（关闭则为原版旋转黑胶）
+            squareCover: false,
+
             // 全局主题色（作用于客户端内联 CSS 变量）
             themeMode: 'native',    // 'native' (原生不干预) | 'custom' (自定义)
             themeRgb: { r: 236, g: 65, b: 65 }
@@ -595,9 +598,134 @@
         return L.join('\n');
     }
 
+    /**
+     * 专辑封面：迷你条左边的旋转黑胶换成圆角方形静态封面（黑胶外框来自 wrapper 自身）
+     */
+    function buildCoverCss() {
+        if (!state.squareCover) return '';
+
+        // 静态类名 + 包含匹配，后者兼容 CSS Module 哈希后缀
+        var bases = [SCOPE + ' .miniVinylWrapper', SCOPE + ' [class*="miniVinylWrapper"]'];
+        function each(suffix) {
+            return bases.map(function (s) { return s + suffix; }).join(',\n');
+        }
+        var R = '8px';
+        // 缩放系数，0.83 约显示成 50px
+        var SCALE = 0.83;
+        var L = [];
+
+        L.push('/* 专辑封面：圆角方形静态样式 */');
+        L.push(each('') + ' {');
+        L.push('  background: none !important;');
+        L.push('  background-image: none !important;');
+        L.push('  border: none !important;');
+        L.push('  box-shadow: none !important;');
+        L.push('  border-radius: ' + R + ' !important;');
+        L.push('  overflow: hidden !important;');
+        // 停掉旋转并整体缩小（transform 覆盖客户端的 rotate）
+        L.push('  animation: none !important;');
+        L.push('  transform: scale(' + SCALE + ') !important;');
+        L.push('}');
+
+        // 去掉黑胶外圈和纹路（伪元素画的）
+        L.push(each('::before') + ',');
+        L.push(each('::after') + ' {');
+        L.push('  display: none !important;');
+        L.push('}');
+
+        // 封面图铺满整个方块
+        L.push(each(' img') + ' {');
+        L.push('  width: 100% !important;');
+        L.push('  height: 100% !important;');
+        L.push('  object-fit: cover !important;');
+        L.push('  border-radius: ' + R + ' !important;');
+        L.push('  animation: none !important;');
+        L.push('  transform: none !important;');
+        L.push('}');
+
+        return L.join('\n');
+    }
+
+    /**
+     * 迷你条封面只有几十像素，这里换成大图（只处理网易 CDN 的小尺寸地址）
+     */
+    var COVER_PREFIX = 'orpheus://cache/?';
+    var COVER_HD = '?imageView&thumbnail=200y200';
+
+    function biggerCoverUrl(src) {
+        if (!src) return '';
+
+        var prefix = '';
+        var inner = src;
+        if (inner.indexOf(COVER_PREFIX) === 0) {
+            prefix = COVER_PREFIX;
+            inner = inner.slice(COVER_PREFIX.length);
+        }
+        if (inner.indexOf('http') !== 0) return '';
+        if (inner.indexOf('music.126.net') === -1) return '';
+
+        var q = inner.indexOf('?') === -1 ? '' : inner.slice(inner.indexOf('?') + 1);
+        var m = q.match(/(?:^|&)(?:param|thumbnail)=(\d+)y(\d+)/);
+        if (m && parseInt(m[1], 10) >= 150) return '';   // 已经够大
+
+        return prefix + inner.split('?')[0] + COVER_HD;
+    }
+
+    // 正在验证的候选地址，避免每轮轮询都重新发起
+    var coverPending = '';
+    var coverRejected = '';
+    var coverBoundImg = null;
+
+    /**
+     * 先验证候选图确实更大，再换。换错地址封面会裂
+     */
+    function upgradeCover(img) {
+        var cur = img.getAttribute('src') || '';
+        if (!cur) return;
+        if (img.naturalWidth >= 150) return;          // 当前这张已经够清晰
+
+        var cand = biggerCoverUrl(cur);
+        if (!cand || cand === cur) return;
+        if (cand === coverRejected || cand === coverPending) return;
+
+        coverPending = cand;
+        var probe = new Image();
+        probe.onload = function () {
+            coverPending = '';
+            // 期间若已切歌，放弃这次替换
+            if (img.getAttribute('src') !== cur) return;
+            if (probe.naturalWidth > (img.naturalWidth || 0)) {
+                img.setAttribute('src', cand);
+            } else {
+                coverRejected = cand;                 // 取不到更大的图
+            }
+        };
+        probe.onerror = function () {
+            coverPending = '';
+            coverRejected = cand;
+        };
+        probe.src = cand;
+    }
+
+    function syncCoverResolution() {
+        if (!state.squareCover) return;
+        var img = document.querySelector(
+            SCOPE + ' .miniVinylWrapper img, ' + SCOPE + ' [class*="miniVinylWrapper"] img');
+        if (!img) return;
+
+        // 切歌后客户端会换 src，靠 load 事件立刻跟上，不必等轮询
+        // 元素被重建时会重新绑
+        if (img !== coverBoundImg) {
+            coverBoundImg = img;
+            img.addEventListener('load', function () { upgradeCover(img); });
+        }
+        upgradeCover(img);
+    }
+
     function buildCss() {
         return [
             buildBarCss(),
+            buildCoverCss(),
             themeCss(),
             buildHoverCss()
         ].filter(Boolean).join('\n');
@@ -1194,7 +1322,15 @@
         }, function (v) { return v === 0 ? '关闭' : v + 'px'; }), '给播放栏加背景模糊'));
         root.appendChild(toggleRow('兼容模式', 'compatMode', '如果透明样式无效，可以尝试开启'));
 
-        // 2. 进度条
+        // 2. 专辑封面
+        root.appendChild(el('div', {
+            fontSize: '15px', fontWeight: '700', marginTop: '28px', marginBottom: '2px'
+        }, '专辑封面'));
+
+        root.appendChild(toggleRow('方形封面', 'squareCover',
+            '开启后换成圆角方形静态封面，关闭为原版旋转黑胶'));
+
+        // 3. 进度条
         root.appendChild(el('div', {
             fontSize: '15px', fontWeight: '700', marginTop: '28px', marginBottom: '2px'
         }, '进度条'));
@@ -1248,7 +1384,7 @@
             rgbKey: 'unplayedRgb'
         }));
 
-        // 3. 全局主题色
+        // 4. 全局主题色
         root.appendChild(el('div', {
             fontSize: '15px', fontWeight: '700', marginTop: '28px', marginBottom: '2px'
         }, '主题色'));
@@ -1330,6 +1466,9 @@
         saved.maskGlow = clamp(saved.maskGlow, 0, 1, 0.05);
         saved.opacity = clamp(saved.opacity, 0, 1, 0.1);
         saved.blur = clamp(saved.blur, 0, 60, 5);
+        if (typeof saved.squareCover !== 'boolean') {
+            saved.squareCover = false;
+        }
         return saved;
     }
 
@@ -1352,6 +1491,8 @@
             // 定时检查：防止 DOM 树或 head 节点被客户端重构时样式丢失
             setInterval(function () {
                 if (!document.getElementById(STYLE_ID)) ensureStyle();
+                // 封面与「透明播放栏」开关无关，要在提前返回之前调用
+                syncCoverResolution();
                 if (!state.barEnabled) return;
 
                 var cur = document.querySelector(BAR_SELECTORS);
@@ -1387,10 +1528,11 @@
         hsvToRgb: hsvToRgb,
         rgbToHsv: rgbToHsv,
         themeVars: THEME_VARS,
+        biggerCoverUrl: biggerCoverUrl,
         get themeCss() { return themeCss(); },
         get css() { return buildCss(); },
         get barCss() { return buildBarCss(); },
         get hoverCss() { return buildHoverCss(); },
-        version: '1.1.0'
+        version: '1.2.0'
     };
 })();
