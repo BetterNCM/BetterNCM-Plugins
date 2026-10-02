@@ -1,8 +1,9 @@
 {
+	"$schema": "https://raw.githubusercontent.com/BetterNCM/BetterNCM-Plugins/refs/heads/master/manifest-schema.json",
 	"manifest_version": 1,
 	"name": "InfLink-rs",
 	"fork_of": "InfLink",
-	"version": "3.2.11",
+	"version": "3.3.0",
 	"author": "apoint123",
 	"ncm3-compatible": true,
 	"description": "SMTC 支持，使用 Rust 实现",
@@ -20,7 +21,15 @@
 			"orpheus://orpheus/pub/hybrid/vendors~app~subApp.chunk": [
 				{
 					"type": "regex",
-					"id": "inflink-disable-native-smtc",
+					"id": "inflink-disable-native-smtc-old",
+					"from": "(setSMTCEnable\\s*\\([^)]*\\)\\s*\\{)",
+					"to": "$1 /* This method has been patched by InfLink-rs to disable native SMTC. */ return Promise.resolve();"
+				}
+			],
+			"orpheus://orpheus/pub/hybrid/app.chunk": [
+				{
+					"type": "regex",
+					"id": "inflink-disable-native-smtc-new",
 					"from": "(setSMTCEnable\\s*\\([^)]*\\)\\s*\\{)",
 					"to": "$1 /* This method has been patched by InfLink-rs to disable native SMTC. */ return Promise.resolve();"
 				}
