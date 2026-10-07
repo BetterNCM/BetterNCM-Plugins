@@ -1,0 +1,31 @@
+{
+  "$schema": "https://raw.githubusercontent.com/BetterNCM/BetterNCM-Plugins/refs/heads/master/manifest-schema.json",
+  "manifest_version": 1,
+  "name": "OBS 直播套件",
+  "slug": "OBSPlaybackSuite",
+  "version": "1.4.0",
+  "author": "LilycleHeart",
+  "author_link": "https://github.com/LilycleHeart",
+  "description": "把网易云歌曲信息、发光封面和逐字歌词带进 OBS。统一 Material You 动态配色，支持切歌过渡与独立圆角；需要 Node.js 20+。",
+  "preview": "preview.png",
+  "type": "extension",
+  "require_restart": true,
+  "requirements": [
+    "RefinedNowPlaying",
+    "MaterialYouTheme"
+  ],
+  "loadAfter": [
+    "RefinedNowPlaying",
+    "MaterialYouTheme"
+  ],
+  "ncm-version-req": ">=2.10.0 <3.0.0",
+  "ncm3-compatible": false,
+  "betterncm_version": ">=1.0.0",
+  "injects": {
+    "Main": [
+      {
+        "file": "main.js"
+      }
+    ]
+  }
+}
