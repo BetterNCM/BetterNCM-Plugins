@@ -1,0 +1,29 @@
+:root{font-family:"Microsoft YaHei UI","Microsoft YaHei",sans-serif;--obs-primary:rgb(198,191,255);--obs-primary-rgb:198,191,255;--obs-secondary:rgb(227,223,249);--obs-surface:rgb(44,42,52);--obs-raised:rgb(54,52,65);--obs-muted:rgb(176,171,193);--edge:24px;--gap:10px;--rail:8px;--cover:calc(100vh - var(--edge)*2 - var(--gap) - var(--rail))}
+*{box-sizing:border-box}html,body{width:100%;height:100%;margin:0;overflow:hidden;background:transparent}body{padding:var(--edge)}[hidden]{display:none!important}
+#card{width:100%;height:100%;display:grid;grid-template-columns:var(--cover) minmax(0,1fr);grid-template-rows:minmax(0,1fr) var(--rail);gap:var(--gap);grid-template-areas:"cover info" "progress progress";background:transparent;opacity:0;transform:translateY(5px);transition:opacity .22s ease,transform .22s ease}
+#card.is-visible{opacity:1;transform:translateY(0)}
+.art-frame{grid-area:cover;position:relative;width:100%;height:100%;border-radius:var(--obs-cover-radius,9px);background:var(--obs-surface)}
+#card.has-art .art-frame{box-shadow:0 0 0 1px rgba(255,255,255,.25),0 0 16px 4px rgba(255,255,255,.28),0 0 25px 2px rgba(var(--obs-primary-rgb),.2)}
+.art{position:relative;width:100%;height:100%;border-radius:var(--obs-cover-radius,9px);overflow:hidden;display:grid;place-items:center;background:var(--obs-raised);color:var(--obs-primary)}
+.art img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}.art svg{width:46px;height:46px;opacity:.6}
+#cover,#placeholder{opacity:1;transform:translateY(0);transition:opacity .18s ease,transform .18s ease}
+#placeholder{opacity:.6}
+.information{grid-area:info;min-width:0;min-height:0;display:grid;grid-template-rows:minmax(0,1.62fr) minmax(0,1fr);gap:9px}
+.song-heading,.timeline{min-width:0;min-height:0;background:var(--obs-surface);border-radius:var(--obs-card-radius,10px);color:var(--obs-primary)}
+.song-heading{display:flex;flex-direction:column;justify-content:center;padding:10px 15px;gap:5px;overflow:hidden}
+.title{font-size:22px;line-height:1.2;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:clip;flex-shrink:0}
+.artist{font-size:15px;line-height:1.25;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:clip;opacity:.93;flex-shrink:0}
+.title,.artist{transform:translateY(0);transition:opacity .18s ease,transform .18s ease}
+#card.track-switching #cover,#card.track-switching #placeholder,#card.track-switching .title,#card.track-switching .artist{opacity:0;transform:translateY(-8px)}
+#card.track-entering #cover,#card.track-entering #placeholder,#card.track-entering .title,#card.track-entering .artist{opacity:0;transform:translateY(8px);transition:none}
+.marquee-text{display:inline-block;width:max-content;max-width:none;white-space:nowrap;vertical-align:top;transform:translateX(0)}
+.is-overflowing .marquee-text{will-change:transform}
+.timeline{display:flex;align-items:center;justify-content:space-between;gap:15px;padding:0 15px;font-size:15px;line-height:1;font-weight:700;font-variant-numeric:tabular-nums}
+.timeline>span{flex-shrink:0}.rhythm{display:block;height:25px;min-width:0;flex:1;max-width:245px;overflow:visible}.rhythm path{stroke:currentColor;stroke-width:5;stroke-linecap:round;fill:none}
+.progress-strip{grid-area:progress;width:100%;height:var(--rail);border-radius:var(--obs-card-radius,20px);background:var(--obs-surface);overflow:hidden;position:relative}
+#fill{width:100%;height:100%;background:var(--obs-primary);border-radius:inherit;transform-origin:left;transform:scaleX(0)}
+#card.no-progress{grid-template-rows:minmax(0,1fr) var(--rail)}
+@media(max-width:450px){:root{--edge:19px}.song-heading{padding:9px 12px}.title{font-size:19px}.artist{font-size:13px}.timeline{gap:10px;padding:0 12px;font-size:12px}.rhythm{height:22px}}
+@media(max-height:160px){:root{--edge:16px;--rail:6px;--gap:8px}.information{gap:7px}.song-heading{padding:6px 11px;gap:3px}.title{font-size:17px;line-height:1.1}.artist{font-size:11px;line-height:1.1}.timeline{font-size:12px;gap:12px;padding:0 11px}.rhythm{height:20px}}
+
+#card.cover-glow-off .art-frame{box-shadow:none!important}
