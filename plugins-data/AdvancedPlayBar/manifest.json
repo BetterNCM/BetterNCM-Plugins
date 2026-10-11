@@ -3,7 +3,7 @@
     "manifest_version": 1,
     "name": "AdvancedPlayBar",
     "slug": "advanced-playbar",
-    "version": "1.1.0",
+    "version": "1.2.0",
     "author": "Fina",
     "author_link": "https://github.com/FinaFina233",
     "description": "播放栏增强：透明/毛玻璃播放栏，进度条悬停动效，全局主题色自定义。",
