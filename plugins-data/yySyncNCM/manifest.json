@@ -1,0 +1,22 @@
+{
+  "$schema": "https://raw.githubusercontent.com/BetterNCM/BetterNCM-Plugins/refs/heads/master/manifest-schema.json",
+  "manifest_version": 1,
+  "name": "yySync-NCM",
+  "slug": "yySyncNCM",
+  "version": "0.2.4",
+  "betterncm_version": ">=1.0.0",
+  "author": "Yanxxxi",
+  "author_link": "https://github.com/Yanxxxi/yySync-NCM",
+  "description": "将网易云音乐的歌曲、歌手和播放进度同步到 Steam 好友状态。支持自定义前缀、暂停显示与重启自动登录，需要 SMTC 协议支持插件（提供 InfLinkApi）。",
+  "preview": "preview.png",
+  "type": "extension",
+  "require_restart": true,
+  "ncm-version-req": ">=2.10.13",
+  "ncm3-compatible": true,
+  "requirements": ["InfLinkrs"],
+  "loadAfter": ["InfLinkrs"],
+  "native_plugin": "backend.dll",
+  "injects": {
+    "Main": [{ "file": "index.js" }]
+  }
+}
