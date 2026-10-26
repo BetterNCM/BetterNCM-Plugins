@@ -1,5 +1,5 @@
 /* ============================================================
- * PlayBarHover — 启动脚本
+ * AdvancedPlayBar — 启动脚本
  *
  * 全部逻辑都在 main.js（注入到主页面）。
  * 这个文件是 manifest 里 startup_script 指向的入口，
