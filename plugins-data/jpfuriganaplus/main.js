@@ -13,7 +13,7 @@
 
 	const LOG = '[jp-furigana-plus]';
 	// 改了实现就换一下，方便确认插件到底有没有被重新加载（JPFuriganaPlus.build）
-	const BUILD = 'standalone-1.5.1';
+	const BUILD = 'standalone-1.5.2';
 	const REPO_URL = 'https://github.com/CarrotLouis/jp-furigana';
 	const CONFIG_KEY = 'jp-furigana-plus.config';
 	// 注音算法改了就换 key，让旧缓存自然失效
@@ -1812,10 +1812,11 @@
 	function compactExternalStatus() {
 		const info = externalClient && externalClient.inspect();
 		if (!info) return '等待播放歌曲';
-		if (info.ready) return (info.source === 'local' ? '本地纠音' : info.source === 'utaten' ? 'UtaTen' : 'Uta-Net') + ' · ' + info.title + '\n' + (info.artists || []).join(' / ') + (info.edits ? '\n人工修改 ' + info.edits + ' 处' : '');
-		if (info.waitingRetry) return '获取失败，等待自动重试';
-		if (info.loading) return '正在获取外部歌词…';
-		return '暂未获取网站歌词，可手动编辑';
+		const track = info.ready ? (info.source === 'local' ? '本地纠音' : info.source === 'utaten' ? 'UtaTen' : 'Uta-Net') + ' · ' + info.title + '\n' + (info.artists || []).join(' / ') + (info.edits ? '\n人工修改 ' + info.edits + ' 处' : '') : '';
+		// Keep the real failure and retry countdown visible even when local edits
+		// or an older website cache remain usable during this request.
+		if (info.loading || info.error || !info.ready) return (track ? track + '\n' : '') + info.status;
+		return track + (info.warning ? '\n' + info.warning : '');
 	}
 
 	function buildConfigUI() {
