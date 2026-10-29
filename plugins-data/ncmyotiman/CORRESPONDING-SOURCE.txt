@@ -1,0 +1,6 @@
+Corresponding Source is available without charge:
+https://github.com/CarrotLouis/ncm-Yotiman/raw/refs/heads/store/sources/yomitan-e7334a96106a6c74e6fa75bd33a5ea1219d92712.tar.gz
+Plugin/host source: https://github.com/CarrotLouis/ncm-Yotiman/raw/refs/heads/store/sources/ncm-yotiman-0.1.9.zip
+Build and notices: https://github.com/CarrotLouis/ncm-Yotiman/tree/store
+Yomitan: GPL-3.0-or-later. See yomitan-host/yomitan/legal.html and legal-npm.html.
+The adapter is MIT; this does not relicense Yomitan.
