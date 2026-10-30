@@ -13,7 +13,7 @@
 
 	const LOG = '[jp-furigana-plus]';
 	// 改了实现就换一下，方便确认插件到底有没有被重新加载（JPFuriganaPlus.build）
-	const BUILD = 'standalone-1.5.2';
+	const BUILD = 'standalone-1.5.3';
 	const REPO_URL = 'https://github.com/CarrotLouis/jp-furigana';
 	const CONFIG_KEY = 'jp-furigana-plus.config';
 	// 注音算法改了就换 key，让旧缓存自然失效

@@ -61,6 +61,13 @@ try {
             ('proxy = ' + (Config-String $proxy)), ('url = ' + (Config-String $url)),
             ('dump-header = ' + (Config-String $headersPath)), 'header = "Accept: text/html,application/xhtml+xml"',
             'write-out = "\n%{http_code}\n%{redirect_url}"') -join "`n"
+        # UtaTen's search endpoint returns HTTP 200 with a zero-length body when
+        # the request has no site Referer. Match the public site's search form;
+        # a browser User-Agent alone does not fix it. Keep this origin constant
+        # so no playing-song, proxy or local-path data is sent in this header.
+        if (@('utaten.com','www.utaten.com').Contains(([Uri]$url).DnsSafeHost)) {
+            $curlConfig += "`n" + 'referer = "https://utaten.com/"'
+        }
         $outTask = $curlProcess.StandardOutput.ReadToEndAsync()
         $errorTask = $curlProcess.StandardError.ReadToEndAsync()
         $curlProcess.StandardInput.WriteLine($curlConfig)
