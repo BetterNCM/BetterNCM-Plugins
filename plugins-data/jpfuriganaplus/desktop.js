@@ -163,7 +163,7 @@
 			if(!cfg.desktopEnabled||!cfg.enabled){if(session||starting){stop();changed('');}return;}
 			const data=snapshot();
 			if(cfg.desktopInheritStyle!==false&&data.style&&data.style.vertical){if(session||starting)stop();changed('竖排继续使用原桌面歌词；桌面注音暂支持横排');return;}
-			if(data.nativeVisible===false){if(session||starting)stop(false);changed('打开网易云桌面歌词后显示注音');return;}
+			if(data.nativeVisible!==true){if(session||starting)stop(false);changed('打开网易云桌面歌词后显示注音');return;}
 			if(!session){open();return;}if(invalidate)revision++;update(false,data);
 			if(invalidate&&api.visibility)api.visibility(true).catch(e=>changed(e.message));
 		}

@@ -13,7 +13,7 @@
 
 	const LOG = '[jp-furigana-plus]';
 	// 改了实现就换一下，方便确认插件到底有没有被重新加载（JPFuriganaPlus.build）
-	const BUILD = 'standalone-1.6.0';
+	const BUILD = 'standalone-1.6.1';
 	const REPO_URL = 'https://github.com/CarrotLouis/jp-furigana';
 	const CONFIG_KEY = 'jp-furigana-plus.config';
 	// 注音算法改了就换 key，让旧缓存自然失效
@@ -1766,7 +1766,6 @@
 		if (typeof DEFAULTS[key] === 'boolean') value = !!value;
 		config[key] = value; saveConfig(); updateStyles();
 		if (key === 'enabled') value ? enable() : disable();
-		else if (key === 'desktopEnabled' && value) { getCurrentTrackId(); if (state.store) state.store.dispatch({type:'setting/updateSetting',payload:{showLyric:true}}); }
 		else if (key === 'externalAutoRetry') { if (externalClient) externalClient.setAutoRetry(value); }
 		else if (NEEDS_RESCAN.includes(key)) rescan();
 		notifyConfigUI();
