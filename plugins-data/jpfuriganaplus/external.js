@@ -18,12 +18,27 @@
 	const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 	function requestError(result) {
 		const status = Number(result.status) || 0, code = Number(result.curlCode) || 0;
-		const message = code === 28 ? '请求超时（curl error 28）' : status ? 'HTTP ' + status : String(result.error || '网络请求失败');
+		const causes = { 5: '无法解析代理地址', 6: '无法解析网站域名', 7: '无法连接网站或代理', 18: '网站响应未接收完整',
+			28: '请求超时', 35: 'TLS 连接失败', 60: '网站证书校验失败', 97: '代理连接失败' };
+		const message = code ? (causes[code] || '网络请求失败') + '（curl error ' + code + '）' :
+			status ? 'HTTP ' + status + (status === 403 ? '（网站拒绝访问）' : status === 429 ? '（网站请求限流）' : '') : String(result.error || '网络请求失败');
 		const error = new Error(message);
 		error.retryable = [408, 425, 429, 500, 502, 503, 504].includes(status) || [5, 6, 7, 18, 28, 35, 52, 55, 56, 92, 97].includes(code);
 		const after = String(result.retryAfter || '').trim();
 		error.retryAfterMs = /^\d+$/.test(after) ? Number(after) * 1000 : Math.max(0, (Date.parse(after) || 0) - Date.now());
 		return error;
+	}
+	function validateBody(body) {
+		if (typeof body !== 'string') throw new Error('无效的网站响应');
+		if (!body.trim()) {
+			const error = new Error('网站返回空页面（HTTP 200），无法判断是否收录此歌曲');
+			error.retryable = true;
+			throw error;
+		}
+		return body;
+	}
+	function errorText(error) {
+		return error.name === 'AbortError' ? '请求超时' : String(error.message || error);
 	}
 	function retryable(error) {
 		if (typeof error.retryable === 'boolean') return error.retryable;
@@ -76,7 +91,7 @@
 							const result = JSON.parse(raw);
 							if (!result.ok) throw requestError(result);
 							if (typeof result.body !== 'string' || !core.allowedURL(result.url)) throw new Error('无效的网站响应');
-							return result.body;
+							return validateBody(result.body);
 						}
 						await sleep(350);
 					}
@@ -127,7 +142,7 @@
 	function create(deps) {
 		let generation = 0, currentId = null, current = null, groups = [], status = '未启用外部网站';
 		let cachePath = '', source = '', lastSettings = null;
-		let cancelWait = null, loading = false, lastMetadata = null;
+		let cancelWait = null, loading = false, lastMetadata = null, lastError = '', warning = '';
 		const retryDelays = deps.retryDelays || [3000, 8000, 15000];
 		const lineCache = new Map();
 		let writes = Promise.resolve();
@@ -153,7 +168,7 @@
 		function announce(text) { status = text; if (deps.onStatus) deps.onStatus(); }
 		const alive = g => g === generation;
 		function cancelRetry() { if (cancelWait) cancelWait(); }
-		function reset() { generation++; cancelRetry(); loading = false; currentId = null; current = null; groups = []; source = ''; lineCache.clear(); }
+		function reset() { generation++; cancelRetry(); loading = false; currentId = null; current = null; groups = []; source = ''; lastError = ''; warning = ''; lineCache.clear(); }
 		function stop() { reset(); announce('未启用外部网站'); }
 		function waitRetry(ms) {
 			return new Promise(resolve => {
@@ -165,7 +180,7 @@
 			if (!lastSettings) return;
 			lastSettings.externalAutoRetry = value;
 			if (value !== 'failed') cancelRetry();
-			else if (!loading && currentId && !current && lastMetadata) return load(currentId, lastMetadata, lastSettings);
+			else if (!loading && currentId && lastError && lastMetadata) return load(currentId, lastMetadata, lastSettings, true);
 		}
 		async function directory(settings) {
 			const root = await deps.dataRoot();
@@ -176,18 +191,19 @@
 			if (!await deps.fs.mkdir(path)) throw new Error('无法创建歌词缓存目录');
 			return path.replace(/\/$/, '');
 		}
-		function accept(record, cached, g, warning = '') {
+		function accept(record, cached, g, cacheWarning = '', preserveRequest = false) {
 			if (!alive(g)) return;
+			if (!preserveRequest) { lastError = ''; warning = cacheWarning; }
 			current = record; lineCache.clear();
 			const scope = lastSettings && lastSettings.externalProvider;
 			source = scope && scope !== 'auto' && record.provider !== scope ? 'local' : record.provider;
 			groups = source === 'local' ? [] : core.prepare(record);
-			announce((cached ? '本地缓存' : '已获取') + ' · ' + (source === 'local' ? '本地人工纠音' : source === 'utaten' ? 'UtaTen 振假名' : '歌ネット罗马音') + ' · ' + record.lines.length + ' 行' + warning);
+			if (!preserveRequest) announce((cached ? '本地缓存' : '已获取') + ' · ' + (source === 'local' ? '本地人工纠音' : source === 'utaten' ? 'UtaTen 振假名' : '歌ネット罗马音') + ' · ' + record.lines.length + ' 行' + warning);
 			if (deps.onReady) deps.onReady();
 		}
 		async function load(songId, metadata, settings, force = false) {
 			reset(); const g = generation; currentId = String(songId); settings = { ...settings }; lastSettings = settings; lastMetadata = metadata;
-			if (!/^\d{1,20}$/.test(currentId)) { announce('当前歌曲没有可用的网易云 ID'); return; }
+			if (!/^\d{1,20}$/.test(currentId)) { lastError = '当前歌曲没有可用的网易云 ID'; announce(lastError); return; }
 			const id = currentId;
 			loading = true;
 			let retries = 0;
@@ -200,7 +216,8 @@
 						// Respect long server cooldowns without retaining a song's task indefinitely.
 						if (!Number.isFinite(delay) || delay > 300000) throw error;
 						retries++;
-						announce(label + '：' + error.message + '；' + Math.ceil(delay / 1000) + ' 秒后自动重试（' + retries + '/' + retryDelays.length + '）');
+						lastError = errorText(error);
+						announce(label + '：' + lastError + '；' + Math.ceil(delay / 1000) + ' 秒后自动重试（' + retries + '/' + retryDelays.length + '）');
 						if (!await waitRetry(delay) || !alive(g) || settings.externalAutoRetry !== 'failed') throw error;
 						announce(label + '：正在自动重试（' + retries + '/' + retryDelays.length + '）…');
 					}
@@ -212,13 +229,16 @@
 				const path = dir + '/' + id + '.json';
 				if (!alive(g)) return;
 				cachePath = dir;
-				if (!force && await deps.fs.exists(path)) {
+				if (await deps.fs.exists(path)) {
 					try {
 						const raw = await deps.fs.readFileText(path);
 						if (raw.length > 2000000) throw new Error('缓存过大');
 						const record = JSON.parse(raw);
 						if (core.validRecord(record, id) && (record.provider === 'local' || settings.externalProvider === 'auto' || !settings.externalProvider || settings.externalProvider === record.provider)) {
-							accept(record, true, g); return;
+							accept(record, true, g);
+							// Corrections alone are not a successful website cache. Keep them
+							// visible while making this playback's first external attempt.
+							if (!force && record.provider !== 'local') return;
 						}
 					} catch (_) { /* Invalid or partially-written cache: refetch. */ }
 				}
@@ -230,16 +250,19 @@
 				const proxy = settings.externalProxyEnabled ? validateProxy(settings.externalProxy) : '';
 				if (settings.externalProxyEnabled && !proxy) throw new Error('请填写代理地址或关闭代理');
 				const providers = settings.externalProvider === 'utaten' ? ['utaten'] : settings.externalProvider === 'utanet' ? ['utanet'] : ['utaten', 'utanet'];
-				const errors = [];
+				const failures = new Map();
 				let evidence;
 				async function findProvider(provider) {
-					const fetchDoc = async url => deps.parse(await deps.request(url, proxy, () => !alive(g)));
-					let candidates = core.searchResults(await fetchDoc(core.searchURL(provider, track)), provider);
+					const fetchDoc = async (url, stage) => {
+						try { return deps.parse(validateBody(await deps.request(url, proxy, () => !alive(g)))); }
+						catch (error) { const contextual = new Error(stage + '：' + errorText(error)); contextual.retryable = retryable(error); contextual.retryAfterMs = error.retryAfterMs; throw contextual; }
+					};
+					let candidates = core.searchResults(await fetchDoc(core.searchURL(provider, track), '搜索页面'), provider);
 					const fetched = new Map();
 					async function detail(candidate) {
 						if (fetched.has(candidate.url)) return fetched.get(candidate.url);
 						const url = provider === 'utaten' ? candidate.url : candidate.url.replace('/song/', '/global/en/lyric/');
-						const doc = await fetchDoc(url);
+						const doc = await fetchDoc(url, '歌词页面');
 						const data = provider === 'utaten' ? core.parseUtaten(doc, url) : core.parseUtanet(doc, url, candidate);
 						if (core.titleKey(data.title) !== core.titleKey(track.title)) throw new Error('歌曲页歌名与搜索结果不一致');
 						fetched.set(candidate.url, data); return data;
@@ -247,7 +270,7 @@
 					const exact = candidates.filter(c => core.matches(c, track));
 					if (exact.length === 1) { const data = await detail(exact[0]); if (core.matches(data, track)) return data; }
 					// Relax the artist only after strict matching fails; this remains one attempt.
-					if (provider === 'utaten') candidates = core.searchResults(await fetchDoc(core.searchURL(provider, track, true)), provider);
+					if (provider === 'utaten') candidates = core.searchResults(await fetchDoc(core.searchURL(provider, track, true), '仅按歌名搜索'), provider);
 					candidates = candidates.filter(c => core.titleKey(c.title) === core.titleKey(track.title));
 					if (!candidates.length) throw new Error('未找到同名歌曲');
 					if (candidates.length > 5) throw new Error('同名候选超过 5 个，未自动套用');
@@ -263,28 +286,36 @@
 					if (verified.length !== 1) throw new Error(verified.length ? '多个版本的歌词均匹配，未自动套用' : '同名歌曲的歌词片段不匹配');
 					return verified[0];
 				}
-				for (const provider of providers) {
-					if (!alive(g)) return;
-					try {
-						announce('正在查询 ' + (provider === 'utaten' ? 'UtaTen' : '歌ネット') + '，暂用网易云音译 / 词典…');
-						const data = await attempt(() => findProvider(provider), provider === 'utaten' ? 'UtaTen 获取流程' : '歌ネット获取流程');
-						if (!alive(g)) return;
-						const record = { schema: 1, songId: id, fetchedAt: new Date().toISOString(), ...data };
-						if (!core.validRecord(record, id)) throw new Error('网站歌词格式校验失败');
-						let warning = '';
+				const data = await attempt(async () => {
+					// Try the other selected website before waiting/retrying the first.
+					for (const provider of providers) {
+						if (!alive(g)) throw new Error('已取消');
+						if (failures.has(provider) && !retryable(failures.get(provider))) continue;
 						try {
-							await exclusive(async () => {
-								if (!alive(g)) return;
-								const previous = await deps.fs.exists(path) ? await deps.fs.readFileText(path) : null;
-								if (previous) try { const saved = JSON.parse(previous); if (saved.userEdits !== undefined) record.userEdits = saved.userEdits; } catch (_) {}
-								await write(path, record, previous);
-							});
-						} catch (_) { warning = '（缓存写入失败，本次仍可显示）'; }
-						accept(record, false, g, warning); return;
-					} catch (error) { errors.push((provider === 'utaten' ? 'UtaTen' : '歌ネット') + '：' + error.message); }
-				}
-				if (alive(g)) announce(errors.join('\n') + '\n继续使用网易云音译 / 词典；可手动重试');
-			} catch (error) { if (alive(g)) announce(error.message + '；继续使用网易云音译 / 词典'); }
+							announce('正在查询 ' + (provider === 'utaten' ? 'UtaTen' : '歌ネット') + '，暂用网易云音译 / 词典…');
+							const data = await findProvider(provider);
+							if (!core.validRecord({ schema: 1, songId: id, ...data }, id)) throw new Error('网站歌词格式校验失败');
+							return data;
+						} catch (error) { failures.set(provider, error); }
+					}
+					const error = new Error([...failures].map(([provider, cause]) => (provider === 'utaten' ? 'UtaTen' : '歌ネット') + '：' + errorText(cause)).join('\n'));
+					error.retryable = [...failures.values()].some(retryable);
+					error.retryAfterMs = Math.max(0, ...[...failures.values()].filter(retryable).map(e => e.retryAfterMs || 0));
+					throw error;
+				}, '获取失败');
+				if (!alive(g)) return;
+				const record = { schema: 1, songId: id, fetchedAt: new Date().toISOString(), ...data };
+				let cacheWarning = '';
+				try {
+					await exclusive(async () => {
+						if (!alive(g)) return;
+						const previous = await deps.fs.exists(path) ? await deps.fs.readFileText(path) : null;
+						if (previous) try { const saved = JSON.parse(previous); if (saved.userEdits !== undefined) record.userEdits = saved.userEdits; } catch (_) {}
+						await write(path, record, previous);
+					});
+				} catch (error) { cacheWarning = '（缓存写入失败：' + errorText(error) + '；本次仍可显示）'; }
+				accept(record, false, g, cacheWarning);
+			} catch (error) { if (alive(g)) { lastError = errorText(error); announce('获取失败：' + lastError + '\n' + (current && source !== 'local' ? '继续使用已有网站缓存' : '继续使用网易云音译 / 词典') + '；可手动重试或编辑'); } }
 			finally { if (alive(g)) { loading = false; if (deps.onStatus) deps.onStatus(); } }
 		}
 		function segments(text, mode, fromRomaji) {
@@ -331,7 +362,7 @@
 				if (!match || match.edit.reading !== anchor.reading) throw new Error('本地读音已变化，请取消后重新打开编辑框');
 				const next = edits.update(record, anchor, value);
 				await write(path, next, raw);
-				accept(next, true, g); return next;
+				accept(next, true, g, '', true); return next;
 			});
 		}
 		async function list(settings) {
@@ -361,11 +392,11 @@
 					if (deps.onReady) deps.onReady();
 				} else if (action === 'restore') {
 					const next = { ...record, userEdits: [] }; await write(path, next, raw);
-					if (selected) accept(next, true, generation);
+					if (selected) accept(next, true, generation, '', true);
 				} else throw new Error('未知管理操作');
 			});
 		}
-		return { load, stop, setAutoRetry, segments, fallbackSegments, ensureLocal, saveEdit, list, manage, directory, inspect: () => ({ songId: currentId, status, cachePath, source, loading, waitingRetry: !!cancelWait, url: source === 'local' ? '' : current && current.url, ready: !!current, title: current && current.title, artists: current && current.artists, edits: current ? edits.items(current).length : 0, settings: lastSettings }) };
+		return { load, stop, setAutoRetry, segments, fallbackSegments, ensureLocal, saveEdit, list, manage, directory, inspect: () => ({ songId: currentId, status, error: lastError, warning, cachePath, source, loading, waitingRetry: !!cancelWait, url: source === 'local' ? '' : current && current.url, ready: !!current, title: current && current.title, artists: current && current.artists, edits: current ? edits.items(current).length : 0, settings: lastSettings }) };
 	}
 	return { create, browserTransport, validateProxy, requestError };
 });
