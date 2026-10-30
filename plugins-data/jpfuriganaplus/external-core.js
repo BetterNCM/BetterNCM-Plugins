@@ -28,16 +28,31 @@
 	}
 	const key = s => indexed(String(s || ''), VARIANTS).key;
 	function titleKey(s) {
-		// Strip only trailing parenthetical labels, commonly TV/anime or album metadata.
-		return key(String(s || '').replace(/(?:\s*[（(][^()（）]*[）)])+\s*$/, ''));
+		return key(queryTitle(s));
 	}
 	function queryTitle(s) {
-		return String(s || '').normalize('NFKC').replace(/(?:\s*[（(][^()（）]*[）)])+\s*$/, '')
-			.replace(/[.…]+\s*$/, '').replace(/./gu, c => VARIANTS[c] || c).trim();
+		let title=String(s||'').normalize('NFKC').trim();
+		for(let i=0;i<4;i++){
+			const before=title;
+			let next=title.replace(/(?:\s*\([^()]*\))+\s*$/,'').replace(/\s*[【\[][^【】\[\]]*(?:feat\.?|ft\.?|cover|remix|翻唱|カバー|リミックス)[^【】\[\]]*[】\]]\s*$/i,'');
+			next=next.replace(/(?:\s+|\s*[-–—|]\s*)(?:feat(?:uring)?\.?|ft\.?)(?![a-z]).*$/i,'');
+			next=next.replace(/\s+[-–—|]\s+[^\n]*(?:\bcover\b|\bremix\b|\bremaster(?:ed)?\b|翻唱|カバー|リミックス)[^\n]*$/i,'');
+			next=next.replace(/(?:\s+|\s*[-–—|]\s*)(?:cover(?:ed)?|remix(?:ed)?|remaster(?:ed)?)(?![a-z])(?=\s*(?:$|by\b|\d|ver(?:sion)?\b|edition\b|[:–—-])).*$/i,'');
+			next=next.replace(/(?:\s+|\s*[-–—|]\s*)(?:翻唱(?:版)?|カバー|リミックス).*$/i,'').trim();
+			if(next)title=next;if(title===before)break;
+		}
+		return title.replace(/[.…]+\s*$/, '').replace(/./gu,c=>VARIANTS[c]||c).trim();
+	}
+	function utatenURL(value){
+		try{const input=String(value||'').trim();if(input.length>2048)throw new Error('URL too long');const u=new URL(input);
+			if(allowedURL(u.href)&&['utaten.com','www.utaten.com'].includes(u.hostname)&&/^\/lyric\/[a-z0-9_-]{1,128}\/?$/i.test(u.pathname))return 'https://utaten.com'+u.pathname.replace(/\/?$/,'/');
+		}catch(_){}
+		throw new Error('请输入有效的 UtaTen 歌词页链接（https://utaten.com/lyric/…/）');
 	}
 	function matches(candidate, track) {
+		const artistKeys=value=>String(value||'').split(/\s+(?:feat(?:uring)?\.?|ft\.?)(?![a-z])\s*/i).map(key).filter(Boolean);
 		return titleKey(candidate.title) === titleKey(track.title) && !!titleKey(track.title) &&
-			(track.artists || []).some(a => key(a) && (candidate.artists || []).some(b => key(a) === key(b)));
+			(track.artists || []).some(a => artistKeys(a).some(k=>(candidate.artists||[]).some(b=>artistKeys(b).includes(k))));
 	}
 	function allowedURL(value) {
 		try {
@@ -222,5 +237,5 @@
 		const characters = found.reduce((n, s) => n + s.length, 0);
 		return { hits: found.length, characters, accepted: found.length >= 2 && characters >= 24 && found.length / Math.min(8, targets.length) >= .25 };
 	}
-	return { key, titleKey, queryTitle, matches, allowedURL, searchURL, searchResults, parseUtaten, parseUtanet, validRecord, prepare, segmentsFor, kana, lyricEvidence };
+	return { key, titleKey, queryTitle, matches, allowedURL, utatenURL, searchURL, searchResults, parseUtaten, parseUtanet, validRecord, prepare, segmentsFor, kana, lyricEvidence };
 });
