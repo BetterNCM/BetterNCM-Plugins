@@ -1,7 +1,8 @@
 {
     "name": "LyricBarNext",
+    "slug": "LyricBarNext",
     "repo": "GlassesMita/LyricBarNext",
     "branch": "main",
-    "subpath": "/LyricBarNext/dist",
+    "subpath": "/",
     "author": "GlassesMita"
 }
