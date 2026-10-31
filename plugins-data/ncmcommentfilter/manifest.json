@@ -1,0 +1,20 @@
+{
+  "manifest_version": 1,
+  "name": "NCMCommentFilter",
+  "slug": "ncm-comment-filter",
+  "version": "0.2.4",
+  "betterncm_version": ">=1.3.1",
+  "ncm-version-req": ">=3.1.41 <=3.1.42",
+  "ncm3-compatible": true,
+  "author": "Hentilix",
+  "author_link": "https://github.com/Hentilix",
+  "description": "按当前账号的用户黑名单过滤专辑和单曲评论，不留空白占位",
+  "preview": "preview.jpg",
+  "type": "extension",
+  "require_restart": false,
+  "injects": {
+    "Main": [
+      { "file": "main.js" }
+    ]
+  }
+}
