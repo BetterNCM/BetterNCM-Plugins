@@ -260,6 +260,14 @@
 		return RE_CREDIT.test(String(text || ''));
 	}
 
+	// Call with original lyrics only, never translations, romaji or track metadata.
+	function hasJapaneseLyrics(lines) {
+		return Array.isArray(lines) && lines.some(line => {
+			const text = String(line && typeof line === 'object' ? line.text || '' : line || '').normalize('NFKC').trim();
+			return text && !isCreditLine(text) && !/^(?:\{|\[(?:ti|ar|al|by|offset|re|ve):)/i.test(text) && RE_HAS_KANA.test(text);
+		});
+	}
+
 	/**
 	 * 把官方 lrc 和 romalrc 按时间戳配对，得到「原文 → 音译」。
 	 * 这样查表用的是歌词文本本身，即使歌曲 id 猜错了也只是查不到、不会串词。
@@ -1070,6 +1078,7 @@
 		parseLrc,
 		lyricKey,
 		isCreditLine,
+		hasJapaneseLyrics,
 		buildRomajiMap,
 	};
 });
