@@ -1,16 +1,22 @@
 {
     "manifest_version": 1,
-    "name": "Deepseek Trans",
+    "name": "LLM Trans",
     "slug": "DSTrans",
     "fork_of": "GPTTrans",
     "author": "Mascot_N, solstice23",
-    "author_links": ["https://github.com/Mascot-N"],
-    "description": "使用 Deepseek 翻译歌词，复刻自https://github.com/solstice23",
+    "author_links": [
+        "https://github.com/Mascot-N"
+    ],
+    "description": "用任意 OpenAI 兼容接口（DeepSeek / OpenAI / 本地 Ollama…）翻译歌词，API 地址、Key、模型名都能在设置里填。改写自 GPTTrans",
     "preview": "preview.png",
-    "version": "0.5.0",
+    "version": "0.6.0",
     "type": "extension",
-    "requirements": ["RefinedNowPlaying"],
-    "loadAfter": ["RefinedNowPlaying"],
+    "requirements": [
+        "RefinedNowPlaying"
+    ],
+    "loadAfter": [
+        "RefinedNowPlaying"
+    ],
     "betterncm_version": ">=1.0.0",
     "injects": {
         "Main": [
