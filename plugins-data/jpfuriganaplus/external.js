@@ -168,8 +168,14 @@
 		function announce(text) { status = text; if (deps.onStatus) deps.onStatus(); }
 		const alive = g => g === generation;
 		function cancelRetry() { if (cancelWait) cancelWait(); }
-		function reset() { generation++; cancelRetry(); loading = false; currentId = null; current = null; groups = []; source = ''; lastError = ''; warning = ''; lineCache.clear(); }
+		function reset() { generation++; cancelRetry(); loading = false; currentId = null; current = null; groups = []; originalLines = null; source = ''; lastError = ''; warning = ''; lineCache.clear(); }
 		function stop() { reset(); announce('未启用外部网站'); }
+		function cancelFetch() {
+			if (!loading) return false;
+			generation++; cancelRetry(); loading = false; lastError = '';
+			announce('已停止本轮网站获取，可进入编辑；下次播放或重新获取时仍会尝试网站');
+			return true;
+		}
 		function waitRetry(ms) {
 			return new Promise(resolve => {
 				const timer = setTimeout(() => { cancelWait = null; resolve(true); }, ms);
@@ -191,13 +197,15 @@
 			if (!await deps.fs.mkdir(path)) throw new Error('无法创建歌词缓存目录');
 			return path.replace(/\/$/, '');
 		}
+		let originalLines = null;
+		const originals = () => deps.originalLines ? deps.originalLines(currentId) : null;
 		function accept(record, cached, g, cacheWarning = '', preserveRequest = false) {
 			if (!alive(g)) return;
 			if (!preserveRequest) { lastError = ''; warning = cacheWarning; }
 			current = record; lineCache.clear();
 			const scope = lastSettings && lastSettings.externalProvider;
 			source = scope && scope !== 'auto' && record.provider !== scope ? 'local' : record.provider;
-			groups = source === 'local' ? [] : core.prepare(record);
+			originalLines=originals();groups = source === 'local' ? [] : core.prepare(record,originalLines);
 			if (!preserveRequest) announce((cached ? '本地缓存' : '已获取') + ' · ' + (source === 'local' ? '本地人工纠音' : source === 'utaten' ? 'UtaTen 振假名' : '歌ネット罗马音') + ' · ' + record.lines.length + ' 行' + warning);
 			if (deps.onReady) deps.onReady();
 		}
@@ -357,6 +365,8 @@
 		}
 		function segments(text, mode, fromRomaji) {
 			if (!current || source === 'local') return null;
+			const next=originals();
+			if(next!==originalLines){originalLines=next;groups=core.prepare(current,originalLines);lineCache.clear();}
 			const k = mode + '|' + text;
 			if (!lineCache.has(k)) {
 				if (lineCache.size > 1000) lineCache.clear();
@@ -369,7 +379,9 @@
 			return edits.annotate({ ...current, provider: 'local', url: '' }, text, segments, mode);
 		}
 		async function ensureLocal(songId, metadata, settings) {
-			if (current && currentId === songId) return;
+			if (loading) throw new Error('正在获取网站注音，请等待完成，或主动停止获取后编辑');
+			if (current && currentId === songId && lastSettings && lastSettings.externalProvider === settings.externalProvider) return;
+			const previousError = currentId === songId ? lastError : '';
 			reset(); const g = generation; currentId = songId; lastSettings = { ...settings };
 			const dir = await directory(settings), path = dir + '/' + songId + '.json';
 			if (!/^\d{1,20}$/.test(songId)) throw new Error('无效歌曲 ID');
@@ -384,6 +396,10 @@
 					await write(path, record, null);
 				}
 				cachePath = dir; accept(record, true, g);
+				if (record.provider === 'local') {
+					lastError = previousError;
+					announce((previousError ? '网站获取失败：' + previousError + '\n' : '') + '本地纠音记录尚无网站注音；可点“重新获取当前歌曲”获取，人工修改会保留');
+				}
 			});
 		}
 		async function saveEdit(anchor, value, fromRomaji, fallback) {
@@ -394,7 +410,7 @@
 				const { raw, record } = await read(path, anchor.songId);
 				const local = anchor.provider === 'local';
 				const baseline = edits.annotate(local ? { ...record, provider: 'local', url: '' } : record, anchor.line,
-					local ? fallback(anchor.line) : core.segmentsFor(anchor.line, core.prepare(record), 'hiragana', fromRomaji), 'hiragana');
+					local ? fallback(anchor.line) : core.segmentsFor(anchor.line, core.prepare(record,originals()), 'hiragana', fromRomaji), 'hiragana');
 				const match = baseline && baseline.find(s => s.edit && edits.key(s.edit) === edits.key(anchor));
 				if (!match || match.edit.reading !== anchor.reading) throw new Error('本地读音已变化，请取消后重新打开编辑框');
 				const next = edits.update(record, anchor, value);
@@ -424,8 +440,11 @@
 				if (action === 'read') return record;
 				const selected = currentId === songId && cachePath === dir;
 				if (action === 'delete') {
-					if (selected) stop();
 					if (!await deps.fs.remove(path)) throw new Error('删除失败');
+					if (selected) {
+						reset(); announce('当前歌曲缓存已删除，等待重新获取');
+						if (deps.onInvalidated) deps.onInvalidated(songId);
+					}
 					if (deps.onReady) deps.onReady();
 				} else if (action === 'restore') {
 					const next = { ...record, userEdits: [] }; await write(path, next, raw);
@@ -433,7 +452,7 @@
 				} else throw new Error('未知管理操作');
 			});
 		}
-		return { load, setSource, stop, setAutoRetry, segments, fallbackSegments, ensureLocal, saveEdit, list, manage, directory, inspect: () => ({ songId: currentId, status, error: lastError, warning, cachePath, source, loading, waitingRetry: !!cancelWait, url: source === 'local' ? '' : current && current.url, manualUrl:current&&current.manualSource&&current.manualSource.url||'', ready: !!current, title: current && current.title, artists: current && current.artists, edits: current ? edits.items(current).length : 0, settings: lastSettings }) };
+		return { load, setSource, stop, cancelFetch, setAutoRetry, segments, fallbackSegments, ensureLocal, saveEdit, list, manage, directory, inspect: () => ({ requestId:generation, songId: currentId, status, error: lastError, warning, cachePath, source, loading, waitingRetry: !!cancelWait, url: source === 'local' ? '' : current && current.url, manualUrl:current&&current.manualSource&&current.manualSource.url||'', ready: !!current, title: current && current.title, artists: current && current.artists, edits: current ? edits.items(current).length : 0, settings: lastSettings }) };
 	}
 	return { create, browserTransport, validateProxy, requestError };
 });
