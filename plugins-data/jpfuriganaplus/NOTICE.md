@@ -1,6 +1,6 @@
 # NOTICE
 
-LICENSE 里的 MIT 覆盖本插件自行编写的 JavaScript、PowerShell 源文件、manifest 与构建工具。
+LICENSE 里的 MIT 覆盖本插件自行编写的 JavaScript、PowerShell、C# 源文件、manifest 与构建工具。
 本插件分发时还打包了以下第三方组件，它们各自的许可另算，重新分发时必须保留这些声明。
 
 ## kuromoji.js

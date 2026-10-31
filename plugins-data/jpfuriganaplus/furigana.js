@@ -48,9 +48,10 @@
 
 	// IPADIC mostly uses modern Japanese forms. Normalize only for dictionary lookup;
 	// all mappings preserve UTF-16 length, and original glyphs/positions are restored.
-	const LOOKUP_VARIANTS = { 會: '会', 戀: '恋', 凜: '凛', 墮: '堕', 體: '体', 聲: '声', 變: '変', 歸: '帰', 萬: '万', 盡: '尽', 驅: '駆' };
+	const LOOKUP_VARIANTS = Object.freeze({ 會: '会', 戀: '恋', 凜: '凛', 墮: '堕', 體: '体', 聲: '声', 變: '変', 歸: '帰', 萬: '万', 盡: '尽', 驅: '駆' });
+	const LOOKUP_VARIANT_PATTERN = new RegExp('[' + Object.keys(LOOKUP_VARIANTS).join('') + ']','g');
 	function tokenizeForReading(tokenizer, text) {
-		const lookup = text.replace(/[會戀凜墮體聲變歸萬盡驅]/g, c => LOOKUP_VARIANTS[c]);
+		const lookup = text.replace(LOOKUP_VARIANT_PATTERN, c => LOOKUP_VARIANTS[c]);
 		const tokens = tokenizer.tokenize(lookup);
 		if (lookup === text) return tokens;
 		if (tokens.map(t => t.surface_form).join('') !== lookup) return tokenizer.tokenize(text);
@@ -569,7 +570,7 @@
 				RE_ALL_KANJI.test(split[end].text)) end++;
 			if (end === i) { output.push(split[i++]); continue; }
 			const run = split.slice(i, end);
-			if (run.some(s => s.unknown)) output.push({ text: run.map(s => s.text).join(''), at: run[0].at, unknown: true });
+			if (run.some(s => s.unknown)) output.push({ text: run.map(s => s.text).join(''), at: run[0].at, unknown: true, fallback: run });
 			else output.push(...run);
 			i = end;
 		}
@@ -599,7 +600,6 @@
 	function fillFromReading(dictSegments, reading, parens, latin) {
 		// 复制一份，别改到调用方缓存里的词典结果
 		let segs = copySegments(dictSegments, parens.flat());
-		const hasUnknown = segs.some(s => s.unknown);
 		// 音译把数字原样留着（10匹 → 10 ppi ki）时，「10匹」拆回 数字 / 助数词：
 		// 数字去对占位符，助数词照常进空档。对完再合回去，读音用词典的
 		if (latin) {
@@ -627,7 +627,7 @@
 			if (gap) groups.push(gap);
 			gap = null;
 		};
-		for (const seg of segs) {
+		for (const [index, seg] of segs.entries()) {
 			if (seg.skip) continue;
 			if (seg.fixed) {
 				// 作词者自带的注音：当锚点，不改
@@ -642,8 +642,15 @@
 				continue;
 			}
 			const unreadable = unreadableRe.test(seg.text);
-			// When recovering an unknown word, don't let it swallow the following っ.
-			const anchor = hasUnknown ? looseAnchorPattern(seg.text, latin).replace(/ッ\?/g, 'ッ') : looseAnchorPattern(seg.text, latin);
+			// Only anchors beside an unknown gap need a mandatory sokuon. Keep the
+			// original optional spelling for unrelated, dictionary-backed phrases.
+			let adjacentUnknown = !!(gap && gap.items.some(s => s.unknown));
+			for (let next = index + 1; !adjacentUnknown && next < segs.length; next++) {
+				const item = segs[next]; if (item.skip) continue;
+				if (item.fixed || !item.rt && !item.unknown && looseAnchorPattern(item.text, latin)) break;
+				if (item.unknown) adjacentUnknown = true;
+			}
+			const anchor = adjacentUnknown ? looseAnchorPattern(seg.text, latin).replace(/ッ\?/g, 'ッ') : looseAnchorPattern(seg.text, latin);
 			if (!anchor) {
 				if (unreadable) openGap().bad = true;
 				if (gap) gap.items.push(seg);
@@ -703,7 +710,10 @@
 		});
 		if (!usedOfficial) return null; // 一段都没用上，结果等同词典
 
-		return segs.filter((s) => !s.numTail).map((s) => stripSegment(s.numHead || s));
+		return segs.filter((s) => !s.numTail).flatMap((s) => {
+			const segment = s.numHead || s;
+			return segment.unknown && !segment.rt && segment.fallback ? segment.fallback.map(stripSegment) : [stripSegment(segment)];
+		});
 	}
 
 	/** 去掉内部用的字段，只留对外的 text / rt / at / fixed / hidden */
@@ -1063,6 +1073,7 @@
 
 	return {
 		KANJI_RANGE: KANJI,
+		LOOKUP_VARIANTS,
 		hasKanji: (s) => RE_HAS_KANJI.test(s),
 		hasKana: (s) => RE_HAS_KANA.test(s),
 		toHiragana,
