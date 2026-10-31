@@ -1,0 +1,33 @@
+{
+    "manifest_version": 1,
+    "name": "LyricBarNext",
+    "slug": "LyricBarNext",
+    "author": "GlassesMita",
+    "author_links": [
+        "https://github.com/GlassesMita"
+    ],
+    "description": "重新设计的软件内词栏（LyricBar 与 LyricBarBlur 合并版，深度可定制、跟随主题，歌词来源可选 RNPNext 或官方解析，适配网易云音乐 3.x）",
+    "preview": "preview.jpg",
+    "version": "1.2.0",
+    "type": "extension",
+    "requirements": [],
+    "loadAfter": [
+        "RefinedNowPlayingNext"
+    ],
+    "incompatible": [
+        "LyricBar",
+        "LyricBarBlur"
+    ],
+    "ncm-version-req": "> 3.1.11",
+    "ncm3-compatible": true,
+    "betterncm_version": ">=1.0.0",
+    "injects": {
+        "Main": [
+            {
+                "file": "main.js"
+            }
+        ]
+    },
+    "license": "GPL-3.0-or-later",
+    "fork_of": "LyricBar"
+}
