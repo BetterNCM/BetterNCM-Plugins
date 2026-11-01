@@ -28,7 +28,7 @@
 			.fg-edit-ui [role=alert] { color:#ffb4ab; white-space:pre-wrap; }
 			.fg-edit-bar { position:fixed; z-index:2147483000; top:12px; left:50%; transform:translateX(-50%); padding:8px 12px; max-width:80vw; display:flex; gap:10px; align-items:center; }
 			.fg-edit-bar[hidden] { display:none; }
-			.fg-editor-pop { position:fixed; z-index:2147483100; padding:8px; width:280px; max-width:95vw; }
+			.fg-editor-pop { position:fixed; z-index:2147483100; padding:8px; width:280px; max-width:95vw; max-height:calc(100vh - 16px); overflow-y:auto; }
 			.fg-editor-pop input { display:block; width:100%; margin:4px 0; user-select:text; }
 			.fg-editor-pop [data-details] { display:none; } .fg-editor-pop.focused [data-details] { display:block; }
 			.fg-editor-pop .fg-buttons { display:flex; gap:5px; flex-wrap:wrap; margin-top:8px; }
@@ -64,9 +64,18 @@
 		function position() {
 			if (!popup || !popup.holder.isConnected) return;
 			const rect = (popup.holder.querySelector('.fg-rt') || popup.holder).getBoundingClientRect();
-			const box = popup.el.getBoundingClientRect();
+			const word = popup.holder.getBoundingClientRect(), gap = 12, margin = 8;
+			// The popup's bottom, including expanded controls, stays above the reading.
+			// Flip below the whole word when the viewport has too little room above.
+			popup.el.style.maxHeight = '';
+			let box = popup.el.getBoundingClientRect();
+			const top = Math.min(rect.top, word.top), bottom = Math.max(rect.bottom, word.bottom);
+			const above = Math.max(0, top - gap - margin), below = Math.max(0, win.innerHeight - bottom - gap - margin);
+			const useAbove = box.height <= above || box.height > below && above >= below;
+			const space = useAbove ? above : below;
+			if (space > 0 && box.height > space) { popup.el.style.maxHeight = space + 'px'; box = popup.el.getBoundingClientRect(); }
 			popup.el.style.left = Math.max(8, Math.min(win.innerWidth - box.width - 8, rect.left + rect.width / 2 - box.width / 2)) + 'px';
-			popup.el.style.top = Math.max(8, Math.min(win.innerHeight - box.height - 8, rect.top - 12)) + 'px';
+			popup.el.style.top = Math.max(margin, Math.min(win.innerHeight - box.height - margin, useAbove ? top - box.height - gap : bottom + gap)) + 'px';
 		}
 		async function apply(restore = false) {
 			const p = popup; if (!p || p.saving) return;
@@ -75,7 +84,7 @@
 			try {
 				await api.save(p.anchor, restore ? null : p.input.value);
 				p.saving = false; closePopup(false); message(restore ? '已恢复原始读音' : '已保存到本曲 JSON');
-			} catch (e) { p.error.textContent = e.message; message('保存失败，输入仍保留'); }
+			} catch (e) { p.error.textContent = e.message; position(); message('保存失败，输入仍保留'); }
 			finally { p.saving = false; for (const b of p.el.querySelectorAll('button')) b.disabled = false; }
 		}
 		function open(holder, focus) {
@@ -85,7 +94,7 @@
 			if (popup && (popup.saving || dirty() || popup.el.contains(doc.activeElement))) return;
 			closePopup(false);
 			const el = doc.createElement('div'); el.className = 'fg-edit-ui fg-editor-pop'; el.setAttribute('role', 'dialog'); el.setAttribute('aria-label', '编辑注音');
-			el.innerHTML = '<strong data-word></strong><input data-reading aria-label="修正注音" maxlength="100" autocomplete="off" spellcheck="false"><div data-details><label>原始注音<input data-original aria-label="原始注音" readonly></label><div class="fg-buttons"><button data-apply>应用</button><button data-cancel>取消</button><button data-restore>恢复原注音</button></div><div role="alert"></div></div>';
+			el.innerHTML = '<strong data-word></strong><input data-reading aria-label="修正注音" maxlength="1000" autocomplete="off" spellcheck="false"><div data-details><label>原始注音<input data-original aria-label="原始注音" readonly></label><div class="fg-buttons"><button data-apply>应用</button><button data-cancel>取消</button><button data-restore>恢复原注音</button></div><div role="alert"></div></div>';
 			el.querySelector('[data-word]').textContent = anchor.text;
 			const input = el.querySelector('[data-reading]'); input.value = anchor.reading;
 			el.querySelector('[data-original]').value = anchor.original;

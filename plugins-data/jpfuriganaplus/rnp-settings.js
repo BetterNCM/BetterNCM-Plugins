@@ -18,6 +18,7 @@
 			.rnp-group[data-tab="jp-furigana-plus"] [hidden] { display:none !important; }
 			.rnp-group[data-tab="jp-furigana-plus"] .fg-rnp-subtitle { font-size:18px; opacity:.6; margin:20px 0; }
 			.rnp-group[data-tab="jp-furigana-plus"] [data-error] { color:#ffb4ab; }
+			.rnp-group[data-tab="jp-furigana-plus"] .fg-edit-interrupt {color:#ef7777 !important;line-height:1.5;}
 		`;
 		doc.head.append(style);
 		function mount(menu) {
@@ -44,10 +45,11 @@
 				'<div class="fg-rnp-subtitle">兼容</div>' + checkbox('karaoke', '逐字歌词模式') + checkbox('onlyFirstLine', '只给原文注音') +
 				checkbox('skipCredits', '跳过制作信息行') + checkbox('skipNoKanaLines', '跳过没有假名的行') + '<p class="fg-rnp-note" role="alert" data-error></p>';
 			lyricTab.after(tab); lyricGroup.after(group);
+			const sliderDrafts = new Map();
 			function refresh() {
 				const config = api.config(), info = api.status();
 				for (const el of group.querySelectorAll('[data-key]')) {
-					const value = config[el.dataset.key];
+					const value = sliderDrafts.has(el.dataset.key) ? sliderDrafts.get(el.dataset.key) : config[el.dataset.key];
 					if (el.type === 'checkbox') el.checked = !!value;
 					else {
 						el.value = value;
@@ -74,15 +76,18 @@
 				group.querySelector('[data-action="source"]').disabled = !info.canOpen;
 				group.querySelector('[data-action="assign"]').disabled = !info.canAssign;
 				group.querySelector('[data-action="edit"]').disabled = !info.editing && !info.canEdit;
-				group.querySelector('[data-action="edit"]').textContent = info.editing ? '退出编辑模式' : '进入编辑模式';
+				group.querySelector('[data-action="edit"]').textContent = info.editText || (info.editing ? '退出编辑模式' : '进入编辑模式');
+				group.querySelector('[data-action="edit"]').classList.toggle('fg-edit-interrupt',!!info.editWarning);
 			}
 			function commit(key, value) {
+				sliderDrafts.delete(key);
 				const error = group.querySelector('[data-error]');
 				try { api.set(key, value); error.textContent = ''; } catch (e) { error.textContent = e.message; }
 				refresh();
 			}
 			for (const input of group.querySelectorAll('[data-key]')) {
-				input.addEventListener(input.type === 'range' ? 'input' : 'change', () => commit(input.dataset.key, input.type === 'checkbox' ? input.checked : Number(input.value)));
+				if (input.type === 'range') input.addEventListener('input', () => { sliderDrafts.set(input.dataset.key, Number(input.value)); refresh(); });
+				input.addEventListener('change', () => commit(input.dataset.key, input.type === 'checkbox' ? input.checked : Number(input.value)));
 			}
 			group.addEventListener('click', event => {
 				const button = event.target.closest('button'); if (!button || button.disabled) return;

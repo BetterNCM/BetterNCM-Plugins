@@ -7,7 +7,7 @@
 	const canonical = value => core.kana(value, 'hiragana');
 	function reading(value) {
 		const text = String(value).trim().normalize('NFKC');
-		if (!/^[ぁ-ゖァ-ヶー]{1,100}$/.test(text)) throw new Error('请输入 1–100 个平假名或片假名（可含长音符）');
+		if (!/^[ぁ-ゖァ-ヶー]{1,1000}$/.test(text)) throw new Error('请输入 1–1000 个平假名或片假名（可含长音符）');
 		return canonical(text);
 	}
 	const key = a => JSON.stringify([a.provider, a.url, a.line, a.start, a.text, a.original]);
@@ -15,8 +15,8 @@
 		return a && (a.provider === 'local' ? a.url === '' : ['utaten', 'utanet'].includes(a.provider) && core.allowedURL(a.url)) &&
 			typeof a.line === 'string' && a.line.length <= 12000 && Number.isInteger(a.start) && a.start >= 0 &&
 			typeof a.text === 'string' && a.text.length > 0 && a.line.slice(a.start, a.start + a.text.length) === a.text &&
-			typeof a.original === 'string' && /^[ぁ-ゖァ-ヶー]{0,100}$/.test(a.original) &&
-			typeof a.reading === 'string' && /^[ぁ-ゖァ-ヶー]{1,100}$/.test(a.reading);
+			typeof a.original === 'string' && /^[ぁ-ゖァ-ヶー]{0,12000}$/.test(a.original) &&
+			typeof a.reading === 'string' && /^[ぁ-ゖァ-ヶー]{1,1000}$/.test(a.reading);
 	}
 	const items = record => Array.isArray(record.userEdits) ? record.userEdits.filter(valid) : [];
 	function annotate(record, text, segments, mode) {
