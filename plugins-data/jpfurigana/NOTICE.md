@@ -1,14 +1,13 @@
 # NOTICE
 
-LICENSE 里的 MIT 只覆盖本插件自身的代码（main.js / furigana.js / manifest.json / tools/）。
+LICENSE 里的 MIT 覆盖本插件自行编写的 JavaScript 源文件、manifest 与构建工具。
 本插件分发时还打包了以下第三方组件，它们各自的许可另算，重新分发时必须保留这些声明。
 
 ## kuromoji.js
 
 - 版本：0.1.2　许可：Apache License 2.0（全文见 LICENSE-kuromoji.txt）
 - 上游：https://github.com/takuyaa/kuromoji.js
-- 本仓库中的 kuromoji.js **经过修改**，改动内容和复现方式见 tools/patch-kuromoji.js
-  与 README.md 的「重新生成 kuromoji.js」一节。
+- 本仓库中的 kuromoji.js **经过修改**，改动内容和复现方式见 tools/patch-kuromoji.js。
 
 ## IPADIC 词典（dict/*.dat.gz）
 

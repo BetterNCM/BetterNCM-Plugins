@@ -18,6 +18,7 @@
 	// 汉字（含「々」「〇」和兼容区），不含假名
 	const KANJI = '々〇一-鿿㐀-䶿豈-﫿';
 	const RE_HAS_KANJI = new RegExp('[' + KANJI + ']');
+	const RE_ALL_KANJI = new RegExp('^[' + KANJI + ']+$');
 	const RE_KANJI_HEAD = new RegExp('^[' + KANJI + ']+');
 	const RE_NOT_KANJI_HEAD = new RegExp('^[^' + KANJI + ']+');
 	// 平假名 + 片假名 + 长音符
@@ -43,6 +44,23 @@
 		return s.replace(/[ぁ-ゖ]/g, (c) =>
 			String.fromCharCode(c.charCodeAt(0) + 0x60)
 		);
+	}
+
+	// IPADIC mostly uses modern Japanese forms. Normalize only for dictionary lookup;
+	// all mappings preserve UTF-16 length, and original glyphs/positions are restored.
+	const LOOKUP_VARIANTS = Object.freeze({ 會: '会', 戀: '恋', 凜: '凛', 墮: '堕', 體: '体', 聲: '声', 變: '変', 歸: '帰', 萬: '万', 盡: '尽', 驅: '駆' });
+	const LOOKUP_VARIANT_PATTERN = new RegExp('[' + Object.keys(LOOKUP_VARIANTS).join('') + ']','g');
+	function tokenizeForReading(tokenizer, text) {
+		const lookup = text.replace(LOOKUP_VARIANT_PATTERN, c => LOOKUP_VARIANTS[c]);
+		const tokens = tokenizer.tokenize(lookup);
+		if (lookup === text) return tokens;
+		if (tokens.map(t => t.surface_form).join('') !== lookup) return tokenizer.tokenize(text);
+		let offset = 0;
+		return tokens.map(token => {
+			const surface = text.slice(offset, offset + token.surface_form.length);
+			offset += token.surface_form.length;
+			return { ...token, surface_form: surface };
+		});
 	}
 
 	function escapeRe(s) {
@@ -243,6 +261,14 @@
 		return RE_CREDIT.test(String(text || ''));
 	}
 
+	// Call with original lyrics only, never translations, romaji or track metadata.
+	function hasJapaneseLyrics(lines) {
+		return Array.isArray(lines) && lines.some(line => {
+			const text = String(line && typeof line === 'object' ? line.text || '' : line || '').normalize('NFKC').trim();
+			return text && !isCreditLine(text) && !/^(?:\{|\[(?:ti|ar|al|by|offset|re|ve):)/i.test(text) && RE_HAS_KANA.test(text);
+		});
+	}
+
 	/**
 	 * 把官方 lrc 和 romalrc 按时间戳配对，得到「原文 → 音译」。
 	 * 这样查表用的是歌词文本本身，即使歌曲 id 猜错了也只是查不到、不会串词。
@@ -374,6 +400,31 @@
 			if (!parts[i].re && !parts[i].full) out.push(reading.substr(p, len));
 			p += len;
 		}
+		// With no dictionary reading, length preference is not evidence. Accept an
+		// unknown gap only if every feasible full-line alignment gives it the same
+		// reading. Known gaps retain the original dictionary-distance algorithm.
+		out.unknownAmbiguous = new Set();
+		if (parts.some(part => part.unknown)) {
+			let reachable = new Set([0]), gapIndex = 0;
+			for (let i = 0; i < parts.length; i++) {
+				const part = parts[i], next = new Set(), values = new Set();
+				for (const p of reachable) {
+					let lengths = [];
+					if (part.re) { part.re.lastIndex = p; const m = part.re.exec(reading); if (m) lengths = [m[0].length]; }
+					else for (let len = part.full ? 0 : 1; p + len <= n; len++) {
+						if (!part.full || part.full.test(reading.substr(p, len))) lengths.push(len);
+					}
+					for (const len of lengths) {
+						if (best[i + 1][p + len] === Infinity) continue;
+						next.add(p + len);
+						if (part.unknown) values.add(reading.substr(p, len));
+					}
+				}
+				if (part.unknown && values.size !== 1) out.unknownAmbiguous.add(gapIndex);
+				if (!part.re && !part.full) gapIndex++;
+				reachable = next;
+			}
+		}
 		return out;
 	}
 
@@ -383,6 +434,9 @@
 	 */
 	function distributeReading(items, capture) {
 		if (items.length === 1) return [capture];
+		// Unknown characters have no dictionary length to split on. A contiguous
+		// kanji run is merged by readingSlots; separate unknown words remain uncertain.
+		if (items.some(it => it.unknown)) return null;
 
 		const lens = items.map((it) => toKatakana(it.rt).length);
 		const total = lens.reduce((a, b) => a + b, 0);
@@ -475,6 +529,7 @@
 		if (!RE_HAS_KANJI.test(text) || !dictSegments || !dictSegments.length) return null;
 		const kanaFn = opts.kana === 'katakana' ? toKatakana : toHiragana;
 		reading = toKatakana(reading);
+		const slots = readingSlots(dictSegments);
 
 		// 作词者自带注音的括号已经是 hidden 片段，不算在内
 		const masked = dictSegments.map((s) => (s.hidden ? ' '.repeat(s.text.length) : s.text)).join('');
@@ -482,13 +537,44 @@
 
 		for (const skipParen of parens.length ? [false, true] : [false]) {
 			for (const latin of reading.includes(UNKNOWN) ? [true, false] : [false]) {
-				const segs = fillFromReading(dictSegments, reading, skipParen ? parens : [], latin);
+				const segs = fillFromReading(slots, reading, skipParen ? parens : [], latin);
 				if (!segs) continue;
 				for (const s of segs) if (s.rt) s.rt = kanaFn(toKatakana(s.rt));
 				return segs;
 			}
 		}
 		return null;
+	}
+
+	/** Unknown kanji still consume the supplied reading; do not treat them as kana.
+	 * Keep known word boundaries, but merge a contiguous run containing an unknown
+	 * character so that 出 + 會 can receive であ without inventing an internal split.
+	 */
+	function readingSlots(segments) {
+		const split = []; let offset = 0;
+		for (const s of segments) {
+			if (s.rt || s.hidden || s.fixed) split.push({ ...s });
+			else {
+				let at = offset;
+				for (const run of splitRuns(s.text)) {
+					split.push(run.kanji ? { text: run.text, at, unknown: true } : { text: run.text });
+					at += run.text.length;
+				}
+			}
+			offset += s.text.length;
+		}
+		const output = [];
+		for (let i = 0; i < split.length;) {
+			let end = i;
+			while (end < split.length && !split[end].hidden && !split[end].fixed &&
+				RE_ALL_KANJI.test(split[end].text)) end++;
+			if (end === i) { output.push(split[i++]); continue; }
+			const run = split.slice(i, end);
+			if (run.some(s => s.unknown)) output.push({ text: run.map(s => s.text).join(''), at: run[0].at, unknown: true, fallback: run });
+			else output.push(...run);
+			i = end;
+		}
+		return output;
 	}
 
 	/**
@@ -532,8 +618,7 @@
 
 		// 用「非空锚点」把 segs 切成若干待填的空档。纯标点/空格锚点是空的，
 		// 并进相邻空档一起处理，而不是像行级对齐那样直接放弃。
-		// 词典读不出的汉字（简体字「背负」的负）、英文、数字在音译里也占读音，
-		// 长度没法估，挨着它们的空档都分不准，标成 bad 留给词典
+		// 未识别的英文/数字仍保持保守回退；未知汉字已经由 readingSlots 单独标出。
 		const groups = [];
 		let gap = null;
 		let nextBad = false;
@@ -542,7 +627,7 @@
 			if (gap) groups.push(gap);
 			gap = null;
 		};
-		for (const seg of segs) {
+		for (const [index, seg] of segs.entries()) {
 			if (seg.skip) continue;
 			if (seg.fixed) {
 				// 作词者自带的注音：当锚点，不改
@@ -551,13 +636,21 @@
 				nextBad = false;
 				continue;
 			}
-			if (seg.rt) {
+			if (seg.rt || seg.unknown) {
 				openGap().items.push(seg);
 				nextBad = false;
 				continue;
 			}
 			const unreadable = unreadableRe.test(seg.text);
-			const anchor = looseAnchorPattern(seg.text, latin);
+			// Only anchors beside an unknown gap need a mandatory sokuon. Keep the
+			// original optional spelling for unrelated, dictionary-backed phrases.
+			let adjacentUnknown = !!(gap && gap.items.some(s => s.unknown));
+			for (let next = index + 1; !adjacentUnknown && next < segs.length; next++) {
+				const item = segs[next]; if (item.skip) continue;
+				if (item.fixed || !item.rt && !item.unknown && looseAnchorPattern(item.text, latin)) break;
+				if (item.unknown) adjacentUnknown = true;
+			}
+			const anchor = adjacentUnknown ? looseAnchorPattern(seg.text, latin).replace(/ッ\?/g, 'ッ') : looseAnchorPattern(seg.text, latin);
 			if (!anchor) {
 				if (unreadable) openGap().bad = true;
 				if (gap) gap.items.push(seg);
@@ -587,8 +680,9 @@
 				);
 				continue;
 			}
-			if (!g.bad && !g.items.some((it) => it.rt)) continue; // 只有标点，不占读音
-			parts.push({ want: g.items.reduce((n, it) => n + (it.rt ? toKatakana(it.rt).length : 0), 0) || 1 });
+			if (!g.bad && !g.items.some((it) => it.rt || it.unknown)) continue; // 只有标点，不占读音
+			parts.push({ want: g.items.reduce((n, it) => n + (it.rt ? toKatakana(it.rt).length : it.unknown ? 1 : 0), 0) || 1,
+				unknown: g.items.some(it => it.unknown) });
 			gaps.push(g);
 		}
 		if (!gaps.length) return null;
@@ -599,19 +693,27 @@
 		let usedOfficial = false;
 		gaps.forEach((g, i) => {
 			// 分到占位符的空档说明英文/数字没对上，这段读音不可信
-			if (g.bad || captures[i].includes(UNKNOWN)) return;
-			const items = g.items.filter((it) => it.rt);
+			if (g.bad || captures[i].includes(UNKNOWN) || captures.unknownAmbiguous.has(i)) return;
+			const items = g.items.filter((it) => it.rt || it.unknown);
 			const readings = distributeReading(items, captures[i]);
 			if (!readings) return; // 分不开，这一段保留词典读音
 			items.forEach((it, k) => {
-				if (!plausibleOfficial(it.text, toKatakana(it.rt), readings[k])) return;
-				it.rt = restoreFromDict(it.rt, readings[k]);
+				if (it.unknown) {
+					if (!/^[ァ-ヺーｰ]+$/.test(readings[k]) || readings[k].length > Math.max(12, it.text.length * 6)) return;
+					it.rt = readings[k];
+				} else {
+					if (!plausibleOfficial(it.text, toKatakana(it.rt), readings[k])) return;
+					it.rt = restoreFromDict(it.rt, readings[k]);
+				}
 				usedOfficial = true;
 			});
 		});
 		if (!usedOfficial) return null; // 一段都没用上，结果等同词典
 
-		return segs.filter((s) => !s.numTail).map((s) => stripSegment(s.numHead || s));
+		return segs.filter((s) => !s.numTail).flatMap((s) => {
+			const segment = s.numHead || s;
+			return segment.unknown && !segment.rt && segment.fallback ? segment.fallback.map(stripSegment) : [stripSegment(segment)];
+		});
 	}
 
 	/** 去掉内部用的字段，只留对外的 text / rt / at / fixed / hidden */
@@ -674,6 +776,9 @@
 	const NEXT_KANA_READINGS = {
 		失: [/^[くク]/, 'ナ'],
 		回: [/^[っッるルりリれレろロらラ]/, 'マワ'],
+		// IPADIC lacks this spelling of おとす / おちる. Do not change 堕落 (だらく).
+		堕: [/^[とちトチ]/, 'オ'],
+		墮: [/^[とちトチ]/, 'オ'],
 	};
 
 	// 数字 + 助数词：整体注音（1人 → ひとり，3本 → さんぼん）。
@@ -966,12 +1071,31 @@
 		return out;
 	}
 
+	// Original YRC text is also needed for language detection and line matching.
+	// This parser has no window, playback, rendering or native-process dependency.
+	function parseYrc(src) {
+		const rows=[];
+		for(const line of String(src||'').split(/\r?\n/)) {
+			const head=/^\[(\d+),(\d+)\]/.exec(line);if(!head)continue;
+			const parts=[...line.slice(head[0].length).matchAll(/\((\d+),(\d+),\d+\)([^()]*)/g)];
+			const text=parts.map(p=>p[3].replace(/\s/g,'')).join('');
+			if(text)rows.push({time:Number(head[1]),text});
+		}
+		return rows;
+	}
+	function clientOriginalLines(lyric,songId) {
+		if(!lyric || String(lyric.resourceTrackId)!==String(songId))return [];
+		const lines=Array.isArray(lyric.lyricLines)?lyric.lyricLines.filter(l=>Number.isFinite(l.time)&&typeof l.lyric==='string').map(l=>({time:l.time*1000,text:l.lyric})):[];
+		return lines.length?lines.sort((a,b)=>a.time-b.time):parseYrc(lyric.yrcInfo&&lyric.yrcInfo.yrc);
+	}
 	return {
 		KANJI_RANGE: KANJI,
+		LOOKUP_VARIANTS,
 		hasKanji: (s) => RE_HAS_KANJI.test(s),
 		hasKana: (s) => RE_HAS_KANA.test(s),
 		toHiragana,
 		toKatakana,
+		tokenizeForReading,
 		splitRuns,
 		alignReading,
 		mergeOverrides,
@@ -980,8 +1104,11 @@
 		UNKNOWN,
 		segmentsFromReading,
 		parseLrc,
+		parseYrc,
+		clientOriginalLines,
 		lyricKey,
 		isCreditLine,
+		hasJapaneseLyrics,
 		buildRomajiMap,
 	};
 });
