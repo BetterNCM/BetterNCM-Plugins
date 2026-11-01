@@ -7,15 +7,15 @@
     "author_links": [
         "https://github.com/Mascot-N"
     ],
-    "description": "用任意 OpenAI 兼容接口（DeepSeek / OpenAI / 本地 Ollama…）翻译歌词，API 地址、Key、模型名都能在设置里填。改写自 GPTTrans",
+    "description": "用任意 OpenAI 兼容接口翻译歌词，API 地址、Key、模型名称可自由填写。改写自 GPTTrans",
     "preview": "preview.png",
-    "version": "0.6.0",
+    "version": "0.7.2",
     "type": "extension",
-    "requirements": [
-        "RefinedNowPlaying"
-    ],
+    "requirements": [],
     "loadAfter": [
-        "RefinedNowPlaying"
+        "RefinedNowPlaying",
+        "RefinedNowPlaying-Enhanced",
+        "RefinedNowPlayingNext"
     ],
     "betterncm_version": ">=1.0.0",
     "injects": {
@@ -24,5 +24,6 @@
                 "file": "main.js"
             }
         ]
-    }
+    },
+    "ncm3-compatible": true
 }
