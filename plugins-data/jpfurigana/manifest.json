@@ -3,7 +3,7 @@
 	"manifest_version": 1,
 	"name": "日语歌词振假名",
 	"slug": "jp-furigana",
-	"version": "1.1.0",
+	"version": "1.2.0",
 	"author": "leleawa",
 	"author_link": "https://github.com/Leleawa/jp-furigana",
 	"description": "在日语歌词的汉字上方标注振假名 (平假名 / 片假名)",
@@ -14,9 +14,34 @@
 	"requirements": [],
 	"injects": {
 		"Main": [
-			{ "file": "kuromoji.js" },
-			{ "file": "furigana.js" },
-			{ "file": "main.js" }
+			{
+				"file": "kuromoji.js"
+			},
+			{
+				"file": "furigana.js"
+			},
+			{
+				"file": "external-core.js"
+			},
+			{
+				"file": "user-edits.js"
+			},
+			{
+				"file": "external.js"
+			},
+			{
+				"file": "editor.js"
+			},
+			{
+				"file": "rnp-settings.js"
+			},
+			{
+				"file": "source-dialog.js"
+			},
+			{
+				"file": "main.js"
+			}
 		]
-	}
+	},
+	"require_restart": true
 }
