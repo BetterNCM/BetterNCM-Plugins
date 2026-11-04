@@ -143,23 +143,51 @@
       packageVersion: String(ncm?.getNCMPackageVersion?.() ?? "") };
   }
 
-  function createNeteaseSource(win) {
-    const { version, build, packageVersion } = getClientVersion(win);
-    const blacklistExports = {
-      "3.1.41.205529": { c6406e5: "H", "83304b1": "K" },
-      // APP_CONF uses this ID; the installed chunk filenames use 1482700000000.
-      "3.1.42.205594": { "14827e8": "K" }
-    }[`${version}.${build}`];
-    if (!blacklistExports) {
-      throw new Error(`客户端 ${version || "未知"} / ${build || "未知"} 未验证；请更新 NCMCommentFilter`);
+  function findBlacklistBinding(factories) {
+    const matches = [];
+    for (const [moduleId, factory] of Object.entries(factories || {})) {
+      if (typeof factory !== "function") continue;
+      const text = Function.prototype.toString.call(factory);
+      // Inspect definitions, never invoke candidate endpoints. Export letters and module
+      // numbers change between builds; the exact read-only endpoint identifies the API.
+      const bindings = [...text.matchAll(/([\w$]+)\s*=\s*Object\([^)]*\)\(\{\s*url\s*:\s*["']\/?api\/blacklist\/get["']/g)];
+      if (!bindings.length) continue;
+      const exports = [...text.matchAll(/\.d\(\s*[\w$]+\s*,\s*["']([^"']+)["']\s*,\s*\(?\s*function\s*\(\s*\)\s*\{\s*return\s+([\w$]+)\s*[;}]/g)];
+      for (const binding of bindings) {
+        for (const entry of exports) {
+          if (entry[2] === binding[1]) matches.push({ moduleId, exportName: entry[1] });
+        }
+      }
     }
-    const blacklistExport = blacklistExports[packageVersion];
-    if (!blacklistExport) throw new Error(`客户端热更新 ${packageVersion || "未知"} 未验证；请更新 NCMCommentFilter`);
+    if (matches.length !== 1) throw new Error("无法唯一识别网易云黑名单接口；请刷新重试，仍失败时反馈适配");
+    return matches[0];
+  }
+
+  function findAccountStore(cache) {
+    const stores = new Set();
+    // Only inspect already initialized modules, avoiding side effects from loading
+    // unrelated pages. The current client initializes its account store before plugins.
+    for (const module of Object.values(cache || {})) {
+      const exports = module?.exports;
+      if (!exports || (typeof exports !== "object" && typeof exports !== "function")) continue;
+      for (const key of [null, ...Object.keys(exports)]) {
+        try {
+          const value = key === null ? exports : exports[key];
+          if (typeof value?.getStore === "function" && typeof value?.getHistory === "function") stores.add(value);
+        } catch { /* An unrelated module may expose an uninitialized getter. */ }
+      }
+    }
+    if (stores.size !== 1) throw new Error("网易云账号存储尚未就绪或结构已变化；请刷新重试");
+    return [...stores][0];
+  }
+
+  function createNeteaseSource(win) {
     const require = captureWebpackRequire(win);
-    const store = require(8)?.a;
-    const getBlacklist = require(15)?.[blacklistExport];
-    if (typeof store?.getStore !== "function" || typeof getBlacklist !== "function") {
-      throw new Error("网易云账号或黑名单接口不可用");
+    const store = findAccountStore(require.c);
+    const { moduleId, exportName } = findBlacklistBinding(require.m);
+    const getBlacklist = require(moduleId)?.[exportName];
+    if (typeof getBlacklist !== "function") {
+      throw new Error("网易云黑名单接口不可用；请反馈适配");
     }
     return {
       getAccountId() {
@@ -346,7 +374,7 @@
       active = !!scope;
       panel.hidden = !active && state !== "error";
       toggle.checked = enabled;
-      refreshButton.disabled = state === "loading" || !source;
+      refreshButton.disabled = state === "loading";
       statusElement.textContent = stateMessage;
       statusElement.dataset.state = state;
       doc.documentElement.classList.toggle("ncmcf-comment-pending",
@@ -434,10 +462,20 @@
     async function refresh() {
       const sequence = ++generation;
       if (!source) {
-        blacklist = null;
-        restoreAll();
-        setState("error", "无法读取黑名单：客户端接口不可用");
-        return;
+        try {
+          source = sourceFactory(win);
+          unlisten = source.listen?.(routeChanged) || null;
+          unwatchAccount = source.watchAccount?.(checkAccount) || null;
+          syncScope();
+        } catch (error) {
+          source = null;
+          if (typeof unlisten === "function") unlisten();
+          unlisten = null;
+          blacklist = null;
+          restoreAll();
+          setState("error", `读取黑名单不可用：${errorMessage(error)}`);
+          return;
+        }
       }
       let nextAccount;
       try { nextAccount = source.getAccountId(); }
@@ -618,15 +656,7 @@
       observer.observe(doc.body, { childList: true, characterData: true, subtree: true });
       win.addEventListener("popstate", routeChanged);
       win.addEventListener("hashchange", routeChanged);
-      try {
-        source = sourceFactory(win);
-        unlisten = source.listen?.(routeChanged) || null;
-        refresh();
-        unwatchAccount = source.watchAccount?.(checkAccount) || null;
-      } catch (error) {
-        blacklist = null;
-        setState("error", `读取黑名单不可用：${errorMessage(error)}`);
-      }
+      refresh();
       accountTimer = win.setInterval(checkAccount, ACCOUNT_CHECK_MS);
     }
 
@@ -666,5 +696,5 @@
   }
 
   return { normalizeId, normalizeBlacklist, isAlbumPath, isCommentPath, readCommentFromFiber,
-    captureWebpackRequire, getClientVersion, createNeteaseSource, createController };
+    captureWebpackRequire, getClientVersion, findBlacklistBinding, createNeteaseSource, createController };
 });
