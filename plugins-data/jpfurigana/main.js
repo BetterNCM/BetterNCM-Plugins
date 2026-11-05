@@ -4,7 +4,7 @@
  * 思路：
  *   1. kuromoji + IPADIC 全部打包在插件目录里，词典通过 betterncm.fs 读，完全离线。
  *   2. 歌词元素不写死选择器 —— 先试已知选择器，失败就按「哪个祖先下面的假名文本行最多」
- *      自动找歌词容器（见 findContainer）。
+ *      自动找歌词容器（见 locate.js）。
  *   3. 改 DOM 时把 React 原本的子节点存下来，每次重算前先还原，避免和 React 抢节点
  *      导致歌词卡住不更新（见 restore / applyWrap）。
  */
@@ -12,8 +12,16 @@
 	'use strict';
 
 	const LOG = '[jp-furigana]';
+	// 这几个模块是主流程必需的；manifest.json 的 injects 里要排在 main.js 前面
+	const missing = ['FuriganaCore', 'FuriganaTrack', 'FuriganaLocate', 'FuriganaLayout'].filter(
+		(name) => typeof globalThis[name] === 'undefined'
+	);
+	if (missing.length) {
+		console.error(LOG, `${missing.join(' / ')} 未注入，检查 manifest.json 的 injects 顺序`);
+		return;
+	}
 	// 改了实现就换一下，方便确认插件到底有没有被重新加载（JPFurigana.build）
-	const BUILD = '1.2.0-browser';
+	const BUILD = '1.2.1-browser';
 	const REPO_URL = 'https://github.com/Leleawa/jp-furigana';
 	const CONFIG_KEY = 'jp-furigana.config';
 	// 注音算法改了就换 key，让旧缓存自然失效
@@ -31,6 +39,7 @@
 		externalConsent: false, // 用户在提示窗口里确认过才会访问外部歌词网站
 		rtSize: 60, // rt 相对底字的百分比
 		rtOpacity: 80, // rt 不透明度百分比
+		rtWeight: '400', // rt 字重：follow = 跟随歌词字重，其余是固定字重
 		karaoke: true, // 逐字歌词：把注音按字符偏移分发到内部的 span，保留逐字动画
 		onlyFirstLine: true, // 一行里只给原文注音，跳过翻译/罗马音
 		skipCredits: true, // 跳过「作词:／编曲:」这类制作信息行
@@ -40,20 +49,8 @@
 		verbose: false,
 	};
 
-	// 已知的歌词行选择器，命中即用，比自动检测更稳
-	const KNOWN_SELECTORS = [
-		// NCM 3.1.36 实测：ul#mod_pc_lyric_record.lyric > li.line > p × 2（原文 + 翻译）
-		'ul.lyric > li > p',
-		'ul.lyric li p',
-		'div.lyric ul li p',
-		'.lyric-line, .lyric-next-p', // NCM 2.x，在 2.10.13 上实测命中，别删
-		// RefinedNowPlaying：开了逐字歌词后，原文行 .rnp-lyrics-line-original 会被换成
-		// .rnp-lyrics-line-karaoke（两者互斥渲染）。但离当前行 10 行以外的还是 -original，
-		// 所以必须写在同一条选择器里 —— 分成两条的话会先命中那些看不见的远处行就 return 了。
-		'div[class^="rnp-lyrics"] div[class^="rnp-lyrics-line-original"], div[class^="rnp-lyrics"] div[class^="rnp-lyrics-line-karaoke"]', // RefinedNowPlaying
-		'div[class^="lyric-bar-inner"] div[class^="rnp-lyrics-line-original"], div[class^="lyric-bar-inner"] div[class^="rnp-lyrics-line-karaoke"]', // LyricBar
-		'div[class^="lyricMainLine"]', // AMLL 类苹果歌词
-	];
+	// 注音字重：follow = 继承歌词本身的字重；其余是固定字重
+	const RT_WEIGHTS = ['follow', '300', '400', '500', '600', '700'];
 
 	// ------------------------------------------------------------------ 配置
 
@@ -85,6 +82,7 @@
 			cfg.rtSize = DEFAULTS.rtSize;
 			cfg.migrated = true;
 		}
+		if (!RT_WEIGHTS.includes(cfg.rtWeight)) cfg.rtWeight = DEFAULTS.rtWeight;
 		// Retain the current configuration revision without bringing Plus-only settings.
 		if (!(saved.configVersion >= CONFIG_VERSION)) cfg.migrated = true;
 		for (const key of Object.keys(cfg)) if (key.startsWith('desktop')) { delete cfg[key]; cfg.migrated = true; }
@@ -116,45 +114,6 @@
 			return false;
 		}
 	})();
-
-	/**
-	 * 这个内核认不认 ruby 排版。旧版网易云的 CEF 不认（CSS.supports('display','ruby')
-	 * 是 false），它把 <rt> 当普通 block 画在底字上面 —— 看着像注音，实际每个带注音的词
-	 * 白占一整个行盒（实测 21px 字号：62px vs 正常 25px），而且外面加多少边距都够不着
-	 * 这块高度。这种情况下只能让注音脱离文档流，自己定位（见 updateStyles 的 fg-no-ruby）。
-	 */
-	let rubySupport = null;
-	function hasRuby() {
-		if (rubySupport !== null) return rubySupport;
-		try {
-			// 排障用：localStorage['jp-furigana.no-ruby'] = '1' 可以强制走降级
-			if (localStorage.getItem('jp-furigana.no-ruby') === '1') return (rubySupport = false);
-		} catch (e) {
-			/* 读不到就算了 */
-		}
-		// 注意：不能用 CSS.supports('display','ruby') —— 不少内核明明有 ruby 排版，
-		// 但 display:ruby 不是合法的作者值，照样返回 false（新版网易云就是）。只能实测：
-		// 有 ruby 排版时注音只占自己那点宽度；没有时 <rt> 会退化成 block，撑满整行宽、
-		// 还要多占一行高。
-		try {
-			if (!document.body) return true; // 还没到能量的时候，先当支持
-			const probe = document.createElement('div');
-			probe.style.cssText =
-				'position:absolute;left:-9999px;top:-9999px;width:300px;' +
-				'font-size:20px;line-height:1.2;visibility:hidden;';
-			probe.innerHTML = '<ruby>漢<rt style="font-size:60%">かんじ</rt></ruby>';
-			document.body.appendChild(probe);
-			const rt = probe.querySelector('rt');
-			const rtWidth = rt ? rt.getBoundingClientRect().width : 0;
-			const height = probe.getBoundingClientRect().height;
-			probe.remove();
-			rubySupport = rtWidth > 0 && rtWidth < 150 && height < 20 * 1.2 * 1.9;
-			log(`ruby 排版检测：注音宽 ${Math.round(rtWidth)}px，整体高 ${Math.round(height)}px → ${rubySupport ? '原生' : '降级'}`);
-			return rubySupport;
-		} catch (e) {
-			return (rubySupport = true);
-		}
-	}
 
 	function saveConfig() {
 		try {
@@ -194,6 +153,36 @@
 	function log(...args) {
 		if (config.verbose) console.log(LOG, ...args);
 	}
+
+	// ------------------------------------------------------------------ 模块装配
+	// 网易云曲目与接口见 ncm-track.js，歌词定位见 locate.js，排版与校准见 layout.js。
+
+	const track = FuriganaTrack.create({
+		LOG, state, core: FuriganaCore,
+		hooks: {
+			onTrackChange: (id) => { if (state.externalTrackId && state.externalTrackId !== id) resetExternal(); },
+			onRomajiReady: () => { invalidateAll(); schedule(0); notifyConfigUI(); }, // 之前按词典注过的行要重做
+			onRomajiFailed: () => notifyConfigUI(),
+		},
+	});
+	const {
+		getCurrentTrackId, clientTrackLines, currentTrackLanguage, requireJapaneseTrack, ensureApiRomaji,
+		playKey: externalPlayKey, trackMetadata: currentTrackMetadata,
+	} = track;
+
+	const { isFiller, plainText, hasText, KNOWN_SELECTORS } = FuriganaLocate;
+	const { shouldSkipLine, isVisible, collectLines } = FuriganaLocate.create({ config, state, core: FuriganaCore });
+
+	const { annotationGap, CALIBRATE_MAX } = FuriganaLayout;
+	const {
+		hasRuby, requestRecalc, resetCalibration, calibrate, referenceHeight,
+		spaceAnnotations, updateStyles, CALIBRATIONS,
+	} = FuriganaLayout.create({
+		config, state, log, RT_WEIGHTS,
+		lastLines: () => lastLines,
+		editor: () => editor,
+		schedule: (delay) => schedule(delay),
+	});
 
 	// ------------------------------------------------------------------ 缓存
 
@@ -323,157 +312,6 @@
 		});
 	}
 
-	// ------------------------------------------------------ 官方音译（接口来源）
-
-	// 这个接口无条件返回 romalrc，和歌词页上「音」的开关无关。
-	const LYRIC_API = 'https://music.163.com/api/song/lyric?lv=-1&kv=-1&tv=-1&rv=-1&id=';
-
-	function looksLikeStore(o) {
-		return (
-			!!o &&
-			typeof o === 'object' &&
-			typeof o.getState === 'function' &&
-			typeof o.dispatch === 'function' &&
-			typeof o.subscribe === 'function'
-		);
-	}
-
-	function storeIn(value, depth) {
-		if (!value || typeof value !== 'object' || depth > 2) return null;
-		if (looksLikeStore(value)) return value;
-		if (looksLikeStore(value.store)) return value.store;
-		// react-redux 的 context 值形如 { store, subscription }
-		for (const k of ['value', '_currentValue', 'stores']) {
-			const s = storeIn(value[k], depth + 1);
-			if (s) return s;
-		}
-		return null;
-	}
-
-	/**
-	 * 从 React fiber 树里找网易云的 Redux store。
-	 * 当前歌曲 id 在 store.getState().playing.resourceTrackId —— 这是 InfLink-rs
-	 * 拿播放状态的同一条路，比 DOM 稳（class 名会随版本变，store 结构不会）。
-	 */
-	function findReduxStore() {
-		for (const sel of ['#root', '#portal_root', 'body']) {
-			const el = document.querySelector(sel);
-			if (!el) continue;
-			const key = Object.keys(el).find(
-				(k) => k.startsWith('__reactContainer$') || k.startsWith('__reactFiber$')
-			);
-			let fiber = key ? el[key] : null;
-			if (!fiber && el._reactRootContainer && el._reactRootContainer._internalRoot)
-				fiber = el._reactRootContainer._internalRoot.current;
-			if (!fiber) continue;
-
-			let budget = 20000;
-			const queue = [fiber];
-			const seen = new Set();
-			while (queue.length && budget-- > 0) {
-				const f = queue.shift();
-				if (!f || seen.has(f)) continue;
-				seen.add(f);
-				const s = storeIn(f.memoizedProps, 0) || storeIn(f.memoizedState, 0);
-				if (s) return s;
-				if (f.child) queue.push(f.child);
-				if (f.sibling) queue.push(f.sibling);
-			}
-		}
-		return null;
-	}
-
-	function getCurrentTrackId() {
-		if (!state.store) state.store = findReduxStore();
-		if (!state.store) return null;
-		let root;
-		try {
-			root = state.store.getState();
-		} catch (e) {
-			state.store = null; // store 换了，下次重新找
-			return null;
-		}
-		const playing = root && root.playing;
-		if (!playing) return null;
-		const id =
-			playing.resourceTrackId ||
-			playing.trackId ||
-			(playing.playingTrack && (playing.playingTrack.id || playing.playingTrack.trackId));
-		return id ? String(id) : null;
-	}
-
-	function clientTrackLines(songId) {
-		if (!songId) return [];
-		const root = state.store && state.store.getState(), lyric = root && root['async:lyric'];
-		if (lyric !== clientLyricSource || songId !== clientLyricId) {
-			clientLyricSource = lyric; clientLyricId = songId;
-			clientLyricLines = FuriganaCore.clientOriginalLines(lyric, songId);
-		}
-		return clientLyricLines;
-	}
-	let languageLines = null;
-	function currentTrackLanguage() {
-		const songId = getCurrentTrackId(), native = clientTrackLines(songId);
-		const evidence = state.evidence && state.evidence.songId === songId ? state.evidence.lines : null;
-		const lines = evidence && evidence.length ? evidence : native.length ? native : evidence;
-		if (lines && languageLines === lines && state.language && state.language.songId === songId) return state.language;
-		const eligible = lines ? FuriganaCore.hasJapaneseLyrics(lines) : null;
-		const status = !songId ? '等待播放日语歌曲' : eligible === true ? '当前原歌词含日语' : eligible === false ?
-			'当前原歌词未发现日语，已跳过注音及外部获取' : state.apiTrackId === songId && state.apiStatus.startsWith('失败') ?
-			'无法确认歌词语种：' + state.apiStatus + '；已跳过外部获取' : '正在确认当前歌词语种…';
-		languageLines = lines; return state.language = { songId, eligible, status };
-	}
-	async function requireJapaneseTrack(songId) {
-		ensureApiRomaji();
-		if (currentTrackLanguage().eligible === null && state.apiPending) await state.apiPending;
-		if (getCurrentTrackId() !== songId) throw new Error('歌曲已变化，请重新操作');
-		const language = currentTrackLanguage();
-		if (language.eligible !== true) throw new Error(language.status);
-	}
-	async function fetchRomajiMap(trackId) {
-		const abort = new AbortController(), timer = setTimeout(() => abort.abort(), 8000);
-		try {
-			const res = await fetch(LYRIC_API + encodeURIComponent(trackId), { headers: { Accept: 'application/json' }, signal:abort.signal });
-			if (!res.ok) throw new Error('HTTP ' + res.status);
-			const json = await res.json(), lrc = json.lrc && json.lrc.lyric, roma = json.romalrc && json.romalrc.lyric;
-			const original = FuriganaCore.parseLrc(lrc);
-			const yrc = FuriganaCore.parseYrc(json.yrc && json.yrc.lyric);
-			if (getCurrentTrackId() === trackId) {
-				state.evidence = { songId:trackId, lines:[...original,...yrc].map(l=>l.text), alignmentLines:(original.length>=yrc.length?original:yrc).map(l=>l.text) };
-			}
-			if (!lrc || !roma) return new Map();
-			return FuriganaCore.buildRomajiMap(lrc, roma);
-		} finally { clearTimeout(timer); }
-	}
-
-	/** 换歌了就异步拉一次音译；查表是按歌词文本，所以就算 id 拿错了也只是查不到 */
-	function ensureApiRomaji() {
-		const id = getCurrentTrackId();
-		if (!id || id === state.apiTrackId) return;
-		if (state.externalTrackId && state.externalTrackId !== id) resetExternal();
-
-		state.apiTrackId = id;
-		state.apiRomaji = null;
-		state.apiStatus = '加载中';
-		state.apiPending = fetchRomajiMap(id).then(
-			(map) => {
-				if (state.apiTrackId !== id) return; // 已经又换歌了
-				state.apiRomaji = map.size ? map : null;
-				state.apiStatus = map.size ? `${map.size} 行` : '该曲无官方音译';
-				invalidateAll(); // 之前按词典注过的行要重做
-				schedule(0);
-				notifyConfigUI();
-			},
-			(err) => {
-				if (state.apiTrackId !== id) return;
-				state.apiRomaji = null;
-				state.apiStatus = '失败：' + (err && err.message);
-				console.warn(LOG, '取官方音译失败', err);
-				notifyConfigUI();
-			}
-		);
-	}
-
 	// ------------------------------------------------------ 外部网站（按需联网）
 	let externalClient = null;
 	let editor = null, playPending = false, playPendingTarget = null, editPreparing = false, editEntry = 0;
@@ -492,12 +330,7 @@
 			externalClient = FuriganaExternal.create({
 				...FuriganaExternal.browserTransport(betterncm, plugin),
 				originalLines:currentOriginalLines,
-				lyrics: async id => {
-					if (state.evidence && state.evidence.songId === id) return state.evidence.lines;
-					const abort = new AbortController(), timer = setTimeout(() => abort.abort(), 8000);
-					try { const response = await fetch(LYRIC_API + encodeURIComponent(id), { signal: abort.signal }); if (!response.ok) throw new Error('歌词信息 HTTP ' + response.status); const data = await response.json(); return FuriganaCore.parseLrc(data.lrc && data.lrc.lyric).map(l=>l.text); }
-					finally { clearTimeout(timer); }
-				},
+				lyrics: track.lyricLines,
 				onReady: () => { invalidateAll(); schedule(0); notifyConfigUI(); },
 				onInvalidated: id => {
 					if (state.externalTrackId === id) { state.externalTrackId = null; state.externalPlayKey = null; state.editInterrupt = null; editEntry++; }
@@ -507,34 +340,10 @@
 		}
 		return externalClient;
 	}
-	async function currentTrackMetadata(id) {
-		try {
-			const p = state.store && state.store.getState().playing;
-			for (const t of p ? [p.curTrack, p.playingTrack, p.track, p.resourceTrack] : []) {
-				if (!t || String(t.id || t.trackId) !== id || !t.name) continue;
-				const artists = (t.ar || t.artists || []).map(a => a.name).filter(Boolean);
-				if (artists.length) return { title: t.name, artists };
-			}
-		} catch (_) { /* Fall back to the official song detail endpoint. */ }
-		const abort = new AbortController(), timer = setTimeout(() => abort.abort(), 8000);
-		try {
-			const url = 'https://music.163.com/api/song/detail/?id=' + encodeURIComponent(id) + '&ids=' + encodeURIComponent('[' + id + ']');
-			const response = await fetch(url, { signal: abort.signal });
-			if (!response.ok) throw new Error('歌曲信息 HTTP ' + response.status);
-			const data = await response.json();
-			const t = (data.songs || []).find(song => String(song.id) === id);
-			if (!t) throw new Error('未获取到当前歌曲信息');
-			return { title: t.name, artists: (t.ar || t.artists || []).map(a => a.name).filter(Boolean) };
-		} finally { clearTimeout(timer); }
-	}
 	function resetExternal() {
 		state.externalTrackId = null;
 		state.externalPlayKey = null; state.editInterrupt = null;
 		if (externalClient) externalClient.stop();
-	}
-	function externalPlayKey(id = getCurrentTrackId()) {
-		const p = state.store && state.store.getState().playing;
-		return id + '|' + (p && p.playId || '');
 	}
 	function ensureExternal() {
 		if (config.readingSource !== 'external' || editPreparing) return;
@@ -555,235 +364,6 @@
 		invalidateAll();
 		const force = state.externalForce; state.externalForce = false;
 		state.externalTask = client.load(id, () => currentTrackMetadata(id), config, force);
-	}
-
-	// ------------------------------------------------------------------ 文本工具
-
-	/**
-	 * RefinedNowPlaying 的「滑动」逐字动画里，每个词渲染两份文本：本体 +
-	 * 一个绝对定位、用遮罩做高亮的 .rnp-karaoke-word-filler 副本。
-	 * 读文本时必须忽略副本，否则整行会重复一遍，分词和偏移全错。
-	 */
-	/** 我们注上去的读音：有 ruby 排版时是 <rt>，降级时是 <span class="fg-rt"> */
-	function isAnnotation(node) {
-		if (!node || node.nodeType !== 1) return false;
-		const n = node.nodeName;
-		if (n === 'RT' || n === 'RP') return true;
-		return !!(node.classList && node.classList.contains('fg-rt'));
-	}
-
-	function isFiller(node) {
-		return (
-			node &&
-			node.nodeType === 1 &&
-			node.classList &&
-			node.classList.contains('rnp-karaoke-word-filler')
-		);
-	}
-
-	/** 元素的「原文」：忽略我们注上去的 rt / rp，以及 RNP 的 filler 副本 */
-	function plainText(el) {
-		if (isFiller(el) || isAnnotation(el)) return '';
-		let out = '';
-		const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, {
-			acceptNode(node) {
-				for (let p = node.parentNode; p && p !== el; p = p.parentNode) {
-					if (isAnnotation(p) || isFiller(p)) return NodeFilter.FILTER_REJECT;
-				}
-				return NodeFilter.FILTER_ACCEPT;
-			},
-		});
-		while (walker.nextNode()) out += walker.currentNode.nodeValue;
-		return out;
-	}
-
-	function hasText(el) {
-		return plainText(el).trim().length > 0;
-	}
-
-	/** 这一行要不要跳过（不注音）。制作信息的判定见 furigana.js 的 isCreditLine */
-	function shouldSkipLine(text) {
-		if (config.skipCredits && FuriganaCore.isCreditLine(text)) return true;
-		if (config.skipNoKanaLines && !FuriganaCore.hasKana(text)) return true;
-		return false;
-	}
-
-	const displayCache = new WeakMap();
-	function isBlock(el) {
-		if (displayCache.has(el)) return displayCache.get(el);
-		let block = true;
-		try {
-			// inline-block 在逐字歌词里通常是「一个字」，算行内
-			const d = getComputedStyle(el).display;
-			block = !/^(inline|inline-block|ruby|ruby-text|contents)$/.test(d);
-		} catch (e) {
-			/* 元素已脱离文档 */
-		}
-		displayCache.set(el, block);
-		return block;
-	}
-
-	/**
-	 * 元素是不是真的看得见。有的第三方歌词插件（refined-now-playing-netease-next）
-	 * 会把网易云原生的播放页整个留在 DOM 里、只用 visibility/opacity 藏起来，
-	 * 不看可见性的话我们会把注音全加在那份看不见的歌词上，屏幕上一个字都不显示。
-	 */
-	let visCache = new Map(); // 每轮 collectLines 清一次，别缓存过夜
-	function isVisible(el) {
-		if (!el || el.nodeType !== 1) return false;
-		let s;
-		try {
-			s = getComputedStyle(el);
-		} catch (e) {
-			return true; // 拿不到就当可见，宁可多注也别漏注
-		}
-		if (!s) return true;
-		// visibility 会继承，看自己这一份就够；display / opacity 不继承，祖先得单独走
-		if (s.visibility === 'hidden' || s.visibility === 'collapse') return false;
-		if (s.display === 'none' || s.opacity === '0') return false;
-		return ancestorsVisible(el.parentElement);
-	}
-
-	function ancestorsVisible(el) {
-		if (!el || el.nodeType !== 1 || el === document.body) return true;
-		if (visCache.has(el)) return visCache.get(el);
-		let ok = true;
-		try {
-			const s = getComputedStyle(el);
-			if (s && (s.display === 'none' || s.opacity === '0')) ok = false;
-		} catch (e) {
-			/* 拿不到就当可见 */
-		}
-		if (ok) ok = ancestorsVisible(el.parentElement);
-		visCache.set(el, ok);
-		return ok;
-	}
-
-	// ------------------------------------------------------------------ 歌词元素定位
-
-	/**
-	 * 自动找歌词容器：统计所有含假名的文本节点，给它们的每一级祖先计票，
-	 * 票数最多（并列时取最深）的那个就是歌词列表。
-	 */
-	function findContainer() {
-		const votes = new Map();
-		const depth = new Map();
-		const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
-		let node;
-		while ((node = walker.nextNode())) {
-			const text = node.nodeValue;
-			if (!text || text.length < 2 || text.length > 120) continue;
-			if (!FuriganaCore.hasKana(text)) continue;
-			if (!isVisible(node.parentElement)) continue; // 藏起来的原生播放页不参与投票
-			let d = 0;
-			for (let p = node.parentElement; p && p !== document.body; p = p.parentElement) {
-				votes.set(p, (votes.get(p) || 0) + 1);
-				if (!depth.has(p)) depth.set(p, d);
-				d++;
-			}
-		}
-
-		let best = null;
-		let bestScore = 0;
-		votes.forEach((count, el) => {
-			if (count < 3) return;
-			if (config.requireLyricClass && !looksLyricish(el)) return;
-			// 票数优先，票数相同取更深（更贴近歌词列表本身）
-			const score = count * 1000 - (depth.get(el) || 0);
-			if (score > bestScore) {
-				bestScore = score;
-				best = el;
-			}
-		});
-		return best;
-	}
-
-	function looksLyricish(el) {
-		for (let p = el; p && p !== document.body; p = p.parentElement) {
-			const cls = typeof p.className === 'string' ? p.className : '';
-			if (/lyric|歌词/i.test(cls + ' ' + (p.id || ''))) return true;
-		}
-		return false;
-	}
-
-	/** 容器里的「行」：递归下钻到块级的最小单位 */
-	function linesIn(el, depth) {
-		if (depth > 4) return [el];
-		const blocks = [];
-		for (const child of el.children) {
-			if (child.nodeName === 'RUBY' || child.classList.contains('fg-line')) continue;
-			if (isBlock(child) && hasText(child)) blocks.push(child);
-		}
-		if (!blocks.length) return [el];
-		const out = [];
-		for (const b of blocks) out.push(...linesIn(b, depth + 1));
-		return out;
-	}
-
-	/** 返回本次要处理的行元素 */
-	function collectLines() {
-		visCache.clear();
-		if (config.customSelector) {
-			const found = [...document.querySelectorAll(config.customSelector)];
-			if (found.length) {
-				state.matchedBy = 'custom';
-				return found;
-			}
-		}
-
-		// 同时装了别的歌词插件时，页面上可能有好几份歌词 DOM（一份是被藏起来的原生页）。
-		// 所以命中还不够，得至少有两行是真看得见的；一份都看不见时才退回原来的行为。
-		let hidden = null;
-		for (const sel of KNOWN_SELECTORS) {
-			let found;
-			try {
-				found = [...document.querySelectorAll(sel)];
-			} catch (e) {
-				continue;
-			}
-			found = found.filter(hasText);
-			if (found.length < 2) continue;
-			let n = 0;
-			for (const el of found) if (isVisible(el) && ++n >= 2) break;
-			if (n >= 2) {
-				state.matchedBy = 'known:' + sel;
-				return dedupeByParent(found);
-			}
-			if (!hidden) hidden = { sel, found };
-		}
-		if (hidden) {
-			state.matchedBy = 'known:' + hidden.sel + '（都不可见）';
-			return dedupeByParent(hidden.found);
-		}
-
-		if (!state.container || !state.container.isConnected) state.container = findContainer();
-		if (!state.container) {
-			state.matchedBy = null;
-			return [];
-		}
-		state.matchedBy = 'auto';
-
-		const out = [];
-		for (const child of state.container.children) {
-			if (!hasText(child)) continue;
-			const lines = linesIn(child, 0);
-			if (config.onlyFirstLine) out.push(lines[0]);
-			else out.push(...lines);
-		}
-		return out;
-	}
-
-	/** onlyFirstLine：同一个父元素下的多行（原文/翻译/罗马音）只留第一行 */
-	function dedupeByParent(lines) {
-		if (!config.onlyFirstLine) return lines;
-		const seen = new Set();
-		return lines.filter((el) => {
-			const p = el.parentElement;
-			if (!p) return true;
-			if (seen.has(p)) return false;
-			seen.add(p);
-			return true;
-		});
 	}
 
 	// ------------------------------------------------------------------ DOM 改写
@@ -1180,231 +760,6 @@
 		}
 	}
 
-	/**
-	 * 逐字宿主要给注音让出多少高度：正数往外让（注音戳出盒子的情况），
-	 * 负数把多让的收回来（注音已经算进盒子高度的情况）。写死一个值总有一边不对，
-	 * 所以量现场：注音上边离行盒上边的空隙 gap，目标是贴着顶留 1px。
-	 * 差多少就往 --fg-word-offset 上补多少（1:1，一两轮就收敛）。
-	 */
-	/*
-	 * 只管逐字歌词这一套：宿主是一个个词的 span，外面是 RNP 的 .rnp-karaoke-word
-	 * （inline-block），注音的高度撑不到外层行盒，得自己让。整行改写的普通行不用管 ——
-	 * 那是普通块，浏览器自己会把行撑开。
-	 *
-	 * 让位必须加在**每个**宿主上（.fg-word 不分有没有注音都加），不能只加在带注音的
-	 * 那一个上：inline-block 的 padding 会把里面的字整体压下去，只给一部分加，
-	 * 那个字就比左右邻居低一截（实测低 15px）。
-	 */
-	const CALIBRATIONS = [
-		{
-			key: 'word',
-			isMine: (line) => line.__fgHosts[0] !== line,
-			vars: ['--fg-word-offset', '--fg-word-tail'],
-			top: 0,
-			tail: 0,
-			tries: 0,
-		},
-	];
-	const CALIBRATE_MAX = 8;
-
-	function applyWordOffset() {
-		try {
-			const root = document.documentElement.style;
-			for (const c of CALIBRATIONS) {
-				root.setProperty(c.vars[0], c.top.toFixed(3) + 'em');
-				root.setProperty(c.vars[1], c.tail.toFixed(3) + 'em');
-			}
-		} catch (e) {
-			/* 没有 documentElement 就算了 */
-		}
-	}
-
-	function resetCalibration() {
-		for (const c of CALIBRATIONS) c.tries = 0;
-	}
-
-	/**
-	 * 量这一行：注音上边离行盒上边多远、行盒多高、注音多高。量不到就 null。
-	 * RNP 给每行挂了 `transform: scale()`，getBoundingClientRect 是缩放后的尺寸、
-	 * offsetHeight 不是（RNP 自己排版也用 clientHeight），拿两者的比值换算回去，
-	 * 否则拿当前行（放大）和远处的行（缩小）比会得出胡说八道的结论。
-	 */
-	function annotationGap(line) {
-		const rt = line.querySelector('.fg-rt');
-		if (!rt) return null;
-		try {
-			const lb = line.getBoundingClientRect();
-			const tb = rt.getBoundingClientRect();
-			const fs = parseFloat(getComputedStyle(line).fontSize);
-			const h = line.offsetHeight;
-			if (!lb.height || !tb.height || !fs || !h) return null; // 没有排版信息（离线测试）
-			const scale = lb.height / h;
-
-			// 注音和底字的关系：>0 说明压在底字上了。降级模式下注音是绝对定位的，
-			// 内核不会自动把它放到底字上方，得靠这个值把 padding 调够。
-			let overlap = null;
-			let holder = rt.parentElement;
-			while (holder && !(holder.classList && holder.classList.contains('fg-ruby')))
-				holder = holder.parentElement;
-			if (holder) {
-				const range = document.createRange();
-				range.selectNodeContents(holder);
-				range.setEndBefore(rt);
-				const base = range.getBoundingClientRect();
-				if (base && base.height) overlap = (tb.bottom - base.top) / scale;
-			}
-
-			return {
-				gap: (tb.top - lb.top) / scale,
-				overlap,
-				fontSize: fs,
-				lineHeight: h,
-				rtHeight: tb.height / scale,
-			};
-		} catch (e) {
-			return null;
-		}
-	}
-
-	// 量高度的候选最多看这么多条，别为了校准把整页都 reflow 一遍
-	const SAMPLE_LIMIT = 10;
-
-	/** 取最矮的一条：折行的行会高出一整行，拿来比会得出错误的目标 */
-	function shortest(lines) {
-		let best = null;
-		let n = 0;
-		for (const l of lines) {
-			if (++n > SAMPLE_LIMIT) break;
-			let h;
-			try {
-				h = l.offsetHeight; // 避开 transform: scale()
-			} catch (e) {
-				continue;
-			}
-			if (!h) continue;
-			if (!best || h < best.h) best = { line: l, h };
-		}
-		return best;
-	}
-
-	/**
-	 * 拿同一份歌词里「没有注音的那些行」当基准 —— 它们就是这套 CSS 下一行该有多高。
-	 * 有注音的行应该正好高出一个注音的高度，多出来的都是白占的。
-	 */
-	function referenceHeight(sample) {
-		const plain = lastLines.filter(
-			(l) => l !== sample && l.__fgHosts && !l.__fgHosts.length && !l.querySelector('.fg-rt')
-		);
-		// 优先找结构一样的（逐字行比逐字行），没有就退而求其次用任意一条没注音的行
-		const best =
-			shortest(plain.filter((l) => l.className === sample.className)) || shortest(plain);
-		if (best) {
-			try {
-				const fs = parseFloat(getComputedStyle(best.line).fontSize);
-				if (fs) return best.h / fs; // 换成 em，字号不同也能比
-			} catch (e) {
-				/* 往下走兜底 */
-			}
-		}
-		// 整首歌每一行都有注音时就没有基准行了 —— 退回 CSS 里写的 line-height，
-		// 那本来就是「一行该有多高」（RNP 明确写了 1.2 / 1.5，不是 normal）
-		try {
-			const cs = getComputedStyle(sample);
-			const lh = parseFloat(cs.lineHeight);
-			const fs = parseFloat(cs.fontSize);
-			if (lh && fs) return lh / fs;
-		} catch (e) {
-			/* 真拿不到就放弃 */
-		}
-		return null;
-	}
-
-	/** 这个上下文当前拿来量的那一行（取最矮的，避开折行的） */
-	function calibrationSample(c) {
-		const best = shortest(
-			lastLines.filter(
-				(l) => l.__fgHosts && l.__fgHosts.length && c.isMine(l) && l.querySelector('.fg-rt')
-			)
-		);
-		return best && best.line;
-	}
-
-	function calibrate() {
-		// 降级模式下注音是绝对定位的，不占高度也没有可调的抓手（那种内核里
-		// inline-block 的 margin 不参与行盒、padding 又会把字压下去），不用校准
-		if (!hasRuby()) return;
-		for (const c of CALIBRATIONS) {
-			if (c.tries >= CALIBRATE_MAX) continue;
-			const line = calibrationSample(c);
-			if (!line) continue;
-			const m = annotationGap(line);
-			if (!m) continue;
-
-			// 注音贴着行盒顶，留 1px
-			const dTop = m.gap - 1;
-			if (Math.abs(dTop) > 1.5) {
-				c.tries++;
-				c.top = clampEm(c.top - dTop / m.fontSize);
-				applyWordOffset();
-				log(
-					`校准[${c.key}] 顶：gap=${Math.round(m.gap)}px` +
-						(m.overlap == null ? '' : ` 压字=${Math.round(m.overlap)}px`) +
-						` → ${c.vars[0]}: ${c.top}em`
-				);
-				schedule(60);
-				continue;
-			}
-
-			// 2) 底：整行应该只比没注音的行高出一个注音，多的收掉
-			const refEm = referenceHeight(line);
-			if (refEm == null) {
-				c.tries = CALIBRATE_MAX; // 没有基准行可比，就到这儿
-				continue;
-			}
-			const wantPx = refEm * m.fontSize + m.rtHeight + 1;
-			const dBottom = m.lineHeight - wantPx;
-			if (Math.abs(dBottom) > 1.5) {
-				c.tries++;
-				c.tail = clampEm(c.tail - dBottom / m.fontSize);
-				applyWordOffset();
-				log(
-					`校准[${c.key}] 底：行高 ${Math.round(m.lineHeight)}px，基准 ` +
-						`${Math.round(refEm * m.fontSize)}px + 注音 ${Math.round(m.rtHeight)}px → ` +
-						`${c.vars[1]}: ${c.tail}em`
-				);
-				schedule(60);
-				continue;
-			}
-
-			c.tries = CALIBRATE_MAX; // 这个上下文两头都对上了
-		}
-	}
-
-	function clampEm(v) {
-		return Math.max(-2, Math.min(2, Math.round(v * 1000) / 1000));
-	}
-
-	/**
-	 * RefinedNowPlaying 是自己算每行的位移来滚动的，行高只在歌词/字号/设置变化时量一次。
-	 * 我们插进去的注音会让行变高，它手里的还是旧高度，于是行与行会叠在一起。
-	 * 它自己留了 recalc-lyrics 这个 window 事件用来强制重量，借用一下。
-	 */
-	let lastRecalc = 0;
-	function requestRecalc() {
-		if (!/rnp|lyric-bar/.test(state.matchedBy || '')) return;
-		const now = performance.now();
-		if (now - lastRecalc < 400) return; // 连着换行时别一直发
-		lastRecalc = now;
-		// 放到本次 pass 之后再发，免得它同步改的 DOM 被我们的 takeRecords() 吞掉
-		setTimeout(() => {
-			try {
-				window.dispatchEvent(new Event('recalc-lyrics'));
-			} catch (e) {
-				/* 没这个插件就没人听 */
-			}
-		}, 0);
-	}
-
 	let timer = null;
 	function schedule(delay) {
 		if (timer) return;
@@ -1460,417 +815,21 @@
 		}, 1500);
 	}
 
-	/**
-	 * 量一行的实际排版：注音相对底字偏了多少、词盒被撑宽了多少、
-	 * 逐字歌词是怎么切的。位置不对时靠这个看，比截图准。
-	 *   JPFurigana.dumpLine()   第一行已注音的
-	 *   JPFurigana.dumpLine(2)  第三行
-	 */
-	function dumpLine(index) {
-		const done = lastLines.filter((l) => l.__fgHosts && l.__fgHosts.length);
-		const line = done[index || 0];
-		if (!line) return `没有已注音的行（共 ${lastLines.length} 行）`;
+	// ------------------------------------------------------------------ 调试接口（见 probe.js）
 
-		const mid = (r) => (r.left + r.right) / 2;
-		const px = (n) => Math.round(n * 10) / 10;
-
-		// 没有排版信息（比如离线测试环境）时全给 null，别让诊断本身炸掉
-		const rect = (o) => {
-			try {
-				const r = o.getBoundingClientRect();
-				return r && typeof r.left === 'number' ? r : null;
-			} catch (e) {
-				return null;
-			}
-		};
-
-		const lineRect = rect(line);
-		const rubies = [...line.querySelectorAll('.fg-ruby')].map((ruby) => {
-			const rt = ruby.querySelector('.fg-rt');
-			const range = document.createRange();
-			range.selectNodeContents(ruby);
-			if (rt) range.setEndBefore(rt);
-			const base = rect(range) || { left: 0, right: 0, top: 0, width: 0 };
-			const rtRect = rt && rect(rt);
-			const word = ruby.parentElement && ruby.parentElement.closest('.rnp-karaoke-word');
-			const wordRect = word && rect(word);
-			return {
-				底字: range.toString(),
-				读音: rt ? rt.textContent : '',
-				底字宽: px(base.width),
-				// 0 = 注音正对着底字；负数 = 注音偏左
-				注音横向偏移: rtRect ? px(mid(rtRect) - mid(base)) : null,
-				// 注音底边离底字顶边多远，负数说明压在底字上
-				注音纵向间距: rtRect ? px(base.top - rtRect.bottom) : null,
-				词盒宽: wordRect ? px(wordRect.width) : null,
-				// >0 说明注音戳出了这一行的盒子外面 —— RNP 按盒子高度排行距，会压到上一行
-				注音戳出行外: rtRect && lineRect ? px(lineRect.top - rtRect.top) : null,
-			};
-		});
-
-		const gap = annotationGap(line);
-		const info = {
-			build: BUILD,
-			ruby排版: hasRuby() ? '内核原生' : '降级（注音绝对定位）',
-			注音让位: hasRuby()
-				? CALIBRATIONS.map(
-						(c) => `${c.key}: 顶 ${c.top}em / 底 ${c.tail}em${c.tries >= CALIBRATE_MAX ? '（已收敛）' : ''}`
-				  ).join('  |  ')
-				: '降级模式不需要（注音不占高度）',
-			注音顶离行盒顶: gap ? Math.round(gap.gap * 10) / 10 : null,
-			注音压住底字: gap && gap.overlap != null ? Math.round(gap.overlap * 10) / 10 : null,
-			没注音的行高: (() => {
-				const em = referenceHeight(line);
-				return em == null || !gap ? null : Math.round(em * gap.fontSize * 10) / 10;
-			})(),
-			matchedBy: state.matchedBy,
-			readingSource: line.__fgSource,
-			karaoke: config.karaoke,
-			text: line.__fgText,
-			行: line.tagName.toLowerCase() + '.' + line.className,
-			宿主数: line.__fgHosts.length,
-			宿主: line.__fgHosts[0] === line ? '整行（没走逐字分发）' : line.__fgHosts[0].tagName.toLowerCase() + '.' + line.__fgHosts[0].className,
-			// 逐字歌词原本是怎么切的（改写前存下来的节点）
-			逐字切法: line.__fgHosts.map((h) => (h.__fgOrig || []).map((n) => n.textContent).join('')),
-			filler副本数: (line.__fgMirrors || []).length,
-			注音: rubies,
-			行高: px((lineRect || { height: 0 }).height),
-			html: line.outerHTML.slice(0, 1200),
-		};
-		console.log(LOG, 'dumpLine', info);
-		if (console.table) console.table(rubies);
-		return info;
-	}
-
-	// ------------------------------------------------------------------ 样式
-
-	function styleEl(id) {
-		let el = document.getElementById(id);
-		if (!el) {
-			el = document.createElement('style');
-			el.id = id;
-			document.head.appendChild(el);
-		}
-		return el;
-	}
-
-	let spacingVersion = 1, spacingCanvas = null;
-	function spaceAnnotations(lines) {
-		if (typeof CanvasRenderingContext2D === 'undefined') return; // DOM-only test environments
-		if (!spacingCanvas) spacingCanvas = document.createElement('canvas').getContext('2d');
-		if (!spacingCanvas) return;
-		let resized = false;
-		for (const line of lines) {
-			const cached = line.__fgSpacingWrap, now = performance.now();
-			const clean = line.__fgSpacingVersion === spacingVersion && cached && cached.isConnected && line.contains(cached);
-			if (clean && now - line.__fgSpacingProbe < 250) continue;
-			const first = clean && line.__fgSpacingSample && line.__fgSpacingSample.isConnected ? line.__fgSpacingSample : line.querySelector('.fg-ruby');
-			if (!first) continue;
-			const sample = getComputedStyle(first); line.__fgSpacingProbe = now;
-			const fontKey = [sample.fontFamily, sample.fontSize, sample.fontWeight, sample.fontStyle, sample.letterSpacing].join('|');
-			if (clean && line.__fgSpacingFont === fontKey) continue;
-			const holders = line.querySelectorAll('.fg-ruby');
-			for (const holder of holders) {
-				const rt = holder.querySelector('.fg-rt'); if (!rt || !rt.textContent) continue;
-				const baseStyle = getComputedStyle(holder), rtStyle = getComputedStyle(rt), size = parseFloat(baseStyle.fontSize);
-				if (!size) continue;
-				const measure = (text, css) => { spacingCanvas.font = css.font || `${css.fontStyle} ${css.fontWeight} ${css.fontSize} ${css.fontFamily}`; return spacingCanvas.measureText(text).width + Math.max(0, text.length - 1) * (parseFloat(css.letterSpacing) || 0); };
-				const baseWidth = measure(holder.__fgBase || '', baseStyle);
-				const custom = rt.querySelector('.fg-edit-custom'), original = rt.querySelector('.fg-edit-original');
-				const currentWidth = measure(custom ? custom.textContent : rt.textContent, rtStyle);
-				let rtWidth = currentWidth, inFlowWidth = currentWidth;
-				if (original && editor && editor.isEnabled()) {
-					inFlowWidth = measure(original.textContent, rtStyle);
-					rtWidth = Math.max(rtWidth, inFlowWidth);
-				}
-				// Native ruby reserves its own width. The absolute-position fallback does not.
-				const padding = size * .08 + Math.max(0, rtWidth - (hasRuby() ? Math.max(baseWidth, inFlowWidth) : baseWidth)) / 2;
-				holder.style.paddingLeft = holder.style.paddingRight = padding.toFixed(2) + 'px';
-				resized = true;
-			}
-			line.__fgSpacingVersion = spacingVersion; line.__fgSpacingFont = fontKey; line.__fgSpacingWrap = line.querySelector('.fg-line');
-			line.__fgSpacingSample = first;
-		}
-		if (resized) requestRecalc();
-	}
-	function updateStyles() {
-		spacingVersion++;
-		resetCalibration(); // 注音字号变了，让位的高度也要重量
-		styleEl('jp-furigana-style').textContent = `
-			.fg-line {
-				display: inline;
-			}
-			/*
-			 * 我们插进去的包装 span 不能再吃一层透明度。RNP 的
-			 * .rnp-karaoke-word span:not(.rnp-karaoke-word-filler) { opacity: .4 }
-			 * 匹配的是**每一层**嵌套 span，透明度会一层层相乘：普通字过两层是 0.4²≈0.16，
-			 * 带注音的字多一层 .fg-ruby 就成了 0.4³≈0.06，淡到几乎看不见。
-			 * 用 !important 是因为对方的选择器更具体，压不过去。
-			 */
-			.fg-line,
-			.fg-ruby {
-				opacity: 1 !important;
-			}
-			/*
-			 * 让位：RNP 的逐字歌词里每个词是独立的 inline-block，注音的高度撑不到外层
-			 * 行盒（clientHeight 不变），而 RNP 正是按 clientHeight 排行距的，于是注音
-			 * 压到上一行头上。所以在逐字宿主上把高度让出来，让多少是量出来的（见
-			 * calibrate）。整行改写的普通行不用管，那是普通块，浏览器自己会撑开。
-			 *
-			 * 关键：让位必须加在**每个** .fg-word 上（不分有没有注音）—— inline-block 的
-			 * padding 会把里面的字整体压下去，只给带注音的那个加，它就比左右邻居低一截
-			 * （实测低 15px，看着就是「这个字掉下去了」）。
-			 */
-			.fg-line.fg-word {
-				display: inline-block;
-				padding-top: var(--fg-word-offset, 0em);
-				margin-bottom: var(--fg-word-tail, 0em);
-			}
-			.fg-line ruby {
-				ruby-position: over;
-				-webkit-ruby-position: before;
-				ruby-align: center;
-				ruby-overhang: none;
-			}
-			/*
-			 * 内核不认 ruby 时的降级：不用 ruby/rt，注音是普通 span 绝对定位在底字正上方。
-			 * .fg-ruby 保持 inline（不能改成 inline-block 再加 padding —— 那样只有带注音的
-			 * 字会被压低），注音落在行与行本来的空隙里，不占行高也不撑宽底字。
-			 */
-			${
-				hasRuby()
-					? ''
-					: `
-			.fg-ruby {
-				position: relative;
-			}
-			.fg-ruby > .fg-rt {
-				position: absolute;
-				left: 50%;
-				bottom: 100%;
-				-webkit-transform: translateX(-50%);
-				transform: translateX(-50%);
-				display: block;
-				pointer-events: none;
-			}
-			`
-			}
-			.fg-line .fg-rt {
-				font-size: ${config.rtSize}%;
-				opacity: ${config.rtOpacity / 100};
-				font-weight: normal;
-				letter-spacing: 0;
-				line-height: 1.1;
-				text-align: center;
-				user-select: none;
-				-webkit-user-select: none;
-				white-space: nowrap;
-			}
-		`;
-	}
-
-	// ------------------------------------------------------------------ 调试接口
-
-	const SOURCE_NAMES = { external: '外部网站', romaji: '官方音译', dict: '词典' };
-	const READING_SOURCE_NAMES = { romaji: '网易云音译优先', dict: '只用词典', external: '外部网站' };
-	const PROVIDER_NAMES = { auto: 'UtaTen 优先，歌ネット备用', utaten: '仅 UtaTen', utanet: '仅歌ネット' };
-
-	/** 把已注音的一行读回「漢字(かんじ)」这样的纯文本，不用看 HTML 就能核对读音 */
-	function annotationPreview(line) {
-		const out = [];
-		for (const host of line.__fgHosts || []) {
-			const wrap = host.__fgWrap;
-			if (!wrap) continue;
-			for (const node of wrap.childNodes) {
-				if (node.nodeType === 3) { out.push(node.nodeValue); continue; }
-				if (!node.classList) continue;
-				if (node.classList.contains('fg-hide')) continue; // 原文自带的「（かな）」括号
-				const base = node.__fgBase != null ? node.__fgBase : node.textContent;
-				// 编辑模式下 .fg-rt 里还挂着被划掉的旧读音，所以优先读 .fg-reading
-				const rt = node.querySelector('.fg-reading') || node.querySelector('.fg-rt');
-				const reading = rt ? rt.textContent : '';
-				out.push(reading ? `${base}(${reading})` : base);
-			}
-		}
-		return out.join('');
-	}
-
-	/** 一行为什么没注音；顺序和 processLine 里的判断保持一致 */
-	function skipReason(text) {
-		if (config.skipCredits && FuriganaCore.isCreditLine(text)) return '制作信息行';
-		if (config.skipNoKanaLines && !FuriganaCore.hasKana(text)) return '没有假名';
-		if (!FuriganaCore.hasKanji(text)) return '没有汉字';
-		return '没取到读音';
-	}
-
-	function probe() {
-		// 先跑一次定位，报告里的 matchedBy 和行分类才是此刻的真相
-		const lines = collectLines().filter(Boolean);
-		const done = lines.filter((l) => l.__fgHosts && l.__fgHosts.length);
-		const skipped = lines.filter((l) => l.__fgHosts && !l.__fgHosts.length);
-		const pending = lines.filter((l) => !l.__fgHosts);
-		const bySrc = (s) => done.filter((l) => l.__fgSource === s).length;
-		const external = externalClient && externalClient.inspect();
-		const language = currentTrackLanguage();
-		const info = {
-			build: BUILD,
-			betterncm: state.betterncmVersion,
-			tokenizerReady: !!state.tokenizer,
-			loadError: state.loadError && String(state.loadError),
-			readingSource: config.readingSource,
-			matchedBy: state.matchedBy,
-			lineCount: lines.length,
-			done: done.length,
-			skipped: skipped.length,
-			pending: pending.length,
-			srcExternal: bySrc('external'),
-			srcRomaji: bySrc('romaji'),
-			srcDict: bySrc('dict'),
-			lastPassMs: state.lastPassMs,
-			trackId: getCurrentTrackId(),
-			japanese: language.eligible,
-			apiStatus: state.apiStatus,
-			apiTrackId: state.apiTrackId,
-			storeFound: !!state.store,
-			external: external && {
-				status: external.status,
-				source: external.source,
-				url: external.url,
-				edits: external.edits,
-				loading: external.loading,
-			},
-			container: state.container
-				? {
-						tag: state.container.tagName,
-						cls: state.container.className,
-						children: state.container.children.length,
-				  }
-				: null,
-		};
-
-		const row = (...parts) => console.log(LOG, parts.filter(Boolean).join('｜'));
-		const sub = (text) => console.log('    ' + text);
-
-		console.log(LOG, `probe ${BUILD}`, info);
-		row(
-			`环境：BetterNCM ${state.betterncmVersion || '未知'}`,
-			`词典 ${state.tokenizer ? '已就绪' : state.loadError ? '加载失败：' + state.loadError : '加载中'}`,
-			`内核 ruby ${hasRuby() ? '支持' : '不支持（降级排版）'}`,
-			`注音 ${config.enabled ? '已启用' : '已关闭'}`
-		);
-		row(
-			`设置：读音来源 ${READING_SOURCE_NAMES[config.readingSource] || config.readingSource}` +
-				(config.readingSource === 'external'
-					? `（${PROVIDER_NAMES[config.externalProvider] || config.externalProvider}）`
-					: ''),
-			config.kana === 'katakana' ? '片假名' : '平假名',
-			`逐字歌词 ${config.karaoke ? '开' : '关'}`,
-			`编辑模式 ${editor && editor.isEnabled() ? '开' : '关'}`
-		);
-		row(
-			`当前曲目：id ${getCurrentTrackId() || '未知'}`,
-			`语种 ${language.eligible === true ? '日语' : language.eligible === false ? '非日语，整首跳过' : '确认中'}`
-		);
-		row(`歌词容器：${state.matchedBy || '未找到歌词元素'}`, `${lines.length} 行`, `上次耗时 ${state.lastPassMs}ms`);
-		if (lines.length) sub('path: ' + domPath(lines[0]));
-		row(`处理结果：已注音 ${done.length}`, `跳过 ${skipped.length}`, `未处理 ${pending.length}`);
-
-		// 这里统计的是「每一行最终用了谁的读音」，和下面官方音译数据的行数不是一回事
-		const rest = done.length - info.srcExternal - info.srcRomaji - info.srcDict;
-		const dist = [
-			['external', info.srcExternal],
-			['romaji', info.srcRomaji],
-			['dict', info.srcDict],
-		]
-			.filter(([s, n]) => n || s !== 'external' || config.readingSource === 'external')
-			.map(([s, n]) => `${SOURCE_NAMES[s]} ${n} 行`);
-		if (rest > 0) dist.push(`其他 ${rest} 行`);
-		console.log(LOG, '读音来源（按行统计）：' + dist.join('｜'));
-
-		const romajiRole =
-			config.readingSource === 'dict'
-				? '当前设置不用它'
-				: config.readingSource === 'external'
-				? '只给网站未命中的行兜底'
-				: '优先用它';
-		console.log(
-			LOG,
-			`官方音译数据：${state.apiStatus}（${romajiRole}；曲目 id ${state.apiTrackId || '未知'}，` +
-				`Redux store ${state.store ? '已找到' : '未找到'}）`
-		);
-
-		if (config.readingSource === 'external' || (external && external.ready)) {
-			if (!external) console.log(LOG, '外部网站：尚未初始化');
-			else {
-				// 状态文案本身是给设置面板用的多行文本，这里只把第一行放进标题
-				const status = String(external.status || '未请求').split('\n');
-				row(
-					`外部网站：${status[0]}`,
-					external.source && `来源 ${external.source}`,
-					external.loading && '获取中',
-					external.waitingRetry && '等待重试',
-					external.edits ? `人工纠音 ${external.edits} 条` : ''
-				);
-				for (const extra of status.slice(1)) if (extra.trim()) sub(extra.trim());
-				if (external.error) sub('错误：' + external.error);
-				if (external.warning) sub('提示：' + external.warning);
-				if (external.url) sub('来源网页：' + external.url);
-				if (external.cachePath) sub('缓存目录：' + external.cachePath);
-				if (external.songId && external.songId !== getCurrentTrackId())
-					sub(`注意：网站数据属于曲目 ${external.songId}，当前曲目 ${getCurrentTrackId() || '未知'}`);
-			}
-		}
-
-		console.log(LOG, '已知选择器命中（至少两行可见才会被采用）：');
-		for (const sel of KNOWN_SELECTORS) {
-			let found;
-			try {
-				found = [...document.querySelectorAll(sel)];
-			} catch (e) {
-				sub(`选择器无效：${sel}`);
-				continue;
-			}
-			const texted = found.filter(hasText);
-			const visible = texted.filter(isVisible).length;
-			const mine = state.matchedBy && state.matchedBy.indexOf('known:' + sel) === 0;
-			sub(`命中 ${found.length} / 有文字 ${texted.length} / 可见 ${visible}　${sel}${mine ? '　← 本次使用' : ''}`);
-		}
-
-		// 前几行往往是「作词:/编曲:」这类被跳过的行，所以三类分别取样
-		const dump = (label, list, n, reason) => {
-			list.slice(0, n).forEach((l, i) => {
-				const text = plainText(l);
-				console.log(LOG, `取样 ${label} #${i + 1}：${text}`);
-				if (reason) sub('原因：' + reason(text));
-				if (l.__fgErrMsg) sub('处理失败：' + l.__fgErrMsg);
-				if (l.__fgHosts && l.__fgHosts.length) {
-					sub(`来源：${SOURCE_NAMES[l.__fgSource] || l.__fgSource || '未知'}`);
-					sub('注音：' + (annotationPreview(l) || '（空）'));
-				}
-				const romaji = state.apiRomaji && state.apiRomaji.get(FuriganaCore.lyricKey(text));
-				if (romaji) sub('官方音译：' + romaji);
-				sub('html：' + l.outerHTML.slice(0, 400));
-			});
-		};
-		dump('已注音', done, 2);
-		dump('跳过', skipped, 2, skipReason);
-		dump('未处理', pending, 2);
-
-		return info;
-	}
-
-	function domPath(el) {
-		const parts = [];
-		for (let p = el; p && p !== document.body; p = p.parentElement) {
-			let s = p.tagName.toLowerCase();
-			if (p.id) s += '#' + p.id;
-			const cls = typeof p.className === 'string' ? p.className.trim() : '';
-			if (cls) s += '.' + cls.split(/\s+/).join('.');
-			parts.unshift(s);
-			if (parts.length > 8) break;
-		}
-		return parts.join(' > ');
-	}
+	const diagnostics = typeof FuriganaProbe !== 'undefined'
+		? FuriganaProbe.create({
+				LOG, BUILD, config, state, core: FuriganaCore,
+				KNOWN_SELECTORS, CALIBRATIONS, CALIBRATE_MAX,
+				lastLines: () => lastLines,
+				externalClient: () => externalClient,
+				editor: () => editor,
+				collectLines, currentTrackLanguage, getCurrentTrackId, hasRuby,
+				hasText, isVisible, plainText, annotationGap, referenceHeight,
+		  })
+		: null;
+	const probe = () => (diagnostics ? diagnostics.probe() : console.warn(LOG, 'probe.js 未注入'));
+	const dumpLine = (index) => (diagnostics ? diagnostics.dumpLine(index) : 'probe.js 未注入');
 
 	function disable() {
 		editEntry++; state.editInterrupt = null;
@@ -1898,27 +857,8 @@
 		schedule(0);
 	}
 
-	// ------------------------------------------------------------------ 设置界面
+	// ------------------------------------------------------------------ 设置（界面见 config-ui.js）
 
-	// 排障用的部分，只在开发模式下露出来（插件放在 plugins_dev 里，
-	// 或者在控制台执行 localStorage['jp-furigana.dev'] = '1' 后重启）
-	const ADVANCED_UI = `
-		<div class="fg-row"><label><input type="checkbox" data-k="requireLyricClass"> 自动检测时限定在 class 含 "lyric" 的区域内</label></div>
-		<div class="fg-row">
-			<label>自定义歌词选择器</label>
-			<input type="text" data-k="customSelector" placeholder="留空则自动检测">
-		</div>
-		<div class="fg-hint">改完选择器点「重新检测」生效。不确定填什么就先点「输出诊断信息」，按 F12 看控制台。</div>
-
-		<h3>维护</h3>
-		<div class="fg-row">
-			<button data-a="rescan">重新检测歌词元素</button>
-			<button data-a="probe">输出诊断信息</button>
-			<button data-a="clearCache">清除注音缓存</button>
-			<label><input type="checkbox" data-k="verbose"> 控制台输出详细日志</label>
-		</div>
-		<div class="fg-status"></div>
-	`;
 
 	// 已打开的设置面板的刷新回调，词典加载完 / 音译取回来时通知它们
 	const configRefreshers = new Set();
@@ -1941,7 +881,8 @@
 			value = Number(value); if (!Number.isFinite(value)) throw new Error('请输入有效数值');
 			value = Math.max(20, Math.min(100, Math.round(value)));
 		}
-		const choices = { readingSource: ['romaji', 'dict', 'external'], externalProvider: ['auto', 'utaten', 'utanet'], externalAutoRetry: ['off', 'failed'], kana: ['hiragana', 'katakana'] };
+		if (key === 'rtWeight') value = String(value);
+		const choices = { readingSource: ['romaji', 'dict', 'external'], externalProvider: ['auto', 'utaten', 'utanet'], externalAutoRetry: ['off', 'failed'], kana: ['hiragana', 'katakana'], rtWeight: RT_WEIGHTS };
 		if (choices[key] && !choices[key].includes(value)) throw new Error('无效的设置选项');
 		if (key === 'readingSource' && value === 'external' && !config.externalConsent) {
 			// 先弹提示，确认后再真正切过去；取消就保持原来的读音来源
@@ -1954,6 +895,7 @@
 		if (key === 'enabled') value ? enable() : disable();
 		else if (key === 'externalAutoRetry') { if (externalClient) externalClient.setAutoRetry(value); }
 		else if (NEEDS_RESCAN.includes(key)) rescan();
+		else if (key === 'rtWeight') schedule(0); // 字重改了，注音宽度和行高补偿要重量一次
 		notifyConfigUI();
 		return config[key];
 	}
@@ -2080,246 +1022,24 @@
 		if (info.loading || info.error || !info.ready) return (track ? track + '\n' : '') + info.status;
 		return track + (info.warning ? '\n' + info.warning : '');
 	}
-	let clientLyricSource = null, clientLyricId = null, clientLyricLines = [];
-
 	function buildConfigUI() {
-		const root = document.createElement('div');
-		root.id = 'jp-furigana-config';
-		root.innerHTML = `
-			<style>
-				#jp-furigana-config { font-size: 14px; line-height: 2; }
-				#jp-furigana-config h3 { font-size: 16px; font-weight: bold; margin: 12px 0 4px; }
-				#jp-furigana-config .fg-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-				#jp-furigana-config .fg-hint { opacity: .6; font-size: 12px; }
-				#jp-furigana-config .fg-links { display: flex; gap: 16px; margin-bottom: 4px; }
-				#jp-furigana-config .fg-links a { text-decoration: underline; cursor: pointer; opacity: .85; }
-				#jp-furigana-config .fg-links a:hover { opacity: 1; }
-				#jp-furigana-config input[type="text"] { width: 320px; }
-				#jp-furigana-config .fg-external-settings[hidden], #jp-furigana-config .fg-consent-row[hidden] { display: none !important; }
-				#jp-furigana-config .fg-external-error { color: #e67e73; font-size: 12px; }
-				#jp-furigana-config .fg-edit-interrupt { color:#e45454;white-space:normal; }
-				#jp-furigana-config .fg-preview {
-					font-size: 26px; padding: 14px 16px; margin: 8px 0;
-					border-radius: 10px; background: rgba(127,127,127,.12);
-				}
-				#jp-furigana-config .fg-status { white-space: pre-wrap; font-family: monospace; font-size: 12px; opacity: .8; }
-			</style>
-			<div class="fg-links">
-				<a href="#" data-open="${REPO_URL}">源码仓库</a>
-				<a href="#" data-open="${REPO_URL}/issues">反馈问题</a>
-			</div>
-
-			<h3>预览</h3>
-			<div class="fg-preview"></div>
-
-			<h3>基本</h3>
-			<div class="fg-row"><label><input type="checkbox" data-k="enabled"> 启用注音</label></div>
-			<div class="fg-row">
-				<label>注音假名</label>
-				<select data-k="kana">
-					<option value="hiragana">平假名</option>
-					<option value="katakana">片假名</option>
-				</select>
-			</div>
-			<div class="fg-row">
-				<label>读音来源</label>
-				<select data-k="readingSource">
-					<option value="romaji">优先用网易云音译（推荐）</option>
-					<option value="dict">只用词典</option>
-					<option value="external">外部网站</option>
-				</select>
-			</div>
-			<div class="fg-row fg-consent-row"><button data-a="revokeConsent">撤销外部网站同意</button><span class="fg-hint">撤销后切回网易云音译，下次开启外部网站时会重新提示</span></div>
-			<section class="fg-external-settings">
-				<div class="fg-hint">外部来源会联网获取并在本地保存歌词，请遵守来源网站使用条款。<a href="#" data-open="https://utaten.com/index/agreement">UtaTen 条款</a> · <a href="#" data-open="https://www.uta-net.com/info/kiyaku.html">歌ネット条款</a></div>
-				<h3>外部歌词</h3>
-				<div class="fg-row"><label>外部网站范围</label><select data-k="externalProvider">
-					<option value="auto">UtaTen 优先，歌ネット备用（推荐）</option>
-					<option value="utaten">仅查询 UtaTen 振假名</option>
-					<option value="utanet">仅查询歌ネット罗马音</option>
-				</select></div>
-				<div class="fg-row"><label>自动重新获取</label><select data-k="externalAutoRetry">
-					<option value="off">关闭（仍会首次获取）</option>
-					<option value="failed">失败后自动重试（最多 3 次）</option>
-				</select></div>
-				<div class="fg-hint">超时等临时网络故障按 3 / 8 / 15 秒间隔重试获取流程；歌名与歌词核对属于同一次尝试。关闭后取消等待。没有匹配歌曲、网页格式错误或 HTTP 403 等情况不自动反复请求。</div>
-				<div class="fg-hint">网站请求沿用浏览器当前网络环境；需要代理时可使用系统代理。本插件不修改网易云或系统网络配置。</div>
-				<div class="fg-row"><label>歌词缓存目录</label><input type="text" data-k="externalCacheDir" placeholder="留空：BetterNCM 数据目录 / lyrics / jp-furigana" spellcheck="false"></div>
-				<div class="fg-hint">可填写完整磁盘路径。每首歌曲一个 JSON 文件，包含网站歌词、读音和来源；更改目录后旧文件保留。</div>
-				<div class="fg-hint">“仅查询”限制外部网站来源；加载期间及未匹配的行仍沿用网易云音译 / 词典。网站命中的行采用网站读音，保留原歌词和时间轴。网站注音也可能有错。</div>
-				<div class="fg-external-error" role="alert"></div>
-				<div class="fg-external-status" role="status" style="white-space:pre-wrap;font-size:12px;margin:8px 0"></div>
-				<div class="fg-row"><button data-a="externalRetry">重新获取当前歌曲</button><button data-a="externalSource">查看来源网页</button><button data-a="externalAssign" title="支持手动指定 UtaTen 歌词页">手动指定歌词页</button></div>
-			</section>
-			<div class="fg-row"><button data-a="editMode">进入编辑模式</button><button data-a="cacheManager">本地歌词管理</button></div>
-			<div class="fg-row">
-				<label>注音大小</label>
-				<input type="range" data-k="rtSize" min="20" max="100" step="1">
-				<span data-v="rtSize"></span>
-			</div>
-			<div class="fg-row">
-				<label>注音不透明度</label>
-				<input type="range" data-k="rtOpacity" min="20" max="100" step="1">
-				<span data-v="rtOpacity"></span>
-			</div>
-
-			<h3>兼容</h3>
-			<div class="fg-row"><label><input type="checkbox" data-k="karaoke"> 逐字歌词模式（把注音分发到每个字/词，保留逐字高亮动画）</label></div>
-			<div class="fg-row"><label><input type="checkbox" data-k="onlyFirstLine"> 只给原文注音，跳过翻译和罗马音</label></div>
-			<div class="fg-row"><label><input type="checkbox" data-k="skipCredits"> 跳过「作词:／编曲:」等制作信息行</label></div>
-			<div class="fg-row"><label><input type="checkbox" data-k="skipNoKanaLines"> 跳过没有假名的行（中文翻译、版权声明）</label></div>
-			${DEV ? ADVANCED_UI : ''}
-		`;
-
-		const preview = root.querySelector('.fg-preview');
-		const status = root.querySelector('.fg-status');
-
-		function refreshPreview() {
-			const demo = '夜空を駆ける一人の影';
-			preview.textContent = '';
-			if (!state.tokenizer) {
-				if (state.loadError) preview.textContent = '词典加载失败：' + state.loadError;
-				else if (state.loading) preview.textContent = '词典加载中…';
-				else if (!config.enabled) preview.textContent = '注音已关闭';
-				else preview.textContent = '词典尚未加载';
-				return;
-			}
-			preview.appendChild(buildWrap(getSegments(demo)));
-		}
-
-		function refreshStatus() {
-			const section = root.querySelector('.fg-external-settings');
-			section.hidden = config.readingSource !== 'external';
-			root.querySelector('.fg-consent-row').hidden = !config.externalConsent;
-			const info = externalClient && externalClient.inspect();
-			const externalStatus = root.querySelector('.fg-external-status'), text = externalStatusText();
-			if (externalStatus.textContent !== text) externalStatus.textContent = text;
-			const japanese = currentTrackLanguage().eligible === true;
-			root.querySelector('[data-a="externalSource"]').disabled = !(japanese && info && info.url && info.songId === getCurrentTrackId());
-			root.querySelector('[data-a="externalRetry"]').disabled = !config.enabled || !getCurrentTrackId() || currentTrackLanguage().eligible === false;
-			root.querySelector('[data-a="externalAssign"]').disabled = !config.enabled || !japanese || config.externalProvider==='utanet';
-			const editButton = root.querySelector('[data-a="editMode"]');
-			const editState=editorButtonState();editButton.textContent=editState.text;editButton.classList.toggle('fg-edit-interrupt',editState.warning);
-			editButton.disabled = !(editor && editor.isEnabled()) && (!japanese || !state.tokenizer);
-			if (!status) return; // 非开发模式没有这块
-			status.textContent = [
-				`词典：${state.tokenizer ? '已就绪' : state.loadError ? '失败 ' + state.loadError : '加载中'}`,
-				`定位方式：${state.matchedBy || '未找到歌词元素'}`,
-				`歌词行数：${state.lineCount}，已注音：${state.annotated}，上次耗时：${state.lastPassMs}ms`,
-				`读音来源：外部网站 ${state.srcExternal} 行 / 官方音译 ${state.srcRomaji} 行 / 词典 ${state.srcDict} 行`,
-				`官方音译数据：${state.apiStatus}（曲目 id ${state.apiTrackId || '未知'}，store ${state.store ? '已找到' : '未找到'}）`,
-				`缓存条目：${cache.size}`,
-			].join('\n');
-		}
-
-		// 滑块旁边那行数值怎么显示
-		const sliderDrafts = new Map();
-		const fmt = (key) => (sliderDrafts.has(key) ? sliderDrafts.get(key) : config[key]) + '%';
-
-		root.querySelectorAll('[data-k]').forEach((el) => {
-			const key = el.dataset.k;
-			if (el.type === 'checkbox') el.checked = !!config[key];
-			else el.value = config[key];
-
-			const commit = () => {
-				sliderDrafts.delete(key);
-				const error = root.querySelector('.fg-external-error');
-				error.textContent = '';
-				try { setConfigValue(key, el.type === 'checkbox' ? el.checked : el.value); }
-				catch (e) { error.textContent = e.message; return; }
-				const out = root.querySelector(`[data-v="${key}"]`);
-				if (out) out.textContent = fmt(key);
-
-				refreshPreview();
-				refreshStatus();
-			};
-			el.addEventListener('change', commit);
-			if (el.type === 'range') el.addEventListener('input', () => {
-				sliderDrafts.set(key, el.value);
-				root.querySelector(`[data-v="${key}"]`).textContent = fmt(key);
-			});
-
-			const out = root.querySelector(`[data-v="${key}"]`);
-			if (out) out.textContent = fmt(key);
+		return FuriganaConfigUI.build({
+			LOG, REPO_URL, DEV, config, state,
+			cacheSize: () => cache.size,
+			externalClient: () => externalClient,
+			editor: () => editor,
+			renderPreview: (text) => buildWrap(getSegments(text)),
+			openUrl: (url) => betterncm.ncm.openUrl(url),
+			subscribe: (fn) => { configRefreshers.add(fn); return () => configRefreshers.delete(fn); },
+			getCurrentTrackId, currentTrackLanguage, externalStatusText, editorButtonState,
+			setConfigValue, retryExternal, openExternalSource, chooseExternalSource,
+			toggleEditor, revokeExternalConsent, rescan, probe, clearCache,
 		});
-
-		// 外链要走 betterncm.ncm.openUrl 交给系统浏览器，直接跳会把网易云本身导航走
-		root.querySelectorAll('[data-open]').forEach((el) => {
-			el.onclick = (e) => {
-				e.preventDefault();
-				const url = el.dataset.open;
-				try {
-					betterncm.ncm.openUrl(url);
-				} catch (err) {
-					console.warn(LOG, '打开链接失败', url, err);
-				}
-			};
-		});
-
-		// 这些按钮只在开发模式下存在
-		const onClick = (action, handler) => {
-			const el = root.querySelector(`[data-a="${action}"]`);
-			if (el) el.onclick = handler;
-		};
-		onClick('externalRetry', retryExternal);
-		onClick('externalSource', openExternalSource);
-		onClick('externalAssign',()=>chooseExternalSource().catch(error=>{root.querySelector('.fg-external-error').textContent=error.message;}));
-		onClick('editMode', () => toggleEditor().catch(e => { root.querySelector('.fg-external-error').textContent = e.message; }));
-		onClick('cacheManager', () => editor && editor.openManager());
-		onClick('revokeConsent', revokeExternalConsent);
-		onClick('rescan', () => {
-			rescan();
-			setTimeout(refreshStatus, 500);
-		});
-		onClick('probe', () => {
-			probe();
-			refreshStatus();
-		});
-		onClick('clearCache', (e) => {
-			clearCache();
-			e.target.textContent = '已清除';
-			setTimeout(() => (e.target.textContent = '清除注音缓存'), 2000);
-			refreshStatus();
-		});
-
-		const refreshAll = () => {
-			for (const el of root.querySelectorAll('[data-k]')) {
-				// 只跳过正在输入的文本框和拖动中的滑块；下拉框要能被确认窗口的结果改回去
-				if (document.activeElement === el && (el.type === 'text' || el.type === 'range')) continue;
-				if (el.type === 'checkbox') el.checked = !!config[el.dataset.k];
-				else el.value = sliderDrafts.has(el.dataset.k) ? sliderDrafts.get(el.dataset.k) : config[el.dataset.k];
-				const out = root.querySelector('[data-v="' + el.dataset.k + '"]');
-				if (out && out.textContent !== fmt(el.dataset.k)) out.textContent = fmt(el.dataset.k);
-			}
-			refreshPreview();
-			refreshStatus();
-		};
-		refreshAll();
-
-		// 词典就绪时立刻刷一次，不用等下一个 tick
-		configRefreshers.add(refreshAll);
-
-		// BetterNCM 会先调 onConfig 把面板建好、之后才插进 DOM，所以刚开始 root 是游离的。
-		// 不能一看到没连上就清定时器，否则面板会永远停在「词典加载中」。
-		let seenConnected = false;
-		let ticks = 0;
-		const iv = setInterval(() => {
-			if (root.isConnected) seenConnected = true;
-			else if (seenConnected || ++ticks > 120) {
-				// 面板已关闭，或者建好之后一直没被用到（2 分钟）
-				clearInterval(iv);
-				configRefreshers.delete(refreshAll);
-				return;
-			}
-			refreshAll();
-		}, 1000);
-
-		return root;
 	}
 
 	// ------------------------------------------------------------------ 入口
 
-	plugin.onConfig(buildConfigUI);
+	if (typeof FuriganaConfigUI !== 'undefined') plugin.onConfig(buildConfigUI);
 
 	let started = false;
 	async function start(plugins) {
