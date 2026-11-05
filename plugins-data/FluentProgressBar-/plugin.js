@@ -2,52 +2,61 @@ plugin.onLoad(() => {
     try {
         // 1. 注入独立硬件加速图层与溢出裁切样式
         let hasMaterialYou = false;
-        try {
-            hasMaterialYou = (typeof loadedPlugins !== 'undefined' && loadedPlugins && ("MaterialYouTheme" in loadedPlugins));
-        } catch {}
-
         const styleEl = document.createElement('style');
-        const hideOverflow = !hasMaterialYou ? "overflow-x: hidden;" : "";
         styleEl.id = 'fluent-progress-bar-style';
-        styleEl.innerHTML = `
-            .m-player .prg { ${hideOverflow} }
-            .m-player .prg .has {
-                width: 100% !important;
-                transform-origin: left center !important;
-                will-change: transform !important;
-            }
-            .m-player-fm .prg { ${hideOverflow} }
-            .m-player-fm .prg .has {
-                width: 100% !important;
-                transform-origin: left center !important;
-                will-change: transform !important;
-            }
-        `;
+
+        function updateStyle(force) {
+            let detected = false;
+            try {
+                detected = (typeof loadedPlugins !== 'undefined' && loadedPlugins && ("MaterialYouTheme" in loadedPlugins));
+            } catch {}
+            if (!force && detected === hasMaterialYou) return;
+            hasMaterialYou = detected;
+            const hideOverflow = !hasMaterialYou ? "overflow-x: hidden;" : "";
+            styleEl.textContent = `
+                .m-player .prg { ${hideOverflow} }
+                .m-player .prg .has {
+                    width: 100% !important;
+                    will-change: transform !important;
+                }
+                .m-player-fm .prg { ${hideOverflow} }
+                .m-player-fm .prg .has {
+                    width: 100% !important;
+                    will-change: transform !important;
+                }
+            `;
+        }
+
+        updateStyle(true);
         document.head.appendChild(styleEl);
 
-        // 限制最高 60 FPS，杜绝 160Hz 屏幕下高频 D3D11 Present 导致的额外负载
-        const TARGET_FPS = 60;
-        const FRAME_INTERVAL = 1000 / TARGET_FPS;
+        // 限制最高 ~60 FPS，兼容 60Hz VSync 抖动并杜绝高刷屏幕下高频 D3D11 Present 负载
+        const FRAME_INTERVAL = 1000 / 62;
+        const MAX_EXTRAPOLATE_SEC = 1.5;
 
         let totalDuration = 0;
         let lastAudioProgress = 0;
         let lastAudioTimestamp = 0;
+        let renderedSec = 0;
         let isPlaying = false;
         let isSeeking = false;
+        let seekTimer = null;
         let rafId = null;
         let lastFrameTime = 0;
+        let lastTransStr = '';
 
         const trackedBars = new Set();
 
         function applyTransform(ratio) {
             const pct = Math.max(0, Math.min(1, ratio)) * 100;
-            const transStr = `translateX(${-100 + pct}%)`;
+            const offset = (-100 + pct).toFixed(3);
+            const transStr = `translate3d(${offset}%, 0, 0)`;
+            if (transStr === lastTransStr) return;
+            lastTransStr = transStr;
+
             for (const el of trackedBars) {
-                if (document.contains(el)) {
-                    // 仅对当前可见元素刷新，跳过后台隐藏的进度条容器
-                    if (el.offsetParent !== null) {
-                        el.style.transform = transStr;
-                    }
+                if (el.isConnected) {
+                    el.style.transform = transStr;
                 } else {
                     trackedBars.delete(el);
                 }
@@ -62,20 +71,27 @@ plugin.onLoad(() => {
 
             rafId = requestAnimationFrame(renderFrame);
 
-            // 60FPS 节流控制
+            // 60FPS 节流控制（容忍 60Hz VSync 微小抖动）
             if (now - lastFrameTime < FRAME_INTERVAL) return;
-            lastFrameTime = now - ((now - lastFrameTime) % FRAME_INTERVAL);
+            lastFrameTime = now;
 
-            const elapsedSec = (now - lastAudioTimestamp) / 1000;
-            const currentSec = lastAudioProgress + elapsedSec;
+            const elapsedSec = Math.min(MAX_EXTRAPOLATE_SEC, Math.max(0, (now - lastAudioTimestamp) / 1000));
+            let currentSec = Math.min(totalDuration, lastAudioProgress + elapsedSec);
+
+            // 消除 IPC 微小延迟导致的进度条瞬间回退抖动，同时保留 >=0.25s 的真实回退/重播
+            if (currentSec < renderedSec && (renderedSec - currentSec) < 0.25) {
+                currentSec = renderedSec;
+            } else {
+                renderedSec = currentSec;
+            }
+
             const ratio = currentSec / totalDuration;
-
             applyTransform(ratio);
         }
 
         function startRender() {
             if (!rafId && isPlaying && !isSeeking && !document.hidden && totalDuration > 0) {
-                lastFrameTime = performance.now();
+                lastFrameTime = 0;
                 rafId = requestAnimationFrame(renderFrame);
             }
         }
@@ -87,20 +103,47 @@ plugin.onLoad(() => {
             }
         }
 
+        function tryParseDurationFromDOM() {
+            const timeEls = document.querySelectorAll('.m-player .time, .m-player-fm .time, #main-player .time');
+            for (let i = 0; i < timeEls.length; i++) {
+                const text = timeEls[i].textContent;
+                if (!text) continue;
+                const match = text.match(/(\d+):(\d+)\s*$/);
+                if (match) {
+                    const mins = parseInt(match[1], 10);
+                    const secs = parseInt(match[2], 10);
+                    const dur = mins * 60 + secs;
+                    if (Number.isFinite(dur) && dur > 0) {
+                        totalDuration = dur;
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+
         function registerBar(eleHas) {
             if (!eleHas || trackedBars.has(eleHas)) return;
             trackedBars.add(eleHas);
-            eleHas.style.transform = 'translateX(-100%)';
+
+            const currentRatio = totalDuration > 0 ? Math.max(0, Math.min(1, renderedSec / totalDuration)) : 0;
+            const offset = (-100 + currentRatio * 100).toFixed(3);
+            eleHas.style.transform = `translate3d(${offset}%, 0, 0)`;
+            lastTransStr = '';
 
             const elePrg = eleHas.closest('.prg') || eleHas.parentElement;
             if (elePrg && !elePrg._fpbBound) {
                 elePrg._fpbBound = true;
 
                 let dragging = false;
+                let dragRect = null;
+                let lastSeekRatio = 0;
+
                 const updateSeek = (e) => {
-                    const rect = elePrg.getBoundingClientRect();
+                    const rect = (dragRect && dragRect.width > 0) ? dragRect : elePrg.getBoundingClientRect();
                     if (rect.width > 0) {
                         const ratio = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+                        lastSeekRatio = ratio;
                         applyTransform(ratio);
                     }
                 };
@@ -110,88 +153,143 @@ plugin.onLoad(() => {
                 };
 
                 const onPointerUp = () => {
-                    if (dragging) {
-                        dragging = false;
-                        window.removeEventListener('pointermove', onPointerMove);
-                        window.removeEventListener('pointerup', onPointerUp);
-                        window.removeEventListener('pointercancel', onPointerUp);
+                    if (!dragging) return;
+                    dragging = false;
+                    dragRect = null;
+                    window.removeEventListener('pointermove', onPointerMove);
+                    window.removeEventListener('pointerup', onPointerUp);
+                    window.removeEventListener('pointercancel', onPointerUp);
+                    window.removeEventListener('blur', onPointerUp);
 
-                        setTimeout(() => {
-                            isSeeking = false;
-                            startRender();
-                        }, 50);
+                    if (totalDuration > 0) {
+                        lastAudioProgress = lastSeekRatio * totalDuration;
+                        lastAudioTimestamp = performance.now();
+                        renderedSec = lastAudioProgress;
                     }
+
+                    if (seekTimer) clearTimeout(seekTimer);
+                    seekTimer = setTimeout(() => {
+                        seekTimer = null;
+                        isSeeking = false;
+                        startRender();
+                    }, 50);
                 };
 
                 elePrg.addEventListener('pointerdown', (e) => {
                     if (e.button !== 0) return;
+                    if (seekTimer) {
+                        clearTimeout(seekTimer);
+                        seekTimer = null;
+                    }
                     dragging = true;
                     isSeeking = true;
+                    dragRect = elePrg.getBoundingClientRect();
                     stopRender();
                     updateSeek(e);
 
                     window.addEventListener('pointermove', onPointerMove);
                     window.addEventListener('pointerup', onPointerUp);
                     window.addEventListener('pointercancel', onPointerUp);
+                    window.addEventListener('blur', onPointerUp);
                 });
             }
         }
 
-        legacyNativeCmder.appendRegisterCall('Load', 'audioplayer', (_, info) => {
-            if (info && typeof info.duration === 'number' && info.duration > 0) {
-                totalDuration = info.duration;
-                lastAudioProgress = 0;
-                lastAudioTimestamp = performance.now();
-                applyTransform(0);
+        function scanBars() {
+            updateStyle(false);
+            const bars = document.querySelectorAll('.m-player .prg .has, .m-player-fm .prg .has, #main-player .prg .has, .prg .has');
+            for (let i = 0; i < bars.length; i++) {
+                registerBar(bars[i]);
             }
-        });
+        }
 
-        legacyNativeCmder.appendRegisterCall('PlayProgress', 'audioplayer', (_, progress) => {
-            if (typeof progress !== 'number' || progress < 0 || totalDuration <= 0) return;
-            lastAudioProgress = progress;
-            lastAudioTimestamp = performance.now();
+        if (typeof legacyNativeCmder !== 'undefined' && legacyNativeCmder && typeof legacyNativeCmder.appendRegisterCall === 'function') {
+            legacyNativeCmder.appendRegisterCall('Load', 'audioplayer', (_, info) => {
+                if (info && Number.isFinite(info.duration) && info.duration > 0) {
+                    totalDuration = info.duration;
+                    lastAudioProgress = 0;
+                    renderedSec = 0;
+                    lastAudioTimestamp = performance.now();
+                    lastTransStr = '';
+                    scanBars();
+                    applyTransform(0);
+                }
+            });
 
-            if (!isPlaying) {
-                applyTransform(progress / totalDuration);
-            }
-        });
+            legacyNativeCmder.appendRegisterCall('PlayProgress', 'audioplayer', (_, progress) => {
+                if (!Number.isFinite(progress) || progress < 0) return;
+                if (trackedBars.size === 0) scanBars();
+                if (totalDuration <= 0) {
+                    tryParseDurationFromDOM();
+                }
+                if (totalDuration <= 0 || isSeeking) return;
 
-        legacyNativeCmder.appendRegisterCall('PlayState', 'audioplayer', (_, __, state) => {
-            if (state === 1) {
-                isPlaying = true;
-                lastAudioTimestamp = performance.now();
-                startRender();
-            } else if (state === 2) {
-                isPlaying = false;
-                stopRender();
-            }
-        });
+                const now = performance.now();
+                if (!isPlaying && lastAudioTimestamp > 0) {
+                    const wallDelta = (now - lastAudioTimestamp) / 1000;
+                    const progDelta = progress - lastAudioProgress;
+                    if (wallDelta > 0.05 && wallDelta < 1.5 && progDelta > 0.05 && progDelta < 1.5) {
+                        isPlaying = true;
+                        startRender();
+                    }
+                }
+
+                lastAudioProgress = progress;
+                lastAudioTimestamp = now;
+
+                if (progress < renderedSec - 0.25 || !isPlaying) {
+                    renderedSec = progress;
+                }
+
+                if (!isPlaying) {
+                    applyTransform(progress / totalDuration);
+                }
+            });
+
+            legacyNativeCmder.appendRegisterCall('PlayState', 'audioplayer', (_, __, state) => {
+                const now = performance.now();
+                scanBars();
+                if (state === 1) {
+                    isPlaying = true;
+                    lastAudioTimestamp = now;
+                    startRender();
+                } else {
+                    if (isPlaying) {
+                        const elapsed = Math.min(MAX_EXTRAPOLATE_SEC, Math.max(0, (now - lastAudioTimestamp) / 1000));
+                        lastAudioProgress = totalDuration > 0
+                            ? Math.min(totalDuration, lastAudioProgress + elapsed)
+                            : lastAudioProgress + elapsed;
+                        renderedSec = lastAudioProgress;
+                    }
+                    isPlaying = false;
+                    lastAudioTimestamp = now;
+                    stopRender();
+                }
+            });
+        }
 
         document.addEventListener('visibilitychange', () => {
             if (document.hidden) {
                 stopRender();
             } else {
+                scanBars();
                 if (isPlaying) {
-                    lastAudioTimestamp = performance.now();
                     startRender();
+                } else if (totalDuration > 0) {
+                    applyTransform(lastAudioProgress / totalDuration);
                 }
             }
         });
 
-        // 轮询定位播放器元素
+        window.addEventListener('hashchange', scanBars);
+
+        // 启动时扫描并轮询定位播放器元素，后续通过事件按需注册
+        scanBars();
         let pollCount = 0;
         const pollTimer = setInterval(() => {
             pollCount++;
-            const mPlayerHas = document.querySelector('.m-player .prg .has');
-            const mainPlayerHas = document.querySelector('#main-player .prg .has');
-            const anyPrgHas = document.querySelector('.prg .has');
-            const fmPrgHas = document.querySelector('.m-player-fm .prg .has');
-
-            const target = mPlayerHas || mainPlayerHas || anyPrgHas;
-            if (target) registerBar(target);
-            if (fmPrgHas) registerBar(fmPrgHas);
-
-            if (pollCount > 30 && trackedBars.size > 0) {
+            scanBars();
+            if (pollCount >= 30 && trackedBars.size > 0) {
                 clearInterval(pollTimer);
             }
         }, 500);
