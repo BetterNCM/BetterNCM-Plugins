@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <title>BetterMV</title>
+  <!-- The OBS page (src/obs/page.ts), served by the plugin's local server (src/obs/helper/BetterMVObs.cs) to a browser source in OBS. -->
+  <style>
+    html, body { margin: 0; height: 100%; overflow: hidden; background: #000; color: #fff;
+      font: 400 13px/1.4 "Segoe UI Variable Text", "Segoe UI", "Microsoft YaHei UI", sans-serif; -webkit-font-smoothing: antialiased; }
+    #stage { position: fixed; inset: 0; }
+    #stage canvas { display: block; width: 100%; height: 100%; }
+    /* As the MV page waits: two blurred copies of the cover turning slowly, the artwork, the song. */
+    #wait { position: fixed; inset: 0; overflow: hidden; background: #000; opacity: 0; transition: opacity .8s cubic-bezier(.45, 0, .25, 1); pointer-events: none; }
+    #wait.is-on { opacity: 1; }
+    #wait .bd { position: absolute; left: 38%; top: 38%; width: 24%; height: 24%; background: center / cover no-repeat;
+      filter: blur(9px) saturate(1.6) brightness(.62); animation: drift 56s linear infinite; }
+    #wait .bd + .bd { opacity: .7; transform-origin: 58% 42%; animation-duration: 74s; animation-direction: reverse; mix-blend-mode: screen;
+      filter: blur(9px) saturate(1.5) brightness(.42); }
+    #wait::after { content: ""; position: absolute; inset: 0; background: radial-gradient(ellipse at 50% 45%, rgba(0, 0, 0, 0) 35%, rgba(0, 0, 0, .5) 100%); }
+    #wait .card { position: absolute; inset: 0; z-index: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+    #wait:not(.has-song) .bd, #wait:not(.has-song) .card { visibility: hidden; }
+    #wait .art { width: min(36vh, 320px); height: min(36vh, 320px); border-radius: 12px; background: rgba(255, 255, 255, .08) center / cover no-repeat;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, .25), 0 28px 70px rgba(0, 0, 0, .5); }
+    #wait .title { margin-top: 28px; max-width: min(70vw, 720px); font: 600 22px/1.25 "Segoe UI Variable Display", "Segoe UI", "Microsoft YaHei UI", sans-serif;
+      text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    #wait .artist { margin-top: 4px; max-width: min(70vw, 720px); font-size: 15px; color: rgba(255, 255, 255, .7); text-align: center;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    @keyframes drift { from { transform: scale(5.4) rotate(0deg); } to { transform: scale(5.4) rotate(360deg); } }
+    #note { position: fixed; left: 24px; bottom: 20px; z-index: 2; color: rgba(255, 255, 255, .55); }
+  </style>
+</head>
+<body>
+  <div id="stage"></div>
+  <div id="wait"><div class="bd"></div><div class="bd"></div><div class="card"><div class="art"></div><div class="title"></div><div class="artist"></div></div></div>
+  <div id="note"></div>
+  <script src="obs.js"></script>
+</body>
+</html>
