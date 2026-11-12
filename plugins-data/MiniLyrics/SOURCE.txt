@@ -1,0 +1,8 @@
+MiniLyrics — GPL-3.0-or-later
+Author: shoebillback
+Corresponding source commit: 3844bf2afc61728abae85ec98a44c8dbb37106f5
+Source: https://github.com/shoebillback/MiniLyrics/tree/3844bf2afc61728abae85ec98a44c8dbb37106f5
+Full source archive: https://github.com/shoebillback/MiniLyrics/archive/3844bf2afc61728abae85ec98a44c8dbb37106f5.zip
+Build: install MinGW-w64 g++ and run powershell -NoProfile -File .\build.ps1
+GitHub Actions build: https://github.com/shoebillback/MiniLyrics/actions/runs/43094784878
+Keep the referenced source commit and its complete build scripts publicly available.
