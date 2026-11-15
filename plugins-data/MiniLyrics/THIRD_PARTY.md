@@ -18,9 +18,9 @@ This is an adapted background pipeline, not the complete Lyricify WPF/WinUI rend
 
 0.3.0 no longer bundles liblyric or a lyric parser. The historical credits remain in CHANGELOG.md and previous releases.
 
-## Runtime interfaces and reviewed references
+## Dependencies and reviewed references
 
-- InfLink-rs: installed 3.4.0 InfLinkApi, including current-song metadata, playback state, millisecond timeline and controls.
+- InfLink-rs: historical reference for song metadata, playback state, timeline and controls; no runtime dependency since 0.7.0. The 0.7.8 player initialization order also references InfLink V3.
 - RefinedNowPlayingNext: https://github.com/SUlTlUS/refined-now-playing-netease-next — processed lyrics, translation, word timing and global-offset events; 0.5.0 measured lyric groups, 200 ms layout lookahead, 50 ms stagger, 500 ms position transitions, four motion curves and float-word timing are adapted from the installed RNPNext implementation (3.0.2+locallyrics.2).
 - LyricBarNext: https://github.com/GlassesMita/LyricBarNext — original project reference and earlier bridge/store-discovery research; no runtime dependency in 0.3.0.
 - Taskbar-Lyrics: https://github.com/BetterNCM/BetterNCM-Plugins/tree/master/plugins-data/Taskbar-Lyrics — plugin/external-native-process structure and BetterNCM app.exec usage. No binary reused.
