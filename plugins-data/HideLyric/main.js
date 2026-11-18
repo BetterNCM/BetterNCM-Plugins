@@ -234,7 +234,7 @@ plugin.onConfig(() => {
 
     title.innerHTML = `
     HideLyric<br>
-    v1.1.1 by 
+    v1.1.2 by 
     <span 
         id="githubLink"
         style="
@@ -650,7 +650,8 @@ let meaninglessLyricClearTimer = null;
 // 当前播放/暂停状态
 // true = 暂停中
 // false = 播放中
-let isPausedState = false;
+// null = 尚未检测
+let isPausedState = null;
 
 // 当前是否有hide/show命令正在执行
 let commandRunning = false;
@@ -1385,7 +1386,8 @@ if (window.__hideLyricmeaninglessLyricTimer) {
 
 window.__hideLyricTickCount = 0;
 
-
+// 启动时立即同步一次播放状态
+updatePlaybackState();
 window.__hideLyricmeaninglessLyricTimer = setInterval(() => {
     window.__hideLyricTickCount++;
     updatePlaybackState();
