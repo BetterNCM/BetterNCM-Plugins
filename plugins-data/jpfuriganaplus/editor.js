@@ -6,7 +6,7 @@
 	'use strict';
 	function install(api, doc = document) {
 		const win = doc.defaultView;
-		let enabled = false, popup = null, manager = null, hoverTimer = null;
+		let enabled = false, popup = null, manager = null, closeManager = null, hoverTimer = null;
 		const style = doc.createElement('style');
 		style.textContent = `
 			.fg-rt .fg-edit-stack { display:inline-block; position:relative; vertical-align:bottom; opacity:1 !important; }
@@ -33,14 +33,19 @@
 			.fg-editor-pop [data-details] { display:none; } .fg-editor-pop.focused [data-details] { display:block; }
 			.fg-editor-pop .fg-buttons { display:flex; gap:5px; flex-wrap:wrap; margin-top:8px; }
 			.fg-edit-backdrop { position:fixed; z-index:2147483050; inset:0; background:#0008; display:flex; align-items:center; justify-content:center; }
-			.fg-cache-manager { width:min(900px,92vw); height:min(700px,88vh); padding:20px; display:flex; flex-direction:column; gap:12px; }
-			.fg-cache-manager header,.fg-cache-tools { display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
-			.fg-cache-manager h2 { font-size:20px; margin:0; flex:1; }
+			.fg-cache-manager { width:min(900px,92vw); height:min(700px,88vh); padding:20px; display:flex; flex-direction:column; gap:12px; min-height:0; overflow:hidden; }
+			.fg-cache-header,.fg-cache-tools { display:flex; align-items:center; gap:10px; flex-wrap:wrap; flex-shrink:0; }
+			.fg-cache-title { font-size:20px; margin:0; flex:1; }
+			.fg-cache-manager > [role=status],.fg-cache-manager > [role=alert] { flex-shrink:0; max-height:18vh; overflow:auto; overflow-wrap:anywhere; }
 			.fg-cache-tools input { flex:1; min-width:150px; } .fg-cache-list { overflow:auto; flex:1; min-height:0; }
 			.fg-cache-row { padding:12px 0; border-bottom:1px solid #ffffff22; display:flex; gap:12px; align-items:center; }
 			.fg-cache-row .fg-cache-info { flex:1; min-width:0; overflow-wrap:anywhere; }
 			.fg-cache-row small { display:block; opacity:.7; } .fg-cache-row button { flex-shrink:0; }
 			.fg-cache-details { white-space:pre-wrap; overflow-wrap:anywhere; } .fg-cache-details p { margin:10px 0; }
+			.fg-cache-reading-controls { display:flex; align-items:center; gap:12px; flex-wrap:wrap; margin-top:16px; }
+			.fg-cache-details .fg-cache-lyric-line { line-height:1.85; margin:.3em 0; }
+			.fg-cache-lyric-line rt { font-size:.6em; }
+			.fg-cache-lyric-line small { display:block; opacity:.7; }
 		`;
 		doc.head.append(style);
 		const bar = doc.createElement('div'); bar.className = 'fg-edit-ui fg-edit-bar'; bar.hidden = true;
@@ -96,8 +101,8 @@
 			const el = doc.createElement('div'); el.className = 'fg-edit-ui fg-editor-pop'; el.setAttribute('role', 'dialog'); el.setAttribute('aria-label', '编辑注音');
 			el.innerHTML = '<strong data-word></strong><input data-reading aria-label="修正注音" maxlength="1000" autocomplete="off" spellcheck="false"><div data-details><label>原始注音<input data-original aria-label="原始注音" readonly></label><div class="fg-buttons"><button data-apply>应用</button><button data-cancel>取消</button><button data-restore>恢复原注音</button></div><div role="alert"></div></div>';
 			el.querySelector('[data-word]').textContent = anchor.text;
-			const input = el.querySelector('[data-reading]'); input.value = anchor.reading;
-			el.querySelector('[data-original]').value = anchor.original;
+			const input = el.querySelector('[data-reading]'); input.value = anchor.displayReading || anchor.reading;
+			el.querySelector('[data-original]').value = anchor.displayOriginal || anchor.original;
 			popup = { el, holder, anchor: { ...anchor }, input, initial: input.value, error: el.querySelector('[role=alert]'), saving: false };
 			doc.body.append(el); position();
 			input.onfocus = () => { el.classList.add('focused'); position(); };
@@ -153,41 +158,96 @@
 			if (manager) return;
 			if (!closePopup()) return;
 			const backdrop = doc.createElement('div'); backdrop.className = 'fg-edit-backdrop';
-			backdrop.innerHTML = '<section class="fg-edit-ui fg-cache-manager" role="dialog" aria-modal="true" aria-label="本地歌词管理"><header><h2>本地歌词管理</h2><button data-refresh>刷新</button><button data-close>关闭</button></header><div class="fg-cache-tools"><input data-search aria-label="搜索缓存歌词" placeholder="歌名、歌手或歌曲 ID"><label><input data-modified type="checkbox"> 仅已修改</label></div><div data-summary role="status"></div><div role="alert"></div><div class="fg-cache-list"></div></section>';
+			// RNP fullscreen styles hide every <header>; keep modal controls scoped.
+			backdrop.innerHTML = '<section class="fg-edit-ui fg-cache-manager" role="dialog" aria-modal="true" aria-label="本地歌词管理"><div class="fg-cache-header"><div class="fg-cache-title" role="heading" aria-level="2">本地歌词管理</div><button type="button" data-refresh>刷新</button><button type="button" data-close>关闭</button></div><div class="fg-cache-tools"><input data-search aria-label="搜索缓存歌词" placeholder="歌名、歌手或歌曲 ID"><label><input data-modified type="checkbox"> 仅已修改</label></div><div data-summary role="status"></div><div role="alert"></div><div class="fg-cache-list"></div></section>';
 			doc.body.append(backdrop); manager = backdrop;
 			const box = backdrop.firstElementChild, list = box.querySelector('.fg-cache-list'), search = box.querySelector('[data-search]'), error = box.querySelector('[role=alert]'), summary = box.querySelector('[data-summary]');
-			let rows = [], limit = 50, revision = 0, dir = '';
+			let rows = [], limit = 50, revision = 0, loadRevision = 0, loading = false, dir = '';
 			const previousFocus = doc.activeElement;
-			const close = () => { revision++; backdrop.remove(); manager = null; if (previousFocus && previousFocus.isConnected) previousFocus.focus(); };
+			const close = () => {
+				if (manager !== backdrop) return;
+				revision++; loadRevision++; doc.removeEventListener('keydown', managerKeys, true); backdrop.remove(); manager = null; closeManager = null;
+				if (previousFocus && previousFocus.isConnected) previousFocus.focus();
+			};
+			closeManager = close;
 			box.querySelector('[data-close]').onclick = close;
 			function button(label, run) {
-				const b = doc.createElement('button'); b.textContent = label;
+				const b = doc.createElement('button'); b.type = 'button'; b.textContent = label;
 				b.onclick = async () => { b.disabled = true; error.textContent = ''; try { await run(); } catch (e) { error.textContent = e.message; } finally { b.disabled = false; } }; return b;
 			}
+			function renderLyrics(details, record, preview) {
+				const controls = doc.createElement('div'); controls.className = 'fg-cache-reading-controls';
+				const label = doc.createElement('strong');
+				const lyrics = doc.createElement('div'); lyrics.className = 'fg-cache-lyrics';
+				const originalLabel = record.provider === 'local' ? '本地原始注音' : '网站原文注音';
+				const toggle = doc.createElement('button'); toggle.type = 'button'; toggle.dataset.toggleReadings = '';
+				toggle.textContent = '显示修改后注音';
+				let corrected = false;
+				function appendRows(rows) {
+					for (const row of rows) {
+						const line = doc.createElement('p'); line.className = 'fg-cache-lyric-line';
+						for (const seg of row.segments) {
+							if (seg.hidden) continue;
+							if (!seg.rt) { line.append(doc.createTextNode(seg.text)); continue; }
+							const ruby = doc.createElement('ruby'), rt = doc.createElement('rt');
+							rt.textContent = seg.rt;
+							ruby.append(doc.createTextNode(seg.text), rt); line.append(ruby);
+						}
+						if (row.romaji) {
+							const small = doc.createElement('small'); small.textContent = row.romaji; line.append(small);
+						}
+						lyrics.append(line);
+					}
+				}
+				function show() {
+					label.textContent = corrected ? '修改后注音' : originalLabel;
+					toggle.setAttribute('aria-pressed', String(corrected));
+					lyrics.replaceChildren();
+					const rows = corrected ? preview.corrected : preview.original;
+					appendRows(rows);
+					if (!rows.length) lyrics.textContent = '这首歌没有可预览的缓存歌词或纠音记录。';
+					if (corrected && preview.separate.length) {
+						const note = doc.createElement('p');
+						note.textContent = '以下纠音按保存时的网易云原句显示，未套到网站原文的其他位置。';
+						lyrics.append(note); appendRows(preview.separate);
+					}
+				}
+				toggle.onclick = () => { corrected = !corrected; show(); };
+				controls.append(label, toggle); details.append(controls, lyrics); show();
+			}
 			function render() {
+				revision++;
 				list.replaceChildren();
 				const query = search.value.trim().toLowerCase();
 				const shown = rows.filter(r => (!box.querySelector('[data-modified]').checked || r.edits) && [r.title, ...r.artists, r.songId].join(' ').toLowerCase().includes(query));
-				summary.textContent = rows.length + ' 首 · ' + bytes(rows.reduce((n, r) => n + r.bytes, 0)) + (rows.some(r => r.invalid) ? '（不含无法读取的文件）' : '') + ' · 已修改 ' + rows.filter(r => r.edits).length + ' 首 · 显示 ' + shown.length + ' 首\n' + dir;
+				summary.textContent = loading && !rows.length ? '读取本地缓存…' : (loading ? '读取本地缓存…\n' : '') + rows.length + ' 首 · ' + bytes(rows.reduce((n, r) => n + r.bytes, 0)) + (rows.some(r => r.invalid) ? '（不含无法读取的文件）' : '') + ' · 已修改 ' + rows.filter(r => r.edits).length + ' 首 · 显示 ' + shown.length + ' 首\n' + dir;
 				for (const row of shown.slice(0, limit)) {
 					const el = doc.createElement('div'); el.className = 'fg-cache-row';
 					const info = doc.createElement('div'); info.className = 'fg-cache-info'; info.textContent = row.title;
 					const meta = doc.createElement('small'); meta.textContent = row.artists.join(' / ') + ' · ' + row.songId + ' · ' + (row.invalid ? '缓存损坏（请在目录内检查）' : bytes(row.bytes) + ' · 修改 ' + row.edits + ' 处'); info.append(meta); el.append(info);
 					if (!row.invalid) {
 						el.append(button('查看', async () => {
-							const record = await api.manage(row, 'read'); list.replaceChildren();
+							const token = ++revision;
+							const record = await api.manage(row, 'read');
+							if (manager !== backdrop || token !== revision) return;
+							const preview = await api.preview(record);
+							if (manager !== backdrop || token !== revision) return;
+							list.replaceChildren();
 							list.append(button('返回列表', render));
 							const details = doc.createElement('div'); details.className = 'fg-cache-details';
 							const title = doc.createElement('h3'); title.textContent = record.title; details.append(title);
-							for (const edit of (Array.isArray(record.userEdits) ? record.userEdits : [])) {
-								if (!edit || typeof edit.line !== 'string') continue;
+							const entries = Array.isArray(record.userEdits) ? record.userEdits.filter(edit => edit && typeof edit.line === 'string') : [];
+							if (entries.length) {
+								const heading = doc.createElement('h4'); heading.textContent = '人工纠音记录'; details.append(heading);
+							}
+							for (const edit of entries) {
 								const p = doc.createElement('p'); p.textContent = edit.line + '\n第 ' + (edit.start + 1) + ' 字起 · ' + edit.text + '：' + edit.original + ' → ' + edit.reading; details.append(p);
 							}
 							if (row.edits) {
 								const note = doc.createElement('p'); note.textContent = '原文、分词或来源变化后，不再匹配的修改仍保留在本文件中，但不会套用到其他位置。'; details.append(note);
 								details.append(button('恢复本曲全部原始读音', async () => { if (win.confirm('清除本曲全部人工修改，恢复原始读音？')) { await api.manage(row, 'restore'); await refresh(); } }));
 							}
-							const lyrics = doc.createElement('p'); lyrics.textContent = '网站原文（保留不变）\n' + record.lines.map(l => l.text).join('\n'); details.append(lyrics); list.append(details);
+							renderLyrics(details, record, preview); list.append(details);
 						}));
 						el.append(button('播放并编辑', async () => { await api.play(row); close(); }));
 						el.append(button('删除', async () => { if (win.confirm('删除「' + row.title + '」的本地歌词及 ' + row.edits + ' 处人工修改？此操作不可恢复。')) { await api.manage(row, 'delete'); await refresh(); } }));
@@ -195,24 +255,28 @@
 					list.append(el);
 				}
 				if (shown.length > limit) list.append(button('显示更多', () => { limit += 50; render(); }));
-				if (!shown.length) { const p = doc.createElement('p'); p.textContent = '没有符合条件的缓存歌词'; list.append(p); }
+				if (!shown.length) { const p = doc.createElement('p'); p.textContent = loading ? '正在读取本地缓存…' : '没有符合条件的缓存歌词'; list.append(p); }
 			}
 			async function refresh() {
-				const token = ++revision; summary.textContent = '读取本地缓存…'; error.textContent = '';
-				try { const result = await api.list(); if (manager !== backdrop || token !== revision) return; rows = result.rows; dir = result.dir; limit = 50; render(); }
-				catch (e) { if (manager === backdrop) { summary.textContent = ''; error.textContent = e.message; } }
+				// Filters invalidate detail views, but must not discard an in-flight
+				// directory scan. Only a newer scan or closing this manager does that.
+				const token = ++loadRevision; loading = true; error.textContent = ''; render();
+				try { const result = await api.list(); if (manager !== backdrop || token !== loadRevision) return; rows = result.rows; dir = result.dir; limit = 50; loading = false; render(); }
+				catch (e) { if (manager === backdrop && token === loadRevision) { loading = false; error.textContent = e.message; render(); } }
 			}
 			box.querySelector('[data-refresh]').onclick = refresh;
 			search.oninput = () => { limit = 50; render(); }; box.querySelector('[data-modified]').onchange = render;
-			backdrop.addEventListener('keydown', e => {
-				e.stopPropagation(); if (e.key === 'Escape') { e.preventDefault(); close(); }
-				if (e.key === 'Tab') { const nodes = [...box.querySelectorAll('button,input')].filter(n => !n.disabled); const a = nodes[0], b = nodes[nodes.length - 1]; if (e.shiftKey && doc.activeElement === a) { e.preventDefault(); b.focus(); } else if (!e.shiftKey && doc.activeElement === b) { e.preventDefault(); a.focus(); } }
-			});
-			for (const event of ['click', 'mousedown', 'keyup', 'keypress']) backdrop.addEventListener(event, e => e.stopPropagation());
+			function managerKeys(e) {
+				if (e.key === 'Escape') { e.preventDefault(); e.stopImmediatePropagation(); close(); }
+				if (e.key === 'Tab') { const nodes = [...box.querySelectorAll('button,input')].filter(n => !n.disabled); const a = nodes[0], b = nodes[nodes.length - 1]; if (!box.contains(doc.activeElement)) { e.preventDefault(); a.focus(); } else if (e.shiftKey && doc.activeElement === a) { e.preventDefault(); b.focus(); } else if (!e.shiftKey && doc.activeElement === b) { e.preventDefault(); a.focus(); } }
+			}
+			doc.addEventListener('keydown', managerKeys, true);
+			backdrop.addEventListener('click', e => { if (e.target === backdrop) close(); });
+			for (const event of ['click', 'mousedown', 'keydown', 'keyup', 'keypress']) backdrop.addEventListener(event, e => e.stopPropagation());
 			refresh(); search.focus();
 		}
 		return { setEnabled, isEnabled: () => enabled, sync, openManager, prepareNavigation: closePopup,
-			destroy: () => { closePopup(false); if (manager) manager.remove(); bar.remove(); style.remove(); clearTimeout(hoverTimer); doc.body.classList.remove('fg-edit-mode'); doc.removeEventListener('mouseover', hover); doc.removeEventListener('mouseout', leave); doc.removeEventListener('click', click, true); doc.removeEventListener('scroll', scroll, true); win.removeEventListener('beforeunload', beforeUnload); win.removeEventListener('resize', position); } };
+			destroy: () => { closePopup(false); if (closeManager) closeManager(); bar.remove(); style.remove(); clearTimeout(hoverTimer); doc.body.classList.remove('fg-edit-mode'); doc.removeEventListener('mouseover', hover); doc.removeEventListener('mouseout', leave); doc.removeEventListener('click', click, true); doc.removeEventListener('scroll', scroll, true); win.removeEventListener('beforeunload', beforeUnload); win.removeEventListener('resize', position); } };
 	}
 	return { install };
 });

@@ -47,13 +47,19 @@
 	const color=(value,fallback)=>/^[a-f0-9]{6}$/i.test(String(value||''))?'#'+value:fallback;
 	function nativeStyle(s={}){
 		const colors=Array.isArray(s.lyricColor)?s.lyricColor:[],outline=Array.isArray(s.lyricOutLine)?s.lyricOutLine:[];
-		const align=s.lyricLineMode?['center','center','left','right'][s.lyricOneLineAlign]:['center','left','left','right'][s.lyricDoubleLineAlign];
+		const doubleLine=s.lyricLineMode===0;
+		const align=doubleLine?['center','split','left','right'][s.lyricDoubleLineAlign]:['center','center','left','right'][s.lyricOneLineAlign];
 		return {fontFamily:String(s.lyricFont&&s.lyricFont!=='默认'?s.lyricFont:s.lyricFontDefault||'Microsoft YaHei'),fontSize:clamp(Number(s.lyricFontSize)||36,8,144),bold:Number(s.lyricFontStyle)===1,
 			colorTop:color(colors[2],'#ffdede'),colorBottom:color(colors[3],'#ffb0b0'),outline:!!s.lyricFontOutlineEnabled,outlineColor:color(outline[1],'#cb7474'),
 			unplayedColorTop:color(colors[0],'#eeeeee'),unplayedColorBottom:color(colors[1],'#eeeeee'),unplayedOutlineColor:color(outline[0],'#999999'),
-			align:align||'center',topmost:s.lyricTop!==false,locked:!!s.desktopLyricLockState,mode:s.lyricMode||'none',showTranslation:s.lyricMode==='translate',doubleLine:s.lyricLineMode===0,vertical:s.lyricComposition==='vertical'};
+			align:align||'center',topmost:s.lyricTop!==false,locked:!!s.desktopLyricLockState,mode:s.lyricMode||'none',showTranslation:s.lyricMode==='translate',doubleLine,vertical:s.lyricComposition==='vertical'};
 	}
-	function bounds(value){if(!value||!['x','y','width'].every(k=>Number.isFinite(Number(value[k]))))return null;return {x:clamp(Number(value.x),-50000,50000),y:clamp(Number(value.y),-50000,50000),width:clamp(Number(value.width),240,10000)};}
+	function bounds(value){
+		if(!value||!['x','y','width'].every(k=>Number.isFinite(Number(value[k]))))return null;
+		const result={x:clamp(Number(value.x),-50000,50000),y:clamp(Number(value.y),-50000,50000),width:clamp(Number(value.width),240,10000)};
+		const height=Number(value.verticalHeight);if(Number.isFinite(height)&&height>0)result.verticalHeight=clamp(height,60,10000);
+		return result;
+	}
 	const menuCleanup=new WeakMap();
 	function openSettings(store,win=window){
 		// Reuse the client's actual desktop-lyrics context menu, including its
@@ -73,37 +79,65 @@
 		store.dispatch({type:'setting/updateSetting',payload:{lyricFontSize:size}});
 		win.channel.call('player.setLRCFont',()=>{},[String(size),String(Number(setting.lyricFontStyle)||0),style.fontFamily]);
 	}
-	function browserTransport(bn,plugin,win=window){
+	function browserTransport(bn,plugin,win=window,ownerPort=typeof BETTERNCM_API_PORT==='number'?BETTERNCM_API_PORT:0){
 		const utf8=value=>{let binary='';for(const b of new win.TextEncoder().encode(value))binary+=String.fromCharCode(b);return win.btoa(binary);};
-		const command64=value=>{let binary='';for(let i=0;i<value.length;i++){const c=value.charCodeAt(i);binary+=String.fromCharCode(c&255,c>>8);}return win.btoa(binary);};
-		return {async start(cancelled=()=>false){
-			const exe=plugin.pluginPath.replace(/\\/g,'/')+'/desktop-host.exe';
-			if(!await bn.fs.exists(exe))throw Error('缺少桌面歌词组件，请重新安装完整插件包');
-			const token=[...win.crypto.getRandomValues(new Uint8Array(16))].map(n=>n.toString(16).padStart(2,'0')).join('');
+		const bundled=plugin.pluginPath.replace(/\\/g,'/')+'/desktop-host.exe';
+		let staging=null;
+		async function stageRenderer(){
+			// BetterNCM removes plugins_runtime during shutdown/reload. A
+			// running Windows executable must live outside that directory.
 			const dir=(await bn.app.getDataPath()).replace(/\\/g,'/')+'/lyrics/jp-furigana/desktop';
 			if(!await bn.fs.mkdir(dir))throw Error('无法创建桌面歌词运行目录');
-			const ready=dir+'/desktop-'+token+'.json',argument=utf8(JSON.stringify({token,ready}));
-			// Only the path is quoted into a PowerShell literal; all other arguments
-			// are one base64 JSON value, never lyric text or executable expressions.
-			const command='powershell.exe -NoLogo -NoProfile -NonInteractive -WindowStyle Hidden -EncodedCommand '+command64("Start-Process -WindowStyle Hidden -FilePath '"+exe.replace(/'/g,"''")+"' -ArgumentList '"+argument+"'");
-			let endpoint=null,stopped=false;const controllers=new Set();
+			const blob=await bn.fs.readFile(bundled),bytes=new Uint8Array(await blob.arrayBuffer());
+			if(bytes.length<1024||bytes[0]!==0x4d||bytes[1]!==0x5a)throw Error('桌面歌词组件不完整，请重新安装插件包');
+			let hash=2166136261;for(const byte of bytes)hash=Math.imul(hash^byte,16777619);
+			const exe=dir+'/desktop-host-'+bytes.length+'-'+(hash>>>0).toString(16).padStart(8,'0')+'.exe';
+			const verified=async()=>{
+				if(!await bn.fs.exists(exe))return false;
+				const copy=new Uint8Array(await (await bn.fs.readFile(exe)).arrayBuffer());
+				return copy.length===bytes.length&&copy.every((byte,i)=>byte===bytes[i]);
+			};
+			if(!await verified()&&(!await bn.fs.writeFile(exe,blob)||!await verified()))throw Error('无法复制并校验桌面歌词组件');
+			return {dir,exe};
+		}
+		const stage=()=>staging||(staging=stageRenderer().finally(()=>{staging=null;}));
+		return {async start(cancelled=()=>false){
+			if(cancelled())throw Error('已取消');
+			const {dir,exe}=await stage();
+			const token=[...win.crypto.getRandomValues(new Uint8Array(16))].map(n=>n.toString(16).padStart(2,'0')).join('');
+			const ready=dir+'/desktop-'+token+'.json',argument=utf8(JSON.stringify({token,ready,ownerPort}));
+			// BetterNCM's exec starts this executable directly. Its single
+			// argument is Base64 JSON; no shell or API key is involved.
+			const command='"'+exe.replace(/\//g,'\\')+'" '+argument;
+			let endpoint=null,closing=null;const controllers=new Set();
 			async function request(path,data){
 				const abort=new win.AbortController();controllers.add(abort);const timer=win.setTimeout(()=>abort.abort(),4000);
-				try{const response=await win.fetch(endpoint+path+'?token='+token,{method:data===undefined?'GET':'POST',body:data===undefined?undefined:JSON.stringify(data),headers:data===undefined?{}:{'Content-Type':'application/json'},signal:abort.signal,cache:'no-store',keepalive:path==='/stop'});if(!response.ok)throw Error('桌面歌词连接失败（HTTP '+response.status+'）');return await response.json();}
+				const stopRequest=path==='/stop';
+				// A simple POST can be sent on page exit without a separate CORS preflight.
+				try{const response=await win.fetch(endpoint+path+'?token='+token,{method:data===undefined?'GET':'POST',body:data===undefined?undefined:JSON.stringify(data),headers:data===undefined||stopRequest?{}:{'Content-Type':'application/json'},signal:abort.signal,cache:'no-store',keepalive:stopRequest});if(!response.ok)throw Error('桌面歌词连接失败（HTTP '+response.status+'）');return await response.json();}
 				finally{win.clearTimeout(timer);controllers.delete(abort);}
 			}
-			async function stop(){if(stopped)return;stopped=true;for(const c of controllers)c.abort();if(endpoint)try{await request('/stop',{});}catch(_){}for(const file of [ready,ready+'.error'])try{if(await bn.fs.exists(file))await bn.fs.remove(file);}catch(_){} }
+			function stop(){
+				if(!closing)closing=(async()=>{
+					for(const c of controllers)c.abort();
+					if(endpoint)try{await request('/stop',{});}catch(_){}
+					for(const file of [ready,ready+'.error'])try{if(await bn.fs.exists(file))await bn.fs.remove(file);}catch(_){}
+				})();
+				return closing;
+			}
 			try{
 				if(cancelled())throw Error('已取消');if(!await bn.app.exec(command,false,false))throw Error('无法启动桌面歌词组件');
 				const deadline=Date.now()+12000;
 				while(Date.now()<deadline){
-					if(cancelled())throw Error('已取消');
 					if(await bn.fs.exists(ready+'.error'))throw Error('桌面歌词启动失败：'+(await bn.fs.readFileText(ready+'.error')).slice(0,300));
 					if(await bn.fs.exists(ready)){
 						let info;try{info=JSON.parse(await bn.fs.readFileText(ready));}catch(_){await new Promise(r=>win.setTimeout(r,100));continue;}
-						if(info.token!==token||info.protocol!==1||!Number.isInteger(info.port)||info.port<1||info.port>65535)throw Error('桌面歌词连接信息无效');
-						endpoint='http://127.0.0.1:'+info.port;return {send:frame=>request('/frame',frame),events:()=>request('/events'),stop};
+						if(info.token!==token||info.protocol!==2||!Number.isInteger(info.port)||info.port<1||info.port>65535)throw Error('桌面歌词连接信息无效');
+						endpoint='http://127.0.0.1:'+info.port;
+						if(cancelled())throw Error('已取消');
+						return {send:frame=>request('/frame',frame),events:()=>request('/events'),stop};
 					}
+					if(cancelled())throw Error('已取消');
 					await new Promise(r=>win.setTimeout(r,100));
 				}throw Error('桌面歌词启动超时，请检查 Windows .NET Framework 4.8 或安全软件拦截');
 			}catch(error){await stop();throw error;}
@@ -116,16 +150,18 @@
 		function changed(text){if(status===text)return;status=text;if(api.changed)api.changed();}
 		function snapshot(){const data=api.snapshot({needCurrentText:position===null});if(data.songId!==track||data.playId!==playId){track=data.songId;playId=data.playId;position=null;signature='';revision++;}return data;}
 		function update(force=false,data=null){
-			if(!session||disposed)return;data=data||snapshot();const cfg=api.config(),style=cfg.desktopInheritStyle===false?{}:data.style||{};
+			if(!session||disposed)return;data=data||snapshot();const cfg=api.config(),native=data.style||{};
+			// The layout switch lives in the native menu, including with a custom desktop font.
+			const style=cfg.desktopInheritStyle===false?{vertical:!!native.vertical}:native,rtWeight=cfg.rtWeight||'400';
 			let index=lineAt(data.lines,position);if(position===null&&data.currentText)index=data.lines.findIndex(l=>l.text.trim()===data.currentText.trim());
 			const row=index>=0?data.lines[index]:null,next=style.doubleLine&&index+1<data.lines.length?data.lines[index+1]:null;
 			const karaoke=cfg.karaoke!==false&&!!(row&&row.words&&row.words.length),highlight=karaoke?highlightTo(row,position):null;
-			const sig=JSON.stringify([track,playId,revision,row,next,cfg.enabled,cfg.kana,cfg.rtSize,cfg.rtOpacity,cfg.karaoke,cfg.skipCredits,cfg.skipNoKanaLines,highlight,cfg.desktopFontSize,cfg.desktopTranslation,cfg.desktopTopmost,cfg.desktopBounds,style,data.playing,data.locked]);
+			const sig=JSON.stringify([track,playId,revision,row,next,cfg.enabled,cfg.kana,cfg.rtSize,cfg.rtOpacity,rtWeight,cfg.karaoke,cfg.skipCredits,cfg.skipNoKanaLines,highlight,cfg.desktopFontSize,cfg.desktopTranslation,cfg.desktopTopmost,cfg.desktopBounds,style,data.playing,data.locked]);
 			if(!force&&sig===signature)return;signature=sig;
 			const readingKey=JSON.stringify([revision,track,cfg.kana,cfg.readingSource,cfg.skipCredits,cfg.skipNoKanaLines]);if(readingRevision!==readingKey){readingCache.clear();readingRevision=readingKey;}
 			const readings=text=>{if(!cfg.enabled||api.skip&&api.skip(text))return[{text}];if(!readingCache.has(text)){if(readingCache.size>=4)readingCache.clear();readingCache.set(text,api.readings(text)||[{text}]);}return readingCache.get(text);};const mode=cfg.desktopInheritStyle===false?cfg.desktopTranslation!==false?'translate':'none':style.mode||'translate',secondary=line=>line?(mode==='roman'?line.romaji:mode==='translate'?line.translation:'')||'':'';
 			pending={segments:row?readings(row.text):[],translation:secondary(row),reserveSecondary:mode!=='none',fontSize:style.fontSize||cfg.desktopFontSize||36,style,
-				rtSize:cfg.rtSize,rtOpacity:cfg.rtOpacity,karaoke,highlightTo:highlight,topmost:style.topmost===undefined?cfg.desktopTopmost!==false:style.topmost,locked:!!data.locked,playing:!!data.playing,bounds:bounds(cfg.desktopBounds),
+				rtSize:cfg.rtSize,rtOpacity:cfg.rtOpacity,rtWeight,karaoke,highlightTo:highlight,topmost:style.topmost===undefined?cfg.desktopTopmost!==false:style.topmost,locked:!!data.locked,playing:!!data.playing,bounds:bounds(cfg.desktopBounds),
 				next:next?{segments:readings(next.text),translation:secondary(next)}:null,
 				message:row?'':!track?'等待播放歌曲':!data.lines.length?'暂无歌词':position===null?'等待播放进度':data.title||'前奏'};
 			return drain(generation);
@@ -135,8 +171,9 @@
 		async function stop(restore=true){
 			generation++;if(timer)win.clearInterval(timer);timer=null;const old=session;session=null;starting=ready=false;pending=null;signature='';track=playId='';position=null;
 			for(const [name,fn] of listeners.splice(0))bridge.removeRegisterCall(name,'audioplayer',fn);
-			if(hidden){hidden=false;if(api.visibility)try{await api.visibility(false,restore);}catch(_){}}
-			if(old)await old.stop();
+		const closing=old&&old.stop();
+		if(hidden){hidden=false;if(api.visibility)try{await api.visibility(false,restore);}catch(_){}}
+		if(closing)await closing;
 		}
 		async function fail(error){await stop();api.set('desktopEnabled',false);changed(error.message||String(error));}
 		async function events(version,active){
@@ -163,13 +200,14 @@
 			if(!cfg.desktopEnabled||!cfg.enabled){if(session||starting){stop();changed('');}return;}
 			const data=snapshot();
 			if(data.eligible===false){if(session||starting)stop();changed(data.languageStatus||'当前歌词不含日语，使用原桌面歌词');return;}
-			if(cfg.desktopInheritStyle!==false&&data.style&&data.style.vertical){if(session||starting)stop();changed('竖排继续使用原桌面歌词；桌面注音暂支持横排');return;}
 			if(data.nativeVisible!==true){if(session||starting)stop(false);changed('打开网易云桌面歌词后显示注音');return;}
 			if(!session){open();return;}if(invalidate)revision++;update(false,data);
 			if(invalidate&&api.visibility)api.visibility(true).catch(e=>changed(e.message));
 		}
 		const unsubscribe=api.subscribe(sync),unwatch=api.watch?api.watch(invalidate=>sync(invalidate===true)):()=>{};
-		const dispose=()=>{if(disposed)return;disposed=true;stop();unsubscribe();unwatch();if(menuCleanup.has(win))menuCleanup.get(win)();win.removeEventListener('beforeunload',dispose);};win.addEventListener('beforeunload',dispose);
+	const onPageExit=()=>dispose(false);
+	const dispose=(restore=true)=>{if(disposed)return;disposed=true;stop(restore);unsubscribe();unwatch();if(menuCleanup.has(win))menuCleanup.get(win)();win.removeEventListener('beforeunload',onPageExit);win.removeEventListener('pagehide',onPageExit);};
+	win.addEventListener('beforeunload',onPageExit);win.addEventListener('pagehide',onPageExit);
 		return {sync,dispose,inspect:()=>({status,ready,opening:starting,track,hasClock:position!==null})};
 	}
 	return {nativeTimeline,lrcTimeline,yrcTimeline,attachWords,highlightTo,lineAt,findBridge,nativeStyle,bounds,openSettings,setFontSize,browserTransport,host};
