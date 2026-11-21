@@ -1,21 +1,27 @@
 (function(){
-const MINILYRICS_VERSION="0.7.9";
+const MINILYRICS_VERSION="0.8.3";
 /* MiniLyrics, GPL-3.0-or-later. Pure normalization shared by plugin and tests. */
 (function (root) {
   'use strict';
   const finite = (x, fallback = 0) => Number.isFinite(Number(x)) ? Number(x) : fallback;
+  const wellFormed = value => {
+    const s = String(value);
+    return typeof s.toWellFormed === 'function'
+      ? s.toWellFormed()
+      : s.replace(/[\uD800-\uDBFF](?![\uDC00-\uDFFF])|(?<![\uD800-\uDBFF])[\uDC00-\uDFFF]/g, '\uFFFD');
+  };
   function normalizeLines(input, options = {}) {
     if (!Array.isArray(input)) return [];
     const lines = input.slice(0, 5000).filter(l => l && typeof l==='object').map(l => {
       const time = Math.max(0, finite(l.time ?? l.startTime ?? l.start));
-      let text = String(l.originalLyric ?? l.lyric ?? l.text ?? l.content ?? '');
+      let text = wellFormed(l.originalLyric ?? l.lyric ?? l.text ?? l.content ?? '');
       const words = (Array.isArray(l.dynamicLyric) ? l.dynamicLyric : []).slice(0, 500).filter(w => w && typeof w==='object').map(w => {
         const t = finite(w.time);
-        return {text: String(w.word ?? w.text ?? ''), time: options.wordTiming === 'relative' ? time + t : t,
+        return {text: wellFormed(w.word ?? w.text ?? ''), time: options.wordTiming === 'relative' ? time + t : t,
           duration: Math.max(1, finite(w.duration, 1))};
       });
       if (!text) text = words.map(w => w.text).join('');
-      const translation = String(l.translatedLyric ?? l.translation ?? '');
+      const translation = wellFormed(l.translatedLyric ?? l.translation ?? '');
       return {time, duration: Math.max(0, finite(l.duration)), text, isInterlude: !!l.isInterlude || (!text && !translation),
         translation, words};
     });
@@ -24,10 +30,10 @@ const MINILYRICS_VERSION="0.7.9";
   function metadata(info) {
     if(!info || typeof info!=='object') return null;
     const ncmId=finite(info.ncmId);
-    const id=String(info.trackId??(ncmId>0?ncmId:''));
+    const id=wellFormed(info.trackId??(ncmId>0?ncmId:''));
     if(!id)return null;
-    return {id,ncmId:ncmId>0?String(ncmId):'',title:String(info.songName??''),
-      artist:String(info.authorName??''),cover:String(info.cover?.url??''),
+    return {id,ncmId:ncmId>0?String(ncmId):'',title:wellFormed(info.songName??''),
+      artist:wellFormed(info.authorName??''),cover:wellFormed(info.cover?.url??''),
       duration:Math.max(0,finite(info.duration))};
   }
   // Reconcile a stale provider pause flag only after sustained, real-time progress.
@@ -73,7 +79,7 @@ const MINILYRICS_VERSION="0.7.9";
       current:()=>output,snapshot:()=>({reportedPlaying:reported,playing:output,inferredFromProgress:inferred,
         progressSamples:run?.steps??0})};
   }
-  const api={finite, normalizeLines, metadata, createPlaybackState};
+  const api={finite, wellFormed, normalizeLines, metadata, createPlaybackState};
   if(typeof module!=='undefined') module.exports=api; else root.MiniLyricsCore=api;
 })(typeof window!=='undefined'?window:globalThis);
 
@@ -81,7 +87,7 @@ const MINILYRICS_VERSION="0.7.9";
 (function(root){
   'use strict';
   function createPlayerAdapter(env=root){
-    let store=null,bridge=null,nativeAdapter=null,unsubscribe=null,disposed=false,starting=false,retry=null;
+    let store=null,bridge=null,nativeAdapter=null,unsubscribe=null,disposed=false,starting=false,retry=null,webpackRequire=null;
     let song=null,status='Paused',timeline=null,sequence=0,lastStoreState=null;
     const events=new Map(),bindings=new Map(),eventNames=['PlayProgress','Seek','PlayState'];
     const now=()=>env.performance?.now?.()??Date.now();
@@ -136,21 +142,24 @@ const MINILYRICS_VERSION="0.7.9";
         timelineSource:timeline?.source??null,control:controlState(),events:Object.fromEntries(eventNames.map(name=>[name,{...nativeStats[name]}]))};
     }
     const emit=(name,detail)=>{for(const fn of [...events.get(name)??[]])try{fn({detail});}catch(e){env.console?.warn('[MiniLyrics] 播放订阅处理失败',e);}};
+    const sameSong=(a,b)=>!!a&&!!b&&a.trackId===b.trackId&&a.ncmId===b.ncmId&&a.songName===b.songName&&a.authorName===b.authorName&&a.cover?.url===b.cover?.url&&a.duration===b.duration;
     const readSong=()=>{
       const state=store.getState(),p=state?.playing;if(!p?.resourceTrackId)return null;
       const voice=state['page:vinylPage']?.currentVoice;
       if(p.resourceType==='voice'&&(!voice||String(voice.id)!==String(p.onlineResourceId)))return null;
       const v=p.resourceType==='voice'?voice:null;
       const online=v?.id??p.onlineResourceId??p.resourceTrackId;
+      const rawArtists=v?.track?.artists??p.resourceArtists;
+      const authorName=Array.isArray(rawArtists)?rawArtists.map(a=>a?.name??'').filter(Boolean).join(' / '):'';
       return {trackId:String(p.resourceTrackId),ncmId:/^\d+$/.test(String(online))?Number(online):0,
-        songName:v?.name??p.resourceName??'',authorName:(v?.track?.artists??p.resourceArtists??[]).map(a=>a.name).join(' / '),
+        songName:v?.name??p.resourceName??'',authorName,
         cover:{url:v?.coverUrl??p.resourceCoverUrl??''},duration:Math.max(0,Number(v?.duration??p.curTrack?.duration)||0)};
     };
     function sync(){
       if(disposed||!store)return;
       bindEvents();
       const next=readSong();if(!next)return;
-      const changed=next.trackId!==song?.trackId,meta=JSON.stringify(next)!==JSON.stringify(song);
+      const changed=next.trackId!==song?.trackId,meta=!sameSong(next,song);
       if(changed){timeline=null;sequence++;lastStoreState=null;lastAcceptedProgressAt=null;lastAcceptedSeekAt=null;cancelSeek(null,true);}
       song=next;
       // Redux uses 2 for playing; native PlayState uses a different enum.
@@ -209,25 +218,39 @@ const MINILYRICS_VERSION="0.7.9";
       bindings.clear();store=null;bridge=null;nativeAdapter=null;
     }
     function find(require,predicate){
-      for(const module of Object.values(require.c??{})){const e=module?.exports;for(const candidate of [e,e?.default])if(candidate&&predicate(candidate))return candidate;}
+      for(const module of Object.values(require.c??{})){
+        try{const e=module?.exports;for(const candidate of [e,e?.default])if(candidate&&predicate(candidate))return candidate;}catch{}
+      }
+      return null;
+    }
+    function findExport(require,predicate){
+      for(const module of Object.values(require.c??{})){
+        try{
+          const e=module?.exports;if(!e||(typeof e!=='object'&&typeof e!=='function'))continue;
+          const list=[e];try{if(e.default)list.push(e.default);}catch{}
+          try{for(const k of Object.keys(e))if(k!=='default')list.push(e[k]);}catch{}
+          for(const v of list)if(v&&predicate(v))return v;
+        }catch{}
+      }
       return null;
     }
     function initialize(require){
-      if(disposed)return;
-      const dva=find(require,e=>e.a?.app?._store?.getState&&e.a.app._store.subscribe&&e.a.app._store.dispatch);
-      // Like InfLink's V3 adapter, resolve AudioPlayer before subscribing through Bridge.
+      if(disposed||!require)return;
+      webpackRequire=require;
+      const dva=findExport(require,v=>v?.app?._store?.getState&&v.app._store.subscribe&&v.app._store.dispatch);
+      // Like InfLink's V3 adapter, inspect cached require.c for AudioPlayer for diagnostics before subscribing through Bridge.
       audioPlayerAvailable=!!find(require,e=>typeof e.AudioPlayer?.subscribePlayStatus==='function');
-      const model=dva?.a.app._models?.find(m=>m.namespace==='playing'),reducers=model?.reducers;
+      const model=dva?.app?._models?.find(m=>m.namespace==='playing'),reducers=model?.reducers;
       canQueueLoadingSeek=typeof (reducers?.['playing/onLoadingSeekUpdate']??reducers?.onLoadingSeekUpdate)==='function';
       const native=find(require,e=>typeof e.Bridge?.appendRegisterCall==='function'&&typeof e.Bridge?.removeRegisterCall==='function')?.Bridge;
       const selected=native??env.legacyNativeCmder,adapter=selected?._Adapter??selected?._envAdapter;
       if(!dva||!adapter?.registerCallMap||typeof selected?.appendRegisterCall!=='function'||typeof selected?.removeRegisterCall!=='function')return;
-      store=dva.a.app._store;bridge=selected;nativeAdapter=adapter;bridgeSource=native?'internal':'legacy';
+      store=dva.app._store;bridge=selected;nativeAdapter=adapter;bridgeSource=native?'internal':'legacy';
       try{
         sync();unsubscribe=store.subscribe(isolate(sync));
         // Event binding is retried by sync/polling after native initialization.
         // Restore only a matching startup snapshot, never overwrite a newer event.
-        const storage=find(require,e=>typeof e.b?.lastPlaying?.get==='function')?.b;
+        const storage=findExport(require,v=>typeof v?.lastPlaying?.get==='function');
         const initial=sequence,id=song?.trackId;
         Promise.resolve(storage?.lastPlaying.get()).then(saved=>{
           if(disposed||sequence!==initial||song?.trackId!==id||String(saved?.trackId)!==id)return;
@@ -239,6 +262,7 @@ const MINILYRICS_VERSION="0.7.9";
       if(disposed||store||starting)return;
       starting=true;
       try{
+        if(webpackRequire){initialize(webpackRequire);return;}
         const chunks=env.webpackJsonp;
         if(chunks?.push){
           const key='minilyrics_player_'+Date.now()+'_'+Math.random().toString(36).slice(2);
@@ -295,7 +319,7 @@ const MINILYRICS_VERSION="0.7.9";
       next:()=>playbackControl('playingList/jump2Track',{flag:1,type:'call',triggerScene:'hotKey'}),
       previous:()=>playbackControl('playingList/jump2Track',{flag:-1,type:'call',triggerScene:'hotKey'}),
       seekTo,cancelSeek,
-      dispose:()=>{cancelSeek(null,true);disposed=true;env.clearTimeout(retry);release();events.clear();timeline=null;song=null;}};
+      dispose:()=>{cancelSeek(null,true);disposed=true;env.clearTimeout(retry);webpackRequire=null;release();events.clear();timeline=null;song=null;}};
     start();return api;
   }
   if(typeof module!=='undefined')module.exports={createPlayerAdapter};else root.MiniLyricsPlayer={createPlayerAdapter};
@@ -335,7 +359,7 @@ const MINILYRICS_VERSION="0.7.9";
   function sendBackground(){send({type:'background',...background});}
   function changeBackground(patch){background=normalizeBackground({...background,...patch});try{plugin.setConfig?.('background',{...background});}catch(e){console.warn('[MiniLyrics] 背景设置保存失败',e);}sendBackground();}
   const listen=(target,name,fn)=>{target.addEventListener(name,fn);listeners.push([target,name,fn]);};
-  const send=m=>{if(socket?.readyState!==1)return;try{socket.send(JSON.stringify(m));}catch(e){console.debug('[MiniLyrics] 小窗消息发送失败',e);socket?.close();}};
+  const send=m=>{if(socket?.readyState!==1)return;try{socket.send(JSON.stringify(m,(_,v)=>typeof v==='string'?C.wellFormed(v):v));}catch(e){console.debug('[MiniLyrics] 小窗消息发送失败',e);socket?.close();}};
   const live=()=>position+(playing&&clockValid?Math.max(0,performance.now()-anchor):0);
   function providerId(d){
     if(d?.songID!=null||d?.songId!=null)return String(d.songID??d.songId);
@@ -397,10 +421,17 @@ const MINILYRICS_VERSION="0.7.9";
     const nextPlaying=playback.sample(next,now,state,!!pendingSeek);
     let seekState=pendingSeek?'pending':'';
     if(pendingSeek&&actual){
-      const expected=pendingSeek.target+(nextPlaying?Math.max(0,now-pendingSeek.started):0);
-      // Actual position is authoritative, including an external seek that supersedes ours.
-      const reached=pendingSeek.startup?next>=pendingSeek.target-250&&next<=pendingSeek.target+(nextPlaying?Math.max(0,now-pendingSeek.started):0)+250:Math.abs(next-expected)<=250;
-      if((pendingSeek.sequence===undefined||t.sequence!==pendingSeek.sequence)&&(reached||!pendingSeek.startup&&(t.seek||Math.abs(next-live())>SEEK_TOLERANCE_MS))){clearSeek();seekState='confirmed';}
+      const elapsed=nextPlaying?Math.max(0,now-pendingSeek.started):0;
+      const expected=pendingSeek.target+elapsed;
+      // Startup progress after a missed synchronous seek may begin slightly ahead
+      // of target; reject bootstrap 0 / stale positions, accept authoritative seek.
+      const reached=pendingSeek.startup
+        ?next>=pendingSeek.target-250&&next<=expected+SEEK_TOLERANCE_MS
+        :Math.abs(next-expected)<=250;
+      const superseded=pendingSeek.startup
+        ?!!t.seek
+        :(!!t.seek||Math.abs(next-live())>SEEK_TOLERANCE_MS);
+      if((pendingSeek.sequence===undefined||t.sequence!==pendingSeek.sequence)&&(reached||superseded)){clearSeek();seekState='confirmed';}
     }
     if(next===sourcePosition&&nextPlaying===sourcePlaying&&kind===sourceKind&&seekState!=='confirmed')return false;
     sourcePosition=next;sourcePlaying=nextPlaying;sourceKind=kind;sourceAdvancedAt=now;
@@ -431,7 +462,8 @@ const MINILYRICS_VERSION="0.7.9";
     if(!Number.isFinite(target))return;
     lastSeekId=Number(requestId)||lastSeekId+1;
     clearSeek();playback.resetProgress();
-    const own={id:lastSeekId,songId:song.id,target,startup:!!player?.getDiagnostics?.()?.control&&player.getDiagnostics().control.phase!=='loaded',sequence:player?.getTimeline?.()?.sequence,started:performance.now(),previous:live()};pendingSeek=own;
+    const control=player?.getDiagnostics?.()?.control;
+    const own={id:lastSeekId,songId:song.id,target,startup:!!control&&control.phase!=='loaded',sequence:player?.getTimeline?.()?.sequence,started:performance.now(),previous:live()};pendingSeek=own;
     seekTimer=setTimeout(()=>failSeek(own,'跳转未确认'),SEEK_TIMEOUT_MS);
     sendClock('pending');
     try{
@@ -491,9 +523,11 @@ const MINILYRICS_VERSION="0.7.9";
     try{attachPlayer();sample();}catch(e){console.debug('[MiniLyrics] 恢复同步失败',e);}
   }
   function refreshStatus(){
-    if(!statusView)return;
+    if(!statusView||statusView.isConnected===false)return;
     const state=playerAdapter.getDiagnostics?.()?.streamState,labels={'waiting-player':'播放器未就绪','waiting-subscription':'等待播放器初始化','subscription-lost':'播放同步已中断','waiting-progress':'等待实际播放进度','events-filtered':'收到进度但未接受','progress-stalled':'播放进度已中断','progress-live':'进度正常','progress-paused':'播放已暂停'};
-    const text=status+' · 进度：'+(labels[state]??(player?'网易云播放器':'等待 网易云播放器'))+' · '+Math.floor(live()/1000)+' 秒 · RNP 歌词 '+lines.length+' 行 · 小窗确认：'+(hostState?.lyricCount??'待回报');if(statusView.textContent!==text)statusView.textContent=text;
+    const rnpMissing=lyricMode==='waiting'&&typeof loadedPlugins==='object'&&loadedPlugins&&Object.keys(loadedPlugins).length>0&&!loadedPlugins.RefinedNowPlayingNext&&!window.currentLyrics;
+    const lyricHint=rnpMissing?'（未检测到 RNPNext）':'';
+    const text=status+' · 进度：'+(labels[state]??(player?'网易云播放器':'等待 网易云播放器'))+' · '+Math.floor(live()/1000)+' 秒 · RNP 歌词 '+lines.length+' 行'+lyricHint+' · 小窗确认：'+(hostState?.lyricCount??'待回报');if(statusView.textContent!==text)statusView.textContent=text;
   }
   function connectSocket(port){
     const ws=new WebSocket(`ws://127.0.0.1:${port}/`);
@@ -510,8 +544,10 @@ const MINILYRICS_VERSION="0.7.9";
     ws.close();
   }
   async function retireHost(port,token){
-    await new Promise(r=>setTimeout(r,200));
-    try{retireSocket(await connectSocket(port),token);}catch{}
+    for(let i=0;i<6;i++){
+      await new Promise(r=>setTimeout(r,200));
+      try{const ws=await connectSocket(port);if(ws){retireSocket(ws,token);return;}}catch{}
+    }
   }
   function retireWindow(own,ws=null){
     if(own.retired){ws?.close();return;}
@@ -556,7 +592,7 @@ const MINILYRICS_VERSION="0.7.9";
     if(song.id){
       send({type:'track',...song});
       if(lastAppliedRnp)send({type:'lyrics',songId:song.id,revision:++lyricRevision,mode:lyricMode,lines});
-      if(clockValid)sendClock();
+      if(clockValid||offset!==0)sendClock();
     }
     sendFont();sendRnpStyle(true);sendBackground();
     status='已连接';tick();
@@ -644,7 +680,8 @@ const MINILYRICS_VERSION="0.7.9";
   plugin.onConfig(()=>{
     const el=document.createElement('div');el.style.cssText='padding:24px;line-height:1.8;max-width:700px';
     const title=document.createElement('h2');title.textContent='MiniLyrics 音乐小窗';el.append(title);
-    for(const [text,fn]of [['打开 / 找回小窗',open],['退出鼠标穿透',()=>send({type:'unlock'})],['重置位置和尺寸',()=>send({type:'reset'})],['关闭小窗',closeWindow]]){
+    const requireSocket=fn=>()=>{if(socket?.readyState===1)fn();else{status='小窗未连接，请先打开小窗';refreshStatus();}};
+    for(const [text,fn]of [['打开 / 找回小窗',open],['退出鼠标穿透',requireSocket(()=>send({type:'unlock'}))],['重置位置和尺寸',requireSocket(()=>send({type:'reset'}))],['关闭小窗',closeWindow]]){
       const b=document.createElement('button');b.textContent=text;b.style.cssText='padding:8px 14px;margin:0 8px 12px 0';b.onclick=fn;el.append(b);}
     const p=document.createElement('p');p.textContent='拖动封面移动，右下角缩放；滚轮回看歌词，点击歌词跳转。右键小窗可调整翻译、置顶和帧率。';el.append(p);
     const fontHeading=document.createElement('h3');fontHeading.textContent='歌词字体';el.append(fontHeading);
@@ -676,7 +713,7 @@ const MINILYRICS_VERSION="0.7.9";
     progressSource:player?'网易云播放器':'未同步',positionMs:live(),playing,valid:clockValid,lyricCount:lines.length,
     lyricMode,lyricSource:lyricMode==='waiting'?'等待 RNP':lyricMode==='empty'?'RNP 暂无歌词':'RNP 歌词',lyricRevision,rnpSongId:providerId(window.currentLyrics),
     host:hostState,playerVersion:player?.version??null,playerFresh:playerTimelineFresh(),playerDiagnostics:playerAdapter.getDiagnostics?.()??null,
-    seekPending:!!pendingSeek,seekRequest:lastSeekId,playbackState:playback.snapshot(),background:{...background}})};
+    seekPending:!!pendingSeek,seekRequest:lastSeekId,playbackState:playback.snapshot(),fontSize,background:{...background}})};
   listen(window,'rnp-lyric-page-opened',resyncPage);
   listen(window,'rnp-lyric-page-closed',resyncPage);
   listen(window,'focus',resyncPage);
