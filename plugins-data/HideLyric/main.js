@@ -234,7 +234,7 @@ plugin.onConfig(() => {
 
     title.innerHTML = `
     HideLyric<br>
-    v1.1.2 by 
+    v1.1.3 by 
     <span 
         id="githubLink"
         style="
@@ -593,7 +593,6 @@ function getCurrentSong() {
             return null;
         }
 
-        // data 或 track 都行，优先 data
         const song = result.data ?? result.track;
 
         if (!song?.id) {
@@ -665,7 +664,6 @@ let pendingHide = null;
 
 
 // 检测Rust daemon连接状态
-// 发送ping请求验证Rust后端是否可用
 async function pingRust() {
 
     try {
