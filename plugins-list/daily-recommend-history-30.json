@@ -1,5 +1,6 @@
 {
   "name": "日推本地记录30天",
+  "slug": "daily-recommend-history-30",
   "repo": "Etern17y-maker/NCM-daily-recommend-history",
   "branch": "main",
   "subpath": "/plugin",
