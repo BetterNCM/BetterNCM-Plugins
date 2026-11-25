@@ -1,0 +1,20 @@
+{
+  "manifest_version": 1,
+  "name": "AppleNowPlaying",
+  "slug": "AppleNowPlaying",
+  "version": "0.5.67",
+  "author": "cello",
+  "description": "Apple Music 风格的沉浸播放页，含高级歌词、流体与律动、字体和宿主队列管理。首次解析封面保存目录时会用隐藏 PowerShell 查询 Windows「图片」目录。查询 QQ 歌词会向腾讯发送曲名、艺人和可用的专辑名。查询 AMLL 歌词会向社区镜像发送歌曲 ID。",
+  "preview": "preview.webp",
+  "type": "extension",
+  "ncm3-compatible": true,
+  "ncm-version-req": ">=3.1.41",
+  "betterncm_version": ">=1.0.0",
+  "injects": {
+    "Main": [
+      {
+        "file": "main.js"
+      }
+    ]
+  }
+}
