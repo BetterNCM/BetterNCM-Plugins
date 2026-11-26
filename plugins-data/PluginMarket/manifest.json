@@ -1,0 +1,16 @@
+{
+    "manifest_version": 1,
+    "name": "PluginMarket",
+    "version": "0.8.4",
+    "author": "BetterNCM",
+    "ncm3-compatible": true,
+    "force-update": "*",
+    "hide": true,
+    "injects": {
+        "Main": [
+            {
+                "file": "./main.js"
+            }
+        ]
+    }
+}

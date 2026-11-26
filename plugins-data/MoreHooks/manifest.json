@@ -1,0 +1,16 @@
+{
+    "manifest_version": 1,
+    "name": "MoreHooks",
+    "version": "0.1.0",
+    "hide": true,
+    "author": "MicroBlock",
+    "description": "依赖库 用于统一进行某些JS Hooks操作",
+    "betterncm_version": ">=0.2.3",
+    "injects": {
+        "Main": [
+            {
+                "file": "main.js"
+            }
+        ]
+    }
+}

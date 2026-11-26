@@ -1,0 +1,488 @@
+.with-transition() {
+    transition: all 0.2s;
+}
+
+.with-blur(@spread: var(--transmission-bg-blur)) {
+    body.bgblur-enabled & {
+        backdrop-filter: blur(@spread);
+    }
+}
+
+.with-blur-transparent() {
+    .with-blur();
+
+    & {
+        background: rgba(15, 15, 15, 0.144) !important;
+    }
+
+    & * {
+        background: transparent !important;
+    }
+}
+
+.with-apple-effect() {
+    & {
+        box-shadow: 2px 0px 7px rgba(0, 0, 0, 0.219);
+        border: 1px solid rgba(255, 255, 255, 0.075) !important;
+    }
+}
+
+#portal_root {
+    background: var(--transmission-background);
+    background-size: cover;
+}
+
+* {
+    scroll-behavior: smooth;
+}
+
+.m-nav * {
+    text-shadow: 1px 1px 4px #00000077;
+}
+
+
+.z-tab-scroll,
+.g-mn,
+.n-set {
+    background: transparent !important;
+}
+
+
+// 滚动槽
+::-webkit-scrollbar {
+    display: none;
+}
+
+// 播放栏
+#main-player,
+.m-player {
+    margin: 10px;
+    border-radius: 10px;
+    border: none !important;
+
+    background: rgba(0, 0, 0, 0.055);
+
+    .with-blur();
+    .with-apple-effect();
+
+    * {
+        .with-transition();
+    }
+
+    .btnp {
+        border-radius: 50px;
+        .with-blur(30px);
+        background: #18181811 !important;
+
+        &:hover {
+            background: #1818180e !important;
+            box-shadow: 9px 9px 20px #22222231,
+                -9px -9px 20px #3a3a3a31 !important;
+        }
+    }
+}
+
+// FM背景透明
+.m-fm .covers::after {
+    background: transparent !important;
+}
+
+// 按钮
+.g-singlec-comment,
+.g-singlec-comment-detail,
+.citm-hotmore A,
+.g-singlec-comment-top {
+    .with-blur();
+    background: rgba(14, 14, 14, 0) !important;
+    .with-transition();
+
+    &:hover {
+        background: rgba(14, 14, 14, 0.322) !important;
+    }
+}
+
+// 其他组件
+.textarea,
+.m-comment .reply {
+    .with-blur();
+}
+
+.nav {
+    margin-bottom: 10px;
+    height: calc(100vh - 160px) !important;
+    overflow: scroll;
+
+
+    margin: 10px;
+
+    li {
+        .with-transition();
+
+        border-radius: 3px;
+
+        padding-right: 10px !important;
+        border: 1px solid rgba(255, 255, 255, 0);
+
+        &.z-sel {
+            .with-blur();
+            border: 1px solid rgba(255, 255, 255, 0.082);
+            background: rgba(255, 255, 255, 0);
+        }
+
+        * {
+            background: none !important;
+        }
+    }
+}
+
+
+.m-pinfo {
+    margin-left: 12px;
+    margin-bottom: 10px;
+}
+
+.m-tabwrap {
+    background: rgba(255, 255, 255, 0) !important;
+    position: absolute;
+    top: 20px;
+}
+
+#x-g-mn,
+.z-show {
+    overflow: hidden;
+    border-radius: 5px;
+}
+
+.g-sd {
+    border-right: none !important;
+}
+
+
+.mq-playing .g-mn.one,
+.mq-playing .m-nav {
+    opacity: 0;
+}
+
+.g-singlec-ct {
+    /* position: absolute; */
+    top: 20px !important;
+    /* -webkit-transform: translateY(-40px); */
+    /* margin-top: -40px; */
+}
+
+.n-single .wrap {
+    margin: 0 !important;
+    /* -webkit-transform: translateY(-40px); */
+}
+
+.n-single {}
+
+/* .n-single .wrap,.g-singlec-ct */
+.bg.j-flag {
+    display: none;
+}
+
+.g-single {
+    position: absolute;
+    top: 50px;
+    /* border: 1px rgba(0, 0, 0, 0.219) solid; */
+    /* border-radius: 10px; */
+    padding: 0 !important;
+    margin: 20px 10px !important;
+    background: transparent;
+    /* background: rgba(0, 0, 0, 0.404); */
+    /* -webkit-transform: translateY(25px); */
+}
+
+.g-hd {
+    background: rgba(35, 35, 38, 0) !important;
+    border: none !important;
+}
+
+
+body:not(.s-theme-white) .g-mn {
+    background: rgba(0, 0, 0, 0) !important;
+
+}
+
+.u-arrlay {
+    .with-blur();
+    background: rgba(0, 0, 0, 0.144) !important;
+    border-radius: 10px !important;
+    margin: 25px 10px;
+    border: none !important;
+
+    animation: appear_right .3s forwards;
+
+    &.f-dn {
+        display: block !important;
+        animation: disappear_right .3s forwards;
+
+    }
+}
+
+header::after {
+    background: none !important;
+    border: none !important;
+}
+
+
+.g-mn.one {
+    -webkit-transform: translateY(-5px);
+    margin: 10px;
+    border-radius: 10px;
+}
+
+
+.j-flag {
+    background: unset;
+}
+
+.nav li {
+    margin: 5px;
+    border-radius: 5px;
+}
+
+.nav li:hover {
+    background: rgba(0, 0, 0, 0);
+    -webkit-transform: scale(1.01);
+}
+
+/* Remove ADs */
+.livewrap,
+.voicelive,
+.m-list-recmd-live,
+.m-banner,
+.heartbeat,
+.icn-live-sm,
+.u-icn-novip {
+    display: none !important;
+}
+
+
+body.modify-vinyl-records-enabled {
+    .cdwrap {
+        .with-blur();
+        border-radius: 100%;
+
+        box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.226);
+
+        .cdbox {
+            box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.705);
+            border-radius: 100%;
+            transform: scale(0.65);
+            background: transparent !important;
+        }
+    }
+}
+
+.recommend {
+    .with-blur();
+    border-radius: 10px;
+    margin: 20px !important;
+    padding-top: 20px !important;
+    padding-left: 0px !important;
+}
+
+.u-cover .lnk {
+    -webkit-mask-image: none !important;
+}
+
+// 列表
+.lst>div>* {
+    border-radius: 10px;
+    background: transparent !important;
+
+    &:hover {
+        background: #cecece0e !important;
+    }
+
+    &.z-sel {
+        background: #cecece1e !important;
+    }
+}
+
+.u-playinglocation {
+    display: none;
+}
+
+// // 弹出窗口
+// .m-layer{
+//     .with-apple-effect();
+//     box-shadow: 2px 0px 7px rgba(0, 0, 0, 0.514);
+//     .with-blur-transparent();
+//     margin: auto;
+// }
+
+
+// 动画
+
+@keyframes disappear_right {
+    0% {
+        opacity: 1;
+    }
+
+    99% {
+        opacity: 0;
+        margin-right: -100px;
+    }
+
+    100% {
+        opacity: 0;
+        position: absolute;
+        margin-right: -100vw;
+        pointer-events: none;
+    }
+}
+
+@keyframes disappear_top {
+    0% {
+        opacity: 1;
+    }
+
+    99% {
+        opacity: 0;
+        margin-top: -100px;
+    }
+
+    100% {
+        opacity: 0;
+        margin-top: -100vh;
+    }
+}
+
+@keyframes appear_right {
+    0% {
+        opacity: 0;
+        margin-right: -100px;
+    }
+
+    100% {
+        opacity: 1;
+        display: block;
+    }
+}
+
+@keyframes appear_norm {
+    0% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 1;
+        display: block;
+    }
+}
+
+@keyframes appear_top {
+    0% {
+        opacity: 0;
+        margin-top: -100px;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
+.g-mn.one {
+    animation: appear_top .3s forwards;
+
+    .mq-playing & {
+        display: block !important;
+        animation: disappear_top .3s forwards;
+
+    }
+}
+
+.m-nav {
+    animation: appear_top .3s forwards;
+
+    .mq-playing & {
+        display: block !important;
+        animation: disappear_top .3s forwards;
+    }
+}
+
+.m-playlist {
+    margin: 20px 10px;
+    background: #0000003a;
+    .with-blur(100px);
+
+    &.z-show {
+        // display: block !important;
+        animation: appear_right .3s forwards;
+    }
+
+    &:not(.z-show) {
+        animation: disappear_right .3s forwards;
+    }
+}
+
+.m-card {
+    right: 20px !important;
+    left: unset !important;
+    background: #0000003a !important;
+    .with-blur(10px);
+
+    & {
+        display: block !important;
+        animation: appear_right .3s forwards;
+    }
+}
+
+.g-mn.one:not(.z-tab-scroll)>*:not(.g-wrap1) {
+    animation: appear_right .3s forwards;
+}
+
+.g-mn.one>.switching {
+    animation: appear_norm .3s forwards;
+}
+
+.g-mn.one.z-tab-scroll>*:not(.g-wrap1) {
+    animation: appear_top .3s forwards;
+}
+
+.j-vipicn {
+    display: none !important;
+}
+
+.m-pinfo:not(.z-show) {}
+
+.list-animation(@nth) when (@nth < 250) {
+    @page: floor((@nth/25 + 1));
+    @num: mod(@nth, 25);
+
+    .lst>div:nth-child(@{page})>*:nth-child(@{num}) {
+        @time: (@nth / 50);
+        opacity: 0;
+        animation: appear_right .3s forwards;
+        animation-delay:~"@{time}s";
+        content-visibility: auto;
+    }
+
+    .list-animation(@nth+1);
+}
+
+// 修复一起听黑头像
+
+// 网易云程序员是不是都有那个大病啊 border-radius的事情 非要用maskimage
+
+.f-fl{
+    .tlMem{
+        .face{
+            border-radius: 100% !important;
+            overflow: hidden;
+            .wrap{
+                -webkit-mask-image: none !important;
+            }
+        }
+    }
+}
+
+body:not(.s-theme-white){
+    .m-nav h2{
+        color: #fbfbfb;
+    }
+}
+

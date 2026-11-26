@@ -1,0 +1,34 @@
+{
+    "manifest_version": 1,
+    "name": "LibEAPIRequest",
+    "slug": "LibEAPIRequest",
+    "author": "SteveXMH",
+    "author_links": [
+        "https://github.com/Steve-xmh",
+        "https://github.com/BetterNCM/LibEAPIRequest"
+    ],
+    "description": "LibEAPIRequest",
+    "preview": "preview.svg",
+    "version": "1.6.2",
+    "type": "extension",
+    "noDevReload": true,
+    "requirements": [],
+    "incompatible": [],
+    "betterncm_version": ">=1.0.0",
+    "injects": {
+        "Main": [
+            {
+                "file": "index.js"
+            }
+        ]
+    },
+    "hijacks": {
+        ">= 2.10.4 <= 2.10.6": {
+            "orpheus://orpheus/pub/core.": {
+                "type": "replace",
+                "from": "=Function.prototype;",
+                "to": "=window.FakeFunction||Function.prototype;"
+            }
+        }
+    }
+}

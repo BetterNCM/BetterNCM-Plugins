@@ -1,0 +1,7 @@
+{
+    "name": "OBSPlaybackSuite",
+    "repo": "LilycleHeart/OBSStreamSuite",
+    "branch": "main",
+    "subpath": "/dist",
+    "author": "LilycleHeart"
+}

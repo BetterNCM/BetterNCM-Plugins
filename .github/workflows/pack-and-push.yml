@@ -1,0 +1,62 @@
+name: 'Pack Plugins and Push'
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches: 
+      - master
+    types: [closed]
+  push:
+    branches: 
+      - master
+    paths:
+      - plugins-data
+
+concurrency:
+  group: 'pack-and-push'
+  cancel-in-progress: true
+
+jobs:
+  PackAndPush:
+    if: (github.event_name == 'pull_request' && github.event.pull_request.merged) || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          path: 'plugins'
+          fetch-depth: 0
+      - name: 'Set up node 18.x'
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18.x
+          cache: 'npm'
+          cache-dependency-path: 'plugins/package-lock.json'
+      - name: 'Install dependencies'
+        run: npm ci
+        working-directory: plugins/scripts
+      - name: 'Run pack script'
+        timeout-minutes: 10
+        run: node pack-plugins
+        id: pack
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+        working-directory: plugins/scripts/pack-plugins
+      - name: Checkout release repo
+        uses: actions/checkout@v3
+        with:
+          repository: 'BetterNCM/BetterNCM-Packed-Plugins'
+          token: ${{ secrets.GH_TOKEN }}
+          path: release
+      - name: Copy files
+        run: |
+          cp -rf ./plugins/tmp/* ./release/
+      - name: Commit and push files
+        run: |
+          git config --local user.email "ltforward1@proton.me"
+          git config --local user.name "BetterNCM-Bot"
+          git add .
+          git commit -m "Update"
+          git push https://${{ secrets.GH_TOKEN }}@github.com/BetterNCM/BetterNCM-Packed-Plugins.git
+        working-directory: release

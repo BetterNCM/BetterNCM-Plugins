@@ -1,0 +1,23 @@
+{
+    "$schema": "https://raw.githubusercontent.com/BetterNCM/BetterNCM-Plugins/refs/heads/master/manifest-schema.json",
+    "manifest_version": 1,
+    "name": "GK4ScreenMusicBridge",
+    "slug": "gk4-screen-music-bridge",
+    "version": "0.2.0",
+    "betterncm_version": ">=1.0.0",
+    "author": "MoJo_Lenz",
+    "author_link": "https://github.com/Lenz2023",
+    "description": "把正在播放的歌曲名、歌手与歌词实时推到 SKYLOONG GK4 / GK87 键盘副屏（需与电脑在同一局域网）",
+    "preview": "preview.jpg",
+    "type": "extension",
+    "noDevReload": false,
+    "requirements": ["LibEAPIRequest", "liblyric"],
+    "loadAfter": ["LibEAPIRequest", "liblyric"],
+    "injects": {
+        "Main": [
+            {
+                "file": "main.js"
+            }
+        ]
+    }
+}

@@ -1,0 +1,30 @@
+{
+    "manifest_version": 1,
+    "name": "RefinedNowPlaying Enhanced",
+    "author": "LaoShui, solstice23",
+    "author_links": ["https://github.com/laoshuikaixue","https://github.com/solstice23"],
+    "description": "重新设计的正在播放页面和歌词（增强版）",
+    "preview": "preview.webp",
+    "version": "0.1.0",
+    "type": "extension",
+    "requirements": [],
+    "loadAfter": ["MaterialYouTheme", "LibFrontendPlay", "SimpleAudioVisualizer"],
+    "incompatible": ["Apple-Musiclike-lyrics"],
+    "betterncm_version": ">=1.0.0",
+    "injects": {
+        "Main": [
+            {
+                "file": "main.js"
+            }
+        ]
+    },
+    "hijacks": {
+        ">= 2.10.4": {
+            "orpheus://orpheus/pub/core": {
+                "type": "replace",
+                "from": "function(t,i,e,r,n,a){var o;if(((this.U()||C).from||C).id==t)",
+                "to": "async function(t,i,e,r,n,a){;i='online';window.onProcessLyrics&&(a=(await onProcessLyrics(a,e)));var o;if(((this.U()||C).from||C).id==t)"
+            }
+        }
+    }
+}

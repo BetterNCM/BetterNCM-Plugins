@@ -1,0 +1,25 @@
+{
+  "manifest_version": 1,
+  "name": "MikuPlugin",
+  "slug": "MikuPlugin",
+  "version": "0.1.2",
+  "author": "小岩喵",
+  "author_links": [
+    "https://github.com/miku3333"
+  ],
+  "description": "(点左侧插件管理使用) 精简网易云音乐，关闭任何组件，修改字体与颜色",
+  "type": "extension",
+  "requirements": [],
+  "betterncm_version": ">=0.2.4",
+  "preview": "miku.jpg",
+  "injects": {
+    "Main": [
+      {
+        "file": "main-prod.js"
+      },
+      {
+        "file": "menu.js"
+      }
+    ]
+  }
+}

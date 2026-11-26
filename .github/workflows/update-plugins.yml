@@ -1,0 +1,43 @@
+name: 'Update Plugins'
+
+on:
+  pull_request:
+    branches: 
+      - master
+    types: [closed]
+  workflow_dispatch:
+  schedule:
+    - cron: '0 * * * *'
+  push:
+    branches: 
+      - master
+    paths: "plugins-list/**"
+    
+concurrency:
+  group: 'update-plugins'
+  cancel-in-progress: true
+
+jobs:
+  UpdatePlugins:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: 'Set up node 18.x'
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18.x
+          cache: 'npm'
+      - name: 'Install dependencies'
+        run: npm ci
+        working-directory: scripts
+      - name: 'Run update plugins script'
+        timeout-minutes: 10
+        run: node update-plugins
+        id: node
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        working-directory: scripts/update-plugins

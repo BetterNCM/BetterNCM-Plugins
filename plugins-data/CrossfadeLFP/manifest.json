@@ -1,0 +1,17 @@
+{
+    "name":"CrossFade LFP",
+    "slug":"crossfade-lfp",
+    "description":"在歌曲间添加平滑过渡",
+    "author":"MicroBlock",
+    "version":"0.1.5",
+    "injects":{
+        "Main":[
+            {
+                "file":"CrossFadeLFP.js"
+            }
+        ]
+    },
+    "requirements":["LibFrontendPlay"],
+    "preview":"preview.png",
+    "manifest_version": 1
+}

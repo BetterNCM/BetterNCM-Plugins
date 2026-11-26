@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en" style="height: 100%; margin: 0;">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>StyleSnippet Editor</title>
+
+</head>
+
+<body style="height: 100%; margin: 0;">
+    <div id="container" style="height: 100%;"></div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.26.1/min/vs/loader.min.js"></script>
+    <script>
+        require.config({
+            paths: {
+                'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.26.1/min/vs'
+            }
+        });
+
+        function debounce(
+            callback,
+            waitTime,
+        ) {
+            let timer = 0;
+            return function debounceClosure() {
+                const self = this;
+                const args = arguments;
+                if (timer) {
+                    clearTimeout(timer);
+                }
+                timer = setTimeout(callback.bind(self, args), waitTime);
+            };
+        }
+
+        class CrossWindowEventListener extends EventTarget {
+            #targetWindow;
+            #name;
+            constructor(targetWindow, name) {
+                super();
+                this.#targetWindow = null;
+                this.#name = "";
+                this.#queue = [];
+                this.#inited = false;
+                if (!targetWindow)
+                    throw "No parent window!";
+                this.#targetWindow = targetWindow;
+                this.#name = name;
+                console.log(this.#targetWindow);
+                this.#targetWindow?.postMessage({
+                    type: "__PING__",
+                    __cross_window_evt__: this.#name
+                }, '*');
+                window.addEventListener("message", ev => {
+
+                    if (ev.data.__cross_window_evt__ === this.#name) {
+                        if (ev.data.type === "__PING__" && !this.#inited) {
+                            this.#inited = true;
+                            this.#targetWindow?.postMessage({
+                                type: "__PING__",
+                                __cross_window_evt__: this.#name
+                            }, '*');
+                            this.#processQueue();
+                        }
+                        console.log(ev.data.type, ev.data.detail);
+                        super.dispatchEvent(new CustomEvent(ev.data.type, {
+                            detail: ev.data.detail
+                        }));
+                    }
+                });
+            }
+            #queue;
+            #inited;
+            #processQueue() {
+                if (!this.#inited)
+                    return;
+                while (this.#queue.length > 0) {
+                    const event = this.#queue.pop();
+                    if (!event)
+                        continue;
+                    this.#targetWindow?.postMessage({
+                        type: event.type,
+                        detail: event.detail,
+                        __cross_window_evt__: this.#name,
+                    }, '*');
+                }
+            }
+            dispatchEvent(event) {
+                this.#queue.push(event);
+                this.#processQueue();
+                return true;
+            }
+        }
+
+        require(["vs/editor/editor.main"], () => {
+            const mainWin = new CrossWindowEventListener(window.opener, "stylesnippet.editorWin");
+
+            let currentFile;
+
+            mainWin.addEventListener("openfile", (e) => {
+                currentFile = e.detail.info;
+                editor.setValue(e.detail.stylesheet)
+            })
+
+            document.addEventListener('keydown', e => {
+                if (e.ctrlKey && e.key === 's') {
+                    e.preventDefault();
+                    mainWin.dispatchEvent(new CustomEvent("savefile", {
+                        detail: {
+                            info: currentFile,
+                            stylesheet: editor.getValue()
+                        }
+                    }))
+                }
+            });
+
+            let autoSave = false;
+
+            window.editor = monaco.editor.create(document.getElementById('container'), {
+                value: ``,
+                language: 'less',
+                theme: 'vs-dark',
+                automaticLayout: true
+            });
+
+
+            // StyleSnippet Extended
+
+            monaco.languages.registerHoverProvider('less', {
+                provideHover: function (model, position) {
+                    const line = model.getLinesContent()[position.lineNumber - 1];
+                    if (line.startsWith("@") && line.includes("//")) {
+                        const optionsText = line.slice(line.indexOf("//") + 2);
+                        const options = optionsText.split(" ").map(v => v.trim()).filter(v => v
+                            .length);
+                        const range = new monaco.Range(
+                            position.lineNumber,
+                            1,
+                            position.lineNumber,
+                            model.getLineMaxColumn(position.lineNumber)
+                        );
+
+                        if (options[0] === "ss")
+                            return {
+                                range,
+                                contents: [{
+                                        value: '### StyleSnippet 设置项'
+                                    },
+                                    {
+                                        value: `#### ID：${line.slice(1,line.indexOf(":"))}`
+                                    },
+                                    ...options.slice(1).map(v => {
+                                        if (v.startsWith("#name:")) {
+                                            return {
+                                                value: "**名称**: " + v.slice(6)
+                                            }
+                                        }
+                                        if (v.startsWith("#group:")) {
+                                            return {
+                                                value: "**分组**: " + v.slice(6)
+                                            }
+                                        }
+                                        if (v.startsWith("#slider")) {
+                                            return {
+                                                value: "**滑条**"
+                                            }
+                                        }
+                                        if (v.startsWith("from:")) {
+                                            return {
+                                                value: "**从**: " + v.slice(5)
+                                            }
+                                        }
+                                        if (v.startsWith("to:")) {
+                                            return {
+                                                value: "**到**: " + v.slice(3)
+                                            }
+                                        }
+                                        if (v.startsWith("step:")) {
+                                            return {
+                                                value: "**每步**: " + v.slice(5)
+                                            }
+                                        }
+                                    })
+                                ]
+                            };
+                    }
+
+                    return {};
+                }
+            });
+
+            // AutoSave Icon
+
+            let autoSaveCodelensDisposable = registerAutoSaveCodeLens();
+            const autoSaveSwitchCommand = editor.addCommand(
+                0,
+                function () {
+                    autoSave = !autoSave;
+                    // NOTE: this is a hack to force the codelens to update
+                    autoSaveCodelensDisposable.dispose();
+                    autoSaveCodelensDisposable = registerAutoSaveCodeLens();
+                },
+                ''
+            );
+
+            function registerAutoSaveCodeLens() {
+                return monaco.languages.registerCodeLensProvider('less', {
+                    provideCodeLenses: function (model, token) {
+                        if (autoSave) {
+                            mainWin.dispatchEvent(new CustomEvent("savefile", {
+                                detail: {
+                                    info: currentFile,
+                                    stylesheet: editor.getValue()
+                                }
+                            }))
+                        }
+                        return {
+                            lenses: [{
+                                range: {
+                                    startLineNumber: 1,
+                                    startColumn: 1,
+                                    endLineNumber: 1,
+                                    endColumn: 1
+                                },
+                                id: 'autosave',
+                                command: {
+                                    id: autoSaveSwitchCommand,
+                                    title: `自动保存 [${autoSave?'√':"×"}]`
+                                }
+                            }],
+                            dispose: () => {}
+                        };
+                    },
+                    resolveCodeLens: function (model, codeLens, token) {
+                        return codeLens;
+                    }
+                });
+            }
+
+
+        });
+    </script>
+
+    <style>
+        html {
+            background: #1e1e1e;
+            overflow: hidden;
+        }
+    </style>
+</body>
+
+</html>
