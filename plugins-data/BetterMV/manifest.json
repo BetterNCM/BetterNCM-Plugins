@@ -2,7 +2,7 @@
   "manifest_version": 1,
   "name": "BetterMV",
   "slug": "ncm-better-mv",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "author": "XIAOMING6680",
   "author_link": "https://github.com/xiaoming6680",
   "description": "为正在播放的歌曲实时生成 3D MV：以封面构建场景，按歌曲结构剪辑镜头，按曲风自动选择风格。",
