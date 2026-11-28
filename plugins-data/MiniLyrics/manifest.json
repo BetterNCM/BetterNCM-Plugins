@@ -2,16 +2,13 @@
   "manifest_version": 1,
   "name": "MiniLyrics",
   "slug": "MiniLyrics",
-  "version": "0.8.3",
+  "version": "0.9.1",
   "author": "shoebillback",
   "description": "原生桌面歌词小窗，支持逐字歌词、翻译、置顶、鼠标穿透与封面动态背景。",
   "type": "extension",
   "betterncm_version": ">=1.0.0",
   "ncm-version-req": ">=3.1.11",
   "ncm3-compatible": true,
-  "loadAfter": [
-    "RefinedNowPlayingNext"
-  ],
   "injects": {
     "Main": [
       {
@@ -21,8 +18,5 @@
   },
   "$schema": "https://raw.githubusercontent.com/BetterNCM/BetterNCM-Plugins/refs/heads/master/manifest-schema.json",
   "author_link": "https://github.com/shoebillback",
-  "preview": "preview.png",
-  "requirements": [
-    "RefinedNowPlayingNext"
-  ]
+  "preview": "preview.png"
 }

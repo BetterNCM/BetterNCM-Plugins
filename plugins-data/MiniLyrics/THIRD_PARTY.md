@@ -21,7 +21,8 @@ This is an adapted background pipeline, not the complete Lyricify WPF/WinUI rend
 ## Dependencies and reviewed references
 
 - InfLink-rs: historical reference for song metadata, playback state, timeline and controls; no runtime dependency since 0.7.0. The 0.7.8 player initialization order also references InfLink V3.
-- RefinedNowPlayingNext: https://github.com/SUlTlUS/refined-now-playing-netease-next — processed lyrics, translation, word timing and global-offset events; 0.5.0 measured lyric groups, 200 ms layout lookahead, 50 ms stagger, 500 ms position transitions, four motion curves and float-word timing are adapted from the installed RNPNext implementation (3.0.2+locallyrics.2).
+- RefinedNowPlayingNext: https://github.com/SUlTlUS/refined-now-playing-netease-next — historical lyric provider through 0.8.3 and a reference for the NetEase lyric endpoint. MiniLyrics fetches and parses lyrics independently since 0.8.4. The measured lyric groups, 200 ms layout lookahead, 50 ms stagger, 500 ms position transitions, four motion curves and float-word timing from 0.5.0 were adapted from the installed RNPNext implementation (3.0.2+locallyrics.2).
+- RefinedNowPlayingNext 3.0.2+locallyrics.2 also informed the cloud lyric endpoint, its query parameters, and string-valued lyric fields in 0.8.13.
 - LyricBarNext: https://github.com/GlassesMita/LyricBarNext — original project reference and earlier bridge/store-discovery research; no runtime dependency in 0.3.0.
 - Taskbar-Lyrics: https://github.com/BetterNCM/BetterNCM-Plugins/tree/master/plugins-data/Taskbar-Lyrics — plugin/external-native-process structure and BetterNCM app.exec usage. No binary reused.
 
