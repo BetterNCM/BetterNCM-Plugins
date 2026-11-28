@@ -18,6 +18,7 @@ const MAX_ERRORS = 10; // 最大错误数
 const ERROR_COOLDOWN_MS = 15000; // 错误冷却时间（毫秒）
 const ERROR_DISPLAY_MS = 8000; // 错误弹窗显示时间（毫秒）
 let posted = false; // 是否处在发送请求后，接收响应前的状态
+let localUnavailable = false; // 本地词典不可用（加载失败后置位，改走远端接口）
 const head = document.querySelector('head');
 const HANZI = '爱为异伟汇违维遗纬员阴饮韵亩运云咏卫园烟远铅冈亿忆华货涡过祸个课贺饿开阶块溃谐贝盖该较阁确获吓额辖贯唤换间闲汉惯监缓还馆环简韩舰顽颜愿纪轨记规几挥贵弃毁辉机骑义仪拟议级纠宫给穷许鱼渔协况胁强桥矫镜竞响惊业极仅紧锦谨银训军计启倾庆鲸剧决结杰洁见轩坚绢宪贤谦键茧悬现减库夸顾后语误护红贡绞项沟构纲兴钢讲购刚狱驹顷垦恳诈锁灾细债载际财栅错册杀产伞斩暂师纸视词试诗资饲挚赐时饵识轴执质车谢肿种树终习众丑袭缩术纯顺润书绪诸绍讼胜伤详赏偿场锭饰织职针绅进诊审亲阵寻肾须帅锤势圣诚请责积绩设节羡铣迁选荐鲜渐组诉础仓扫创丧层赠则侧测贼孙损逊贷队态题诺浊达夺谁绽诞锻谈坛耻筑冲驻贮长帐张钓顶鸟胀贴肠调惩沉陈赁镇坠鹤贞订侦缔适敌彻电涂赌东冻岛讨栋汤统头誊腾动铜导顿贪钝谜锅软难认热纳农浓马骂败辈买赔剥缚罚阀贩饭烦颁范盘飞费罢备笔评标贫宾频负妇肤赋谱风复纷喷坟愤奋闻并闭币饼别编补访报饱缝纺贸谋颊扑脉务无梦雾铭鸣灭绵网门纹问约跃输邮涌犹游诱忧优预扬叶阳窑养拥罗络滥蓝栏里离陆侣虏虑凉领疗粮伦轮临类铃丽连练吕赂笼论话贿醫悅歐毆奧橫溫畫會學嶽幹卻腳舊虛禦峽挾狹區徑莖攜獻嚮黃號國參蠶慘殘辭濕寫壽敘將稱條狀觸囑寢盡隨樞數據聲靜稅竊淺踐潛雙壯爭裝屬墮體滯脫擔膽斷癡蟲晝點鬥燈當黨盜獨屆內麥蠻貓寶沒萬與譽踴來亂禮勵戀爐樓灣';
 const KANJI = '愛為異偉彙違維遺緯員陰飲韻畝運雲詠衛園煙遠鉛岡億憶華貨渦過禍個課賀餓開階塊潰諧貝蓋該較閣確獲嚇額轄貫喚換間閑漢慣監緩還館環簡韓艦頑顔願紀軌記規幾揮貴棄毀輝機騎義儀擬議級糾宮給窮許魚漁協況脅強橋矯鏡競響驚業極僅緊錦謹銀訓軍計啓傾慶鯨劇決結傑潔見軒堅絹憲賢謙鍵繭懸現減庫誇顧後語誤護紅貢絞項溝構綱興鋼講購剛獄駒頃墾懇詐鎖災細債載際財柵錯冊殺産傘斬暫師紙視詞試詩資飼摯賜時餌識軸執質車謝腫種樹終習衆醜襲縮術純順潤書緒諸紹訟勝傷詳賞償場錠飾織職針紳進診審親陣尋腎須帥錘勢聖誠請責積績設節羨銑遷選薦鮮漸組訴礎倉掃創喪層贈則側測賊孫損遜貸隊態題諾濁達奪誰綻誕鍛談壇恥築沖駐貯長帳張釣頂鳥脹貼腸調懲沈陳賃鎮墜鶴貞訂偵締適敵徹電塗賭東凍島討棟湯統頭謄騰働銅導頓貪鈍謎鍋軟難認熱納農濃馬罵敗輩買賠剝縛罰閥販飯煩頒範盤飛費罷備筆評標貧賓頻負婦膚賦譜風複紛噴墳憤奮聞併閉幣餅別編補訪報飽縫紡貿謀頰撲脈務無夢霧銘鳴滅綿網門紋問約躍輸郵湧猶遊誘憂優預揚葉陽窯養擁羅絡濫藍欄里離陸侶虜慮涼領療糧倫輪臨類鈴麗連練呂賂籠論話賄医悦欧殴奥横温画会学岳干却脚旧虚御峡挟狭区径茎携献向黄号国参蚕惨残辞湿写寿叙将称条状触嘱寝尽随枢数拠声静税窃浅践潜双壮争装属堕体滞脱担胆断痴虫昼点斗灯当党盗独届内麦蛮猫宝没万与誉踊来乱礼励恋炉楼湾';
@@ -50,6 +51,23 @@ plugin.onConfig(() => {
         #furigana-config button {
             color: black;
         }
+
+        /* CEF 里原生 title 不弹提示，改自绘 */
+        #furigana-tip {
+            position: fixed;
+            z-index: 99999;
+            display: none;
+            max-width: 420px;
+            padding: 10px 12px;
+            border-radius: 8px;
+            background: rgba(20, 20, 24, 0.96);
+            color: #fff;
+            font-size: 13px;
+            line-height: 1.6;
+            white-space: pre-wrap;
+            box-shadow: 0 6px 24px rgba(0, 0, 0, 0.35);
+            pointer-events: none;
+        }
     </style>
     <ul>
         <li><ruby>天気<rt>てんき</rt></ruby>が<ruby>良<rt>い</rt></ruby>いから</li>
@@ -58,10 +76,21 @@ plugin.onConfig(() => {
     <h5>本插件对桌面歌词无效。光标悬停在“?”上以查看说明。</h5>
     <br>
     <p>
+        <label>注音引擎</label>
+        <b id="engine-status">检测中…</b>
+        <a title="1.2.0 起，注音默认在本地完成，不再联网：
+· 插件内置 kuromoji + IPADIC 词典（约 17 MB），插件包因此变大
+· 第一次注音时加载词典，约 1 秒；之后常驻内存，单次注音约 4 毫秒
+· 断网也能用
+· 注音结果与旧版的远程接口完全一致
+· 万一本地词典加载失败，会自动改用远程接口，功能不受影响">?</a>
+    </p>
+    <p>
         <input type="checkbox" id="pronounce">
         <label for="pronounce">日文振假名</label>
         <a title="给日文歌的汉字上方注音
-需要联网，且准确率有限">?</a>
+使用插件内置词典在本地完成，不需要联网
+机械分词，准确率有限，歌手改读的字可能标错">?</a>
     </p>
     <p>
         <input type="checkbox" id="karaoke_support">
@@ -115,6 +144,70 @@ plugin.onConfig(() => {
         config[key] = value;
         localStorage.setItem('furigana', JSON.stringify(config));
     };
+
+    // 注音引擎状态：只在设置页显示，不影响播放页与歌词区
+    const engineStatusDOM = configDOM.querySelector('#engine-status');
+    const readEngineState = () =>
+        (typeof FuriganaLocal !== 'undefined' && FuriganaLocal.status)
+            ? FuriganaLocal.status()
+            : { state: 'unavailable', ms: 0 };
+    function renderEngineStatus() {
+        if (!engineStatusDOM) return;
+        const st = readEngineState();
+        // 加粗放大：一眼看清现在用的是本地还是远程
+        engineStatusDOM.style.fontWeight = '700';
+        engineStatusDOM.style.fontSize = '17px';
+        engineStatusDOM.style.letterSpacing = '0.02em';
+        if (localUnavailable || st.state === 'failed') {
+            engineStatusDOM.innerHTML = '远程接口（本地词典不可用）';
+            engineStatusDOM.style.color = '#d9822b';
+        } else if (st.state === 'ready') {
+            engineStatusDOM.innerHTML = `本地词典 · 已就绪${st.ms ? `（首次加载 ${st.ms}ms）` : ''}`;
+            engineStatusDOM.style.color = '#2f9e44';
+        } else if (st.state === 'loading') {
+            engineStatusDOM.innerHTML = '本地词典 · 加载中…';
+            engineStatusDOM.style.color = '#868e96';
+        } else {
+            engineStatusDOM.innerHTML = '本地词典 · 首次注音时加载';
+            engineStatusDOM.style.color = '#868e96';
+        }
+    }
+    renderEngineStatus();
+    // 设置页开着时状态会跟着变；页面关掉后自动停
+    const statusTimer = setInterval(() => {
+        if (!engineStatusDOM || !engineStatusDOM.isConnected) return clearInterval(statusTimer);
+        const st = readEngineState();
+        renderEngineStatus();
+        if (st.state === 'ready' || st.state === 'failed' || st.state === 'unavailable')
+            clearInterval(statusTimer);
+    }, 400);
+
+    // 原生 title 在 CEF 里不弹，改成自绘提示框（页面上所有「?」都用它）
+    const oldTip = document.getElementById('furigana-tip');
+    if (oldTip) oldTip.remove(); // 每次打开设置页重建，避免叠加
+    const tipDOM = document.createElement('div');
+    tipDOM.id = 'furigana-tip';
+    document.body.appendChild(tipDOM);
+    const hideTip = () => { tipDOM.style.display = 'none'; };
+    configDOM.querySelectorAll('a[title]').forEach(a => {
+        const text = a.getAttribute('title');
+        a.removeAttribute('title'); // 拿掉原生 title，免得两种提示重叠
+        a.setAttribute('data-tip', text);
+        a.style.cursor = 'help';
+        a.addEventListener('mouseenter', () => {
+            tipDOM.textContent = text;
+            tipDOM.style.display = 'block';
+            const r = a.getBoundingClientRect();
+            const w = tipDOM.offsetWidth;
+            const h = tipDOM.offsetHeight;
+            const left = Math.min(Math.max(8, r.left - 16), window.innerWidth - w - 8);
+            let top = r.bottom + 8;
+            if (top + h > window.innerHeight - 8) top = Math.max(8, r.top - h - 8);
+            tipDOM.style.left = left + 'px';
+            tipDOM.style.top = top + 'px';
+        });
+        a.addEventListener('mouseleave', hideTip);
+    });
 
     function getStyle(id) {
         let styleDOM = document.getElementById(id);
@@ -324,6 +417,55 @@ function process(result, isAcc) {
 }
 
 /**
+ * 远端注音（旧接口，仅在本地词典不可用时兜底）
+ * @param {string} str 换行分隔的歌词
+ * @returns {Promise<string>} 注音后的 HTML 文本
+ */
+function remoteAnnotate(str) {
+    const requestBody = JSON.stringify({
+        str: str,
+        mode: 'furigana',
+        to: 'hiragana',
+        romajiSystem: 'hepburn'
+    });
+    const requestOptions = {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json;charset=UTF-8' },
+        body: requestBody
+    };
+    const primaryUrl = 'https://jpxg.netlify.app/.netlify/functions/index';
+    const middleUrl = 'https://api.meaningless.best/.netlify/functions/index';
+
+    const doFetch = (url) => fetch(url, requestOptions).then(resp => {
+        if (resp.ok) return resp.json();
+        else throw new Error(`响应出错，错误代码：${resp.status}`);
+    });
+
+    return doFetch(primaryUrl).catch(err => {
+        console.warn('Furigana: 主接口失败，尝试备用接口…', err);
+        return doFetch(middleUrl);
+    });
+}
+
+/**
+ * 本地优先注音：内置词典在本地算，失败才走远端接口
+ * @param {string} str 换行分隔的歌词
+ * @returns {Promise<string>}
+ */
+async function annotateText(str) {
+    if (typeof FuriganaLocal !== 'undefined' && !localUnavailable) {
+        try {
+            return await FuriganaLocal.annotate(str);
+        } catch (err) {
+            console.warn('Furigana: 本地注音失败，改用远端接口', err);
+            // 词典加载失败是持久性问题，本次会话不再重试，免得每句都卡一次
+            if (err && err.fatal) localUnavailable = true;
+        }
+    }
+    return remoteAnnotate(str);
+}
+
+/**
  * 给歌词注音
  * @param {Element[]} lyricElem 多句歌词的DOM元素
  */
@@ -410,35 +552,8 @@ function pronounce(lyricElem) {
 
     posted = true;
     date = Math.round(Date.now() / 3600000);
-    console.log('Furigana: Trying to fetch...');
-    const requestBody = JSON.stringify({
-        str: str,
-        mode: 'furigana',
-        to: 'hiragana',
-        romajiSystem: 'hepburn'
-    });
-    const requestOptions = {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json;charset=UTF-8' },
-        body: requestBody
-    };
-    const primaryUrl = 'https://jpxg.netlify.app/.netlify/functions/index';
-    const middleUrl = 'https://api.meaningless.best/.netlify/functions/index';
-    const backupUrl = 'https://api.0721for.me/.netlify/functions/index';
-
-    const doFetch = (url) => fetch(url, requestOptions).then(resp => {
-        console.log('Furigana: Response received.');
-        if (resp.ok) return resp.json();
-        else throw new Error(`响应出错，错误代码：${resp.status}`);
-    });
-
-    doFetch(primaryUrl).catch(err => {
-        console.warn('Primary API failed, trying middle API...', err);
-        return doFetch(middleUrl);
-    }).catch(err => {
-        console.warn('Middle API failed, trying backup API...', err);
-        return doFetch(backupUrl);
-    }).then(result => {
+    console.log('Furigana: 开始注音（本地优先）...');
+    annotateText(str).then(result => {
         if (!result) return;
         result = process(result, isAcc);
         str = str.split('\n');
@@ -579,35 +694,8 @@ function pronouncePlus(lyricElem) {
 
     posted = true;
     date = Math.round(Date.now() / 3600000);
-    console.log('Furigana: Trying to fetch...');
-    const requestBody = JSON.stringify({
-        str: str,
-        mode: 'furigana',
-        to: 'hiragana',
-        romajiSystem: 'hepburn'
-    });
-    const requestOptions = {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json;charset=UTF-8' },
-        body: requestBody
-    };
-    const primaryUrl = 'https://jpxg.netlify.app/.netlify/functions/index';
-    const middleUrl = 'https://api.meaningless.best/.netlify/functions/index';
-    const backupUrl = 'https://api.0721for.me/.netlify/functions/index';
-
-    const doFetch = (url) => fetch(url, requestOptions).then(resp => {
-        console.log('Furigana: Response received.');
-        if (resp.ok) return resp.json();
-        else throw new Error(`响应出错，错误代码：${resp.status}`);
-    });
-
-    doFetch(primaryUrl).catch(err => {
-        console.warn('Primary API failed, trying middle API...', err);
-        return doFetch(middleUrl);
-    }).catch(err => {
-        console.warn('Middle API failed, trying backup API...', err);
-        return doFetch(backupUrl);
-    }).then(result => {
+    console.log('Furigana: 开始注音（本地优先）...');
+    annotateText(str).then(result => {
         if (!result) return;
         result = process(result, isAcc);
         str = str.split('\n');
