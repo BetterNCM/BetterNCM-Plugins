@@ -1,13 +1,20 @@
 {
     "manifest_version": 1,
     "name": "Furigana-api-fixed(JanpaneseFonts)",
-    "version": "1.1.3",
+    "version": "1.2.0",
     "author": "Hxjjxg",
-    "description": "替换日文歌字体为日文字体，日语汉字振假名(api-fixed)",
+    "description": "替换日文歌字体为日文字体，日语汉字振假名(本地词典优先)",
     "betterncm_version": ">=1.0.0",
     "ncm3-compatible": true,
+    "require_restart": true,
     "injects": {
         "Main": [
+            {
+                "file": "kuromoji.js"
+            },
+            {
+                "file": "local-furigana.js"
+            },
             {
                 "file": "main.js"
             }
